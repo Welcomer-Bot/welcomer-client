@@ -14,7 +14,7 @@ export function EmbedBodyTitleInput({
     <Input
       label={"Title " + `( ${value?.length ?? 0}/256 )`}
       validate={(value) => {
-        if (value.length > 256) return "Author must not exceed 256 characters!";
+        if (value.length > 256) return "Title must not exceed 256 characters!";
       }}
       value={value}
       onValueChange={setValue}

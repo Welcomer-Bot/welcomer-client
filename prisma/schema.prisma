@@ -56,10 +56,10 @@ model DM {
 
 model Embed {
   id          Int             @id @default(autoincrement())
-  title       String?
-  description String?
+  title       String? @db.VarChar(256)
+  description String? @db.VarChar(2048)
   color       Int?
-  timestamp   String?
+  timestamp   DateTime?
   footer      EmbedFooter?
   fields      EmbedField[]
   author      EmbedAuthor?
