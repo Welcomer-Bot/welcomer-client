@@ -4,7 +4,6 @@ import ChannelSelector from "./channelSelector";
 import ContentEditor from "./contentEditor";
 import EmbedMenuAccordion from "./embed/embedMenuAccordion";
 
-import { getEmbeds } from "@/lib/dal";
 import { getGuildChannels } from "@/lib/dal";
 export async function MessageEditor({ module }: { module: Welcomer | Leaver }) {
   const channels = await getGuildChannels(module.guildId);

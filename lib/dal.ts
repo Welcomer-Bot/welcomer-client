@@ -1,16 +1,16 @@
 import "server-only";
 
-import { Leaver, Welcomer } from "@prisma/client";
-import { RESTGetAPIGuildChannelsResult } from "discord-api-types/v10";
-import { cache } from "react";
+import {Leaver, Welcomer} from "@prisma/client";
+import {RESTGetAPIGuildChannelsResult} from "discord-api-types/v10";
+import {cache} from "react";
 
 import prisma from "./prisma";
 
-import { decrypt, getSession } from "@/lib/session";
-import { GuildExtended } from "@/types";
+import {decrypt, getSession} from "@/lib/session";
+import {GuildExtended} from "@/types";
 
 export const verifySession = cache(async () => {
-  const session = getSession();
+  const session = await getSession();
   const clientSession = await decrypt(session);
 
   if (!clientSession?.userId) {
@@ -28,9 +28,8 @@ export const getUser = cache(async () => {
     const data = await prisma.user.findMany({
       where: { id: session.userId },
     });
-    const user = data[0];
 
-    return user;
+    return data[0];
   } catch {
     return null;
   }

@@ -6,6 +6,7 @@ import RemoveEmbedsButton from "./removeEmbedsButton";
 
 import EmbedsAccordionWrapper from "@/components/Accordion/EmbedsAccordionWrapper";
 import { getEmbeds } from "@/lib/dal";
+
 export default async function EmbedMenuAccordion({
   module,
 }: {
@@ -13,12 +14,12 @@ export default async function EmbedMenuAccordion({
 }) {
   const embeds = await getEmbeds(module);
   const embedsLenght = embeds ? embeds.length : 0;
-  
+
   return (
     <EmbedsAccordionWrapper embedsLength={embedsLenght}>
       <EmbedsViewer embeds={embeds} />
       <div className="sm:flex-row flex-col flex mt-5">
-        <CreateEmbedButton moduleId={module.id} />
+        <CreateEmbedButton embedsLength={embedsLenght} moduleId={module.id} />
         <RemoveEmbedsButton embedsLenght={embedsLenght} moduleId={module.id} />
       </div>
     </EmbedsAccordionWrapper>

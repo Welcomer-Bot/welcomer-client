@@ -1,5 +1,5 @@
 import { Card, CardBody } from "@nextui-org/card";
-import { Guild, UserGuild } from "@prisma/client";
+import { UserGuild } from "@prisma/client";
 import Image from "next/image";
 
 import { getGuildIcon } from "@/lib/utils";

@@ -41,8 +41,8 @@ export default function NavbarUserDropdown({ user }: { user: User }) {
                 isBordered: true,
                 name: user.username || "Discord User",
               }}
-              name={user.username}
               description={user.id}
+              name={user.username}
             />
           </DropdownItem>
         </DropdownSection>

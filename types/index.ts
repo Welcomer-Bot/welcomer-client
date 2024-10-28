@@ -31,4 +31,3 @@ export interface EmbedExtended extends Embed {
   image: EmbedImage | null;
   thumbnail: EmbedThumbnail | null;
 }
-

@@ -4,6 +4,8 @@ import { Accordion, AccordionItem } from "@nextui-org/accordion";
 
 import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
 import { EmbedBodyFields } from "./body/EmbedBodyFields";
+import { EmbedFieldsAccordion } from "./fields/EmbedFieldsAccordion";
+import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
 import { EmbedExtended } from "@/types";
 
@@ -20,7 +22,7 @@ export default function EmbedsViewer({
     <div>
       <Accordion variant="splitted">
         {embeds.map((embed, index) => (
-          <AccordionItem key={index} title={`Embed ${index + 1}`}>
+          <AccordionItem key={index} title={`Embed ${index + 1} - ${embed.id}`}>
             <Accordion
               defaultSelectedKeys={"all"}
               selectionMode="multiple"
@@ -33,13 +35,13 @@ export default function EmbedsViewer({
                 <EmbedBodyFields embed={embed} />
               </AccordionItem>
               <AccordionItem key={3} aria-label="Footer" title="Footer">
-                Footer
+                <EmbedFooterFields embed={embed} />
               </AccordionItem>
               <AccordionItem key={4} aria-label="Images" title="Images">
                 Images
               </AccordionItem>
               <AccordionItem key={5} aria-label="Fields" title="Fields">
-                Fields
+                <EmbedFieldsAccordion embed={embed} />
               </AccordionItem>
             </Accordion>
           </AccordionItem>

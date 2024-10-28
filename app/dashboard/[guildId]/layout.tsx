@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
+import React from "react";
 
 import { Sidebar } from "@/components/dashboard/guild/sideBar";
-import { getUserGuild, getUserGuilds, getUserData } from "@/lib/dal";
+import { getUserData, getUserGuild, getUserGuilds } from "@/lib/dal";
 
 export default async function Layout({
   children,
@@ -12,7 +13,8 @@ export default async function Layout({
     guildId: string;
   };
 }) {
-  const guild = await getUserGuild(params.guildId);
+  const { guildId } = await params;
+  const guild = await getUserGuild(guildId);
 
   if (!guild) redirect("/dashboard");
   const otherGuilds =

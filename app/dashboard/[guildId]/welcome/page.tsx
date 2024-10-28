@@ -6,13 +6,15 @@ import CreateWelcomerButton from "@/components/dashboard/guild/createWelcomerBut
 import RemoveWelcomerButton from "@/components/dashboard/guild/deleteWelcomerButton";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import { getGuild, getWelcomer } from "@/lib/dal";
+
 export default async function Page({
   params,
 }: {
   params: { guildId: string };
 }) {
-  const welcomerParams = await getWelcomer(params.guildId);
-  const guild = await getGuild(params.guildId);
+  const { guildId } = await params;
+  const welcomerParams = await getWelcomer(guildId);
+  const guild = await getGuild(guildId);
 
   if (!guild) redirect("/dashboard");
 
@@ -20,9 +22,9 @@ export default async function Page({
     <CardHeader className="flex justify-between">
       <p>Welcome module status</p>
       {welcomerParams ? (
-        <RemoveWelcomerButton guildId={params.guildId} />
+        <RemoveWelcomerButton guildId={guildId} />
       ) : (
-        <CreateWelcomerButton guildId={params.guildId} />
+        <CreateWelcomerButton guildId={guildId} />
       )}
     </CardHeader>
   );

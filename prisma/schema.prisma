@@ -56,8 +56,8 @@ model DM {
 
 model Embed {
   id          Int             @id @default(autoincrement())
-  title       String? @db.VarChar(256)
-  description String? @db.VarChar(2048)
+  title       String?         @db.VarChar(256)
+  description String?         @db.VarChar(2048)
   color       Int?
   timestamp   DateTime?
   footer      EmbedFooter?
@@ -132,28 +132,28 @@ model EmbedFooter {
 }
 
 model User {
-  id           String   @id
-  username         String?
+  id            String      @id
+  username      String?
   discriminator String?
-  avatar       String?
-  accessToken  String?
-  refreshToken String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  guilds       UserGuild[]
+  avatar        String?
+  accessToken   String?
+  refreshToken  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  guilds        UserGuild[]
 }
 
 model UserGuild {
-  id        String      @id
-  name      String
-  icon      String?
-  banner    String?
+  id          String     @id
+  name        String
+  icon        String?
+  banner      String?
   permissions String?
-  channels  Channels[]
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  channels    Channels[]
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Channels {
@@ -161,8 +161,8 @@ model Channels {
   type      String
   name      String
   guildId   String
-  guild     UserGuild     @relation(fields: [guildId], references: [id])
+  guild     UserGuild @relation(fields: [guildId], references: [id])
   channelId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

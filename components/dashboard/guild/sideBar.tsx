@@ -138,8 +138,8 @@ export function Sidebar({
               avatarProps={{
                 src: getUserAvatar(user),
               }}
-              name={user.username}
               description={user.id}
+              name={user.username}
             />
           </div>
           <LogoutIcon />

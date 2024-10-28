@@ -13,7 +13,7 @@ export async function signIn() {
 }
 
 export async function signOut() {
-  deleteSession();
+  await deleteSession();
   redirect("/");
 }
 
@@ -60,7 +60,6 @@ export async function removeWelcomer(
   try {
     if (!(await canUserManageGuild(guildId))) return null;
 
-    
     const res = await prisma.welcomer.delete({
       where: {
         guildId: guildId,
@@ -72,7 +71,8 @@ export async function removeWelcomer(
     return res;
   } catch (error) {
     console.error(error);
-    return null
+
+    return null;
   }
 }
 export async function createEmbed(welcomerId: number): Promise<Embed | null> {
@@ -154,3 +154,40 @@ export async function removeEmbed(welcomerId: number, embedId: number) {
     throw new Error("Failed to delete embed");
   }
 }
+
+// export async function createField(embedId: number) {
+//   try {
+//     const embed = await prisma.embed.findUnique({
+//       where: {
+//         id: embedId,
+//       },
+//       select: {
+//         welcomerId: true,
+//       },
+//     });
+//     let welcomerId = embed?.welcomerId;
+//     const guild = await prisma.welcomer.findUnique({
+//       where: {
+//         id: welcomerId!,
+//       },
+//       select: {
+//         guildId: true,
+//       },
+//     });
+//     let guildId = guild?.guildId;
+
+//     if (!guildId || !(await canUserManageGuild(guildId))) return;
+//     await prisma.embedField.create({
+//       data: {
+//         embedId: embedId,
+//         name: null,
+//         value: null,
+//       },
+//     });
+
+//     revalidatePath(`/app/dashboard/${welcomerId}/welcome`);
+//   } catch (error) {
+//     console.error(error);
+//     throw new Error("Failed to create field");
+//   }
+// }

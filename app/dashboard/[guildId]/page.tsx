@@ -8,7 +8,8 @@ export default async function Page({
 }: {
   params: { guildId: string };
 }) {
-  const guild = await getUserGuild(params.guildId);
+  const { guildId } = await params;
+  const guild = await getUserGuild(guildId);
 
   if (!guild) redirect("/dashboard");
 

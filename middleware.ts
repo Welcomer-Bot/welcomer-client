@@ -8,7 +8,7 @@ export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
 
-  const session = getSession();
+  const session = await getSession();
   const sessionData = await decrypt(session);
 
   if (isProtectedRoute && !sessionData?.userId) {

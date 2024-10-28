@@ -11,7 +11,7 @@ export function EmbedBodyFields({ embed }: { embed: EmbedExtended }) {
       <EmbedBodyTitleInput title={embed.title} />
       <EmbedBodyDescriptionInput description={embed.description} />
       <EmbedBodyColorInput color={embed.color} />
-      <EmbedBodyTimestampInput timestamp={embed.timestamp} />
+      <EmbedBodyTimestampInput timestamp={embed.timestamp?.toString()} />
     </div>
   );
 }
