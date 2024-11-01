@@ -1,7 +1,7 @@
 import "server-only";
 
 import {Leaver, Welcomer} from "@prisma/client";
-import {RESTGetAPIGuildChannelsResult} from "discord-api-types/v10";
+import {APIChannel, RESTGetAPIGuildChannelsResult} from "discord-api-types/v10";
 import {cache} from "react";
 
 import prisma from "./prisma";
@@ -174,10 +174,10 @@ export async function getEmbeds(module: Welcomer | Leaver) {
   }
 }
 
-export async function getGuildChannels(guildId: string) {
+export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
   // get guild channels from discord api
   try {
-    if (!canUserManageGuild(guildId)) return null;
+    if (!canUserManageGuild(guildId)) throw new Error("You do not have permission to manage this guild");
     const data = await fetch(
       "https://discord.com/api/guilds/" + guildId + "/channels",
       {
@@ -194,7 +194,7 @@ export async function getGuildChannels(guildId: string) {
 
     return channels;
   } catch (error) {
-    return null;
+    throw new Error("Failed to fetch guild channels");
   }
 }
 

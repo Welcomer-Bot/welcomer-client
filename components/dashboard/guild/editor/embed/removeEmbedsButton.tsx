@@ -2,21 +2,22 @@
 
 import { Button } from "@nextui-org/button";
 
-import { removeEmbeds } from "@/lib/actions";
+import { useCurrentMessageStore } from "@/state/message";
 
 export default function RemoveEmbedsButton({
-  embedsLenght,
-  moduleId,
+  embedsLength,
 }: {
-  embedsLenght: number;
+  embedsLength: number;
   moduleId: number;
 }) {
+  const clearEmbeds = useCurrentMessageStore((state) => state.clearEmbeds);
+
   return (
     <Button
       color="danger"
-      isDisabled={embedsLenght == 0}
+      isDisabled={embedsLength == 0}
       variant="ghost"
-      onClick={() => removeEmbeds(moduleId)}
+      onClick={() => clearEmbeds()}
     >
       Clear Embeds
     </Button>

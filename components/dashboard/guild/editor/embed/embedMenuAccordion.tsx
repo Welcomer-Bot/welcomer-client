@@ -20,7 +20,7 @@ export default async function EmbedMenuAccordion({
       <EmbedsViewer embeds={embeds} />
       <div className="sm:flex-row flex-col flex mt-5">
         <CreateEmbedButton embedsLength={embedsLenght} moduleId={module.id} />
-        <RemoveEmbedsButton embedsLenght={embedsLenght} moduleId={module.id} />
+        <RemoveEmbedsButton embedsLength={embedsLenght} moduleId={module.id} />
       </div>
     </EmbedsAccordionWrapper>
 
