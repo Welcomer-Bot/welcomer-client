@@ -27,6 +27,7 @@ export default function SendMenu() {
         channels
           .filter((channel) => channel.type === 4)
           .map((channel) => (
+            // if category has no channels, don't show it
             <SelectSection key={channel.id} showDivider title={channel.name}>
               {channels
                 .filter((c) => c.type === 0)

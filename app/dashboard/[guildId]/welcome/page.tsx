@@ -37,7 +37,7 @@ export default async function Page({
       {welcomerParams ? (
         <div>
           <Divider className="mb-2" />
-          <Editor module={welcomerParams} />
+          <Editor/>
         </div>
       ) : null}
     </Card>

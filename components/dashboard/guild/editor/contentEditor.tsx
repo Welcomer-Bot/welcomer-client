@@ -1,14 +1,11 @@
 "use client";
 
+import { useWelcomerStore } from "@/state/welcomer";
 import { Textarea } from "@nextui-org/input";
-import { useState } from "react";
 
-export default function ContentEditor({
-  content,
-}: {
-  content: string | undefined;
-}) {
-  const [value, setValue] = useState(content);
+export default function ContentEditor() {
+  const value = useWelcomerStore((state) => state.content);
+  const setValue = useWelcomerStore((state) => state.setContent);
 
   return (
     <Textarea
@@ -18,7 +15,7 @@ export default function ContentEditor({
         if (value.length > 2000)
           return "Content must not exceed 2000 characters!";
       }}
-      value={value}
+      value={value ?? ""}
       onChange={(e) => setValue(e.target.value)}
     />
   );
