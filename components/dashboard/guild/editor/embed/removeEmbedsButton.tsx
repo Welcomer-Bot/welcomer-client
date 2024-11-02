@@ -2,7 +2,7 @@
 
 import { Button } from "@nextui-org/button";
 
-import { useCurrentMessageStore } from "@/state/message";
+import { useCurrentMessageStore } from "@/state/embeds";
 
 export default function RemoveEmbedsButton({
   embedsLength,

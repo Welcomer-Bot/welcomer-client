@@ -118,6 +118,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // for (const guild of guilds) {
+    //   await prisma.guild.create({
+    //     data: {
+    //       id: guild.id,
+    //     },
+    //   });
+    // }
     // add guilds to user
     await prisma.userGuild.deleteMany({
       where: {
