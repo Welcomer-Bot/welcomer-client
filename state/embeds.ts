@@ -6,7 +6,7 @@ import { Embed } from "@/lib/discord/schema";
 
 export interface EmbedsStore {
   embeds: Embed[];
-  setEmbeds: (embeds: Embed[] | null) => void;
+  setEmbeds: (embeds: Embed[]) => void;
   addEmbed: (embed: Embed) => void;
   deleteEmbed: (i: number) => void;
   clearEmbeds: () => void;
@@ -16,6 +16,8 @@ const defaultEmbeds = {
   embeds: [
     {
       id: -1,
+      created: new Date(),
+      updated: new Date(),
       title: "Welcome to the server!",
       description: "Welcome {user} to {guild}",
       color: 0x00ff00,
@@ -24,8 +26,9 @@ const defaultEmbeds = {
 };
 
 const emptyEmbeds = {
-  embeds: [],
+  embeds: [] as Embed[],
 };
+
 
 export const useEmbedsStore =
   create<EmbedsStore>()(

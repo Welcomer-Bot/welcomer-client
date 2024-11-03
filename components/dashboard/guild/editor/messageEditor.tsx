@@ -2,7 +2,7 @@ import { Leaver, Welcomer } from "@prisma/client";
 
 import SendMenu from "./sendMenu";
 import ContentEditor from "./contentEditor";
-import EmbedMenuAccordion from "./embed/embedMenuAccordion";
+import EmbedMenuAccordion from "./embed/embedEditor";
 
 import { getGuildChannels } from "@/lib/dal";
 

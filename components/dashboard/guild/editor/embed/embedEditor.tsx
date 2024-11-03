@@ -1,26 +1,16 @@
-import { Leaver, Welcomer } from "@prisma/client";
-
 import CreateEmbedButton from "./createEmbedButton";
 import EmbedsViewer from "./embedsViewer";
 import RemoveEmbedsButton from "./removeEmbedsButton";
 
 import EmbedsAccordionWrapper from "@/components/Accordion/EmbedsAccordionWrapper";
-import { getEmbeds } from "@/lib/dal";
 
-export default async function EmbedMenuAccordion({
-  module,
-}: {
-  module: Welcomer | Leaver;
-}) {
-  const embeds = await getEmbeds(module);
-  const embedsLenght = embeds ? embeds.length : 0;
-
+export async function EmbedEditor() {
   return (
-    <EmbedsAccordionWrapper embedsLength={embedsLenght}>
-      <EmbedsViewer embeds={embeds} />
+    <EmbedsAccordionWrapper>
+      <EmbedsViewer />
       <div className="sm:flex-row flex-col flex mt-5">
-        <CreateEmbedButton embedsLength={embedsLenght} moduleId={module.id} />
-        <RemoveEmbedsButton embedsLength={embedsLenght} moduleId={module.id} />
+        <CreateEmbedButton />
+        <RemoveEmbedsButton />
       </div>
     </EmbedsAccordionWrapper>
 

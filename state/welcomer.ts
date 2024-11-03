@@ -8,13 +8,24 @@ interface WelcomerStore extends Welcomer {
   setChannelId: (channelId: string) => void;
   setContent: (content: string) => void;
   clear(): void;
+  addEmbed(embed: Embed): void;
+  addDefaultEmbed(): void;
+  removeEmbed(index: number): void;
+  clearEmbeds(): void;
 }
 
 const defaultMessage: Welcomer = {
-  id: 0,
   guildId: "",
   channelId: "",
   content: "Welcome {user} to {guild}",
+  embeds: [],
+};
+
+const defaultEmbed: Embed = {
+  title: "Welcome to the server!",
+  description: "Welcome {user} to {guild}",
+  color: 0x00ff00,
+  fields: [],
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
@@ -26,6 +37,27 @@ export const useWelcomerStore = create<WelcomerStore>()(
         setChannelId: (channelId) => set({ channelId }),
         setContent: (content) => set({ content }),
         clear: () => set(defaultMessage),
+        addEmbed: (embed: Embed) =>
+          set((state) => {
+            if (!state.embeds) {
+              state.embeds = [embed];
+            } else {
+              state.embeds.push(embed);
+            }
+          }),
+        addDefaultEmbed: () =>
+          set((state) => {
+            if (!state.embeds) {
+              state.embeds = [defaultEmbed];
+            } else {
+              state.embeds.push(defaultEmbed);
+            }
+          }),
+        removeEmbed: (index) =>
+          set((state) => {
+            state.embeds.splice(index, 1);
+          }),
+        clearEmbeds: () => set((state) => (state.embeds = [])),
       }),
       {
         name: "welcomer",

@@ -4,7 +4,7 @@ import { EmbedAuthorUrlInput } from "./EmbedAuthorUrl";
 
 import { EmbedExtended } from "@/types";
 
-export function EmbedAuthorFields({ embed }: { embed: EmbedExtended }) {
+export function EmbedAuthorFields() {
   return (
     <div className="space-y-3">
       <EmbedAuthorNameInput name={embed.author?.name} />

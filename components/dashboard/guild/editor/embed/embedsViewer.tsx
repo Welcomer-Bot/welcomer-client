@@ -8,15 +8,11 @@ import { EmbedFieldsAccordion } from "./fields/EmbedFieldsAccordion";
 import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
 import { EmbedExtended } from "@/types";
+import { useEmbedsStore } from "@/state/embeds";
+import { useWelcomerStore } from "@/state/welcomer";
 
-export default function EmbedsViewer({
-  embeds,
-}: {
-  embeds: EmbedExtended[] | null;
-}) {
-  if (!embeds) {
-    return null;
-  }
+export default function EmbedsViewer() {
+  const embeds = useWelcomerStore((state) => state.embeds);
 
   return (
     <div>
@@ -29,19 +25,19 @@ export default function EmbedsViewer({
               variant="bordered"
             >
               <AccordionItem key={1} aria-label="Author" title="Author">
-                <EmbedAuthorFields embed={embed} />
+                {/* <EmbedAuthorFields embed={embed} /> */}
               </AccordionItem>
               <AccordionItem key={2} aria-label="Body" title="Body">
-                <EmbedBodyFields embed={embed} />
+                {/* <EmbedBodyFields embed={embed} /> */}
               </AccordionItem>
               <AccordionItem key={3} aria-label="Footer" title="Footer">
-                <EmbedFooterFields embed={embed} />
+                {/* <EmbedFooterFields embed={embed} /> */}
               </AccordionItem>
               <AccordionItem key={4} aria-label="Images" title="Images">
                 Images
               </AccordionItem>
               <AccordionItem key={5} aria-label="Fields" title="Fields">
-                <EmbedFieldsAccordion embed={embed} />
+                {/* <EmbedFieldsAccordion embed={embed} /> */}
               </AccordionItem>
             </Accordion>
           </AccordionItem>

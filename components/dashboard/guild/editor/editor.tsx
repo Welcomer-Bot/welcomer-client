@@ -1,8 +1,9 @@
-import MessagePreview from "./messagePreview";
+import MessagePreview from "./editorMessagePreview";
 import { Divider } from "@nextui-org/divider";
 import SendMenu from "@/components/dashboard/guild/editor/sendMenu";
 import ContentEditor from "./contentEditor";
-import { EmbedEditor } from "./embedEditor";
+import { EmbedEditor } from "./embed/embedEditor";
+import EditorMessagePreview from "./editorMessagePreview";
 
 export function Editor() {
   return (
@@ -18,7 +19,7 @@ export function Editor() {
           </div>
         </div>
         <div className="hidden lg:block w-1/2 h-full bg-dark-4 lg:border-l-2 border-dark-3 px-5 py-2 overflow-y-auto no-scrollbar">
-          <MessagePreview />
+          <EditorMessagePreview />
         </div>
       </div>
     </div>

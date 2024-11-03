@@ -2,15 +2,11 @@
 
 import { Button } from "@nextui-org/button";
 
-import { useCurrentMessageStore } from "@/state/embeds";
+import { useWelcomerStore } from "@/state/welcomer";
 
-export default function RemoveEmbedsButton({
-  embedsLength,
-}: {
-  embedsLength: number;
-  moduleId: number;
-}) {
-  const clearEmbeds = useCurrentMessageStore((state) => state.clearEmbeds);
+export default function RemoveEmbedsButton() {
+  const clearEmbeds = useWelcomerStore((state) => state.clearEmbeds);
+  const embedsLength = useWelcomerStore((state) => state.embeds).length;
 
   return (
     <Button

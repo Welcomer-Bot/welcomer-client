@@ -22,26 +22,26 @@ model Guild {
 }
 
 model Welcomer {
-  id        Int      @unique @default(autoincrement())
+  id        Int      @unique @default(autoincrement()) /// @zod.nullish()
   guildId   String   @unique
-  guild     Guild    @relation(fields: [guildId], references: [id])
+  guild     Guild?    @relation(fields: [guildId], references: [id]) /// @zod.nullish()
   channelId String?
   content   String?
   embeds    Embed[] /// @zod.max(10)
   DM        DM?
-  created DateTime @default(now())
-  updated DateTime @default(now())
+  created DateTime @default(now()) /// @zod.nullish()
+  updated DateTime @default(now()) /// @zod.nullish()
 }
 
 model Leaver {
-  id        Int      @unique @default(autoincrement())
+  id        Int      @unique @default(autoincrement()) /// @zod.nullish()
   guildId   String   @unique
-  guild     Guild    @relation(fields: [guildId], references: [id])
+  guild     Guild    @relation(fields: [guildId], references: [id]) /// @zod.nullish()
   channelId String?
   content   String?
   embeds    Embed[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) /// @zod.nullish()
+  updatedAt DateTime @updatedAt /// @zod.nullish()
 }
 
 model DM {
@@ -55,26 +55,26 @@ model DM {
 }
 
 model Embed {
-  id          Int             @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())  /// @zod.nullish()
   title       String?         @db.VarChar(256)
   description String?         @db.VarChar(2048)
   color       Int?
   timestamp   DateTime?
-  footer      EmbedFooter?
-  fields      EmbedField[]
-  author      EmbedAuthor?
-  image       EmbedImage?
-  thumbnail   EmbedThumbnail?
-  created DateTime @default(now())
-  updated DateTime @default(now())
+  footer      EmbedFooter?  /// @zod.nullish()
+  fields      EmbedField[]  /// @zod.nullish()
+  author      EmbedAuthor?  /// @zod.nullish()
+  image       EmbedImage?  /// @zod.nullish()
+  thumbnail   EmbedThumbnail?  /// @zod.nullish()
+  created DateTime @default(now())  /// @zod.nullish()
+  updated DateTime @default(now())  /// @zod.nullish()
 
   // relations
   welcomerId Int?
-  welcomer   Welcomer? @relation(fields: [welcomerId], references: [id])
+  welcomer   Welcomer? @relation(fields: [welcomerId], references: [id]) /// @zod.nullish()
   leaverId   Int?
-  leaver     Leaver?   @relation(fields: [leaverId], references: [id])
+  leaver     Leaver?   @relation(fields: [leaverId], references: [id]) /// @zod.nullish()
   DMId       Int?
-  DM         DM?       @relation(fields: [DMId], references: [id])
+  DM         DM?       @relation(fields: [DMId], references: [id]) /// @zod.nullish()
 }
 
 model EmbedThumbnail {
