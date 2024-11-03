@@ -1,24 +1,26 @@
 "use client";
 
+import { useWelcomerStore } from "@/state/welcomer";
 import { Textarea } from "@nextui-org/input";
-import { useState } from "react";
 
 export function EmbedBodyDescriptionInput({
-  description,
+  embedIndex,
 }: {
-  description: string | null | undefined;
+  embedIndex: number;
 }) {
-  const [value, setValue] = useState(description ?? "");
+  const description =
+    useWelcomerStore((state) => state.embeds[embedIndex].description) ?? "";
+  const setDescription = useWelcomerStore((state) => state.setEmbedDescription);
 
   return (
     <Textarea
-      label={"Description " + `( ${value?.length ?? 0}/2048 )`}
+      label={"Description " + `( ${description?.length ?? 0}/2048 )`}
       validate={(value) => {
         if (value.length > 2048)
           return "Description must not exceed 2048 characters!";
       }}
-      value={value}
-      onValueChange={setValue}
+      value={description}
+      onValueChange={(value) => setDescription(embedIndex, value)}
     />
   );
 }

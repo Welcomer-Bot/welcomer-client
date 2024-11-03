@@ -11,7 +11,7 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                 __html: msg.content || "",
               }}
             />
-            {msg.embeds.map((embed, index) => (
+            {msg.embeds.length > 0  && msg.embeds.map((embed, index) => (
               <DiscordEmbed
                 slot="embeds"
                 color={embed.color?.toString()}

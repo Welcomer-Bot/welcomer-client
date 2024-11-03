@@ -12,7 +12,7 @@ export default function EmbedsAccordionWrapper({
   const embedsLength = useWelcomerStore((state) => state.embeds).length;
 
   return (
-    <Accordion>
+    <Accordion variant="shadow">
       <AccordionItem title={`Embeds (${embedsLength}/10)`}>
         {children}
       </AccordionItem>

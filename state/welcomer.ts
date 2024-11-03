@@ -12,6 +12,10 @@ interface WelcomerStore extends Welcomer {
   addDefaultEmbed(): void;
   removeEmbed(index: number): void;
   clearEmbeds(): void;
+  setEmbedTitle(index: number, title: string): void;
+  setEmbedDescription(index: number, description: string): void;
+  setEmbedColor(index: number, color: number): void;
+  setEmbedTimestamp(index: number, timestamp: Date): void;
 }
 
 const defaultMessage: Welcomer = {
@@ -57,7 +61,23 @@ export const useWelcomerStore = create<WelcomerStore>()(
           set((state) => {
             state.embeds.splice(index, 1);
           }),
-        clearEmbeds: () => set((state) => (state.embeds = [])),
+        clearEmbeds: () => set({embeds: []}),
+        setEmbedTitle: (index, title) =>
+          set((state) => {
+            state.embeds[index].title = title;
+          }),
+        setEmbedDescription: (index, description) =>
+          set((state) => {
+            state.embeds[index].description = description;
+          }),
+        setEmbedColor: (index, color) =>
+          set((state) => {
+            state.embeds[index].color = color;
+          }),
+        setEmbedTimestamp: (index, timestamp) =>
+          set((state) => {
+            state.embeds[index].timestamp = timestamp;
+          }),
       }),
       {
         name: "welcomer",

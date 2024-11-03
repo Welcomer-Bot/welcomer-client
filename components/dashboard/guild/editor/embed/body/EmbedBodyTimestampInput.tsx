@@ -1,5 +1,6 @@
 "use client";
 
+import { useWelcomerStore } from "@/state/welcomer";
 import { parseDate } from "@internationalized/date";
 import { DateInput } from "@nextui-org/date-input";
 import { Divider } from "@nextui-org/divider";
@@ -8,10 +9,14 @@ import { useState } from "react";
 import { MdClear } from "react-icons/md";
 
 export function EmbedBodyTimestampInput({
-  timestamp,
+  embedIndex,
 }: {
-  timestamp: string | null | undefined;
-}) {
+  embedIndex: number
+  }) {
+  
+  const timestamp = useWelcomerStore((state) => state.embeds[embedIndex].timestamp);
+  const setTimestamp = useWelcomerStore((state) => state.setEmbedTimestamp);
+  
   function clearData() {
     setValue(null);
   }
@@ -23,10 +28,6 @@ export function EmbedBodyTimestampInput({
   );
 
   const [timestampEnabled, setTimestampEnabled] = useState<boolean>(false);
-  const [value, setValue] = useState<DateValue | string | null>(
-    // parse the timestamp string to a DateValue
-    timestamp ? parseDate(timestamp) : null,
-  );
 
   return (
     <>
@@ -44,7 +45,7 @@ export function EmbedBodyTimestampInput({
         {timestampEnabled ? (
           <>
             <Switch
-              isSelected={value === "current"}
+              isSelected={timestamp === "current"}
               onChange={() => {
                 setValue(value === "current" ? null : "current");
               }}

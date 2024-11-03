@@ -1,8 +1,8 @@
 "use client";
 
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
-
 import { useWelcomerStore } from "@/state/welcomer";
+import { EmbedBodyFields } from "./body/EmbedBodyFields";
 
 export default function EmbedsViewer() {
   const embeds = useWelcomerStore((state) => state.embeds);
@@ -26,10 +26,10 @@ export default function EmbedsViewer() {
               variant="bordered"
             >
               <AccordionItem key={1} aria-label="Author" title="Author">
-                {/* <EmbedAuthorFields embed={embed} /> */}
+                {/* <EmbedAuthorFields embedIndex={index} /> */}
               </AccordionItem>
               <AccordionItem key={2} aria-label="Body" title="Body">
-                {/* <EmbedBodyFields embed={embed} /> */}
+                <EmbedBodyFields embedIndex={index} />
               </AccordionItem>
               <AccordionItem key={3} aria-label="Footer" title="Footer">
                 {/* <EmbedFooterFields embed={embed} /> */}

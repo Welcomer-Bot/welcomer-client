@@ -8,7 +8,7 @@ export async function EmbedEditor() {
   return (
     <EmbedsAccordionWrapper>
       <EmbedsViewer />
-      <div className="sm:flex-row flex-col flex mt-5">
+      <div className="sm:flex-row flex-col flex my-5">
         <CreateEmbedButton />
         <RemoveEmbedsButton />
       </div>

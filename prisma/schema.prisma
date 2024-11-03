@@ -56,7 +56,7 @@ model DM {
 
 model Embed {
   id          Int             @id @default(autoincrement())  /// @zod.nullish()
-  title       String?         @db.VarChar(256)
+  title       String?         @db.VarChar(256) 
   description String?         @db.VarChar(2048)
   color       Int?
   timestamp   DateTime?
