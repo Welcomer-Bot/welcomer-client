@@ -1,15 +1,23 @@
 import * as z from "zod"
 import * as imports from "../null"
-import { CompleteEmbedFooter, RelatedEmbedFooterModel, CompleteEmbedField, RelatedEmbedFieldModel, CompleteEmbedAuthor, RelatedEmbedAuthorModel, CompleteEmbedImage, RelatedEmbedImageModel, CompleteEmbedThumbnail, RelatedEmbedThumbnailModel, CompleteWelcomer, RelatedWelcomerModel, CompleteLeaver, RelatedLeaverModel, CompleteDM, RelatedDMModel } from "./index"
+import { CompleteEmbedFooter, RelatedEmbedFooterModel, CompleteEmbedField, RelatedEmbedFieldModel, CompleteEmbedAuthor, RelatedEmbedAuthorModel, CompleteEmbedImage, RelatedEmbedImageModel, CompleteWelcomer, RelatedWelcomerModel, CompleteLeaver, RelatedLeaverModel, CompleteDM, RelatedDMModel } from "./index"
+
+// Helper schema for JSON fields
+type Literal = boolean | number | string
+type Json = Literal | { [key: string]: Json } | Json[]
+const literalSchema = z.union([z.string(), z.number(), z.boolean()])
+const jsonSchema: z.ZodSchema<Json> = z.lazy(() => z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]))
 
 export const EmbedModel = z.object({
-  id: z.number().int().nullish(),
+  id: z.number().int().optional(),
   title: z.string().nullish(),
   description: z.string().nullish(),
   color: z.number().int().nullish(),
-  timestamp: z.date().nullish(),
-  created: z.date().nullish(),
-  updated: z.date().nullish(),
+  timestamp: jsonSchema.optional(),
+  thumbnail: z.string().optional().nullish(),
+  url: z.string().optional().nullish(),
+  created: z.date().optional(),
+  updated: z.date().optional(),
   welcomerId: z.number().int().nullish(),
   leaverId: z.number().int().nullish(),
   DMId: z.number().int().nullish(),
@@ -20,7 +28,6 @@ export interface CompleteEmbed extends z.infer<typeof EmbedModel> {
   fields: CompleteEmbedField[]
   author?: CompleteEmbedAuthor | null
   image?: CompleteEmbedImage | null
-  thumbnail?: CompleteEmbedThumbnail | null
   welcomer?: CompleteWelcomer | null
   leaver?: CompleteLeaver | null
   DM?: CompleteDM | null
@@ -32,12 +39,11 @@ export interface CompleteEmbed extends z.infer<typeof EmbedModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedEmbedModel: z.ZodSchema<CompleteEmbed> = z.lazy(() => EmbedModel.extend({
-  footer: RelatedEmbedFooterModel.nullish().nullish(),
-  fields: RelatedEmbedFieldModel.array().nullish(),
-  author: RelatedEmbedAuthorModel.nullish().nullish(),
-  image: RelatedEmbedImageModel.nullish().nullish(),
-  thumbnail: RelatedEmbedThumbnailModel.nullish().nullish(),
-  welcomer: RelatedWelcomerModel.nullish().nullish(),
-  leaver: RelatedLeaverModel.nullish().nullish(),
-  DM: RelatedDMModel.nullish().nullish(),
+  footer: RelatedEmbedFooterModel.optional().nullish(),
+  fields: RelatedEmbedFieldModel.array().optional(),
+  author: RelatedEmbedAuthorModel.optional().nullish(),
+  image: RelatedEmbedImageModel.optional().nullish(),
+  welcomer: RelatedWelcomerModel.optional().nullish(),
+  leaver: RelatedLeaverModel.optional().nullish(),
+  DM: RelatedDMModel.optional().nullish(),
 }))

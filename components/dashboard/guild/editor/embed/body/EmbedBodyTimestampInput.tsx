@@ -18,7 +18,7 @@ export function EmbedBodyTimestampInput({
   const setTimestamp = useWelcomerStore((state) => state.setEmbedTimestamp);
   
   function clearData() {
-    setValue(null);
+    setTimestamp(embedIndex, null);
   }
 
   const clearDataButton = (
@@ -47,7 +47,7 @@ export function EmbedBodyTimestampInput({
             <Switch
               isSelected={timestamp === "current"}
               onChange={() => {
-                setValue(value === "current" ? null : "current");
+                setTimestamp(embedIndex, timestamp === true ? null : true);
               }}
             >
               <p>
@@ -57,15 +57,15 @@ export function EmbedBodyTimestampInput({
                 </span>
               </p>
             </Switch>
-            {value === "current" ? (
+            {timestamp === true ? (
               <p>Current time will be used</p>
             ) : (
               <DateInput
                 className="flex justify-center align-middle"
                 endContent={clearDataButton}
                 granularity="second"
-                value={value as DateValue} // Cast value to DateValue
-                onChange={setValue}
+                value={parseDate(timestamp as string)} // Cast value to DateValue
+                onChange={(value)=> setTimestamp(embedIndex, value.toDate(""))}
               />
             )}
           </>

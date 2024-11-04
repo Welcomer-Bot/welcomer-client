@@ -3,12 +3,12 @@ import * as imports from "../null"
 import { CompleteGuild, RelatedGuildModel, CompleteEmbed, RelatedEmbedModel, CompleteDM, RelatedDMModel } from "./index"
 
 export const WelcomerModel = z.object({
-  id: z.number().int().nullish(),
+  id: z.number().int().optional(),
   guildId: z.string(),
   channelId: z.string().nullish(),
   content: z.string().nullish(),
-  created: z.date().nullish(),
-  updated: z.date().nullish(),
+  created: z.date().optional(),
+  updated: z.date().optional(),
 })
 
 export interface CompleteWelcomer extends z.infer<typeof WelcomerModel> {
@@ -23,7 +23,7 @@ export interface CompleteWelcomer extends z.infer<typeof WelcomerModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedWelcomerModel: z.ZodSchema<CompleteWelcomer> = z.lazy(() => WelcomerModel.extend({
-  guild: RelatedGuildModel.nullish().nullish(),
+  guild: RelatedGuildModel.optional().nullish(),
   embeds: RelatedEmbedModel.array().max(10),
   DM: RelatedDMModel.nullish(),
 }))

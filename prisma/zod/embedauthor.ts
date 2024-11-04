@@ -3,13 +3,13 @@ import * as imports from "../null"
 import { CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const EmbedAuthorModel = z.object({
-  id: z.number().int(),
-  embedId: z.number().int(),
+  id: z.number().int().optional(),
+  embedId: z.number().int().optional(),
   name: z.string().nullish(),
   iconUrl: z.string().nullish(),
   url: z.string().nullish(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 })
 
 export interface CompleteEmbedAuthor extends z.infer<typeof EmbedAuthorModel> {
@@ -22,5 +22,5 @@ export interface CompleteEmbedAuthor extends z.infer<typeof EmbedAuthorModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedEmbedAuthorModel: z.ZodSchema<CompleteEmbedAuthor> = z.lazy(() => EmbedAuthorModel.extend({
-  embed: RelatedEmbedModel,
+  embed: RelatedEmbedModel.optional(),
 }))

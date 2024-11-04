@@ -15,7 +15,13 @@ interface WelcomerStore extends Welcomer {
   setEmbedTitle(index: number, title: string): void;
   setEmbedDescription(index: number, description: string): void;
   setEmbedColor(index: number, color: number): void;
-  setEmbedTimestamp(index: number, timestamp: Date): void;
+  setEmbedTimestamp(
+    index: number,
+    timestamp: String | Date | Boolean | null
+  ): void;
+  setEmbedAuthorName(index: number, author: string): void;
+  setEmbedAuthorIcon(index: number, icon: string): void;
+  setEmbedAuthorUrl(index: number, url: string): void;
 }
 
 const defaultMessage: Welcomer = {
@@ -61,7 +67,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
           set((state) => {
             state.embeds.splice(index, 1);
           }),
-        clearEmbeds: () => set({embeds: []}),
+        clearEmbeds: () => set({ embeds: [] }),
         setEmbedTitle: (index, title) =>
           set((state) => {
             state.embeds[index].title = title;
@@ -78,6 +84,21 @@ export const useWelcomerStore = create<WelcomerStore>()(
           set((state) => {
             state.embeds[index].timestamp = timestamp;
           }),
+        setEmbedAuthorName: (index, author) => set((state) => {
+          if (state.embeds[index].author) {
+            state.embeds[index].author.name = author
+          }
+        }),
+        setEmbedAuthorIcon: (index, icon) => set((state) => {
+          if (state.embeds[index].author) {
+            state.embeds[index].author.iconUrl = icon;
+          }
+        }),
+        setEmbedAuthorUrl: (index, url) => set((state) => {
+          if (state.embeds[index].author) {
+            state.embeds[index].author.url = url;
+          }
+        }),
       }),
       {
         name: "welcomer",

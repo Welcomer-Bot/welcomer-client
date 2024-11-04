@@ -13,7 +13,7 @@ export default function EmbedsAccordionWrapper({
 
   return (
     <Accordion variant="shadow">
-      <AccordionItem title={`Embeds (${embedsLength}/10)`}>
+      <AccordionItem aria-label="Embeds" title={`Embeds (${embedsLength}/10)`}>
         {children}
       </AccordionItem>
     </Accordion>

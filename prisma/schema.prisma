@@ -22,26 +22,26 @@ model Guild {
 }
 
 model Welcomer {
-  id        Int      @unique @default(autoincrement()) /// @zod.nullish()
+  id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
-  guild     Guild?    @relation(fields: [guildId], references: [id]) /// @zod.nullish()
+  guild     Guild?    @relation(fields: [guildId], references: [id]) /// @zod.optional()
   channelId String?
   content   String?
   embeds    Embed[] /// @zod.max(10)
   DM        DM?
-  created DateTime @default(now()) /// @zod.nullish()
-  updated DateTime @default(now()) /// @zod.nullish()
+  created DateTime @default(now()) /// @zod.optional()
+  updated DateTime @default(now()) /// @zod.optional()
 }
 
 model Leaver {
-  id        Int      @unique @default(autoincrement()) /// @zod.nullish()
+  id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
-  guild     Guild    @relation(fields: [guildId], references: [id]) /// @zod.nullish()
+  guild     Guild    @relation(fields: [guildId], references: [id]) /// @zod.optional()
   channelId String?
   content   String?
   embeds    Embed[]
-  createdAt DateTime @default(now()) /// @zod.nullish()
-  updatedAt DateTime @updatedAt /// @zod.nullish()
+  createdAt DateTime @default(now()) /// @zod.optional()
+  updatedAt DateTime @updatedAt /// @zod.optional()
 }
 
 model DM {
@@ -54,38 +54,29 @@ model DM {
   updatedAt DateTime @updatedAt
 }
 
+
 model Embed {
-  id          Int             @id @default(autoincrement())  /// @zod.nullish()
+  id          Int             @id @default(autoincrement())  /// @zod.optional()
   title       String?         @db.VarChar(256) 
   description String?         @db.VarChar(2048)
   color       Int?
-  timestamp   DateTime?
-  footer      EmbedFooter?  /// @zod.nullish()
-  fields      EmbedField[]  /// @zod.nullish()
-  author      EmbedAuthor?  /// @zod.nullish()
-  image       EmbedImage?  /// @zod.nullish()
-  thumbnail   EmbedThumbnail?  /// @zod.nullish()
-  created DateTime @default(now())  /// @zod.nullish()
-  updated DateTime @default(now())  /// @zod.nullish()
+  timestamp   Json?         /// @zod.optional() 
+  footer      EmbedFooter?  /// @zod.optional()
+  fields      EmbedField[]  /// @zod.optional()
+  author      EmbedAuthor?  /// @zod.optional()
+  image       EmbedImage?  /// @zod.optional()
+  thumbnail   String?  /// @zod.optional()
+  url         String?  /// @zod.optional()
+  created DateTime @default(now())  /// @zod.optional()
+  updated DateTime @default(now())  /// @zod.optional()
 
   // relations
   welcomerId Int?
-  welcomer   Welcomer? @relation(fields: [welcomerId], references: [id]) /// @zod.nullish()
+  welcomer   Welcomer? @relation(fields: [welcomerId], references: [id]) /// @zod.optional()
   leaverId   Int?
-  leaver     Leaver?   @relation(fields: [leaverId], references: [id]) /// @zod.nullish()
+  leaver     Leaver?   @relation(fields: [leaverId], references: [id]) /// @zod.optional()
   DMId       Int?
-  DM         DM?       @relation(fields: [DMId], references: [id]) /// @zod.nullish()
-}
-
-model EmbedThumbnail {
-  id        Int      @id @default(autoincrement())
-  embedId   Int      @unique
-  embed     Embed    @relation(fields: [embedId], references: [id])
-  url       String
-  width     Int?
-  heigth    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  DM         DM?       @relation(fields: [DMId], references: [id]) /// @zod.optional()
 }
 
 model EmbedImage {
@@ -100,14 +91,14 @@ model EmbedImage {
 }
 
 model EmbedAuthor {
-  id        Int      @id @default(autoincrement())
-  embedId   Int      @unique
-  embed     Embed    @relation(fields: [embedId], references: [id])
+  id        Int      @id @default(autoincrement()) /// @zod.optional() 
+  embedId   Int      @unique /// @zod.optional() 
+  embed     Embed    @relation(fields: [embedId], references: [id]) /// @zod.optional() 
   name      String?
   iconUrl   String?
   url       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) /// @zod.optional() 
+  updatedAt DateTime @updatedAt /// @zod.optional() 
 }
 
 model EmbedField {

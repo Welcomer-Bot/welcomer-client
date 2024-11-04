@@ -16,7 +16,12 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                 slot="embeds"
                 color={embed.color?.toString()}
                 key={index}
-                embedTitle={embed.title!}
+                embedTitle={embed.title ?? undefined}
+                authorName={embed.author?.name ?? undefined}
+                authorImage={embed.author?.iconUrl ?? undefined}
+                authorUrl={embed.author?.url ?? undefined}
+                url={embed.url ?? undefined}
+                thumbnail={embed.thumbnail ?? undefined}
               >
                 <DiscordEmbedDescription slot="description">
                   {embed.description}

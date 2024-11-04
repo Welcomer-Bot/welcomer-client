@@ -3,12 +3,12 @@ import * as imports from "../null"
 import { CompleteGuild, RelatedGuildModel, CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const LeaverModel = z.object({
-  id: z.number().int().nullish(),
+  id: z.number().int().optional(),
   guildId: z.string(),
   channelId: z.string().nullish(),
   content: z.string().nullish(),
-  createdAt: z.date().nullish(),
-  updatedAt: z.date().nullish(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 })
 
 export interface CompleteLeaver extends z.infer<typeof LeaverModel> {
@@ -22,6 +22,6 @@ export interface CompleteLeaver extends z.infer<typeof LeaverModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedLeaverModel: z.ZodSchema<CompleteLeaver> = z.lazy(() => LeaverModel.extend({
-  guild: RelatedGuildModel.nullish(),
+  guild: RelatedGuildModel.optional(),
   embeds: RelatedEmbedModel.array(),
 }))

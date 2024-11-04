@@ -3,6 +3,7 @@
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { useWelcomerStore } from "@/state/welcomer";
 import { EmbedBodyFields } from "./body/EmbedBodyFields";
+import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
 
 export default function EmbedsViewer() {
   const embeds = useWelcomerStore((state) => state.embeds);
@@ -13,6 +14,7 @@ export default function EmbedsViewer() {
         {embeds.map((embed, index) => (
           <AccordionItem
             key={index}
+            aria-label={`Embed ${index + 1}`}
             title={
               <div>
                 {`Embed ${index + 1} -`}
@@ -26,7 +28,7 @@ export default function EmbedsViewer() {
               variant="bordered"
             >
               <AccordionItem key={1} aria-label="Author" title="Author">
-                {/* <EmbedAuthorFields embedIndex={index} /> */}
+                <EmbedAuthorFields embedIndex={index} />
               </AccordionItem>
               <AccordionItem key={2} aria-label="Body" title="Body">
                 <EmbedBodyFields embedIndex={index} />
@@ -47,3 +49,4 @@ export default function EmbedsViewer() {
     </div>
   );
 }
+
