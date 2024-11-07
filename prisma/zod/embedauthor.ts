@@ -7,8 +7,8 @@ export const EmbedAuthorModel = z.object({
   name: z.string().nullish(),
   iconUrl: z.string().nullish(),
   url: z.string().nullish(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteEmbedAuthor extends z.infer<typeof EmbedAuthorModel> {

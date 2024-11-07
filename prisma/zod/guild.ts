@@ -3,8 +3,8 @@ import { CompleteWelcomer, RelatedWelcomerModel, CompleteLeaver, RelatedLeaverMo
 
 export const GuildModel = z.object({
   id: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteGuild extends z.infer<typeof GuildModel> {

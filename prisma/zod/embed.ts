@@ -2,7 +2,7 @@ import * as z from "zod"
 import { CompleteEmbedFooter, RelatedEmbedFooterModel, CompleteEmbedField, RelatedEmbedFieldModel, CompleteEmbedAuthor, RelatedEmbedAuthorModel, CompleteEmbedImage, RelatedEmbedImageModel, CompleteWelcomer, RelatedWelcomerModel, CompleteLeaver, RelatedLeaverModel, CompleteDM, RelatedDMModel } from "./index"
 
 export const EmbedModel = z.object({
-  id: z.number().int(),
+  id: z.number().int().optional(),
   title: z.string().nullish(),
   description: z.string().nullish(),
   color: z.string().nullish(),
@@ -10,8 +10,8 @@ export const EmbedModel = z.object({
   timestampNow: z.boolean().nullish(),
   thumbnail: z.string().nullish(),
   url: z.string().nullish(),
-  created: z.date().optional(),
-  updated: z.date().optional(),
+  created: z.date().optional().nullish(),
+  updated: z.date().optional().nullish(),
   welcomerId: z.number().int().nullish(),
   leaverId: z.number().int().nullish(),
   DMId: z.number().int().nullish(),

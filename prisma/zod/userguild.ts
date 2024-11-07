@@ -8,8 +8,8 @@ export const UserGuildModel = z.object({
   banner: z.string().nullish(),
   permissions: z.string().nullish(),
   userId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteUserGuild extends z.infer<typeof UserGuildModel> {

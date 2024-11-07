@@ -17,31 +17,31 @@ model Guild {
   id        String    @id @unique
   welcomer  Welcomer?
   leaver    Leaver?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
 }
 
 model Welcomer {
-  id        Int      @unique @default(autoincrement())
+  id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
   guild     Guild?   @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
   embeds    Embed[] /// @zod.max(10)
   DM        DM?
-  created   DateTime @default(now())
-  updated   DateTime @default(now())
+  created   DateTime? @default(now())
+  updated   DateTime? @default(now())
 }
 
 model Leaver {
-  id        Int      @unique @default(autoincrement())
+  id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
   guild     Guild    @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
   embeds    Embed[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model DM {
@@ -50,12 +50,12 @@ model DM {
   module    Welcomer @relation(fields: [moduleId], references: [id])
   message   String?
   embeds    Embed[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Embed {
-  id           Int          @id @default(autoincrement())
+  id           Int          @id @default(autoincrement()) /// @zod.optional()
   title        String?      @db.VarChar(256)
   description  String?      @db.VarChar(2048)
   color        String?
@@ -67,8 +67,8 @@ model Embed {
   image        EmbedImage?
   thumbnail    String?
   url          String?
-  created      DateTime     @default(now()) /// @zod.optional()
-  updated      DateTime     @default(now()) /// @zod.optional()
+  created      DateTime?     @default(now()) /// @zod.optional()
+  updated      DateTime?     @default(now()) /// @zod.optional()
 
   // relations
   welcomerId Int?
@@ -86,8 +86,8 @@ model EmbedImage {
   url       String
   width     Int?
   heigth    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model EmbedAuthor {
@@ -97,8 +97,8 @@ model EmbedAuthor {
   name      String?
   iconUrl   String?
   url       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model EmbedField {
@@ -108,8 +108,8 @@ model EmbedField {
   name      String
   value     String
   inline    Boolean?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model EmbedFooter {
@@ -118,8 +118,8 @@ model EmbedFooter {
   embed     Embed?    @relation(fields: [embedId], references: [id]) /// @zod.optional()
   text      String?
   iconUrl   String?
-  createdAt DateTime @default(now())/// @zod.optional()
-  updatedAt DateTime @updatedAt/// @zod.optional()
+  createdAt DateTime? @default(now())/// @zod.optional()
+  updatedAt DateTime? @updatedAt/// @zod.optional()
 }
 
 model User {
@@ -129,8 +129,8 @@ model User {
   avatar        String?
   accessToken   String?
   refreshToken  String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime?    @default(now())
+  updatedAt     DateTime?    @updatedAt
   guilds        UserGuild[]
 }
 
@@ -143,8 +143,8 @@ model UserGuild {
   channels    Channels[]
   userId      String
   user        User       @relation(fields: [userId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime?   @default(now())
+  updatedAt   DateTime?   @updatedAt
 }
 
 model Channels {
@@ -154,8 +154,8 @@ model Channels {
   guildId   String
   guild     UserGuild @relation(fields: [guildId], references: [id])
   channelId String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
 }
 
 generator zod {

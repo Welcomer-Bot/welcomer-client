@@ -2,12 +2,12 @@ import * as z from "zod"
 import { CompleteGuild, RelatedGuildModel, CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const LeaverModel = z.object({
-  id: z.number().int(),
+  id: z.number().int().optional(),
   guildId: z.string(),
   channelId: z.string().nullish(),
   content: z.string().nullish(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteLeaver extends z.infer<typeof LeaverModel> {

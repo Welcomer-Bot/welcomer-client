@@ -7,8 +7,8 @@ export const EmbedFieldModel = z.object({
   name: z.string(),
   value: z.string(),
   inline: z.boolean().nullish(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteEmbedField extends z.infer<typeof EmbedFieldModel> {

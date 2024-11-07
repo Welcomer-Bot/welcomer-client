@@ -11,7 +11,6 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended } from "@/types";
-import { CompleteEmbed } from "@/prisma/zod";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -102,7 +101,7 @@ export const getGuilds = cache(async () => {
         }
 
         return userGuild;
-      }),
+      })
     );
 
     return guilds;
@@ -167,7 +166,7 @@ export async function getWelcomerById(welcomerId: number) {
 }
 
 export async function getEmbeds(
-  moduleId: string | number,
+  moduleId: string | number
 ): Promise<Embed[] | null> {
   try {
     moduleId = Number(moduleId);
@@ -179,12 +178,6 @@ export async function getEmbeds(
     const embeds: Embed[] = await prisma.embed.findMany({
       where: {
         OR: [{ welcomerId: moduleId }, { leaverId: moduleId }],
-      },
-      include: {
-        fields: true,
-        author: true,
-        footer: true,
-        image: true,
       },
     });
 
@@ -208,7 +201,7 @@ export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
         next: {
           revalidate: 60,
         },
-      },
+      }
     );
 
     const channels: RESTGetAPIGuildChannelsResult = await data.json();

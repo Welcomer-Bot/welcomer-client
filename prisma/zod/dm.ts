@@ -5,8 +5,8 @@ export const DMModel = z.object({
   id: z.number().int(),
   moduleId: z.number().int(),
   message: z.string().nullish(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteDM extends z.infer<typeof DMModel> {

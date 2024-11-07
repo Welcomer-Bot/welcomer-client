@@ -7,8 +7,8 @@ export const EmbedImageModel = z.object({
   url: z.string(),
   width: z.number().int().nullish(),
   heigth: z.number().int().nullish(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteEmbedImage extends z.infer<typeof EmbedImageModel> {

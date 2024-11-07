@@ -8,31 +8,31 @@
 erDiagram
 "Guild" {
   String id PK
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "Welcomer" {
   Int id UK
   String guildId FK
   String channelId "nullable"
   String content "nullable"
-  DateTime created
-  DateTime updated
+  DateTime created "nullable"
+  DateTime updated "nullable"
 }
 "Leaver" {
   Int id UK
   String guildId FK
   String channelId "nullable"
   String content "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "DM" {
   Int id UK
   Int moduleId FK
   String message "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "Embed" {
   Int id PK
@@ -43,8 +43,8 @@ erDiagram
   Boolean timestampNow "nullable"
   String thumbnail "nullable"
   String url "nullable"
-  DateTime created
-  DateTime updated
+  DateTime created "nullable"
+  DateTime updated "nullable"
   Int welcomerId FK "nullable"
   Int leaverId FK "nullable"
   Int DMId FK "nullable"
@@ -55,8 +55,8 @@ erDiagram
   String url
   Int width "nullable"
   Int heigth "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "EmbedAuthor" {
   Int id PK
@@ -64,8 +64,8 @@ erDiagram
   String name "nullable"
   String iconUrl "nullable"
   String url "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "EmbedField" {
   Int id PK
@@ -73,16 +73,16 @@ erDiagram
   String name
   String value
   Boolean inline "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "EmbedFooter" {
   Int id PK
   Int embedId FK "nullable"
   String text "nullable"
   String iconUrl "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "User" {
   String id PK
@@ -91,8 +91,8 @@ erDiagram
   String avatar "nullable"
   String accessToken "nullable"
   String refreshToken "nullable"
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "UserGuild" {
   String id PK
@@ -101,8 +101,8 @@ erDiagram
   String banner "nullable"
   String permissions "nullable"
   String userId FK
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "Channels" {
   String id PK
@@ -110,8 +110,8 @@ erDiagram
   String name
   String guildId FK
   String channelId
-  DateTime createdAt
-  DateTime updatedAt
+  DateTime createdAt "nullable"
+  DateTime updatedAt "nullable"
 }
 "Welcomer" |o--|| "Guild" : guild
 "Leaver" |o--|| "Guild" : guild

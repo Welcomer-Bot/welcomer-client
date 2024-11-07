@@ -6,8 +6,8 @@ export const EmbedFooterModel = z.object({
   embedId: z.number().int().optional().nullish(),
   text: z.string().nullish(),
   iconUrl: z.string().nullish(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  createdAt: z.date().optional().nullish(),
+  updatedAt: z.date().optional().nullish(),
 })
 
 export interface CompleteEmbedFooter extends z.infer<typeof EmbedFooterModel> {

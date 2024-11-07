@@ -1,4 +1,5 @@
-import { Embed, Welcomer } from "@/lib/discord/schema";
+import { Embed, FullEmbed, Welcomer } from "@/lib/discord/schema";
+import { CompleteEmbed } from "@/prisma/zod";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -8,7 +9,7 @@ interface WelcomerStore extends Welcomer {
   setChannelId: (channelId: string) => void;
   setContent: (content: string) => void;
   clear(): void;
-  addEmbed(embed: Embed): void;
+  addEmbed(embed: CompleteEmbed): void;
   addDefaultEmbed(): void;
   removeEmbed(index: number): void;
   clearEmbeds(): void;
@@ -29,7 +30,7 @@ const defaultMessage: Welcomer = {
   embeds: [],
 };
 
-const defaultEmbed: Embed = {
+const defaultEmbed: CompleteEmbed = {
   title: "Welcome to the server!",
   description: "Welcome {user} to {guild}",
   color: "0x00ff00",
@@ -45,7 +46,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
         setChannelId: (channelId) => set({ channelId }),
         setContent: (content) => set({ content }),
         clear: () => set(defaultMessage),
-        addEmbed: (embed: Embed) =>
+        addEmbed: (embed: CompleteEmbed) =>
           set((state) => {
             if (!state.embeds) {
               state.embeds = [embed];

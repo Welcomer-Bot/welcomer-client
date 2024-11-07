@@ -8,8 +8,8 @@ export const UserModel = z.object({
   avatar: z.string().nullish(),
   accessToken: z.string().nullish(),
   refreshToken: z.string().nullish(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteUser extends z.infer<typeof UserModel> {

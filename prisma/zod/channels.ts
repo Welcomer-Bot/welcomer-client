@@ -7,8 +7,8 @@ export const ChannelsModel = z.object({
   name: z.string(),
   guildId: z.string(),
   channelId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullish(),
+  updatedAt: z.date().nullish(),
 })
 
 export interface CompleteChannels extends z.infer<typeof ChannelsModel> {
