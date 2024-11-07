@@ -13,6 +13,7 @@ import { LogoutIcon } from "./logoutIcon";
 
 import { Logo } from "@/components/icons";
 import { getUserAvatar } from "@/lib/utils";
+import { useGuildStore } from "@/state/guild";
 
 const SidebarContext = createContext({
   isOpen: true,
@@ -32,6 +33,7 @@ export function Sidebar({
 }) {
   const [isOpen, setIsOpen] = useState(true);
   const [active, setActive] = useState("dashboard");
+  useGuildStore.setState({ id: currentGuild.id });
 
   return (
     <aside className="h-screen fixed z-50">

@@ -1,14 +1,20 @@
 "use client";
 
+import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@nextui-org/input";
-import { useState } from "react";
+import { shallow } from "zustand/shallow";
 
 export function EmbedBodyColorInput({
-  color,
+  embedIndex,
 }: {
-  color: number | null | undefined;
+  embedIndex: number
 }) {
-  const [value, setValue] = useState(color ?? "");
+  const embedColor = useWelcomerStore(
+    (state) => state.embeds[embedIndex].color,
+  );
+  const setEmbedColor = useWelcomerStore(
+    (state) => state.setEmbedColor,
+  );
 
   return (
     <Input
@@ -17,8 +23,8 @@ export function EmbedBodyColorInput({
         if (value.length > 2048)
           return "color must not exceed 2048 characters!";
       }}
-      value={value.toString()}
-      onValueChange={setValue}
+      value={embedColor ?? undefined}
+      onValueChange={(value) => setEmbedColor(embedIndex, value)}
     />
   );
 }

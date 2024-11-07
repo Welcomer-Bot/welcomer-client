@@ -3,15 +3,16 @@ import React from "react";
 
 import { Sidebar } from "@/components/dashboard/guild/sideBar";
 import { getUserData, getUserGuild, getUserGuilds } from "@/lib/dal";
+import { useGuildStore } from "@/state/guild";
 
 export default async function Layout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     guildId: string;
-  };
+  }>;
 }) {
   const { guildId } = await params;
   const guild = await getUserGuild(guildId);

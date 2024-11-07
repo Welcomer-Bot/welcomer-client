@@ -6,7 +6,7 @@ import { getUserGuild } from "@/lib/dal";
 export default async function Page({
   params,
 }: {
-  params: { guildId: string };
+  params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
   const guild = await getUserGuild(guildId);

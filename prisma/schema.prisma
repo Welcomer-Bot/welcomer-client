@@ -17,31 +17,31 @@ model Guild {
   id        String    @id @unique
   welcomer  Welcomer?
   leaver    Leaver?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
 }
 
 model Welcomer {
-  id        Int      @unique @default(autoincrement())
+  id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
-  guild     Guild    @relation(fields: [guildId], references: [id])
+  guild     Guild?   @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
-  embeds    Embed[]
+  embeds    Embed[] /// @zod.max(10)
   DM        DM?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created   DateTime? @default(now())
+  updated   DateTime? @default(now())
 }
 
 model Leaver {
-  id        Int      @unique @default(autoincrement())
+  id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
   guild     Guild    @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
   embeds    Embed[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model DM {
@@ -50,23 +50,25 @@ model DM {
   module    Welcomer @relation(fields: [moduleId], references: [id])
   message   String?
   embeds    Embed[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Embed {
-  id          Int             @id @default(autoincrement())
-  title       String?         @db.VarChar(256)
-  description String?         @db.VarChar(2048)
-  color       Int?
-  timestamp   DateTime?
-  footer      EmbedFooter?
-  fields      EmbedField[]
-  author      EmbedAuthor?
-  image       EmbedImage?
-  thumbnail   EmbedThumbnail?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id           Int          @id @default(autoincrement()) /// @zod.optional()
+  title        String?      @db.VarChar(256)
+  description  String?      @db.VarChar(2048)
+  color        String?
+  timestamp    DateTime?
+  timestampNow Boolean?
+  footer       EmbedFooter?
+  fields       EmbedField[]
+  author       EmbedAuthor?
+  image        EmbedImage?
+  thumbnail    String?
+  url          String?
+  created      DateTime?     @default(now()) /// @zod.optional()
+  updated      DateTime?     @default(now()) /// @zod.optional()
 
   // relations
   welcomerId Int?
@@ -77,17 +79,6 @@ model Embed {
   DM         DM?       @relation(fields: [DMId], references: [id])
 }
 
-model EmbedThumbnail {
-  id        Int      @id @default(autoincrement())
-  embedId   Int      @unique
-  embed     Embed    @relation(fields: [embedId], references: [id])
-  url       String
-  width     Int?
-  heigth    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model EmbedImage {
   id        Int      @id @default(autoincrement())
   embedId   Int      @unique
@@ -95,8 +86,8 @@ model EmbedImage {
   url       String
   width     Int?
   heigth    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model EmbedAuthor {
@@ -106,8 +97,8 @@ model EmbedAuthor {
   name      String?
   iconUrl   String?
   url       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model EmbedField {
@@ -117,18 +108,18 @@ model EmbedField {
   name      String
   value     String
   inline    Boolean?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model EmbedFooter {
   id        Int      @id @default(autoincrement())
-  embedId   Int      @unique
-  embed     Embed    @relation(fields: [embedId], references: [id])
-  text      String
-  iconUrl   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  embedId   Int?      @unique /// @zod.optional()
+  embed     Embed?    @relation(fields: [embedId], references: [id]) /// @zod.optional()
+  text      String?
+  iconUrl   String?
+  createdAt DateTime? @default(now())/// @zod.optional()
+  updatedAt DateTime? @updatedAt/// @zod.optional()
 }
 
 model User {
@@ -138,8 +129,8 @@ model User {
   avatar        String?
   accessToken   String?
   refreshToken  String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime?    @default(now())
+  updatedAt     DateTime?    @updatedAt
   guilds        UserGuild[]
 }
 
@@ -152,8 +143,8 @@ model UserGuild {
   channels    Channels[]
   userId      String
   user        User       @relation(fields: [userId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime?   @default(now())
+  updatedAt   DateTime?   @updatedAt
 }
 
 model Channels {
@@ -163,6 +154,33 @@ model Channels {
   guildId   String
   guild     UserGuild @relation(fields: [guildId], references: [id])
   channelId String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
+}
+
+generator zod {
+  provider = "zod-prisma"
+  output   = "./zod" // (default) the directory where generated zod schemas will be saved
+
+  relationModel = true // (default) Create and export both plain and related models.
+  // relationModel         = "default" // Do not export model without relations.
+  // relationModel         = false // Do not generate related model
+
+  modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
+  // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
+
+  modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+
+  // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
+  useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
+
+  // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
+  prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
+  // prismaJsonNullability = false // allows null assignment to optional JSON fields
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "./ERD.md"
+  title    = "Welcomer ERD"
 }

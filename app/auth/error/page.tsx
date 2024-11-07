@@ -1,13 +1,14 @@
 import { SignIn } from "@/components/signinButton";
 
-export default function Error({
+export default async function Error({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [error: string]: string | string[] | undefined }>;
 }) {
-  const error = searchParams.error;
+  const params = await searchParams;
+  const error = params.error;
   let error_description =
-    searchParams.error_description ?? "An unknown error as occured";
+    params.error_description ?? "An unknown error as occured";
 
   if (!error) {
     error_description =

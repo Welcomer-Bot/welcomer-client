@@ -1,14 +1,22 @@
 "use client";
 
+import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@nextui-org/input";
-import { useState } from "react";
 
-export function EmbedAuthorIconInput({
-  icon,
-}: {
-  icon: string | null | undefined;
-}) {
-  const [value, setValue] = useState(icon ?? "");
+export function EmbedAuthorIconInput({ embedIndex }: { embedIndex: number }) {
+  const icon = useWelcomerStore(
+    (state) => state.embeds[embedIndex].author?.iconUrl
+  );
+  const setIcon = useWelcomerStore((state) => state.setEmbedAuthorIcon);
 
-  return <Input label={"Icon url"} value={value} onValueChange={setValue} />;
+  return (
+    <Input
+      type="url"
+      isClearable
+      label="Icon url"
+      aria-label="Icon url"
+      value={icon ?? ""}
+      onValueChange={(value) => setIcon(embedIndex, value)}
+    />
+  );
 }

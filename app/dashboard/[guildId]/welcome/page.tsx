@@ -6,11 +6,12 @@ import CreateWelcomerButton from "@/components/dashboard/guild/createWelcomerBut
 import RemoveWelcomerButton from "@/components/dashboard/guild/deleteWelcomerButton";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import { getGuild, getWelcomer } from "@/lib/dal";
+import { StoreUpdater } from "@/components/dashboard/guild/storeUpdater";
 
 export default async function Page({
   params,
 }: {
-  params: { guildId: string };
+  params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
   const welcomerParams = await getWelcomer(guildId);
@@ -32,10 +33,11 @@ export default async function Page({
   return (
     <Card className="w-full min-h-[95vh] lg:w-11/12 h-fit pb-5">
       <WelcomeCardHeader />
+      {welcomerParams && <StoreUpdater module={welcomerParams} />}
       {welcomerParams ? (
         <div>
           <Divider className="mb-2" />
-          <Editor module={welcomerParams} />
+          <Editor/>
         </div>
       ) : null}
     </Card>

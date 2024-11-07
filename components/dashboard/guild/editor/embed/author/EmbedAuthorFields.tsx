@@ -2,15 +2,13 @@ import { EmbedAuthorIconInput } from "./EmbedAuthorIcon";
 import { EmbedAuthorNameInput } from "./EmbedAuthorNameInput";
 import { EmbedAuthorUrlInput } from "./EmbedAuthorUrl";
 
-import { EmbedExtended } from "@/types";
-
-export function EmbedAuthorFields({ embed }: { embed: EmbedExtended }) {
+export function EmbedAuthorFields({ embedIndex }: { embedIndex: number }) {
   return (
     <div className="space-y-3">
-      <EmbedAuthorNameInput name={embed.author?.name} />
+      <EmbedAuthorNameInput embedIndex={embedIndex} />
       <div className="flex flex-row space-x-4">
-        <EmbedAuthorIconInput icon={embed.author?.iconUrl} />
-        <EmbedAuthorUrlInput url={embed.author?.url} />
+        <EmbedAuthorIconInput embedIndex={embedIndex} />
+        <EmbedAuthorUrlInput embedIndex={embedIndex} />
       </div>
     </div>
   );

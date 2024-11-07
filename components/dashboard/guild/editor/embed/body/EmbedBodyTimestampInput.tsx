@@ -1,33 +1,33 @@
 "use client";
 
-import { parseDate } from "@internationalized/date";
-import { DateInput } from "@nextui-org/date-input";
+import { useWelcomerStore } from "@/state/welcomer";
+import { parseAbsoluteToLocal } from "@internationalized/date";
 import { Divider } from "@nextui-org/divider";
-import { DateValue, Switch } from "@nextui-org/react";
+import { DatePicker, Switch } from "@nextui-org/react";
 import { useState } from "react";
 import { MdClear } from "react-icons/md";
 
 export function EmbedBodyTimestampInput({
-  timestamp,
+  embedIndex,
 }: {
-  timestamp: string | null | undefined;
+  embedIndex: number;
 }) {
+  const timestamp = useWelcomerStore(
+    (state) => state.embeds[embedIndex].timestamp
+  );
+  const timestampNow = useWelcomerStore(
+    (state) => state.embeds[embedIndex].timestampNow ?? false
+  );
+  const setTimestamp = useWelcomerStore((state) => state.setEmbedTimestamp);
+  const setTimestampNow = useWelcomerStore(
+    (state) => state.setEmbedTimestampNow
+  );
+
   function clearData() {
-    setValue(null);
+    setTimestamp(embedIndex, null);
   }
 
-  const clearDataButton = (
-    <button onClick={clearData}>
-      <MdClear />
-    </button>
-  );
-
-  const [timestampEnabled, setTimestampEnabled] = useState<boolean>(false);
-  const [value, setValue] = useState<DateValue | string | null>(
-    // parse the timestamp string to a DateValue
-    timestamp ? parseDate(timestamp) : null,
-  );
-
+  const [timestampEnabled, setTimestampEnabled] = useState(false);
   return (
     <>
       <Divider />
@@ -35,8 +35,14 @@ export function EmbedBodyTimestampInput({
       <div className="space-y-3">
         <Switch
           isSelected={timestampEnabled}
-          onChange={() => {
-            setTimestampEnabled(!timestampEnabled);
+          onValueChange={(value) => {
+            if (value) {
+              setTimestampEnabled(true);
+            } else {
+              setTimestampEnabled(false);
+              setTimestampNow(embedIndex, false);
+              setTimestamp(embedIndex, null);
+            }
           }}
         >
           Enable timestamp
@@ -44,9 +50,9 @@ export function EmbedBodyTimestampInput({
         {timestampEnabled ? (
           <>
             <Switch
-              isSelected={value === "current"}
+              isSelected={timestampNow}
               onChange={() => {
-                setValue(value === "current" ? null : "current");
+                setTimestampNow(embedIndex, !timestampNow);
               }}
             >
               <p>
@@ -56,15 +62,20 @@ export function EmbedBodyTimestampInput({
                 </span>
               </p>
             </Switch>
-            {value === "current" ? (
+            {timestampNow ? (
               <p>Current time will be used</p>
             ) : (
-              <DateInput
+              <DatePicker
                 className="flex justify-center align-middle"
-                endContent={clearDataButton}
                 granularity="second"
-                value={value as DateValue} // Cast value to DateValue
-                onChange={setValue}
+                label="Timestamp:"
+                hideTimeZone
+                value={
+                  timestamp !== null && timestamp != undefined
+                    ? parseAbsoluteToLocal(new Date(timestamp).toISOString())
+                    : undefined
+                }
+                onChange={(value) => setTimestamp(embedIndex, value.toDate())}
               />
             )}
           </>

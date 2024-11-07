@@ -2,21 +2,18 @@
 
 import { Button } from "@nextui-org/button";
 
-import { removeEmbeds } from "@/lib/actions";
+import { useWelcomerStore } from "@/state/welcomer";
 
-export default function RemoveEmbedsButton({
-  embedsLenght,
-  moduleId,
-}: {
-  embedsLenght: number;
-  moduleId: number;
-}) {
+export default function RemoveEmbedsButton() {
+  const clearEmbeds = useWelcomerStore((state) => state.clearEmbeds);
+  const embedsLength = useWelcomerStore((state) => state.embeds).length;
+
   return (
     <Button
       color="danger"
-      isDisabled={embedsLenght == 0}
+      isDisabled={embedsLength == 0}
       variant="ghost"
-      onClick={() => removeEmbeds(moduleId)}
+      onClick={() => clearEmbeds()}
     >
       Clear Embeds
     </Button>

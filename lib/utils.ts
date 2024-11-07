@@ -19,3 +19,7 @@ export function getGuildBanner(guild: GuildExtended) {
     ? `https://cdn.discordapp.com/banners/${guild.id}/${guild.banner}.png`
     : getGuildIcon(guild);
 }
+
+export function getUniqueId(): number {
+  return Math.floor(Math.random() * 1000000000);
+}

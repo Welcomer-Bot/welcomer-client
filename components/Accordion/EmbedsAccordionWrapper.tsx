@@ -1,18 +1,19 @@
 "use client";
 
+import { useWelcomerStore } from "@/state/welcomer";
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import React from "react";
 
 export default function EmbedsAccordionWrapper({
-  embedsLength,
   children,
 }: {
-  embedsLength: number;
   children: React.ReactNode;
 }) {
+  const embedsLength = useWelcomerStore((state) => state.embeds).length;
+
   return (
-    <Accordion>
-      <AccordionItem title={`Embeds (${embedsLength}/10)`}>
+    <Accordion variant="shadow">
+      <AccordionItem aria-label="Embeds" title={`Embeds (${embedsLength}/10)`}>
         {children}
       </AccordionItem>
     </Accordion>

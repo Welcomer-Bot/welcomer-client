@@ -1,13 +1,16 @@
 import "server-only";
 
-import {Leaver, Welcomer} from "@prisma/client";
-import {RESTGetAPIGuildChannelsResult} from "discord-api-types/v10";
-import {cache} from "react";
+import { Embed } from "@/lib/discord/schema";
+import {
+  APIChannel,
+  RESTGetAPIGuildChannelsResult,
+} from "discord-api-types/v10";
+import { cache } from "react";
 
 import prisma from "./prisma";
 
-import {decrypt, getSession} from "@/lib/session";
-import {GuildExtended} from "@/types";
+import { decrypt, getSession } from "@/lib/session";
+import { GuildExtended } from "@/types";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -98,7 +101,7 @@ export const getGuilds = cache(async () => {
         }
 
         return userGuild;
-      }),
+      })
     );
 
     return guilds;
@@ -150,34 +153,45 @@ export async function getWelcomer(guildId: string) {
   }
 }
 
-export async function getEmbeds(module: Welcomer | Leaver) {
+export async function getWelcomerById(welcomerId: number) {
   try {
-    if (!canUserManageGuild(module.guildId)) return null;
+    const welcomer = await prisma.welcomer.findUnique({
+      where: { id: welcomerId },
+    });
 
-    const embeds = await prisma.embed.findMany({
-      // make the resquest either on welcomerId or leaverId
+    return welcomer;
+  } catch {
+    return null;
+  }
+}
+
+export async function getEmbeds(
+  moduleId: string | number
+): Promise<Embed[] | null> {
+  try {
+    moduleId = Number(moduleId);
+    const module = await getWelcomerById(moduleId);
+    if (!module) return null;
+
+    if (!(await canUserManageGuild(module?.guildId))) return null;
+
+    const embeds: Embed[] = await prisma.embed.findMany({
       where: {
-        OR: [{ welcomerId: module.id }, { leaverId: module.id }],
-      },
-      include: {
-        author: true,
-        fields: true,
-        footer: true,
-        image: true,
-        thumbnail: true,
+        OR: [{ welcomerId: moduleId }, { leaverId: moduleId }],
       },
     });
 
     return embeds;
   } catch {
-    return [];
+    return null;
   }
 }
 
-export async function getGuildChannels(guildId: string) {
+export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
   // get guild channels from discord api
   try {
-    if (!canUserManageGuild(guildId)) return null;
+    if (!canUserManageGuild(guildId))
+      throw new Error("You do not have permission to manage this guild");
     const data = await fetch(
       "https://discord.com/api/guilds/" + guildId + "/channels",
       {
@@ -187,14 +201,14 @@ export async function getGuildChannels(guildId: string) {
         next: {
           revalidate: 60,
         },
-      },
+      }
     );
 
     const channels: RESTGetAPIGuildChannelsResult = await data.json();
 
     return channels;
   } catch (error) {
-    return null;
+    throw new Error("Failed to fetch guild channels");
   }
 }
 
