@@ -1,5 +1,5 @@
 import { Welcomer } from "@/lib/discord/schema"
-import { DiscordEmbed, DiscordEmbedDescription, DiscordMessage, DiscordMessages } from "@skyra/discord-components-react"
+import { DiscordEmbed, DiscordEmbedDescription, DiscordEmbedFooter, DiscordMessage, DiscordMessages } from "@skyra/discord-components-react"
 
 export default function MessagePreview({ msg }: { msg: Welcomer }) { 
     return (
@@ -26,6 +26,9 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                 <DiscordEmbedDescription slot="description">
                   {embed.description}
                 </DiscordEmbedDescription>
+                <DiscordEmbedFooter slot="footer" footerImage={embed.footer?.iconUrl} timestamp={embed.timestampNow? new Date().toISOString() : embed.timestamp}>
+                  {embed.footer?.text}
+                  </DiscordEmbedFooter>
               </DiscordEmbed>
             ))}
           </DiscordMessage>

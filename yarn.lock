@@ -451,7 +451,7 @@
     "@react-types/combobox" "3.11.1"
     "@react-types/shared" "3.23.1"
 
-"@nextui-org/avatar@2.0.33", "@nextui-org/avatar@^2.0.32":
+"@nextui-org/avatar@2.0.33":
   version "2.0.33"
   resolved "https://registry.yarnpkg.com/@nextui-org/avatar/-/avatar-2.0.33.tgz#1fe5d199bdc7967a0e19b4a422caf4a832e88740"
   integrity sha512-SPnIKM+34T/a+KCRCBiG8VwMBzu2/bap7IPHhmICtQ6KmG8Dzmazj3tGZsVt7HjhMRVY7e1vzev4IMaHqkIdRg==
@@ -529,7 +529,7 @@
     lodash.debounce "^4.0.8"
     scroll-into-view-if-needed "3.0.10"
 
-"@nextui-org/card@2.0.34", "@nextui-org/card@^2.0.33":
+"@nextui-org/card@2.0.34":
   version "2.0.34"
   resolved "https://registry.yarnpkg.com/@nextui-org/card/-/card-2.0.34.tgz#d9c7f68f84f86dcb4965a365a59e122e75e252b4"
   integrity sha512-2RYNPsQkM0FOifGCKmRBR3AuYgYCNmPV7dyA5M3D9Lf0APsHHtsXRA/GeIJ/AuPnglZrYBX8wpM5kLt3dnlQjQ==
@@ -633,7 +633,7 @@
     "@nextui-org/system-rsc" "2.1.6"
     "@react-types/shared" "3.23.1"
 
-"@nextui-org/dropdown@2.1.31", "@nextui-org/dropdown@^2.1.29":
+"@nextui-org/dropdown@2.1.31":
   version "2.1.31"
   resolved "https://registry.yarnpkg.com/@nextui-org/dropdown/-/dropdown-2.1.31.tgz#4606509b00101f9a04a420400837485fe0390081"
   integrity sha512-tP6c5MAhWK4hJ6U02oX6APUpjjrn97Zn7t+56Xx4YyQOSj0CJx18VF0JsU+MrjFZxPX3UBKU3B2zGBHOEGE4Kw==
@@ -658,7 +658,7 @@
     "@nextui-org/system" "2.2.6"
     "@nextui-org/use-measure" "2.0.2"
 
-"@nextui-org/image@2.0.32", "@nextui-org/image@^2.0.31":
+"@nextui-org/image@2.0.32":
   version "2.0.32"
   resolved "https://registry.yarnpkg.com/@nextui-org/image/-/image-2.0.32.tgz#4011ca965f691a615fcc396aaf09542ebcc47927"
   integrity sha512-JpE0O8qAeJpQA61ZnXNLH76to+dbx93PR5tTOxSvmTxtnuqVg4wl5ar/SBY3czibJPr0sj33k8Mv2EfULjoH7Q==
@@ -1299,7 +1299,7 @@
   resolved "https://registry.yarnpkg.com/@nextui-org/use-update-effect/-/use-update-effect-2.0.6.tgz#107a4e0496232683578ee24dfae4be7edb58e371"
   integrity sha512-n5Qiv3ferKn+cSxU3Vv+96LdG8I/00mzc7Veoan+P9GL0aCTrsPB6RslTsiblaiAXQcqTiFXd8xwsK309DXOXA==
 
-"@nextui-org/user@2.0.34", "@nextui-org/user@^2.0.33":
+"@nextui-org/user@2.0.34":
   version "2.0.34"
   resolved "https://registry.yarnpkg.com/@nextui-org/user/-/user-2.0.34.tgz#53b79c9d2b5777e661a81672541a6bac2217a929"
   integrity sha512-7MN/xBaMhDJ0b+hB2YpGIm2DsC9CTpN1ab+EKwhUuWn26SgXw2FNu8CSHViyDEkvOP7sYKdHLp9UtSo/f3JnsQ==

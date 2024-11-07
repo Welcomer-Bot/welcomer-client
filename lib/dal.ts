@@ -101,7 +101,7 @@ export const getGuilds = cache(async () => {
         }
 
         return userGuild;
-      })
+      }),
     );
 
     return guilds;
@@ -166,7 +166,7 @@ export async function getWelcomerById(welcomerId: number) {
 }
 
 export async function getEmbeds(
-  moduleId: string | number
+  moduleId: string | number,
 ): Promise<Embed[] | null> {
   try {
     moduleId = Number(moduleId);
@@ -202,7 +202,7 @@ export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
         next: {
           revalidate: 60,
         },
-      }
+      },
     );
 
     const channels: RESTGetAPIGuildChannelsResult = await data.json();

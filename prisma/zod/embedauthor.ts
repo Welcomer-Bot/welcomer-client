@@ -1,5 +1,4 @@
 import * as z from "zod"
-import * as imports from "../null"
 import { CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const EmbedAuthorModel = z.object({
@@ -22,5 +21,5 @@ export interface CompleteEmbedAuthor extends z.infer<typeof EmbedAuthorModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedEmbedAuthorModel: z.ZodSchema<CompleteEmbedAuthor> = z.lazy(() => EmbedAuthorModel.extend({
-  embed: RelatedEmbedModel.optional(),
+  embed: RelatedEmbedModel,
 }))

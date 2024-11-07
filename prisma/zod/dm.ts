@@ -1,5 +1,4 @@
 import * as z from "zod"
-import * as imports from "../null"
 import { CompleteWelcomer, RelatedWelcomerModel, CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const DMModel = z.object({

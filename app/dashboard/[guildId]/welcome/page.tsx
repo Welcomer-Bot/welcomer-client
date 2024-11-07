@@ -11,7 +11,7 @@ import { StoreUpdater } from "@/components/dashboard/guild/storeUpdater";
 export default async function Page({
   params,
 }: {
-  params: { guildId: string };
+  params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
   const welcomerParams = await getWelcomer(guildId);

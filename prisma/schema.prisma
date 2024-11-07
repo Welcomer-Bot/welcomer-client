@@ -24,19 +24,19 @@ model Guild {
 model Welcomer {
   id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
-  guild     Guild?    @relation(fields: [guildId], references: [id]) /// @zod.optional()
+  guild     Guild?   @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
   embeds    Embed[] /// @zod.max(10)
   DM        DM?
-  created DateTime @default(now()) /// @zod.optional()
-  updated DateTime @default(now()) /// @zod.optional()
+  created   DateTime @default(now()) /// @zod.optional()
+  updated   DateTime @default(now()) /// @zod.optional()
 }
 
 model Leaver {
   id        Int      @unique @default(autoincrement()) /// @zod.optional()
   guildId   String   @unique
-  guild     Guild    @relation(fields: [guildId], references: [id]) /// @zod.optional()
+  guild     Guild    @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
   embeds    Embed[]
@@ -54,21 +54,21 @@ model DM {
   updatedAt DateTime @updatedAt
 }
 
-
 model Embed {
-  id          Int             @id @default(autoincrement())  /// @zod.optional()
-  title       String?         @db.VarChar(256) 
-  description String?         @db.VarChar(2048)
-  color       Int?
-  timestamp   Json?         /// @zod.optional() 
-  footer      EmbedFooter?  /// @zod.optional()
-  fields      EmbedField[]  /// @zod.optional()
-  author      EmbedAuthor?  /// @zod.optional()
-  image       EmbedImage?  /// @zod.optional()
-  thumbnail   String?  /// @zod.optional()
-  url         String?  /// @zod.optional()
-  created DateTime @default(now())  /// @zod.optional()
-  updated DateTime @default(now())  /// @zod.optional()
+  id           Int          @id @default(autoincrement()) /// @zod.optional()
+  title        String?      @db.VarChar(256)
+  description  String?      @db.VarChar(2048)
+  color        String? /// @zod.optional()
+  timestamp    DateTime? /// @zod.optional()
+  timestampNow Boolean? /// @zod.optional()
+  footer       EmbedFooter?
+  fields       EmbedField[]
+  author       EmbedAuthor?
+  image        EmbedImage?
+  thumbnail    String? /// @zod.optional()
+  url          String? /// @zod.optional()
+  created      DateTime     @default(now()) /// @zod.optional()
+  updated      DateTime     @default(now()) /// @zod.optional()
 
   // relations
   welcomerId Int?
@@ -93,7 +93,7 @@ model EmbedImage {
 model EmbedAuthor {
   id        Int      @id @default(autoincrement()) /// @zod.optional() 
   embedId   Int      @unique /// @zod.optional() 
-  embed     Embed    @relation(fields: [embedId], references: [id]) /// @zod.optional() 
+  embed     Embed    @relation(fields: [embedId], references: [id])
   name      String?
   iconUrl   String?
   url       String?
@@ -158,26 +158,23 @@ model Channels {
   updatedAt DateTime  @updatedAt
 }
 
-
 generator zod {
-  provider                 = "zod-prisma"
-  output                   = "./zod" // (default) the directory where generated zod schemas will be saved
+  provider = "zod-prisma"
+  output   = "./zod" // (default) the directory where generated zod schemas will be saved
 
-  relationModel            = true // (default) Create and export both plain and related models.
+  relationModel = true // (default) Create and export both plain and related models.
   // relationModel         = "default" // Do not export model without relations.
   // relationModel         = false // Do not generate related model
 
-  modelCase                = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
+  modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
   // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
 
-  modelSuffix              = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+  modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
 
   // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
-  useDecimalJs             = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
-
-  imports                  = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
+  useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
 
   // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
-  prismaJsonNullability    = true // (default) uses prisma's scheme for JSON field nullability
+  prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
   // prismaJsonNullability = false // allows null assignment to optional JSON fields
 }

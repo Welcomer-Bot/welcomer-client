@@ -10,9 +10,9 @@ export default async function Layout({
   params,
 }: {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     guildId: string;
-  };
+  }>;
 }) {
   const { guildId } = await params;
   const guild = await getUserGuild(guildId);

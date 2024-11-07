@@ -14,11 +14,9 @@ interface WelcomerStore extends Welcomer {
   clearEmbeds(): void;
   setEmbedTitle(index: number, title: string): void;
   setEmbedDescription(index: number, description: string): void;
-  setEmbedColor(index: number, color: number): void;
-  setEmbedTimestamp(
-    index: number,
-    timestamp: String | Date | Boolean | null
-  ): void;
+  setEmbedColor(index: number, color: string): void;
+  setEmbedTimestamp(index: number, timestamp: Date | null): void;
+  setEmbedTimestampNow(index: number, timestampNow: boolean): void;
   setEmbedAuthorName(index: number, author: string): void;
   setEmbedAuthorIcon(index: number, icon: string): void;
   setEmbedAuthorUrl(index: number, url: string): void;
@@ -34,7 +32,7 @@ const defaultMessage: Welcomer = {
 const defaultEmbed: Embed = {
   title: "Welcome to the server!",
   description: "Welcome {user} to {guild}",
-  color: 0x00ff00,
+  color: "0x00ff00",
   fields: [],
 };
 
@@ -99,6 +97,10 @@ export const useWelcomerStore = create<WelcomerStore>()(
             state.embeds[index].author.url = url;
           }
         }),
+        setEmbedTimestampNow: (index, timestampNow) =>
+          set((state) => {
+            state.embeds[index].timestampNow = timestampNow;
+          }),
       }),
       {
         name: "welcomer",

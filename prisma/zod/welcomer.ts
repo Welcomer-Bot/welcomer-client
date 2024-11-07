@@ -1,5 +1,4 @@
 import * as z from "zod"
-import * as imports from "../null"
 import { CompleteGuild, RelatedGuildModel, CompleteEmbed, RelatedEmbedModel, CompleteDM, RelatedDMModel } from "./index"
 
 export const WelcomerModel = z.object({
@@ -23,7 +22,7 @@ export interface CompleteWelcomer extends z.infer<typeof WelcomerModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedWelcomerModel: z.ZodSchema<CompleteWelcomer> = z.lazy(() => WelcomerModel.extend({
-  guild: RelatedGuildModel.optional().nullish(),
+  guild: RelatedGuildModel.nullish(),
   embeds: RelatedEmbedModel.array().max(10),
   DM: RelatedDMModel.nullish(),
 }))

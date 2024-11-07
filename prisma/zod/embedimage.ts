@@ -1,5 +1,4 @@
 import * as z from "zod"
-import * as imports from "../null"
 import { CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const EmbedImageModel = z.object({

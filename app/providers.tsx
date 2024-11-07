@@ -7,12 +7,9 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 
-export interface ProvidersProps {
-  children: React.ReactNode;
-  themeProps?: ThemeProviderProps;
-}
 
-export function Providers({ children, themeProps }: ProvidersProps) {
+
+export function Providers({children, themeProps}: {children: React.ReactNode, themeProps: ThemeProviderProps}) {
   const router = useRouter();
   const queryClient = new QueryClient();
 
@@ -20,7 +17,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <>
       <NextUIProvider navigate={router.push}>
         <QueryClientProvider client={queryClient}>
-        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          <NextThemesProvider {...themeProps}>
+            {children}
+          </NextThemesProvider>
         </QueryClientProvider>
       </NextUIProvider>
     </>

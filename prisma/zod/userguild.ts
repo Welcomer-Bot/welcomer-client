@@ -1,5 +1,4 @@
 import * as z from "zod"
-import * as imports from "../null"
 import { CompleteChannels, RelatedChannelsModel, CompleteUser, RelatedUserModel } from "./index"
 
 export const UserGuildModel = z.object({
