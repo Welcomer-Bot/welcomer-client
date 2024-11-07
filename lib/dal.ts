@@ -11,6 +11,7 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended } from "@/types";
+import { CompleteEmbed } from "@/prisma/zod";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -173,12 +174,17 @@ export async function getEmbeds(
     const module = await getWelcomerById(moduleId);
     if (!module) return null;
 
-    if (!canUserManageGuild(module?.guildId)) return null;
+    if (!(await canUserManageGuild(module?.guildId))) return null;
 
     const embeds: Embed[] = await prisma.embed.findMany({
-      // make the resquest either on welcomerId or leaverId
       where: {
         OR: [{ welcomerId: moduleId }, { leaverId: moduleId }],
+      },
+      include: {
+        fields: true,
+        author: true,
+        footer: true,
+        image: true,
       },
     });
 

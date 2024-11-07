@@ -3,15 +3,15 @@ import { CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const EmbedFooterModel = z.object({
   id: z.number().int(),
-  embedId: z.number().int(),
-  text: z.string(),
-  iconUrl: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  embedId: z.number().int().optional().nullish(),
+  text: z.string().nullish(),
+  iconUrl: z.string().nullish(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 })
 
 export interface CompleteEmbedFooter extends z.infer<typeof EmbedFooterModel> {
-  embed: CompleteEmbed
+  embed?: CompleteEmbed | null
 }
 
 /**
@@ -20,5 +20,5 @@ export interface CompleteEmbedFooter extends z.infer<typeof EmbedFooterModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedEmbedFooterModel: z.ZodSchema<CompleteEmbedFooter> = z.lazy(() => EmbedFooterModel.extend({
-  embed: RelatedEmbedModel,
+  embed: RelatedEmbedModel.optional().nullish(),
 }))

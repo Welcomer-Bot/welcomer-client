@@ -2,12 +2,12 @@ import * as z from "zod"
 import { CompleteGuild, RelatedGuildModel, CompleteEmbed, RelatedEmbedModel, CompleteDM, RelatedDMModel } from "./index"
 
 export const WelcomerModel = z.object({
-  id: z.number().int().optional(),
+  id: z.number().int(),
   guildId: z.string(),
   channelId: z.string().nullish(),
   content: z.string().nullish(),
-  created: z.date().optional(),
-  updated: z.date().optional(),
+  created: z.date(),
+  updated: z.date(),
 })
 
 export interface CompleteWelcomer extends z.infer<typeof WelcomerModel> {

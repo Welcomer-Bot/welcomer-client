@@ -2,13 +2,13 @@ import * as z from "zod"
 import { CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const EmbedAuthorModel = z.object({
-  id: z.number().int().optional(),
-  embedId: z.number().int().optional(),
+  id: z.number().int(),
+  embedId: z.number().int(),
   name: z.string().nullish(),
   iconUrl: z.string().nullish(),
   url: z.string().nullish(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 })
 
 export interface CompleteEmbedAuthor extends z.infer<typeof EmbedAuthorModel> {

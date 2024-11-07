@@ -2,14 +2,14 @@ import * as z from "zod"
 import { CompleteEmbedFooter, RelatedEmbedFooterModel, CompleteEmbedField, RelatedEmbedFieldModel, CompleteEmbedAuthor, RelatedEmbedAuthorModel, CompleteEmbedImage, RelatedEmbedImageModel, CompleteWelcomer, RelatedWelcomerModel, CompleteLeaver, RelatedLeaverModel, CompleteDM, RelatedDMModel } from "./index"
 
 export const EmbedModel = z.object({
-  id: z.number().int().optional(),
+  id: z.number().int(),
   title: z.string().nullish(),
   description: z.string().nullish(),
-  color: z.string().optional().nullish(),
-  timestamp: z.date().optional().nullish(),
-  timestampNow: z.boolean().optional().nullish(),
-  thumbnail: z.string().optional().nullish(),
-  url: z.string().optional().nullish(),
+  color: z.string().nullish(),
+  timestamp: z.date().nullish(),
+  timestampNow: z.boolean().nullish(),
+  thumbnail: z.string().nullish(),
+  url: z.string().nullish(),
   created: z.date().optional(),
   updated: z.date().optional(),
   welcomerId: z.number().int().nullish(),
@@ -37,7 +37,7 @@ export const RelatedEmbedModel: z.ZodSchema<CompleteEmbed> = z.lazy(() => EmbedM
   fields: RelatedEmbedFieldModel.array(),
   author: RelatedEmbedAuthorModel.nullish(),
   image: RelatedEmbedImageModel.nullish(),
-  welcomer: RelatedWelcomerModel.optional().nullish(),
-  leaver: RelatedLeaverModel.optional().nullish(),
-  DM: RelatedDMModel.optional().nullish(),
+  welcomer: RelatedWelcomerModel.nullish(),
+  leaver: RelatedLeaverModel.nullish(),
+  DM: RelatedDMModel.nullish(),
 }))

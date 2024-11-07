@@ -22,26 +22,26 @@ model Guild {
 }
 
 model Welcomer {
-  id        Int      @unique @default(autoincrement()) /// @zod.optional()
+  id        Int      @unique @default(autoincrement())
   guildId   String   @unique
   guild     Guild?   @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
   embeds    Embed[] /// @zod.max(10)
   DM        DM?
-  created   DateTime @default(now()) /// @zod.optional()
-  updated   DateTime @default(now()) /// @zod.optional()
+  created   DateTime @default(now())
+  updated   DateTime @default(now())
 }
 
 model Leaver {
-  id        Int      @unique @default(autoincrement()) /// @zod.optional()
+  id        Int      @unique @default(autoincrement())
   guildId   String   @unique
   guild     Guild    @relation(fields: [guildId], references: [id])
   channelId String?
   content   String?
   embeds    Embed[]
-  createdAt DateTime @default(now()) /// @zod.optional()
-  updatedAt DateTime @updatedAt /// @zod.optional()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model DM {
@@ -55,28 +55,28 @@ model DM {
 }
 
 model Embed {
-  id           Int          @id @default(autoincrement()) /// @zod.optional()
+  id           Int          @id @default(autoincrement())
   title        String?      @db.VarChar(256)
   description  String?      @db.VarChar(2048)
-  color        String? /// @zod.optional()
-  timestamp    DateTime? /// @zod.optional()
-  timestampNow Boolean? /// @zod.optional()
+  color        String?
+  timestamp    DateTime?
+  timestampNow Boolean?
   footer       EmbedFooter?
   fields       EmbedField[]
   author       EmbedAuthor?
   image        EmbedImage?
-  thumbnail    String? /// @zod.optional()
-  url          String? /// @zod.optional()
+  thumbnail    String?
+  url          String?
   created      DateTime     @default(now()) /// @zod.optional()
   updated      DateTime     @default(now()) /// @zod.optional()
 
   // relations
   welcomerId Int?
-  welcomer   Welcomer? @relation(fields: [welcomerId], references: [id]) /// @zod.optional()
+  welcomer   Welcomer? @relation(fields: [welcomerId], references: [id])
   leaverId   Int?
-  leaver     Leaver?   @relation(fields: [leaverId], references: [id]) /// @zod.optional()
+  leaver     Leaver?   @relation(fields: [leaverId], references: [id])
   DMId       Int?
-  DM         DM?       @relation(fields: [DMId], references: [id]) /// @zod.optional()
+  DM         DM?       @relation(fields: [DMId], references: [id])
 }
 
 model EmbedImage {
@@ -91,14 +91,14 @@ model EmbedImage {
 }
 
 model EmbedAuthor {
-  id        Int      @id @default(autoincrement()) /// @zod.optional() 
-  embedId   Int      @unique /// @zod.optional() 
+  id        Int      @id @default(autoincrement())
+  embedId   Int      @unique
   embed     Embed    @relation(fields: [embedId], references: [id])
   name      String?
   iconUrl   String?
   url       String?
-  createdAt DateTime @default(now()) /// @zod.optional() 
-  updatedAt DateTime @updatedAt /// @zod.optional() 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model EmbedField {
@@ -114,12 +114,12 @@ model EmbedField {
 
 model EmbedFooter {
   id        Int      @id @default(autoincrement())
-  embedId   Int      @unique
-  embed     Embed    @relation(fields: [embedId], references: [id])
-  text      String
-  iconUrl   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  embedId   Int?      @unique /// @zod.optional()
+  embed     Embed?    @relation(fields: [embedId], references: [id]) /// @zod.optional()
+  text      String?
+  iconUrl   String?
+  createdAt DateTime @default(now())/// @zod.optional()
+  updatedAt DateTime @updatedAt/// @zod.optional()
 }
 
 model User {
@@ -177,4 +177,10 @@ generator zod {
   // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
   prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
   // prismaJsonNullability = false // allows null assignment to optional JSON fields
+}
+
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "./ERD.md"
+  title    = "Welcomer ERD"
 }
