@@ -22,11 +22,11 @@ export default async function Layout({
   const user = await getUserData();
 
   return (
-    <div className="flex flex-row h-screen overflow-y-clip">
+    <div className="flex h-full w-full">
       <Sidebar currentGuild={guild} guilds={otherGuilds} user={user!} />
-      <main className="flex justify-center mx-auto overflow-y-auto flex-grow py-5 px-6">
+      <div className="flex justify-center mx-auto flex-grow">
         {children}
-      </main>
+      </div>
     </div>
   );
 }

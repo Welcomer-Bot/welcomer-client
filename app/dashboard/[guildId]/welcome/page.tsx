@@ -31,11 +31,11 @@ export default async function Page({
   );
 
   return (
-    <Card className="w-full min-h-[95vh] lg:w-11/12 h-fit pb-5">
+    <Card radius="none" className="w-full h-full">
       <WelcomeCardHeader />
       {welcomerParams && <StoreUpdater module={welcomerParams} />}
       {welcomerParams ? (
-        <div>
+        <div className="h-full">
           <Divider className="mb-2" />
           <Editor/>
         </div>
