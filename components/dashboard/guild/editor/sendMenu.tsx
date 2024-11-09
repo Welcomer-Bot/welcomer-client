@@ -1,7 +1,6 @@
 "use client";
 import { useGuildChannelsQuery } from "@/lib/queries";
 import { useGuildStore } from "@/state/guild";
-import { useSendSettingsStore } from "@/state/sendSettings";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Select, SelectItem, SelectSection } from "@nextui-org/select";
 import { APIChannel } from "discord-api-types/v10";
@@ -14,14 +13,17 @@ export default function SendMenu() {
     | APIChannel[]
     | undefined;
 
-
   return (
     <Select
       label="Channel"
       placeholder="Select a channel"
       disabledKeys={["0"]}
       onChange={(e) => updateChannel(e.target.value)}
-      selectedKeys={[(currentChannel && channels?.find(({id})=> currentChannel == id)) ? currentChannel : ""]}
+      selectedKeys={[
+        currentChannel && channels?.find(({ id }) => currentChannel == id)
+          ? currentChannel
+          : "",
+      ]}
     >
       {channels ? (
         channels

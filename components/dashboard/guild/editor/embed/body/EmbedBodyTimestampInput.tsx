@@ -5,7 +5,6 @@ import { parseAbsoluteToLocal } from "@internationalized/date";
 import { Divider } from "@nextui-org/divider";
 import { DatePicker, Switch } from "@nextui-org/react";
 import { useState } from "react";
-import { MdClear } from "react-icons/md";
 
 export function EmbedBodyTimestampInput({
   embedIndex,
@@ -22,10 +21,6 @@ export function EmbedBodyTimestampInput({
   const setTimestampNow = useWelcomerStore(
     (state) => state.setEmbedTimestampNow
   );
-
-  function clearData() {
-    setTimestamp(embedIndex, null);
-  }
 
   const [timestampEnabled, setTimestampEnabled] = useState(false);
   return (

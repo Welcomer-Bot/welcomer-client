@@ -54,11 +54,9 @@ export const getUserGuilds = cache(async () => {
   if (!session) return null;
 
   try {
-    const guilds = await prisma.userGuild.findMany({
+    return await prisma.userGuild.findMany({
       where: { userId: session.userId },
     });
-
-    return guilds;
   } catch {
     return null;
   }
@@ -70,11 +68,9 @@ export const getUserGuild = cache(async (guildId: string) => {
   if (!session) return null;
 
   try {
-    const guild = await prisma.userGuild.findFirst({
+    return await prisma.userGuild.findFirst({
       where: { userId: session.userId, id: guildId },
     });
-
-    return guild;
   } catch {
     return null;
   }
@@ -90,7 +86,7 @@ export const getGuilds = cache(async () => {
 
     if (!userGuilds) return null;
 
-    const guilds = await Promise.all(
+    return await Promise.all(
       userGuilds.map(async (userGuild: GuildExtended) => {
         const guild = await prisma.guild.findUnique({
           where: { id: userGuild.id },
@@ -101,23 +97,19 @@ export const getGuilds = cache(async () => {
         }
 
         return userGuild;
-      })
+      }),
     );
-
-    return guilds;
-  } catch (error) {
+  } catch {
     return null;
   }
 });
 
 export async function getGuild(guildId: string) {
   try {
-    if (!canUserManageGuild(guildId)) return null;
-    const guild = await prisma.guild.findUnique({
+    if (!(await canUserManageGuild(guildId))) return null;
+    return await prisma.guild.findUnique({
       where: { id: guildId },
     });
-
-    return guild;
   } catch {
     return null;
   }
@@ -142,7 +134,7 @@ export async function getUserData() {
 
 export async function getWelcomer(guildId: string) {
   try {
-    if (!canUserManageGuild(guildId)) return null;
+    if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
       where: { guildId },
     });
@@ -166,14 +158,14 @@ export async function getWelcomerById(welcomerId: number) {
 }
 
 export async function getEmbeds(
-  moduleId: string | number
+  moduleId: string | number,
 ): Promise<Embed[] | null> {
   try {
     moduleId = Number(moduleId);
-    const module = await getWelcomerById(moduleId);
-    if (!module) return null;
+    const welcomerModule = await getWelcomerById(moduleId);
+    if (!welcomerModule) return null;
 
-    if (!(await canUserManageGuild(module?.guildId))) return null;
+    if (!(await canUserManageGuild(welcomerModule?.guildId))) return null;
 
     const embeds: Embed[] = await prisma.embed.findMany({
       where: {
@@ -190,7 +182,7 @@ export async function getEmbeds(
 export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
   // get guild channels from discord api
   try {
-    if (!canUserManageGuild(guildId))
+    if (!(await canUserManageGuild(guildId)))
       throw new Error("You do not have permission to manage this guild");
     const data = await fetch(
       "https://discord.com/api/guilds/" + guildId + "/channels",
@@ -201,13 +193,13 @@ export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
         next: {
           revalidate: 60,
         },
-      }
+      },
     );
 
     const channels: RESTGetAPIGuildChannelsResult = await data.json();
 
     return channels;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to fetch guild channels");
   }
 }

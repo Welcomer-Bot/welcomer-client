@@ -2,8 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-import { getGuild } from "@/lib/dal";
-
 interface Guild {
   id: string;
 }
@@ -23,7 +21,7 @@ export const useGuildStore = create<GuildParams>()(
       }),
       {
         name: "guild",
-      },
-    ),
-  ),
+      }
+    )
+  )
 );

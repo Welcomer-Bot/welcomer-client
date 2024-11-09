@@ -30,7 +30,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // @ts-ignore
   return (
     <html suppressHydrationWarning lang="en">
       <head />

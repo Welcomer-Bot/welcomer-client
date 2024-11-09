@@ -15,11 +15,16 @@ import { Logo } from "@/components/icons";
 import { getUserAvatar } from "@/lib/utils";
 import { useGuildStore } from "@/state/guild";
 
-const SidebarContext = createContext({
+const SidebarContext = createContext<{
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  active: string;
+  setActive: React.Dispatch<React.SetStateAction<string>>;
+}>({
   isOpen: true,
-  setIsOpen: (_isOpen: boolean) => {},
+  setIsOpen: () => {},
   active: "dashboard",
-  setActive: (_active: any) => {},
+  setActive: () => {},
 });
 
 export function Sidebar({
@@ -168,7 +173,8 @@ export function SidebarItem({
     <Link
       href={link}
       onClick={() => {
-        setIsOpen(false), setActive(text.toLowerCase());
+        setIsOpen(false);
+        setActive(text.toLowerCase());
       }}
     >
       <li

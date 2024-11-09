@@ -1,6 +1,7 @@
 "use client";
 
 import { AccordionItem } from "@nextui-org/accordion";
+import React from "react";
 
 export default function AccordionItemWrapper({
   children,

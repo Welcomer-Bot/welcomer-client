@@ -2,19 +2,12 @@
 
 import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@nextui-org/input";
-import { shallow } from "zustand/shallow";
 
-export function EmbedBodyColorInput({
-  embedIndex,
-}: {
-  embedIndex: number
-}) {
+export function EmbedBodyColorInput({ embedIndex }: { embedIndex: number }) {
   const embedColor = useWelcomerStore(
-    (state) => state.embeds[embedIndex].color,
+    (state) => state.embeds[embedIndex].color
   );
-  const setEmbedColor = useWelcomerStore(
-    (state) => state.setEmbedColor,
-  );
+  const setEmbedColor = useWelcomerStore((state) => state.setEmbedColor);
 
   return (
     <Input

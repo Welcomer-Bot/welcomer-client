@@ -1,4 +1,4 @@
-import { Embed, FullEmbed, Welcomer } from "@/lib/discord/schema";
+import { Welcomer } from "@/lib/discord/schema";
 import { CompleteEmbed } from "@/prisma/zod";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -8,18 +8,31 @@ interface WelcomerStore extends Welcomer {
   setGuildId: (guildId: string) => void;
   setChannelId: (channelId: string) => void;
   setContent: (content: string) => void;
+
   clear(): void;
+
   addEmbed(embed: CompleteEmbed): void;
+
   addDefaultEmbed(): void;
+
   removeEmbed(index: number): void;
+
   clearEmbeds(): void;
+
   setEmbedTitle(index: number, title: string): void;
+
   setEmbedDescription(index: number, description: string): void;
+
   setEmbedColor(index: number, color: string): void;
+
   setEmbedTimestamp(index: number, timestamp: Date | null): void;
+
   setEmbedTimestampNow(index: number, timestampNow: boolean): void;
+
   setEmbedAuthorName(index: number, author: string): void;
+
   setEmbedAuthorIcon(index: number, icon: string): void;
+
   setEmbedAuthorUrl(index: number, url: string): void;
 }
 
@@ -83,21 +96,24 @@ export const useWelcomerStore = create<WelcomerStore>()(
           set((state) => {
             state.embeds[index].timestamp = timestamp;
           }),
-        setEmbedAuthorName: (index, author) => set((state) => {
-          if (state.embeds[index].author) {
-            state.embeds[index].author.name = author
-          }
-        }),
-        setEmbedAuthorIcon: (index, icon) => set((state) => {
-          if (state.embeds[index].author) {
-            state.embeds[index].author.iconUrl = icon;
-          }
-        }),
-        setEmbedAuthorUrl: (index, url) => set((state) => {
-          if (state.embeds[index].author) {
-            state.embeds[index].author.url = url;
-          }
-        }),
+        setEmbedAuthorName: (index, author) =>
+          set((state) => {
+            if (state.embeds[index].author) {
+              state.embeds[index].author.name = author;
+            }
+          }),
+        setEmbedAuthorIcon: (index, icon) =>
+          set((state) => {
+            if (state.embeds[index].author) {
+              state.embeds[index].author.iconUrl = icon;
+            }
+          }),
+        setEmbedAuthorUrl: (index, url) =>
+          set((state) => {
+            if (state.embeds[index].author) {
+              state.embeds[index].author.url = url;
+            }
+          }),
         setEmbedTimestampNow: (index, timestampNow) =>
           set((state) => {
             state.embeds[index].timestampNow = timestampNow;
@@ -105,7 +121,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
       }),
       {
         name: "welcomer",
-      }
-    )
-  )
+      },
+    ),
+  ),
 );

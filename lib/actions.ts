@@ -18,7 +18,7 @@ export async function signOut() {
 }
 
 export async function createWelcomer(guildId: string): Promise<Welcomer> {
-  if (!canUserManageGuild(guildId)) {
+  if (!(await canUserManageGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
   const res = await prisma.welcomer.create({
@@ -32,19 +32,17 @@ export async function createWelcomer(guildId: string): Promise<Welcomer> {
   return res;
 }
 
-
 export async function removeWelcomer(guildId: string): Promise<boolean> {
-  if (!canUserManageGuild(guildId)) {
+  if (!(await canUserManageGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
   try {
-    
     await prisma.welcomer.delete({
       where: {
         guildId: guildId,
       },
     });
-    
+
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
     return true;
   } catch (error) {
