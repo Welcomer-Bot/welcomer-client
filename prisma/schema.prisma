@@ -56,8 +56,8 @@ model DM {
 
 model Embed {
   id           Int          @id @default(autoincrement()) /// @zod.optional()
-  title        String?      @db.VarChar(256)
-  description  String?      @db.VarChar(2048)
+  title        String?      @db.VarChar(256) 
+  description  String?      @db.VarChar(4096)
   color        String?
   timestamp    DateTime?
   timestampNow Boolean?
@@ -91,18 +91,18 @@ model EmbedImage {
 }
 
 model EmbedAuthor {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())/// @zod.optional()
   embedId   Int      @unique
   embed     Embed    @relation(fields: [embedId], references: [id])
   name      String?
   iconUrl   String?
-  url       String?
+  url       String? @db.VarChar(256)
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }
 
 model EmbedField {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())/// @zod.optional()
   embedId   Int      @unique
   embed     Embed    @relation(fields: [embedId], references: [id])
   name      String
@@ -113,10 +113,10 @@ model EmbedField {
 }
 
 model EmbedFooter {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())/// @zod.optional()
   embedId   Int?      @unique /// @zod.optional()
   embed     Embed?    @relation(fields: [embedId], references: [id]) /// @zod.optional()
-  text      String?
+  text      String?   @db.VarChar(2048)
   iconUrl   String?
   createdAt DateTime? @default(now())/// @zod.optional()
   updatedAt DateTime? @updatedAt/// @zod.optional()

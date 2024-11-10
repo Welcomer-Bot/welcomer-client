@@ -14,10 +14,10 @@ export function EmbedBodyDescriptionInput({
 
   return (
     <Textarea
-      label={"Description " + `( ${description?.length ?? 0}/2048 )`}
+      label={"Description " + `( ${description?.length ?? 0}/4096 )`}
       validate={(value) => {
-        if (value.length > 2048)
-          return "Description must not exceed 2048 characters!";
+        if (value.length > 4096)
+          return "Description must not exceed 4096 characters!";
       }}
       value={description}
       onValueChange={(value) => setDescription(embedIndex, value)}

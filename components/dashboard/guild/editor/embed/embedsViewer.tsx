@@ -4,6 +4,7 @@ import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { useWelcomerStore } from "@/state/welcomer";
 import { EmbedBodyFields } from "./body/EmbedBodyFields";
 import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
+import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
 export default function EmbedsViewer() {
   const embeds = useWelcomerStore((state) => state.embeds);
@@ -34,7 +35,7 @@ export default function EmbedsViewer() {
                 <EmbedBodyFields embedIndex={index} />
               </AccordionItem>
               <AccordionItem key={3} aria-label="Footer" title="Footer">
-                {/* <EmbedFooterFields embed={embed} /> */}
+                <EmbedFooterFields embedIndex={index} />
               </AccordionItem>
               <AccordionItem key={4} aria-label="Images" title="Images">
                 Images

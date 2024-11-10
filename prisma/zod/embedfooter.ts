@@ -2,7 +2,7 @@ import * as z from "zod"
 import { CompleteEmbed, RelatedEmbedModel } from "./index"
 
 export const EmbedFooterModel = z.object({
-  id: z.number().int(),
+  id: z.number().int().optional(),
   embedId: z.number().int().optional().nullish(),
   text: z.string().nullish(),
   iconUrl: z.string().nullish(),

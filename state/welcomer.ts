@@ -34,6 +34,9 @@ interface WelcomerStore extends Welcomer {
   setEmbedAuthorIcon(index: number, icon: string): void;
 
   setEmbedAuthorUrl(index: number, url: string): void;
+
+  setEmbedFooterText(index: number, text: string): void;
+  setEmbedFooterIcon(index: number, icon: string): void;
 }
 
 const defaultMessage: Welcomer = {
@@ -117,6 +120,22 @@ export const useWelcomerStore = create<WelcomerStore>()(
         setEmbedTimestampNow: (index, timestampNow) =>
           set((state) => {
             state.embeds[index].timestampNow = timestampNow;
+          }),
+        setEmbedFooterText: (index, text) =>
+          set((state) => {
+            if (state.embeds[index].footer) {
+              state.embeds[index].footer.text = text;
+            } else {
+              state.embeds[index].footer = { text };
+            }
+          }),
+        setEmbedFooterIcon: (index, icon) =>
+          set((state) => {
+            if (state.embeds[index].footer) {
+              state.embeds[index].footer.iconUrl = icon;
+            } else {
+              state.embeds[index].footer = { iconUrl: icon };
+            }
           }),
       }),
       {

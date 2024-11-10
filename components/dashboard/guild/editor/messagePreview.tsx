@@ -34,7 +34,7 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                   {embed.description}
                 </DiscordEmbedDescription>
                 <DiscordEmbedFooter
-                  slot="footer"
+                  slot="footer" 
                   footerImage={embed.footer?.iconUrl ?? undefined}
                   timestamp={
                     embed.timestampNow
@@ -42,7 +42,9 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                       : embed.timestamp
                   }
                 >
-                  {embed.footer?.text}
+                  <span dangerouslySetInnerHTML={{
+                    __html: embed.footer?.text || ""
+                  }}/>
                 </DiscordEmbedFooter>
               </DiscordEmbed>
             ))}
