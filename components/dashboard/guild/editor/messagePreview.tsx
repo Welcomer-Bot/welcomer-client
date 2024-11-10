@@ -10,8 +10,8 @@ import {
 export default function MessagePreview({ msg }: { msg: Welcomer }) {
   return (
     <>
-      <DiscordMessages>
-        <DiscordMessage author="Welcomer">
+      <DiscordMessages className="rounded-lg min-h-full">
+        <DiscordMessage author="Welcomer" bot verified>
           <span
             dangerouslySetInnerHTML={{
               __html: msg.content || "",

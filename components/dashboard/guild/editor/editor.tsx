@@ -16,8 +16,8 @@ export function Editor() {
             <EmbedEditor />
           </div>
         </div>
-        <div className="hidden lg:block w-1/2 h-full bg-dark-4 lg:border-l-2 border-gray-800 px-5 py-2 overflow-y-auto no-scrollbar mb-10">
-          <EditorMessagePreview />
+        <div className="hidden lg:block pb-20 w-1/2 h-full bg-dark-4 overflow-y-auto no-scrollbar">
+          <EditorMessagePreview/>
         </div>
       </div>
     </div>
