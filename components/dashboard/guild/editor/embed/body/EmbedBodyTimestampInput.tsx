@@ -28,35 +28,34 @@ export function EmbedBodyTimestampInput({
       <Divider />
       Timestamp
       <div className="space-y-3">
-        <Switch
-          isSelected={timestampEnabled}
-          onValueChange={(value) => {
-            if (value) {
-              setTimestampEnabled(true);
-            } else {
-              setTimestampEnabled(false);
-              setTimestampNow(embedIndex, false);
-              setTimestamp(embedIndex, null);
-            }
-          }}
-        >
-          Enable timestamp
-        </Switch>
-        {timestampEnabled ? (
-          <>
+        <div className="flex space-x-5">
+          <Switch
+            isSelected={timestampEnabled}
+            onValueChange={(value) => {
+              if (value) {
+                setTimestampEnabled(true);
+              } else {
+                setTimestampEnabled(false);
+                setTimestampNow(embedIndex, false);
+                setTimestamp(embedIndex, null);
+              }
+            }}
+          >
+            Enable timestamp
+          </Switch>
+          {timestampEnabled ? (
             <Switch
               isSelected={timestampNow}
               onChange={() => {
                 setTimestampNow(embedIndex, !timestampNow);
               }}
             >
-              <p>
-                Use current time{" "}
-                <span className="text-small text-default-300">
-                  (leave blank if you don&apos;t want to use a timestamp)
-                </span>
-              </p>
+              <p>Use current time </p>
             </Switch>
+          ) : null}
+        </div>
+        {timestampEnabled ? (
+          <>
             {timestampNow ? (
               <p>Current time will be used</p>
             ) : (
