@@ -17,37 +17,43 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
               __html: msg.content || "",
             }}
           />
-          {msg.embeds.length > 0 &&
-            msg.embeds.map((embed, index) => (
-              <DiscordEmbed
-                slot="embeds"
-                color={embed.color?.toString()}
-                key={index}
-                embedTitle={embed.title ?? undefined}
-                authorName={embed.author?.name ?? undefined}
-                authorImage={embed.author?.iconUrl ?? undefined}
-                authorUrl={embed.author?.url ?? undefined}
-                url={embed.url ?? undefined}
-                thumbnail={embed.thumbnail ?? undefined}
-              >
-                <DiscordEmbedDescription slot="description">
-                  {embed.description}
-                </DiscordEmbedDescription>
-                <DiscordEmbedFooter
-                  slot="footer" 
-                  footerImage={embed.footer?.iconUrl ?? undefined}
-                  timestamp={
-                    embed.timestampNow
-                      ? new Date().toISOString()
-                      : embed.timestamp
-                  }
-                >
-                  <span dangerouslySetInnerHTML={{
-                    __html: embed.footer?.text || ""
-                  }}/>
-                </DiscordEmbedFooter>
-              </DiscordEmbed>
-            ))}
+          <div>
+            {msg.embeds &&
+              msg.embeds.map((embed, index) => {
+                return (
+                  <DiscordEmbed
+                    slot="embeds"
+                    color={embed.color?.toString()}
+                    key={index}
+                    embedTitle={embed.title ?? undefined}
+                    authorName={embed.author?.name ?? undefined}
+                    authorImage={embed.author?.iconUrl ?? undefined}
+                    authorUrl={embed.author?.url ?? undefined}
+                    url={embed.url ?? undefined}
+                    thumbnail={embed.thumbnail ?? undefined}
+                  >
+                    <DiscordEmbedDescription slot="description">
+                      {embed.description}
+                    </DiscordEmbedDescription>
+                    <DiscordEmbedFooter
+                      slot="footer"
+                      footerImage={embed.footer?.iconUrl ?? undefined}
+                      timestamp={
+                        embed.timestampNow
+                          ? new Date().toISOString()
+                          : embed.timestamp
+                      }
+                    >
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: embed.footer?.text || "",
+                        }}
+                      />
+                    </DiscordEmbedFooter>
+                  </DiscordEmbed>
+                );
+              })}
+          </div>
         </DiscordMessage>
       </DiscordMessages>
     </>
