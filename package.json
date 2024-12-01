@@ -41,7 +41,7 @@
 		"date-fns": "^4.1.0",
 		"debounce": "^2.2.0",
 		"discord-api-types": "^0.37.103",
-		"framer-motion": "~11.11.10",
+		"framer-motion": "~11.12.0",
 		"immer": "^10.1.1",
 		"intl-messageformat": "^10.5.0",
 		"jose": "^5.8.0",
