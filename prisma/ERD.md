@@ -60,7 +60,7 @@ erDiagram
 }
 "EmbedAuthor" {
   Int id PK
-  Int embedId FK
+  Int embedId FK "nullable"
   String name "nullable"
   String iconUrl "nullable"
   String url "nullable"
@@ -69,7 +69,7 @@ erDiagram
 }
 "EmbedField" {
   Int id PK
-  Int embedId FK
+  Int embedId FK "nullable"
   String name
   String value
   Boolean inline "nullable"
@@ -120,8 +120,8 @@ erDiagram
 "Embed" }o--o| "Leaver" : leaver
 "Embed" }o--o| "DM" : DM
 "EmbedImage" |o--|| "Embed" : embed
-"EmbedAuthor" |o--|| "Embed" : embed
-"EmbedField" |o--|| "Embed" : embed
+"EmbedAuthor" |o--o| "Embed" : embed
+"EmbedField" |o--o| "Embed" : embed
 "EmbedFooter" |o--o| "Embed" : embed
 "UserGuild" }o--|| "User" : user
 "Channels" }o--|| "UserGuild" : guild

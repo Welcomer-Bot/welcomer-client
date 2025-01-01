@@ -13,7 +13,7 @@ export default function RemoveEmbedsButton() {
       color="danger"
       isDisabled={embedsLength == 0}
       variant="ghost"
-      onClick={() => clearEmbeds()}
+      onPress={() => clearEmbeds()}
     >
       Clear Embeds
     </Button>

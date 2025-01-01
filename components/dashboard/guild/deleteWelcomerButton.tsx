@@ -8,7 +8,7 @@ export default function RemoveWelcomerButton({ guildId }: { guildId: string }) {
     <Button
       color="danger"
       variant="ghost"
-      onClick={() => removeWelcomer(guildId)}
+      onPress={() => removeWelcomer(guildId)}
     >
       Disable Welcomer
     </Button>

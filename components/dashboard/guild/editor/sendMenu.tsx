@@ -18,6 +18,7 @@ export default function SendMenu() {
       label="Channel"
       placeholder="Select a channel"
       disabledKeys={["0"]}
+      required
       onChange={(e) => updateChannel(e.target.value)}
       selectedKeys={[
         currentChannel && channels?.find(({ id }) => currentChannel == id)

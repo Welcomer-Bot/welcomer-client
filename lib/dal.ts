@@ -11,6 +11,7 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended } from "@/types";
+import { Welcomer } from "@prisma/client";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -132,11 +133,21 @@ export async function getUserData() {
   }
 }
 
-export async function getWelcomer(guildId: string) {
+export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
   try {
     if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
       where: { guildId },
+      include: {
+        embeds: {
+          include: {
+            fields: true,
+            author: true,
+            footer: true,
+          },
+        },
+        DM: true,
+      }
     });
 
     return welcomer;

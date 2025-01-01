@@ -41,7 +41,7 @@ export function Sidebar({
   useGuildStore.setState({ id: currentGuild.id });
 
   return (
-    <aside className="h-full w-64 z-30 relative block">
+    <aside className="h-full z-30 fixed md:relative block">
       <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
         <div className="p-4 pb-2 flex justify-between items-center align-center">
           <div className={` items-center h-10 justify-start flex flex-row `}>
@@ -67,7 +67,7 @@ export function Sidebar({
           <Button
             isIconOnly
             className="p-1.5 rounded-lg"
-            onClick={() => setIsOpen(!isOpen)}
+            onPress={() => setIsOpen(!isOpen)}
           >
             <svg
               className="h-6 w-6"
@@ -172,7 +172,7 @@ export function SidebarItem({
   return (
     <Link
       href={link}
-      onClick={() => {
+      onPress={() => {
         setIsOpen(false);
         setActive(text.toLowerCase());
       }}

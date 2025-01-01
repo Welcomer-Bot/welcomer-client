@@ -26,7 +26,7 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                     color={embed.color?.toString()}
                     key={index}
                     embedTitle={embed.title ?? undefined}
-                    authorName={embed.author?.name ?? undefined}
+                    authorName={embed.author?.name ?? ""}
                     authorImage={embed.author?.iconUrl ?? undefined}
                     authorUrl={embed.author?.url ?? undefined}
                     url={embed.url ?? undefined}
@@ -44,11 +44,7 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                           : embed.timestamp
                       }
                     >
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: embed.footer?.text || "",
-                        }}
-                      />
+                      {embed.footer?.text}
                     </DiscordEmbedFooter>
                   </DiscordEmbed>
                 );

@@ -15,7 +15,7 @@ export default function Error({
     <div>
       <h2>Something went wrong!</h2>
       <p>{error.message}</p>
-      <Button onClick={reset}>Try again</Button>
+      <Button onPress={reset}>Try again</Button>
     </div>
   );
 }

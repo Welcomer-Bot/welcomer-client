@@ -5,6 +5,7 @@ import { useWelcomerStore } from "@/state/welcomer";
 import { EmbedBodyFields } from "./body/EmbedBodyFields";
 import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
 import { EmbedFooterFields } from "./footer/EmbedFooterFields";
+import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
 
 export default function EmbedsViewer() {
   const embeds = useWelcomerStore((state) => state.embeds);
@@ -41,7 +42,7 @@ export default function EmbedsViewer() {
                 Images
               </AccordionItem>
               <AccordionItem key={5} aria-label="Fields" title="Fields">
-                {/* <EmbedFieldsAccordion embed={embed} /> */}
+                <EmbedFieldsFields embedIndex={index} />
               </AccordionItem>
             </Accordion>
           </AccordionItem>

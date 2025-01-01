@@ -17,7 +17,7 @@ export function SignIn({
       color="primary"
       isLoading={isRedirecting}
       type="submit"
-      onClick={() => {
+      onPress={() => {
         setIsRedirecting(true);
         signIn();
       }}

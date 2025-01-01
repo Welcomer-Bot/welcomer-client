@@ -11,7 +11,7 @@ export default function CreateEmbedButton() {
       className="sm:mr-4 sm:mb-0 mb-2"
       color="primary"
       isDisabled={embedsLength >= 10}
-      onClick={() => embedsLength < 10 && addDefaultEmbed()}
+      onPress={() => embedsLength < 10 && addDefaultEmbed()}
     >
       Add Embed
     </Button>

@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 
 import CreateWelcomerButton from "@/components/dashboard/guild/createWelcomerButton";
 import RemoveWelcomerButton from "@/components/dashboard/guild/deleteWelcomerButton";
+import AppInitializer from "@/components/dashboard/guild/editor/appInitialiser";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import { getGuild, getWelcomer } from "@/lib/dal";
-import { StoreUpdater } from "@/components/dashboard/guild/storeUpdater";
 
 export default async function Page({
   params,
@@ -31,15 +31,18 @@ export default async function Page({
   );
 
   return (
-    <Card radius="none" className="w-full h-full">
-      <WelcomeCardHeader />
-      {welcomerParams && <StoreUpdater module={welcomerParams} />}
-      {welcomerParams ? (
-        <div className="h-full">
-          <Divider className="mb-2" />
-          <Editor/>
-        </div>
-      ) : null}
-    </Card>
+    <AppInitializer module={welcomerParams} guildId={guildId}>
+      <Card radius="none" className="w-full h-full">
+        <WelcomeCardHeader />
+        {welcomerParams ? (
+          <>
+            <div className="h-full">
+              <Divider className="mb-2" />
+              <Editor guildId={guild.id} />
+            </div>
+          </>
+        ) : null}
+      </Card>
+    </AppInitializer>
   );
 }

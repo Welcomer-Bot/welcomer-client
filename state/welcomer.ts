@@ -1,10 +1,10 @@
 import { Welcomer } from "@/lib/discord/schema";
-import { CompleteEmbed } from "@/prisma/zod";
+import { CompleteEmbed, CompleteEmbedField } from "@/prisma/zod";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-interface WelcomerStore extends Welcomer {
+export interface WelcomerStore extends Welcomer {
   setGuildId: (guildId: string) => void;
   setChannelId: (channelId: string) => void;
   setContent: (content: string) => void;
@@ -37,6 +37,10 @@ interface WelcomerStore extends Welcomer {
 
   setEmbedFooterText(index: number, text: string): void;
   setEmbedFooterIcon(index: number, icon: string): void;
+
+  addField(index: number): void;
+  clearFields(index: number): void;
+  removeField(index: number, fieldIndex: number): void;
 }
 
 const defaultMessage: Welcomer = {
@@ -51,6 +55,11 @@ const defaultEmbed: CompleteEmbed = {
   description: "Welcome {user} to {guild}",
   color: "0x00ff00",
   fields: [],
+};
+
+const defaultField: CompleteEmbedField = {
+  name: "New Field",
+  value: "New Value",
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
@@ -101,14 +110,19 @@ export const useWelcomerStore = create<WelcomerStore>()(
           }),
         setEmbedAuthorName: (index, author) =>
           set((state) => {
+            console.log(author);
             if (state.embeds[index].author) {
               state.embeds[index].author.name = author;
+            } else {
+              state.embeds[index].author = { name: author };
             }
           }),
         setEmbedAuthorIcon: (index, icon) =>
           set((state) => {
             if (state.embeds[index].author) {
               state.embeds[index].author.iconUrl = icon;
+            } else {
+              state.embeds[index].author = { iconUrl: icon };
             }
           }),
         setEmbedAuthorUrl: (index, url) =>
@@ -137,10 +151,22 @@ export const useWelcomerStore = create<WelcomerStore>()(
               state.embeds[index].footer = { iconUrl: icon };
             }
           }),
+        addField: (index) =>
+          set((state) => {
+            state.embeds[index].fields.push(defaultField);
+          }),
+        clearFields: (index) =>
+          set((state) => {
+            state.embeds[index].fields = [];
+          }),
+        removeField: (index, fieldIndex) =>
+          set((state) => {
+            state.embeds[index].fields.splice(fieldIndex, 1);
+          }),
       }),
       {
         name: "welcomer",
-      },
-    ),
-  ),
+      }
+    )
+  )
 );
