@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
-
+import { ToastContainer } from "react-toastify";
 import { Providers } from "./providers";
 
 import { fontSans } from "@/config/fonts";
@@ -45,6 +45,7 @@ export default function RootLayout({
           >
             {children}
           </div>
+          <ToastContainer />
         </Providers>
       </body>
     </html>

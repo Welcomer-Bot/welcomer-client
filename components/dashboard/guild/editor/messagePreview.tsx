@@ -13,12 +13,8 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
   return (
     <>
       <DiscordMessages className="rounded-lg min-h-full">
-        <DiscordMessage author="Welcomer" bot verified>
-          <span
-            dangerouslySetInnerHTML={{
-              __html: msg.content || "",
-            }}
-          />
+        <DiscordMessage author="Welcomer" avatar="/logo32.svg" bot verified>
+          {msg.content}
           <div>
             {msg.embeds &&
               msg.embeds.map((embed, index) => {

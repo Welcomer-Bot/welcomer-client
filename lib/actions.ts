@@ -37,7 +37,19 @@ export async function createWelcomer(guildId: string): Promise<Welcomer> {
 export async function updateWelcomer(store: WelcomerStore) {
   const guildId = store.guildId;
   if (!(await canUserManageGuild(guildId))) {
-    throw new Error("You do not have permission to manage this guild");
+    return {
+      error: "You do not have permission to manage this guild",
+    };
+  }
+  if (!store.content && store.embeds.length === 0) {
+    return {
+      error: "You need to add some content or embeds",
+    };
+  }
+  if (!store.channelId) {
+    return {
+      error: "You need to select a channel",
+    };
   }
 
   const module = await prisma.welcomer.update({
@@ -53,6 +65,10 @@ export async function updateWelcomer(store: WelcomerStore) {
   for (const embed of store.embeds) {
     await createOrUpdateEmbed(embed, module.id, "welcomer");
   }
+
+  return {
+    done: true,
+  };
 }
 
 export async function createOrUpdateEmbed(
