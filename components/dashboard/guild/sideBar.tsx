@@ -172,7 +172,7 @@ export function SidebarItem({
   return (
     <Link
       href={link}
-      onPress={() => {
+      onClick={() => {
         setIsOpen(false);
         setActive(text.toLowerCase());
       }}

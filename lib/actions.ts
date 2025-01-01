@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import prisma from "./prisma";
 
-import { CompleteEmbed, CompleteEmbedField } from "@/prisma/zod";
+import { CompleteEmbed, CompleteEmbedField } from "@/prisma/schema";
 import { WelcomerStore } from "@/state/welcomer";
 import { Welcomer } from "@prisma/client";
 import { revalidatePath } from "next/cache";

@@ -26,32 +26,30 @@ model Guild {
 }
 
 model Welcomer {
-  /// @zod.optional()
-  id        Int       @unique @default(autoincrement())
+  id        Int       @id @default(autoincrement())  /// @zod.optional()
   guildId   String    @unique
   channelId String?
   content   String?
   createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  updatedAt DateTime? @updatedAt 
   DM        DM?
   embeds    Embed[]
-  guild     Guild     @relation(fields: [guildId], references: [id])
+  guild     Guild?     @relation(fields: [guildId], references: [id])
 }
 
 model Leaver {
-  /// @zod.optional()
-  id        Int       @unique @default(autoincrement())
+  id        Int       @id @default(autoincrement())  /// @zod.optional()
   guildId   String    @unique
   channelId String?
   content   String?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   embeds    Embed[]
-  guild     Guild     @relation(fields: [guildId], references: [id])
+  guild     Guild?     @relation(fields: [guildId], references: [id])
 }
 
 model DM {
-  id        Int       @unique @default(autoincrement())
+  id        Int       @id @default(autoincrement())  /// @zod.optional()
   moduleId  Int       @unique
   message   String
   createdAt DateTime? @default(now())
@@ -61,8 +59,7 @@ model DM {
 }
 
 model Embed {
-  /// @zod.optional()
-  id           Int          @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())  /// @zod.optional()
   title        String?      @db.VarChar(256)
   description  String?      @db.VarChar(4096)
   color        String?
@@ -70,9 +67,7 @@ model Embed {
   timestampNow Boolean?
   thumbnail    String?
   url          String?
-  /// @zod.optional()
   created      DateTime?    @default(now())
-  /// @zod.optional()
   updated      DateTime?    @default(now())
   welcomerId   Int?
   leaverId     Int?
@@ -81,26 +76,24 @@ model Embed {
   leaver       Leaver?      @relation(fields: [leaverId], references: [id])
   welcomer     Welcomer?    @relation(fields: [welcomerId], references: [id])
   author       EmbedAuthor?
-  fields       EmbedField?
+  fields       EmbedField[]
   footer       EmbedFooter?
   image        EmbedImage?
 }
 
 model EmbedImage {
-  id        Int       @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())  /// @zod.optional()
   embedId   Int       @unique
   url       String
   width     Int?
   heigth    Int?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  embed     Embed     @relation(fields: [embedId], references: [id])
+  embed     Embed?     @relation(fields: [embedId], references: [id])
 }
 
 model EmbedAuthor {
-  /// @zod.optional()
-  id        Int       @id @default(autoincrement())
-  /// @zod.optional()
+  id        Int       @id @default(autoincrement())  /// @zod.optional()
   embedId   Int?      @unique
   name      String?
   iconUrl   String?
@@ -111,9 +104,7 @@ model EmbedAuthor {
 }
 
 model EmbedField {
-  /// @zod.optional()
-  id        Int       @id @default(autoincrement())
-  /// @zod.optional()
+  id        Int       @id @default(autoincrement())  /// @zod.optional()
   embedId   Int?      @unique
   name      String
   value     String
@@ -124,15 +115,11 @@ model EmbedField {
 }
 
 model EmbedFooter {
-  /// @zod.optional()
-  id        Int       @id @default(autoincrement())
-  /// @zod.optional()
+  id        Int       @id @default(autoincrement())  /// @zod.optional()
   embedId   Int?      @unique
   text      String?   @db.VarChar(2048)
   iconUrl   String?
-  /// @zod.optional()
   createdAt DateTime? @default(now())
-  /// @zod.optional()
   updatedAt DateTime? @updatedAt
   embed     Embed?    @relation(fields: [embedId], references: [id])
 }

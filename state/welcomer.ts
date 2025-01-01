@@ -1,5 +1,5 @@
 import { Welcomer } from "@/lib/discord/schema";
-import { CompleteEmbed, CompleteEmbedField } from "@/prisma/zod";
+import { CompleteEmbed, CompleteEmbedField } from "@/prisma/schema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";

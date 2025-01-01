@@ -1,4 +1,4 @@
-import { EmbedModel, RelatedEmbedModel, RelatedWelcomerModel } from "@/prisma/zod";
+import { EmbedModel, RelatedEmbedModel, RelatedWelcomerModel } from "@/prisma/schema";
 import * as z from "zod";
 
 export type Welcomer = z.infer<typeof RelatedWelcomerModel>;
