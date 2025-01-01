@@ -19,6 +19,7 @@ export default function AppInitializer({
       guildId: guildId,
       channelId: module?.channelId,
       content: module?.content,
+      ...module,
     });
   }
   return <>{children}</>;

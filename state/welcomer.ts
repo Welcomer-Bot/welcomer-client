@@ -114,7 +114,6 @@ export const useWelcomerStore = create<WelcomerStore>()(
           }),
         setEmbedAuthorName: (index, author) =>
           set((state) => {
-            console.log(author);
             if (state.embeds[index].author) {
               state.embeds[index].author.name = author;
             } else {

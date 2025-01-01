@@ -36,7 +36,7 @@ export default async function Page({
         <WelcomeCardHeader />
         {welcomerParams ? (
           <>
-            <div className="h-full">
+            <div className="h-fit md:h-full overflow-y-scroll md:overflow-y-hidden ">
               <Divider className="mb-2" />
               <Editor guildId={guild.id} />
             </div>

@@ -69,7 +69,7 @@ export function EmbedBodyTimestampInput({
                     ? parseAbsoluteToLocal(new Date(timestamp).toISOString())
                     : undefined
                 }
-                onChange={(value) => setTimestamp(embedIndex, value.toDate())}
+                onChange={(value) => setTimestamp(embedIndex, value?.toDate() ?? null)}
               />
             )}
           </>

@@ -10,7 +10,6 @@ import {
 } from "@skyra/discord-components-react";
 
 export default function MessagePreview({ msg }: { msg: Welcomer }) {
-  console.log(msg.embeds.map((embed) => embed.fields));
   return (
     <>
       <DiscordMessages className="rounded-lg min-h-full">

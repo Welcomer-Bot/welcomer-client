@@ -55,7 +55,11 @@ export async function updateWelcomer(store: WelcomerStore) {
   }
 }
 
-export async function createOrUpdateEmbed(embed: CompleteEmbed, moduleId: number, moduleType: "welcomer" | "leaver") {
+export async function createOrUpdateEmbed(
+  embed: CompleteEmbed,
+  moduleId: number,
+  moduleType: "welcomer" | "leaver"
+) {
   let embedDb;
   if (embed.id) {
     embedDb = await prisma.embed.update({
@@ -98,7 +102,6 @@ export async function createOrUpdateEmbed(embed: CompleteEmbed, moduleId: number
     },
   });
 
-
   const embedFooter = await prisma.embedFooter.upsert({
     where: {
       embedId: embedDb.id,
@@ -119,7 +122,10 @@ export async function createOrUpdateEmbed(embed: CompleteEmbed, moduleId: number
   }
 }
 
-export async function createOrUpdateField(field: CompleteEmbedField, embedId: number) {
+export async function createOrUpdateField(
+  field: CompleteEmbedField,
+  embedId: number
+) {
   if (field.id) {
     await prisma.embedField.update({
       where: {
@@ -131,7 +137,7 @@ export async function createOrUpdateField(field: CompleteEmbedField, embedId: nu
         inline: field.inline,
       },
     });
-  }else {
+  } else {
     await prisma.embedField.create({
       data: {
         embedId: embedId,
@@ -151,6 +157,18 @@ export async function removeWelcomer(guildId: string): Promise<boolean> {
     await prisma.welcomer.delete({
       where: {
         guildId: guildId,
+      },
+      // delete all embeds and fields associated with the welcomer
+      include: {
+        embeds: {
+          include: {
+            fields: true,
+            author: true,
+            footer: true,
+            image: true,
+          },
+        },
+        DM: true,
       },
     });
 
