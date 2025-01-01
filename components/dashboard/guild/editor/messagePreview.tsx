@@ -2,12 +2,15 @@ import { Welcomer } from "@/lib/discord/schema";
 import {
   DiscordEmbed,
   DiscordEmbedDescription,
+  DiscordEmbedField,
+  DiscordEmbedFields,
   DiscordEmbedFooter,
   DiscordMessage,
   DiscordMessages,
 } from "@skyra/discord-components-react";
 
 export default function MessagePreview({ msg }: { msg: Welcomer }) {
+  console.log(msg.embeds.map((embed) => embed.fields));
   return (
     <>
       <DiscordMessages className="rounded-lg min-h-full">
@@ -35,6 +38,21 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                     <DiscordEmbedDescription slot="description">
                       {embed.description}
                     </DiscordEmbedDescription>
+                    {embed.fields && (
+                      <DiscordEmbedFields slot="fields">
+
+                        {embed.fields.map((field, index) => (
+                          <DiscordEmbedField
+                          key={index}
+                          inline={field.inline ?? undefined}
+                          fieldTitle={field.name}
+                          >
+                            {field.value}
+                          </DiscordEmbedField>
+                        ))}
+                        </DiscordEmbedFields>
+                      
+                    )}
                     <DiscordEmbedFooter
                       slot="footer"
                       footerImage={embed.footer?.iconUrl ?? undefined}

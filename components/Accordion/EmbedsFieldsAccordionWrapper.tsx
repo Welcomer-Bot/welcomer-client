@@ -6,16 +6,16 @@ import React from "react";
 
 export default function EmbedsFieldsAccordionWrapper({
   embedId,
+  index,
   children,
 }: {
-  embedId: number;
+    embedId: number;
+    index: number;
   children: React.ReactNode;
 }) {
-  const embedsFieldLength = useWelcomerStore((state) => state.embeds[embedId].fields).length;
-
   return (
-    <Accordion variant="shadow">
-      <AccordionItem aria-label="Fields" title={`Fields (${embedsFieldLength}/25)`}>
+    <Accordion variant="splitted" className="space-y-2">
+      <AccordionItem aria-label="Fields" title={`Fields - ${index + 1}`}>
         {children}
       </AccordionItem>
     </Accordion>

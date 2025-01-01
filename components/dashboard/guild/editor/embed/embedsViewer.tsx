@@ -41,7 +41,7 @@ export default function EmbedsViewer() {
               <AccordionItem key={4} aria-label="Images" title="Images">
                 Images
               </AccordionItem>
-              <AccordionItem key={5} aria-label="Fields" title="Fields">
+              <AccordionItem key={5} aria-label="Fields" title={`Fields (${embed.fields.length}/25)`}>
                 <EmbedFieldsFields embedIndex={index} />
               </AccordionItem>
             </Accordion>

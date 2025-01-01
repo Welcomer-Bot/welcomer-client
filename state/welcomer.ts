@@ -41,6 +41,10 @@ export interface WelcomerStore extends Welcomer {
   addField(index: number): void;
   clearFields(index: number): void;
   removeField(index: number, fieldIndex: number): void;
+  setFieldName(index: number, fieldIndex: number, name: string): void;
+  setFieldValue(index: number, fieldIndex: number, value: string): void;
+  setFieldInline(index: number, fieldIndex: number, inline: boolean): void;
+
 }
 
 const defaultMessage: Welcomer = {
@@ -58,8 +62,8 @@ const defaultEmbed: CompleteEmbed = {
 };
 
 const defaultField: CompleteEmbedField = {
-  name: "New Field",
-  value: "New Value",
+  name: "",
+  value: "",
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
@@ -162,6 +166,18 @@ export const useWelcomerStore = create<WelcomerStore>()(
         removeField: (index, fieldIndex) =>
           set((state) => {
             state.embeds[index].fields.splice(fieldIndex, 1);
+          }),
+        setFieldName: (index, fieldIndex, name) =>
+          set((state) => {
+            state.embeds[index].fields[fieldIndex].name = name;
+          }),
+        setFieldValue: (index, fieldIndex, value) =>
+          set((state) => {
+            state.embeds[index].fields[fieldIndex].value = value;
+          }),
+        setFieldInline: (index, fieldIndex, inline) =>
+          set((state) => {
+            state.embeds[index].fields[fieldIndex].inline = inline;
           }),
       }),
       {
