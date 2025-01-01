@@ -18,7 +18,7 @@ export function Editor({ guildId }: { guildId: string }) {
             <SaveButton guildId={guildId}/>
           </div>
         </div>
-        <div className="hidden lg:block pb-20 w-1/2 h-full bg-dark-4 overflow-y-auto no-scrollbar">
+        <div className="block pb-20 w-full lg:w-1/2 h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
           <EditorMessagePreview />
         </div>
       </div>
