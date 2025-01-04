@@ -12,7 +12,7 @@ export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
   return (
     <Input
       type="text"
-      label={`Author ( ${author?.length ?? 0}/256 )`}
+      label={`Name ( ${author?.length ?? 0}/256 )`}
       aria-label="Author"
       validate={(value) => {
         if (value.length > 256) return "Author must not exceed 256 characters!";

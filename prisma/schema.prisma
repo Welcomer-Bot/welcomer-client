@@ -5,11 +5,11 @@ generator client {
 generator zod {
   provider              = "zod-prisma"
   output                = "./schema"
-  relationModel         = "true"
   modelSuffix           = "Model"
+  relationModel         = "true"
   useDecimalJs          = "true"
-  prismaJsonNullability = "true"
   modelCase             = "PascalCase"
+  prismaJsonNullability = "true"
 }
 
 datasource db {
@@ -26,30 +26,33 @@ model Guild {
 }
 
 model Welcomer {
-  id        Int       @id @default(autoincrement())  /// @zod.optional()
-  guildId   String    @unique
+  /// @zod.optional()
+  id        Int       @id @default(autoincrement())
+  guildId   String?   @unique
   channelId String?
   content   String?
   createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt 
+  updatedAt DateTime? @updatedAt
   DM        DM?
   embeds    Embed[]
-  guild     Guild?     @relation(fields: [guildId], references: [id])
+  guild     Guild?    @relation(fields: [guildId], references: [id])
 }
 
 model Leaver {
-  id        Int       @id @default(autoincrement())  /// @zod.optional()
+  /// @zod.optional()
+  id        Int       @id @default(autoincrement())
   guildId   String    @unique
   channelId String?
   content   String?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   embeds    Embed[]
-  guild     Guild?     @relation(fields: [guildId], references: [id])
+  guild     Guild     @relation(fields: [guildId], references: [id])
 }
 
 model DM {
-  id        Int       @id @default(autoincrement())  /// @zod.optional()
+  /// @zod.optional()
+  id        Int       @id @default(autoincrement())
   moduleId  Int       @unique
   message   String
   createdAt DateTime? @default(now())
@@ -59,10 +62,10 @@ model DM {
 }
 
 model Embed {
-  id           Int          @id @default(autoincrement())  /// @zod.optional()
+  /// @zod.optional()
+  id           Int          @id @default(autoincrement())
   title        String?      @db.VarChar(256)
   description  String?      @db.VarChar(4096)
-  color        String?
   timestamp    DateTime?
   timestampNow Boolean?
   thumbnail    String?
@@ -72,6 +75,7 @@ model Embed {
   welcomerId   Int?
   leaverId     Int?
   DMId         Int?
+  color        String?
   DM           DM?          @relation(fields: [DMId], references: [id])
   leaver       Leaver?      @relation(fields: [leaverId], references: [id])
   welcomer     Welcomer?    @relation(fields: [welcomerId], references: [id])
@@ -82,20 +86,22 @@ model Embed {
 }
 
 model EmbedImage {
-  id        Int       @id @default(autoincrement())  /// @zod.optional()
-  embedId   Int       @unique
+  /// @zod.optional()
+  id        Int       @id @default(autoincrement())
+  embedId   Int?      @unique
   url       String
   width     Int?
   heigth    Int?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  embed     Embed?     @relation(fields: [embedId], references: [id])
+  embed     Embed?    @relation(fields: [embedId], references: [id])
 }
 
 model EmbedAuthor {
-  id        Int       @id @default(autoincrement())  /// @zod.optional()
+  /// @zod.optional()
+  id        Int       @id @default(autoincrement())
   embedId   Int?      @unique
-  name      String?
+  name      String
   iconUrl   String?
   url       String?   @db.VarChar(256)
   createdAt DateTime? @default(now())
@@ -104,8 +110,9 @@ model EmbedAuthor {
 }
 
 model EmbedField {
-  id        Int       @id @default(autoincrement())  /// @zod.optional()
-  embedId   Int?      @unique
+  /// @zod.optional()
+  id        Int       @id @default(autoincrement())
+  embedId   Int?
   name      String
   value     String
   inline    Boolean?
@@ -115,9 +122,10 @@ model EmbedField {
 }
 
 model EmbedFooter {
-  id        Int       @id @default(autoincrement())  /// @zod.optional()
+  /// @zod.optional()
+  id        Int       @id @default(autoincrement())
   embedId   Int?      @unique
-  text      String?   @db.VarChar(2048)
+  text      String    @db.VarChar(2048)
   iconUrl   String?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -142,20 +150,20 @@ model UserGuild {
   icon        String?
   banner      String?
   permissions String?
-  userId      String
+  userId      String?
   createdAt   DateTime?  @default(now())
   updatedAt   DateTime?  @updatedAt
   channels    Channels[]
-  user        User       @relation(fields: [userId], references: [id])
+  user        User?      @relation(fields: [userId], references: [id])
 }
 
 model Channels {
-  id        String    @id
+  id        String     @id
   type      String
   name      String
-  guildId   String
+  guildId   String?
   channelId String
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  guild     UserGuild @relation(fields: [guildId], references: [id])
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
+  guild     UserGuild? @relation(fields: [guildId], references: [id])
 }

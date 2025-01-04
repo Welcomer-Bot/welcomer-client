@@ -7,7 +7,9 @@ import EmbedsAccordionWrapper from "@/components/Accordion/EmbedsAccordionWrappe
 export async function EmbedEditor() {
   return (
     <EmbedsAccordionWrapper>
+      <div className="space-y-2">
       <EmbedsViewer />
+      </div>
       <div className="sm:flex-row flex-col flex my-5">
         <CreateEmbedButton />
         <RemoveEmbedsButton />

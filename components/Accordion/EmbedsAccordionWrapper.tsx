@@ -10,9 +10,9 @@ export default function EmbedsAccordionWrapper({
   children: React.ReactNode;
 }) {
   const embedsLength = useWelcomerStore((state) => state.embeds).length;
-
+  
   return (
-    <Accordion variant="shadow">
+    <Accordion variant="splitted">
       <AccordionItem aria-label="Embeds" title={`Embeds (${embedsLength}/10)`}>
         {children}
       </AccordionItem>

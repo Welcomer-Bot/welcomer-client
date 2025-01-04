@@ -1,10 +1,12 @@
 import { Welcomer } from "@/lib/discord/schema";
 import { CompleteEmbed, CompleteEmbedField } from "@/prisma/schema";
+import { stat } from "fs";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 export interface WelcomerStore extends Welcomer {
+  deletedEmbeds: CompleteEmbed[];
+  deletedFields: CompleteEmbedField[];
   setGuildId: (guildId: string) => void;
   setChannelId: (channelId: string) => void;
   setContent: (content: string) => void;
@@ -44,7 +46,6 @@ export interface WelcomerStore extends Welcomer {
   setFieldName(index: number, fieldIndex: number, name: string): void;
   setFieldValue(index: number, fieldIndex: number, value: string): void;
   setFieldInline(index: number, fieldIndex: number, inline: boolean): void;
-
 }
 
 const defaultMessage: Welcomer = {
@@ -57,7 +58,7 @@ const defaultMessage: Welcomer = {
 const defaultEmbed: CompleteEmbed = {
   title: "Welcome to the server!",
   description: "Welcome {user} to {guild}",
-  color: "0x00ff00",
+  color: "#ffffff",
   fields: [],
 };
 
@@ -67,121 +68,124 @@ const defaultField: CompleteEmbedField = {
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
-  immer(
-    persist(
-      (set) => ({
-        ...defaultMessage,
-        setGuildId: (guildId) => set({ guildId }),
-        setChannelId: (channelId) => set({ channelId }),
-        setContent: (content) => set({ content }),
-        clear: () => set(defaultMessage),
-        addEmbed: (embed: CompleteEmbed) =>
-          set((state) => {
-            if (!state.embeds) {
-              state.embeds = [embed];
-            } else {
-              state.embeds.push(embed);
-            }
-          }),
-        addDefaultEmbed: () =>
-          set((state) => {
-            if (!state.embeds) {
-              state.embeds = [defaultEmbed];
-            } else {
-              state.embeds.push(defaultEmbed);
-            }
-          }),
-        removeEmbed: (index) =>
-          set((state) => {
-            state.embeds.splice(index, 1);
-          }),
-        clearEmbeds: () => set({ embeds: [] }),
-        setEmbedTitle: (index, title) =>
-          set((state) => {
-            state.embeds[index].title = title;
-          }),
-        setEmbedDescription: (index, description) =>
-          set((state) => {
-            state.embeds[index].description = description;
-          }),
-        setEmbedColor: (index, color) =>
-          set((state) => {
-            state.embeds[index].color = color;
-          }),
-        setEmbedTimestamp: (index, timestamp) =>
-          set((state) => {
-            state.embeds[index].timestamp = timestamp;
-          }),
-        setEmbedAuthorName: (index, author) =>
-          set((state) => {
-            if (state.embeds[index].author) {
-              state.embeds[index].author.name = author;
-            } else {
-              state.embeds[index].author = { name: author };
-            }
-          }),
-        setEmbedAuthorIcon: (index, icon) =>
-          set((state) => {
-            if (state.embeds[index].author) {
-              state.embeds[index].author.iconUrl = icon;
-            } else {
-              state.embeds[index].author = { iconUrl: icon };
-            }
-          }),
-        setEmbedAuthorUrl: (index, url) =>
-          set((state) => {
-            if (state.embeds[index].author) {
-              state.embeds[index].author.url = url;
-            }
-          }),
-        setEmbedTimestampNow: (index, timestampNow) =>
-          set((state) => {
-            state.embeds[index].timestampNow = timestampNow;
-          }),
-        setEmbedFooterText: (index, text) =>
-          set((state) => {
-            if (state.embeds[index].footer) {
-              state.embeds[index].footer.text = text;
-            } else {
-              state.embeds[index].footer = { text };
-            }
-          }),
-        setEmbedFooterIcon: (index, icon) =>
-          set((state) => {
-            if (state.embeds[index].footer) {
-              state.embeds[index].footer.iconUrl = icon;
-            } else {
-              state.embeds[index].footer = { iconUrl: icon };
-            }
-          }),
-        addField: (index) =>
-          set((state) => {
-            state.embeds[index].fields.push(defaultField);
-          }),
-        clearFields: (index) =>
-          set((state) => {
-            state.embeds[index].fields = [];
-          }),
-        removeField: (index, fieldIndex) =>
-          set((state) => {
-            state.embeds[index].fields.splice(fieldIndex, 1);
-          }),
-        setFieldName: (index, fieldIndex, name) =>
-          set((state) => {
-            state.embeds[index].fields[fieldIndex].name = name;
-          }),
-        setFieldValue: (index, fieldIndex, value) =>
-          set((state) => {
-            state.embeds[index].fields[fieldIndex].value = value;
-          }),
-        setFieldInline: (index, fieldIndex, inline) =>
-          set((state) => {
-            state.embeds[index].fields[fieldIndex].inline = inline;
-          }),
+  immer((set) => ({
+    ...defaultMessage,
+    deletedEmbeds: [],
+    deletedFields: [],
+    setGuildId: (guildId) => set({ guildId }),
+    setChannelId: (channelId) => set({ channelId }),
+    setContent: (content) => set({ content }),
+    clear: () => set(defaultMessage),
+    addEmbed: (embed: CompleteEmbed) =>
+      set((state) => {
+        if (!state.embeds) {
+          state.embeds = [embed];
+        } else {
+          state.embeds.push(embed);
+        }
       }),
-      {
-        name: "welcomer",
-      }
-    )
-  )
+    addDefaultEmbed: () =>
+      set((state) => {
+        if (!state.embeds) {
+          state.embeds = [defaultEmbed];
+        } else {
+          state.embeds.push(defaultEmbed);
+        }
+      }),
+    removeEmbed: (index) =>
+      set((state) => {
+        if (state.embeds) {
+          state.deletedEmbeds.push(state.embeds[index]);
+          state.embeds.splice(index, 1);
+        }
+      }),
+    clearEmbeds: () =>
+      set((state) => {
+        state.deletedEmbeds = state.embeds;
+        state.embeds = [];
+      }),
+    setEmbedTitle: (index, title) =>
+      set((state) => {
+        state.embeds[index].title = title;
+      }),
+    setEmbedDescription: (index, description) =>
+      set((state) => {
+        state.embeds[index].description = description;
+      }),
+    setEmbedColor: (index, color) =>
+      set((state) => {
+        state.embeds[index].color = color;
+      }),
+    setEmbedTimestamp: (index, timestamp) =>
+      set((state) => {
+        state.embeds[index].timestamp = timestamp;
+      }),
+    setEmbedAuthorName: (index, author) =>
+      set((state) => {
+        if (state.embeds[index].author) {
+          state.embeds[index].author.name = author;
+        } else {
+          state.embeds[index].author = { name: author };
+        }
+      }),
+    setEmbedAuthorIcon: (index, icon) =>
+      set((state) => {
+        if (state.embeds[index].author) {
+          state.embeds[index].author.iconUrl = icon;
+        } else {
+          state.embeds[index].author = { name: "", iconUrl: icon };
+        }
+      }),
+    setEmbedAuthorUrl: (index, url) =>
+      set((state) => {
+        if (state.embeds[index].author) {
+          state.embeds[index].author.url = url;
+        }
+      }),
+    setEmbedTimestampNow: (index, timestampNow) =>
+      set((state) => {
+        state.embeds[index].timestampNow = timestampNow;
+      }),
+    setEmbedFooterText: (index, text) =>
+      set((state) => {
+        if (state.embeds[index].footer) {
+          state.embeds[index].footer.text = text;
+        } else {
+          state.embeds[index].footer = { text };
+        }
+      }),
+    setEmbedFooterIcon: (index, icon) =>
+      set((state) => {
+        if (state.embeds[index].footer) {
+          state.embeds[index].footer.iconUrl = icon;
+        } else {
+          state.embeds[index].footer = { text: "", iconUrl: icon };
+        }
+      }),
+    addField: (index) =>
+      set((state) => {
+        state.embeds[index].fields.push(defaultField);
+      }),
+    clearFields: (index) =>
+      set((state) => {
+        state.deletedFields = state.embeds[index].fields;
+        state.embeds[index].fields = [];
+      }),
+    removeField: (index, fieldIndex) =>
+      set((state) => {
+        state.embeds[index].fields.splice(fieldIndex, 1);
+      }),
+    setFieldName: (index, fieldIndex, name) =>
+      set((state) => {
+        state.embeds[index].fields[fieldIndex].name = name;
+      }),
+    setFieldValue: (index, fieldIndex, value) =>
+      set((state) => {
+        state.embeds[index].fields[fieldIndex].value = value;
+      }),
+    setFieldInline: (index, fieldIndex, inline) =>
+      set((state) => {
+        state.embeds[index].fields[fieldIndex].inline = inline;
+      }),
+  }))
 );

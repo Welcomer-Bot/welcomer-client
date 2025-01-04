@@ -1,29 +1,56 @@
 "use client";
 
-import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { useWelcomerStore } from "@/state/welcomer";
-import { EmbedBodyFields } from "./body/EmbedBodyFields";
+import { Accordion, AccordionItem } from "@nextui-org/accordion";
+import { Button } from "@nextui-org/button";
+import { FaTrash } from "react-icons/fa";
 import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
-import { EmbedFooterFields } from "./footer/EmbedFooterFields";
+import { EmbedBodyFields } from "./body/EmbedBodyFields";
 import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
+import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
 export default function EmbedsViewer() {
   const embeds = useWelcomerStore((state) => state.embeds);
+  const removeEmbed = useWelcomerStore((state) => state.removeEmbed);
 
   return (
-    <div>
-      <Accordion variant="splitted">
-        {embeds.map((embed, index) => (
+    <>
+      {embeds.map((embed, index) => (
+        <Accordion variant="splitted" key={index}>
           <AccordionItem
-            key={index}
             aria-label={`Embed ${index + 1}`}
-            title={
-              <div>
-                {`Embed ${index + 1} -`}
-                <span className="text-gray-500"> {embed.title ?? ""}</span>
-              </div>
-              }
+            title={`Embed ${index + 1}`}
+            subtitle={embed.title}
           >
+            <div className="relative w-full mb-5 ml-auto right-0">
+              <Button
+                isIconOnly
+                color="danger"
+                variant="ghost"
+                size="sm"
+                onPress={() => removeEmbed(index)}
+              >
+                <FaTrash />
+              </Button>
+              <Button
+                isIconOnly
+                color="danger"
+                variant="ghost"
+                size="sm"
+                onPress={() => removeEmbed(index)}
+              >
+                <FaTrash />
+              </Button>
+              <Button
+                isIconOnly
+                color="danger"
+                variant="ghost"
+                size="sm"
+                onPress={() => removeEmbed(index)}
+              >
+                <FaTrash />
+              </Button>
+            </div>
             <Accordion
               defaultSelectedKeys={"all"}
               selectionMode="multiple"
@@ -41,14 +68,17 @@ export default function EmbedsViewer() {
               <AccordionItem key={4} aria-label="Images" title="Images">
                 Images
               </AccordionItem>
-              <AccordionItem key={5} aria-label="Fields" title={`Fields (${embed.fields.length}/25)`}>
+              <AccordionItem
+                key={5}
+                aria-label="Fields"
+                title={`Fields (${embed.fields.length}/25)`}
+              >
                 <EmbedFieldsFields embedIndex={index} />
               </AccordionItem>
             </Accordion>
           </AccordionItem>
-        ))}
-      </Accordion>
-    </div>
+        </Accordion>
+      ))}
+    </>
   );
 }
-
