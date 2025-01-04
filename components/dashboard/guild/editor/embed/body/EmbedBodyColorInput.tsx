@@ -8,7 +8,6 @@ export function EmbedBodyColorInput({ embedIndex }: { embedIndex: number }) {
     (state) => state.embeds[embedIndex].color
   );
   const setEmbedColor = useWelcomerStore((state) => state.setEmbedColor);
-  console.log(embedColor);
   return (
     <Input
       type="color"

@@ -56,10 +56,9 @@ export async function updateWelcomer(store: WelcomerStore) {
     const messageValidated = MessageSchema.safeParse(store);
     if (!messageValidated.success) {
       return {
-        error:
-          messageValidated.error.errors[0].path[-1] ? (messageValidated.error.errors[0].path[-1] +
-          ": ") : "" +
-          messageValidated.error.errors[0].message,
+        error: messageValidated.error.errors[0].path[-1]
+          ? messageValidated.error.errors[0].path[-1] + ": "
+          : "" + messageValidated.error.errors[0].message,
       };
     }
     const module = await prisma.welcomer.update({
@@ -72,11 +71,13 @@ export async function updateWelcomer(store: WelcomerStore) {
       },
     });
 
+    console.log(module);
+
     for (const embed of store.embeds) {
       const embedUpdated = await createOrUpdateEmbed(
         embed,
         module.id,
-        "welcomer"
+        "welcomer",
       );
       store.embeds[store.embeds.indexOf(embed)] = embedUpdated;
     }
@@ -116,7 +117,7 @@ export async function updateWelcomer(store: WelcomerStore) {
 export async function createOrUpdateEmbed(
   embed: CompleteEmbed,
   moduleId: number,
-  moduleType: "welcomer" | "leaver"
+  moduleType: "welcomer" | "leaver",
 ) {
   let embedDb;
   const createOrUpdateAuthor = {
@@ -163,11 +164,11 @@ export async function createOrUpdateEmbed(
       : undefined,
   };
 
-  const createOrUpdateFileds = {
+  const createOrUpdateFields = {
     fields: {
       upsert: embed.fields.map((field) => ({
         where: {
-          id: field.id,
+          id: field.id ?? -1,
         },
         update: {
           name: field.name,
@@ -175,7 +176,6 @@ export async function createOrUpdateEmbed(
           inline: field.inline,
         },
         create: {
-          embedId: embed.id,
           name: field.name,
           value: field.value,
           inline: field.inline,
@@ -187,7 +187,7 @@ export async function createOrUpdateEmbed(
   const createAuthor = {
     author: embed.author?.name
       ? {
-          create: {
+        create: {
             name: embed.author?.name,
             iconUrl: embed.author?.iconUrl,
             url: embed.author?.url,
@@ -217,6 +217,8 @@ export async function createOrUpdateEmbed(
     },
   };
 
+  console.log(embed);
+
   if (embed.id) {
     embedDb = await prisma.embed.update({
       where: {
@@ -229,7 +231,7 @@ export async function createOrUpdateEmbed(
         timestamp: embed.timestamp,
         ...createOrUpdateAuthor,
         ...createOrUpdateFooter,
-        ...createOrUpdateFileds,
+        ...createOrUpdateFields,
       },
       include: {
         fields: true,
@@ -257,6 +259,7 @@ export async function createOrUpdateEmbed(
     });
   }
 
+  console.log(embedDb);
   return {
     ...embedDb,
   };

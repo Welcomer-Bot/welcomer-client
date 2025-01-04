@@ -1,6 +1,5 @@
 import { Welcomer } from "@/lib/discord/schema";
 import { CompleteEmbed, CompleteEmbedField } from "@/prisma/schema";
-import { stat } from "fs";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -18,6 +17,8 @@ export interface WelcomerStore extends Welcomer {
   addDefaultEmbed(): void;
 
   removeEmbed(index: number): void;
+  setToPreviousEmbed(index: number): void;
+  setToNextEmbed(index: number): void;
 
   clearEmbeds(): void;
 
@@ -46,6 +47,8 @@ export interface WelcomerStore extends Welcomer {
   setFieldName(index: number, fieldIndex: number, name: string): void;
   setFieldValue(index: number, fieldIndex: number, value: string): void;
   setFieldInline(index: number, fieldIndex: number, inline: boolean): void;
+  setToPreviousField(index: number, fieldIndex: number): void;
+  setToNextField(index: number, fieldIndex: number): void;
 }
 
 const defaultMessage: Welcomer = {
@@ -63,8 +66,8 @@ const defaultEmbed: CompleteEmbed = {
 };
 
 const defaultField: CompleteEmbedField = {
-  name: "",
-  value: "",
+  name: "New member count",
+  value: "{memberCount}",
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
@@ -97,6 +100,22 @@ export const useWelcomerStore = create<WelcomerStore>()(
         if (state.embeds) {
           state.deletedEmbeds.push(state.embeds[index]);
           state.embeds.splice(index, 1);
+        }
+      }),
+    setToPreviousEmbed: (index) =>
+      set((state) => {
+        if (state.embeds && index > 0) {
+          const temp = state.embeds[index];
+          state.embeds[index] = state.embeds[index - 1];
+          state.embeds[index - 1] = temp;
+        }
+      }),
+    setToNextEmbed: (index) =>
+      set((state) => {
+        if (state.embeds && index < state.embeds.length - 1) {
+          const temp = state.embeds[index];
+          state.embeds[index] = state.embeds[index + 1];
+          state.embeds[index + 1] = temp;
         }
       }),
     clearEmbeds: () =>
@@ -173,6 +192,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
       }),
     removeField: (index, fieldIndex) =>
       set((state) => {
+        state.deletedFields.push(state.embeds[index].fields[fieldIndex]);
         state.embeds[index].fields.splice(fieldIndex, 1);
       }),
     setFieldName: (index, fieldIndex, name) =>
@@ -186,6 +206,24 @@ export const useWelcomerStore = create<WelcomerStore>()(
     setFieldInline: (index, fieldIndex, inline) =>
       set((state) => {
         state.embeds[index].fields[fieldIndex].inline = inline;
+      }),
+    setToPreviousField: (index, fieldIndex) =>
+      set((state) => {
+        if (fieldIndex > 0) {
+          const temp = state.embeds[index].fields[fieldIndex];
+          state.embeds[index].fields[fieldIndex] =
+            state.embeds[index].fields[fieldIndex - 1];
+          state.embeds[index].fields[fieldIndex - 1] = temp;
+        }
+      }),
+    setToNextField: (index, fieldIndex) =>
+      set((state) => {
+        if (fieldIndex < state.embeds[index].fields.length - 1) {
+          const temp = state.embeds[index].fields[fieldIndex];
+          state.embeds[index].fields[fieldIndex] =
+            state.embeds[index].fields[fieldIndex + 1];
+          state.embeds[index].fields[fieldIndex + 1] = temp;
+        }
       }),
   }))
 );

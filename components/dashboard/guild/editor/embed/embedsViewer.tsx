@@ -3,7 +3,7 @@
 import { useWelcomerStore } from "@/state/welcomer";
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { Button } from "@nextui-org/button";
-import { FaTrash } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
 import { EmbedBodyFields } from "./body/EmbedBodyFields";
 import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
@@ -12,6 +12,8 @@ import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 export default function EmbedsViewer() {
   const embeds = useWelcomerStore((state) => state.embeds);
   const removeEmbed = useWelcomerStore((state) => state.removeEmbed);
+  const setToPrevious = useWelcomerStore((state) => state.setToPreviousEmbed);
+  const setToNext = useWelcomerStore((state) => state.setToNextEmbed);
 
   return (
     <>
@@ -22,7 +24,7 @@ export default function EmbedsViewer() {
             title={`Embed ${index + 1}`}
             subtitle={embed.title}
           >
-            <div className="relative w-full mb-5 ml-auto right-0">
+            <div className="flex flex-row-reverse space-x-reverse space-x-2 mb-2">
               <Button
                 isIconOnly
                 color="danger"
@@ -34,21 +36,21 @@ export default function EmbedsViewer() {
               </Button>
               <Button
                 isIconOnly
-                color="danger"
-                variant="ghost"
+                color="default"
                 size="sm"
-                onPress={() => removeEmbed(index)}
+                isDisabled={index === embeds.length - 1}
+                onPress={() => setToNext(index)}
               >
-                <FaTrash />
+                <FaArrowDown />
               </Button>
               <Button
                 isIconOnly
-                color="danger"
-                variant="ghost"
+                color="default"
                 size="sm"
-                onPress={() => removeEmbed(index)}
+                isDisabled={index === 0}
+                onPress={() => setToPrevious(index)}
               >
-                <FaTrash />
+                <FaArrowUp />
               </Button>
             </div>
             <Accordion
