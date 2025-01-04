@@ -15,7 +15,7 @@ export function Editor({ guildId }: { guildId: string }) {
             <Divider className="my-4" />
             <ContentEditor />
             <EmbedEditor />
-            <SaveButton guildId={guildId}/>
+            <SaveButton/>
           </form>
         </div>
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">

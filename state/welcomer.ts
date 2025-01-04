@@ -49,6 +49,8 @@ export interface WelcomerStore extends Welcomer {
   setFieldInline(index: number, fieldIndex: number, inline: boolean): void;
   setToPreviousField(index: number, fieldIndex: number): void;
   setToNextField(index: number, fieldIndex: number): void;
+
+  reset(): void;
 }
 
 const defaultMessage: Welcomer = {
@@ -67,7 +69,7 @@ const defaultEmbed: CompleteEmbed = {
 
 const defaultField: CompleteEmbedField = {
   name: "New member count",
-  value: "{memberCount}",
+  value: "{membercount}",
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
@@ -225,5 +227,11 @@ export const useWelcomerStore = create<WelcomerStore>()(
           state.embeds[index].fields[fieldIndex + 1] = temp;
         }
       }),
+    reset: () =>
+      set((state) => ({
+        ...state,
+        deletedEmbeds: [],
+        deletedFields: [],
+      })),
   }))
 );

@@ -135,6 +135,7 @@ export async function getUserData() {
 
 export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
   try {
+    console.log("getting welcomer");
     if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
       where: { guildId },

@@ -54,8 +54,8 @@ export const MessageEmbedSchema = z.object({
     .string()
     .optional()
     .nullable()
-    .refine((value) => (value?.length || 0) <= 2048, {
-      message: "Embed description must be less than 2048 characters.",
+    .refine((value) => (value?.length || 0) <= 4096, {
+      message: "Embed description must be less than 4096 characters.",
     }),
   url: z
     .string()
@@ -78,9 +78,15 @@ export const MessageEmbedSchema = z.object({
     ])
     .optional()
     .nullable()
-    .refine((value) => typeof value === 'number' ? (value || 0) >= 0 && (value || 0) <= 16777215 : true, {
-      message: "Embed color must be a valid color.",
-    }),
+    .refine(
+      (value) =>
+        typeof value === "number"
+          ? (value || 0) >= 0 && (value || 0) <= 16777215
+          : true,
+      {
+        message: "Embed color must be a valid color.",
+      }
+    ),
   author: z
     .object({
       name: z
@@ -117,9 +123,12 @@ export const MessageEmbedSchema = z.object({
     })
     .optional()
     .nullable()
-    .refine((value) => (!value?.url || !value?.icon_url) && value?.name, {
-      message: "Embed author must have the name property set.",
-    }),
+    .refine(
+      (value) => !value || (value?.name && (!value?.icon_url || !value?.url)),
+      {
+        message: "Embed author must have the name property set.",
+      }
+    ),
   thumbnail: z
     .object({
       url: z
@@ -178,18 +187,24 @@ export const MessageEmbedSchema = z.object({
     })
     .optional()
     .nullable()
-    .refine((value) => !value || !value.icon_url && value.text, {
+    .refine((value) => !value || (!value.icon_url && value.text), {
       message: "Embed footer must have the text property set.",
     }),
   fields: z
     .array(
       z.object({
-        name: z.string().refine((value) => (value?.length || 0) <= 256, {
-          message: "Embed field name must be less than 256 characters.",
-        }),
-        value: z.string().refine((value) => (value?.length || 0) <= 1024, {
-          message: "Embed field value must be less than 1024 characters.",
-        }),
+        name: z
+          .string()
+          .min(1, "Embed field name must be a valid string")
+          .refine((value) => (value?.length || 0) <= 256, {
+            message: "Embed field name must be less than 256 characters.",
+          }),
+        value: z
+          .string()
+          .min(1, "Embed field name must be a valid string")
+          .refine((value) => (value?.length || 0) <= 1024, {
+            message: "Embed field value must be less than 1024 characters.",
+          }),
         inline: z.boolean().optional().nullable(),
       })
     )

@@ -6,9 +6,8 @@ import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
 import { toast } from "react-toastify";
 
-export default function SaveButton({ guildId }: { guildId: string }) {
+export default function SaveButton() {
   const store = useWelcomerStore((state) => state);
-
   return (
     <Card className="fixed bottom-5">
       <CardBody>
@@ -18,7 +17,7 @@ export default function SaveButton({ guildId }: { guildId: string }) {
             const res = await updateWelcomer(store);
             if (res?.error) {
               toast.error(res.error);
-            } else {
+            } else if (res.done) {
               toast.success("Welcomer settings updated");
             }
           }}

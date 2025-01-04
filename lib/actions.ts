@@ -43,11 +43,6 @@ export async function updateWelcomer(store: WelcomerStore) {
         error: "You do not have permission to manage this guild",
       };
     }
-    // if (!store.content && store.embeds.length === 0) {
-    //   return {
-    //     error: "You need to add some content or embeds",
-    //   };
-    // }
     if (!store.channelId) {
       return {
         error: "You need to select a channel",
@@ -71,43 +66,63 @@ export async function updateWelcomer(store: WelcomerStore) {
       },
     });
 
-    console.log(module);
-
+    console.log(store)
     for (const embed of store.embeds) {
+      if (embed.id && embed.welcomerId && module.id != embed.welcomerId) return {
+        error: "You cannot update an embed that is not in the welcomer",
+      }
       const embedUpdated = await createOrUpdateEmbed(
         embed,
         module.id,
-        "welcomer",
+        "welcomer"
       );
+      if (!embedUpdated) {
+        return {
+          error: "An error occurred while updating the welcomer module",
+        };
+      }
       store.embeds[store.embeds.indexOf(embed)] = embedUpdated;
     }
     for (const embed of store.deletedEmbeds) {
       if (embed.id) {
+        if (embed.welcomerId && module.id != embed.welcomerId) return {
+          error: "You cannot delete an embed that is not in the welcomer",
+        }
         await prisma.embed.delete({
           where: {
             id: embed.id,
+            welcomerId: module.id,
           },
+          include: {
+            author: true,
+            footer: true,
+            fields: true,
+            image: true,
+          }
         });
-      }
+      } 
     }
-    store.deletedEmbeds = [];
     for (const field of store.deletedFields) {
       if (field.id) {
-        await prisma.embedField.delete({
-          where: {
-            id: field.id,
-          },
-        });
-      }
+        if (field.embedId && !(field.embedId in store.embeds)) return {
+          error: "You cannot delete a field that is not in the embed",
+        }
+          await prisma.embedField.delete({
+            where: {
+              id: field.id,
+            },
+          });
+      } 
     }
-    store.deletedFields = [];
-
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
+
     return {
       done: true,
     };
   } catch (error) {
     console.log(error);
+    revalidatePath(`/app/dashboard/${store.guildId}/welcome`);
+
     return {
       error: "An error occurred while updating the welcomer module",
     };
@@ -117,8 +132,8 @@ export async function updateWelcomer(store: WelcomerStore) {
 export async function createOrUpdateEmbed(
   embed: CompleteEmbed,
   moduleId: number,
-  moduleType: "welcomer" | "leaver",
-) {
+  moduleType: "welcomer" | "leaver"
+):Promise<CompleteEmbed | null> {
   let embedDb;
   const createOrUpdateAuthor = {
     author: embed.author?.name
@@ -126,6 +141,7 @@ export async function createOrUpdateEmbed(
           upsert: {
             where: {
               embedId: embed.id,
+              [`${moduleType}Id`]: moduleId,
             },
             update: {
               name: embed.author?.name,
@@ -149,6 +165,7 @@ export async function createOrUpdateEmbed(
           upsert: {
             where: {
               embedId: embed.id,
+              [`${moduleType}Id`]: moduleId,
             },
             update: {
               text: embed.footer?.text,
@@ -168,6 +185,7 @@ export async function createOrUpdateEmbed(
     fields: {
       upsert: embed.fields.map((field) => ({
         where: {
+          embedId: embed.id,
           id: field.id ?? -1,
         },
         update: {
@@ -187,7 +205,7 @@ export async function createOrUpdateEmbed(
   const createAuthor = {
     author: embed.author?.name
       ? {
-        create: {
+          create: {
             name: embed.author?.name,
             iconUrl: embed.author?.iconUrl,
             url: embed.author?.url,
@@ -217,52 +235,53 @@ export async function createOrUpdateEmbed(
     },
   };
 
-  console.log(embed);
-
-  if (embed.id) {
-    embedDb = await prisma.embed.update({
-      where: {
-        id: embed.id,
-      },
-      data: {
-        title: embed.title,
-        description: embed.description,
-        color: embed.color,
-        timestamp: embed.timestamp,
-        ...createOrUpdateAuthor,
-        ...createOrUpdateFooter,
-        ...createOrUpdateFields,
-      },
-      include: {
-        fields: true,
-        author: true,
-        footer: true,
-      },
-    });
-  } else {
-    embedDb = await prisma.embed.create({
-      data: {
-        [`${moduleType}Id`]: moduleId,
-        title: embed.title,
-        description: embed.description,
-        color: embed.color,
-        timestamp: embed.timestamp,
-        ...createAuthor,
-        ...createFooter,
-        ...createFields,
-      },
-      include: {
-        fields: true,
-        author: true,
-        footer: true,
-      },
-    });
+  try {
+    if (embed.id) {
+      embedDb = await prisma.embed.update({
+        where: {
+          id: embed.id,
+        },
+        data: {
+          title: embed.title,
+          description: embed.description,
+          color: embed.color,
+          timestamp: embed.timestamp,
+          ...createOrUpdateAuthor,
+          ...createOrUpdateFooter,
+          ...createOrUpdateFields,
+        },
+        include: {
+          fields: true,
+          author: true,
+          footer: true,
+        },
+      });
+    } else {
+      embedDb = await prisma.embed.create({
+        data: {
+          [`${moduleType}Id`]: moduleId,
+          title: embed.title,
+          description: embed.description,
+          color: embed.color,
+          timestamp: embed.timestamp,
+          ...createAuthor,
+          ...createFooter,
+          ...createFields,
+        },
+        include: {
+          fields: true,
+          author: true,
+          footer: true,
+        },
+      });
+    }
+    return {
+      ...embedDb,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
   }
-
-  console.log(embedDb);
-  return {
-    ...embedDb,
-  };
 }
 
 export async function removeWelcomer(guildId: string): Promise<boolean> {
