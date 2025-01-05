@@ -35,18 +35,16 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                     </DiscordEmbedDescription>
                     {embed.fields && (
                       <DiscordEmbedFields slot="fields">
-
                         {embed.fields.map((field, index) => (
                           <DiscordEmbedField
-                          key={index}
-                          inline={field.inline ?? undefined}
-                          fieldTitle={field.name}
+                            key={index}
+                            inline={field.inline ?? undefined}
+                            fieldTitle={field.name}
                           >
                             {field.value}
                           </DiscordEmbedField>
                         ))}
-                        </DiscordEmbedFields>
-                      
+                      </DiscordEmbedFields>
                     )}
                     <DiscordEmbedFooter
                       slot="footer"

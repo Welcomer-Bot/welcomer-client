@@ -1,11 +1,16 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@nextui-org/input";
 
 export function EmbedAuthorUrlInput({ embedIndex }: { embedIndex: number }) {
-  const url = useWelcomerStore((state) => state.embeds[embedIndex].author?.url);
-  const setUrl = useWelcomerStore((state) => state.setEmbedAuthorUrl);
+    const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  
+  const url = store.embeds[embedIndex].author?.url;
+  const setUrl = store.setEmbedAuthorUrl
 
   return (
     <Input

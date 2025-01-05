@@ -1,13 +1,15 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@nextui-org/input";
 
 export function EmbedBodyColorInput({ embedIndex }: { embedIndex: number }) {
-  const embedColor = useWelcomerStore(
-    (state) => state.embeds[embedIndex].color
-  );
-  const setEmbedColor = useWelcomerStore((state) => state.setEmbedColor);
+    const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const embedColor = store.embeds[embedIndex].color;
+  const setEmbedColor = store.setEmbedColor;
   return (
     <Input
       type="color"

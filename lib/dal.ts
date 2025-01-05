@@ -11,7 +11,7 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended } from "@/types";
-import { Welcomer } from "@prisma/client";
+import { Leaver, Welcomer } from "@prisma/client";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -98,7 +98,7 @@ export const getGuilds = cache(async () => {
         }
 
         return userGuild;
-      }),
+      })
     );
   } catch {
     return null;
@@ -135,7 +135,6 @@ export async function getUserData() {
 
 export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
   try {
-    console.log("getting welcomer");
     if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
       where: { guildId },
@@ -148,10 +147,33 @@ export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
           },
         },
         DM: true,
-      }
+      },
     });
 
     return welcomer;
+  } catch {
+    return null;
+  }
+}
+
+export async function getLeaver(guildId: string): Promise<Leaver | null> {
+  try {
+    if (!(await canUserManageGuild(guildId))) return null;
+    const leaver = await prisma.leaver.findUnique({
+      where: { guildId },
+      include: {
+        embeds: {
+          include: {
+            fields: true,
+            author: true,
+            footer: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    return leaver;
   } catch {
     return null;
   }
@@ -170,7 +192,7 @@ export async function getWelcomerById(welcomerId: number) {
 }
 
 export async function getEmbeds(
-  moduleId: string | number,
+  moduleId: string | number
 ): Promise<Embed[] | null> {
   try {
     moduleId = Number(moduleId);
@@ -205,7 +227,7 @@ export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
         next: {
           revalidate: 60,
         },
-      },
+      }
     );
 
     const channels: RESTGetAPIGuildChannelsResult = await data.json();

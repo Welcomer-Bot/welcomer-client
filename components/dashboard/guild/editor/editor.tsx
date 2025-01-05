@@ -5,7 +5,7 @@ import ContentEditor from "./contentEditor";
 import { EmbedEditor } from "./embed/embedEditor";
 import SaveButton from "./saveButton";
 
-export function Editor({ guildId }: { guildId: string }) {
+export function Editor() {
   return (
     <div className="flex h-full w-full">
       <div className="flex flex-col lg:flex-row h-full flex-auto w-full">

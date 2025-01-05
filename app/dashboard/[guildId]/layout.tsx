@@ -24,7 +24,7 @@ export default async function Layout({
   return (
     <div className="flex h-full w-full">
       <Sidebar currentGuild={guild} guilds={otherGuilds} user={user!} />
-      <div className="flex justify-center mx-auto flex-grow h-full">
+      <div className="w-full">
         {children}
       </div>
     </div>

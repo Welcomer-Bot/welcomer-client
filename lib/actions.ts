@@ -5,11 +5,13 @@ import prisma from "./prisma";
 
 import { CompleteEmbed } from "@/prisma/schema";
 import { WelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Welcomer } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { canUserManageGuild } from "./dal";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
+import { LeaverStore } from "@/state/leaver";
 
 export async function signIn() {
   redirect("/api/auth/login");
@@ -20,22 +22,36 @@ export async function signOut() {
   redirect("/");
 }
 
-export async function createWelcomer(guildId: string): Promise<Welcomer> {
+export async function createModule(
+  guildId: string,
+  moduleName: ModuleName
+): Promise<Welcomer> {
   if (!guildId || !(await canUserManageGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
-  const res = await prisma.welcomer.create({
-    data: {
-      guildId: guildId,
-    },
-  });
+  let res;
+  if (moduleName === "welcomer") {
+    res = await prisma.welcomer.create({
+      data: {
+        guildId: guildId,
+      },
+    });
+  } else if (moduleName === "leaver") {
+    res = await prisma.leaver.create({
+      data: {
+        guildId: guildId,
+      },
+    });
+  } else {
+    throw new Error("Invalid module name");
+  }
 
   revalidatePath(`/app/dashboard/${guildId}/welcome`);
 
   return res;
 }
 
-export async function updateWelcomer(store: WelcomerStore) {
+export async function updateModule(store: WelcomerStore|LeaverStore, moduleName: ModuleName) {
   try {
     const guildId = store.guildId;
     if (!guildId || !(await canUserManageGuild(guildId))) {
@@ -56,63 +72,82 @@ export async function updateWelcomer(store: WelcomerStore) {
           : "" + messageValidated.error.errors[0].message,
       };
     }
-    const module = await prisma.welcomer.update({
-      where: {
-        guildId: guildId,
-      },
-      data: {
-        channelId: store.channelId,
-        content: store.content,
-      },
-    });
+    let module;
+    if (moduleName === "welcomer") {
+      module = await prisma.welcomer.update({
+        where: {
+          guildId: guildId,
+        },
+        data: {
+          channelId: store.channelId,
+          content: store.content,
+        },
+      });
+    } else if (moduleName === "leaver") {
+      module = await prisma.leaver.update({
+        where: {
+          guildId: guildId,
+        },
+        data: {
+          channelId: store.channelId,
+          content: store.content,
+        },
+      });
+    } else {
+      return {
+        error: "Invalid module name",
+      };
+    }
 
-    console.log(store)
     for (const embed of store.embeds) {
-      if (embed.id && embed.welcomerId && module.id != embed.welcomerId) return {
-        error: "You cannot update an embed that is not in the welcomer",
-      }
+      if (embed.id && embed[`${moduleName}Id`] && module.id != embed[`${moduleName}Id`])
+        return {
+          error: "You cannot update an embed that is not in the module",
+        };
       const embedUpdated = await createOrUpdateEmbed(
         embed,
         module.id,
-        "welcomer"
+        moduleName
       );
       if (!embedUpdated) {
         return {
-          error: "An error occurred while updating the welcomer module",
+          error: "An error occurred while updating the module",
         };
       }
       store.embeds[store.embeds.indexOf(embed)] = embedUpdated;
     }
     for (const embed of store.deletedEmbeds) {
       if (embed.id) {
-        if (embed.welcomerId && module.id != embed.welcomerId) return {
-          error: "You cannot delete an embed that is not in the welcomer",
-        }
+        if (embed[`${moduleName}Id`] && module.id != embed[`${moduleName}Id`])
+          return {
+            error: "You cannot delete an embed that is not in the module",
+          };
         await prisma.embed.delete({
           where: {
             id: embed.id,
-            welcomerId: module.id,
+          [`${moduleName}Id`]: module.id,
           },
           include: {
             author: true,
             footer: true,
             fields: true,
             image: true,
-          }
+          },
         });
-      } 
+      }
     }
     for (const field of store.deletedFields) {
       if (field.id) {
-        if (field.embedId && !(field.embedId in store.embeds)) return {
-          error: "You cannot delete a field that is not in the embed",
-        }
-          await prisma.embedField.delete({
-            where: {
-              id: field.id,
-            },
-          });
-      } 
+        if (field.embedId && !(field.embedId in store.embeds))
+          return {
+            error: "You cannot delete a field that is not in the embed",
+          };
+        await prisma.embedField.delete({
+          where: {
+            id: field.id,
+          },
+        });
+      }
     }
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
 
@@ -133,7 +168,7 @@ export async function createOrUpdateEmbed(
   embed: CompleteEmbed,
   moduleId: number,
   moduleType: "welcomer" | "leaver"
-):Promise<CompleteEmbed | null> {
+): Promise<CompleteEmbed | null> {
   let embedDb;
   const createOrUpdateAuthor = {
     author: embed.author?.name
@@ -240,6 +275,7 @@ export async function createOrUpdateEmbed(
       embedDb = await prisma.embed.update({
         where: {
           id: embed.id,
+          [`${moduleType}Id`]: moduleId,
         },
         data: {
           title: embed.title,
@@ -284,28 +320,46 @@ export async function createOrUpdateEmbed(
   }
 }
 
-export async function removeWelcomer(guildId: string): Promise<boolean> {
+export async function removeModule(
+  guildId: string,
+  moduleName: ModuleName
+): Promise<boolean> {
   if (!(await canUserManageGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
-  try {
-    await prisma.welcomer.delete({
-      where: {
-        guildId: guildId,
-      },
-      // delete all embeds and fields associated with the welcomer
+  const embedsInclude = {
+    embeds: {
       include: {
-        embeds: {
-          include: {
-            fields: true,
-            author: true,
-            footer: true,
-            image: true,
-          },
-        },
-        DM: true,
+        fields: true,
+        author: true,
+        footer: true,
+        image: true,
       },
-    });
+    },
+  };
+  try {
+    if (moduleName === "welcomer") {
+      await prisma.welcomer.delete({
+        where: {
+          guildId: guildId,
+        },
+        include: {
+          ...embedsInclude,
+          DM: true,
+        },
+      });
+    } else if (moduleName === "leaver") {
+      await prisma.leaver.delete({
+        where: {
+          guildId: guildId,
+        },
+        include: {
+          ...embedsInclude,
+        },
+      });
+    } else {
+      throw new Error("Invalid module name");
+    }
 
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
     return true;

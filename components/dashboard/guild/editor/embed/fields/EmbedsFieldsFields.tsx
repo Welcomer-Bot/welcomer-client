@@ -1,4 +1,6 @@
 import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Button } from "@nextui-org/button";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
@@ -9,45 +11,48 @@ import { EmbedFieldNameInput } from "./EmbedFieldNameInput";
 import { EmbedFieldValueInput } from "./EmbedFieldValueInput";
 
 export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
-  const fields = useWelcomerStore((state) => state.embeds[embedIndex].fields);
-  const removeField = useWelcomerStore((state) => state.removeField);
-  const setToPrevious = useWelcomerStore((state) => state.setToPreviousField);
-  const setToNext = useWelcomerStore((state) => state.setToNextField);
+  const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+
+  const fields = store.embeds[embedIndex].fields;
+  const removeField = store.removeField;
+  const setToPrevious = store.setToPreviousField;
+  const setToNext = store.setToNextField;
 
   return (
     <div className="space-y-2">
       {fields.map((field, index) => (
         <div key={index} className="space-y-2">
           <EmbedsFieldsAccordionWrapper embedId={embedIndex} index={index}>
-          <div className="flex flex-row-reverse space-x-reverse space-x-2 mb-2">
-            <Button
-              isIconOnly
-              color="danger"
-              variant="ghost"
-              size="sm"
-              onPress={() => removeField(embedIndex,index)}
-            >
-              <FaTrash />
-            </Button>
-            <Button
-              isIconOnly
-              color="default"
-              size="sm"
-              isDisabled={index === fields.length - 1}
-              onPress={() => setToNext(embedIndex, index)}
-            >
-              <FaArrowDown />
-            </Button>
-            <Button
-              isIconOnly
-              color="default"
-              size="sm"
-              isDisabled={index === 0}
-              onPress={() => setToPrevious(embedIndex, index)}
-            >
-              <FaArrowUp />
-            </Button>
-          </div>
+            <div className="flex flex-row-reverse space-x-reverse space-x-2 mb-2">
+              <Button
+                isIconOnly
+                color="danger"
+                variant="ghost"
+                size="sm"
+                onPress={() => removeField(embedIndex, index)}
+              >
+                <FaTrash />
+              </Button>
+              <Button
+                isIconOnly
+                color="default"
+                size="sm"
+                isDisabled={index === fields.length - 1}
+                onPress={() => setToNext(embedIndex, index)}
+              >
+                <FaArrowDown />
+              </Button>
+              <Button
+                isIconOnly
+                color="default"
+                size="sm"
+                isDisabled={index === 0}
+                onPress={() => setToPrevious(embedIndex, index)}
+              >
+                <FaArrowUp />
+              </Button>
+            </div>
             <div className="space-y-2">
               <EmbedFieldNameInput embedIndex={embedIndex} fieldIndex={index} />
               <EmbedFieldValueInput

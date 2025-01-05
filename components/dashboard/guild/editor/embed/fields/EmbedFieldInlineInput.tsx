@@ -1,5 +1,7 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Checkbox } from "@nextui-org/checkbox";
 
@@ -10,17 +12,19 @@ export function EmbedFieldInlineInput({
   embedIndex: number;
   fieldIndex: number;
 }) {
-  const fieldInline = useWelcomerStore(
-    (state) => state.embeds[embedIndex].fields[fieldIndex].inline
-  );
-  const setFieldInline = useWelcomerStore((state) => state.setFieldInline);
+  const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+
+  const fieldInline = store.embeds[embedIndex].fields[fieldIndex].inline;
+
+  const setFieldInline = store.setFieldInline;
 
   return (
     <Checkbox
       isSelected={fieldInline ?? false}
       onValueChange={(value) => setFieldInline(embedIndex, fieldIndex, value)}
-      >
-        Inline
+    >
+      Inline
     </Checkbox>
   );
 }

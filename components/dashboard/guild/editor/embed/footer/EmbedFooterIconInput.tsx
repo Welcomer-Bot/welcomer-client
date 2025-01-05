@@ -1,13 +1,16 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@nextui-org/input";
 
 export function EmbedFooterIconInput({ embedIndex }: { embedIndex: number }) {
-  const icon = useWelcomerStore(
-    (state) => state.embeds[embedIndex].footer?.iconUrl
-  );
-  const setIcon = useWelcomerStore((state) => state.setEmbedFooterIcon);
+  const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const icon = store.embeds[embedIndex].footer?.iconUrl;
+
+  const setIcon = store.setEmbedFooterIcon;
 
   return (
     <Input

@@ -1,6 +1,8 @@
 "use client";
 
-import { Welcomer } from "@/lib/discord/schema";
+import { Welcomer, Leaver } from "@/lib/discord/schema";
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import debounce from "debounce";
 import { lazy, Suspense, useState } from "react";
@@ -8,16 +10,18 @@ import { lazy, Suspense, useState } from "react";
 const LazyMessagePreview = lazy(() => import("./messagePreview"));
 
 export default function EditorMessagePreview() {
-  const [msg, setMsg] = useState<Welcomer>();
-
+  const [msg, setMsg] = useState<Welcomer|Leaver>();
   const debouncedSetMessage = debounce(setMsg, 250);
+  const moduleName = useModuleStore((state) => state.moduleName);
+  const store = moduleName === "welcomer" ? useWelcomerStore : useLeaverStore;
 
-    useWelcomerStore((state) => debouncedSetMessage(state));
-    
-    if (!msg) return null;
-    return (
-        <Suspense>
-            <LazyMessagePreview msg={msg} />
-        </Suspense>
-    )
+  const state = store();
+  debouncedSetMessage(state);
+
+  if (!msg) return null;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LazyMessagePreview msg={msg} />
+    </Suspense>
+  );
 }

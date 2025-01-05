@@ -1,5 +1,7 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import { Divider } from "@nextui-org/divider";
@@ -11,16 +13,15 @@ export function EmbedBodyTimestampInput({
 }: {
   embedIndex: number;
 }) {
-  const timestamp = useWelcomerStore(
-    (state) => state.embeds[embedIndex].timestamp
-  );
-  const timestampNow = useWelcomerStore(
-    (state) => state.embeds[embedIndex].timestampNow ?? false
-  );
+  const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+
+  const timestamp = store.embeds[embedIndex].timestamp;
+
+  const timestampNow = store.embeds[embedIndex].timestampNow ?? false;
+
   const setTimestamp = useWelcomerStore((state) => state.setEmbedTimestamp);
-  const setTimestampNow = useWelcomerStore(
-    (state) => state.setEmbedTimestampNow
-  );
+  const setTimestampNow = store.setEmbedTimestampNow;
 
   const [timestampEnabled, setTimestampEnabled] = useState(false);
   return (
@@ -69,7 +70,9 @@ export function EmbedBodyTimestampInput({
                     ? parseAbsoluteToLocal(new Date(timestamp).toISOString())
                     : undefined
                 }
-                onChange={(value) => setTimestamp(embedIndex, value?.toDate() ?? null)}
+                onChange={(value) =>
+                  setTimestamp(embedIndex, value?.toDate() ?? null)
+                }
               />
             )}
           </>

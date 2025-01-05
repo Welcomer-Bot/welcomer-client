@@ -1,11 +1,15 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Button } from "@nextui-org/button";
 
 export default function CreateEmbedButton() {
-  const addDefaultEmbed = useWelcomerStore((state) => state.addDefaultEmbed);
-  const embedsLength = useWelcomerStore((state) => state.embeds).length;
+    const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const addDefaultEmbed = store.addDefaultEmbed
+  const embedsLength = store.embeds.length;
   return (
     <Button
       className="sm:mr-4 sm:mb-0 mb-2"

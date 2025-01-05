@@ -1,4 +1,4 @@
-import { Card, CardHeader } from "@nextui-org/card";
+import { Card, CardBody } from "@nextui-org/card";
 import { redirect } from "next/navigation";
 
 import { getUserGuild } from "@/lib/dal";
@@ -16,7 +16,7 @@ export default async function Page({
   return (
     <>
       <Card>
-        <CardHeader>{guild.name}</CardHeader>
+        <CardBody>{guild.name}</CardBody>
       </Card>
     </>
   );

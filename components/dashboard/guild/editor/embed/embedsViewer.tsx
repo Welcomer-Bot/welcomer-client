@@ -1,5 +1,7 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleStore } from "@/state/module";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { Button } from "@nextui-org/button";
@@ -10,10 +12,13 @@ import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
 import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
 export default function EmbedsViewer() {
-  const embeds = useWelcomerStore((state) => state.embeds);
-  const removeEmbed = useWelcomerStore((state) => state.removeEmbed);
-  const setToPrevious = useWelcomerStore((state) => state.setToPreviousEmbed);
-  const setToNext = useWelcomerStore((state) => state.setToNextEmbed);
+  
+  const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
+  const embeds = store().embeds;
+  const removeEmbed = store().removeEmbed;
+  const setToPrevious = store().setToPreviousEmbed;
+  const setToNext = store().setToNextEmbed
 
   return (
     <>

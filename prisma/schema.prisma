@@ -47,7 +47,7 @@ model Leaver {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   embeds    Embed[]
-  guild     Guild     @relation(fields: [guildId], references: [id])
+  guild     Guild?     @relation(fields: [guildId], references: [id])
 }
 
 model DM {

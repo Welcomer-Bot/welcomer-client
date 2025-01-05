@@ -3,10 +3,20 @@
 import { Button } from "@nextui-org/button";
 
 import { useWelcomerStore } from "@/state/welcomer";
+import { useModuleStore } from "@/state/module";
+import { useLeaverStore } from "@/state/leaver";
 
-export default function ClearEmbedFieldsButton({ embedIndex }: { embedIndex: number }) {
-    const clearFields = useWelcomerStore((state) => state.clearFields);
-    const fieldsLength = useWelcomerStore((state) => state.embeds[embedIndex].fields.length);
+export default function ClearEmbedFieldsButton({
+  embedIndex,
+}: {
+  embedIndex: number;
+  }) {
+    const module = useModuleStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  
+  const clearFields = store.clearFields;
+  const fieldsLength = store.embeds[embedIndex].fields.length
+
   return (
     <Button
       color="danger"

@@ -14,3 +14,5 @@ export interface SessionPayload extends JWTPayload {
 export interface GuildExtended extends UserGuild {
   mutual?: boolean;
 }
+
+export type ModuleName = "welcomer" | "leaver";
