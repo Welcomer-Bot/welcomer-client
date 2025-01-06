@@ -2,6 +2,7 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Leaver, Welcomer } from "@prisma/client";
 import { useEffect } from "react";
 
@@ -12,13 +13,13 @@ export default function AppInitializer({
   children,
 }: {
   module?: Welcomer | Leaver | null;
-  moduleName: "welcomer" | "leaver";
+  moduleName: ModuleName;
   guildId: string;
   children: React.ReactNode;
 }) {
-  
+  const setModuleName = useModuleNameStore((state) => state.setModuleName);
+  setModuleName(moduleName);
   if (moduleName === "welcomer") {
-    useModuleNameStore.setState({ moduleName: "welcomer" });
     const reset = useWelcomerStore((state) => state.reset);
     useEffect(() => {
       reset();
@@ -31,7 +32,6 @@ export default function AppInitializer({
       });
     }, [module, guildId, reset]);
   } else if (moduleName === "leaver") {
-    useModuleNameStore.setState({ moduleName: "leaver" });
     const reset = useLeaverStore((state) => state.reset);
     useEffect(() => {
       reset();

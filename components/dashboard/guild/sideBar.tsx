@@ -43,6 +43,9 @@ export function Sidebar({
   useEffect(() => {
     useGuildStore.setState({ id: currentGuild.id });
   }, [currentGuild.id]);
+  useEffect(() => {
+    setActive(module ?? "dashboard");
+  }, [module]);
   return (
     <aside className="h-full z-30 sticky block">
       <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
