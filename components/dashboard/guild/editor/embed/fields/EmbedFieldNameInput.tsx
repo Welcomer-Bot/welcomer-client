@@ -1,7 +1,7 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleStore } from "@/state/module";
+import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@nextui-org/input";
 
@@ -12,7 +12,7 @@ export function EmbedFieldNameInput({
   embedIndex: number;
   fieldIndex: number;
 }) {
-  const module = useModuleStore((state) => state.moduleName);
+  const module = useModuleNameStore((state) => state.moduleName);
   const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
 
   const fieldName = store.embeds[embedIndex].fields[fieldIndex].name;

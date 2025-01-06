@@ -1,12 +1,12 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleStore } from "@/state/module";
+import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Textarea } from "@nextui-org/input";
 
 export default function ContentEditor() {
-  const moduleName = useModuleStore((state) => state.moduleName);
+  const moduleName = useModuleNameStore((state) => state.moduleName);
   const store = moduleName === "welcomer" ? useWelcomerStore : useLeaverStore;
   const state = store();
   const value = state.content;

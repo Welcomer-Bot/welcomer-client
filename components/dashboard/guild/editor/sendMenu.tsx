@@ -2,14 +2,14 @@
 import { useGuildChannelsQuery } from "@/lib/queries";
 import { useGuildStore } from "@/state/guild";
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleStore } from "@/state/module";
+import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Select, SelectItem, SelectSection } from "@nextui-org/select";
 import { APIChannel } from "discord-api-types/v10";
 
 export default function SendMenu() {
   const guildId = useGuildStore((state) => state.id);
-  const module = useModuleStore((state) => state.moduleName);
+  const module = useModuleNameStore((state) => state.moduleName);
 
   const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
   const updateChannel = store().setChannelId;

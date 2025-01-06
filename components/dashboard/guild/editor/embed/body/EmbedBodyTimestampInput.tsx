@@ -1,7 +1,7 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleStore } from "@/state/module";
+import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import { Divider } from "@nextui-org/divider";
@@ -13,7 +13,7 @@ export function EmbedBodyTimestampInput({
 }: {
   embedIndex: number;
 }) {
-  const module = useModuleStore((state) => state.moduleName);
+  const module = useModuleNameStore((state) => state.moduleName);
   const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
 
   const timestamp = store.embeds[embedIndex].timestamp;

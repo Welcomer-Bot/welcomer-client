@@ -1,7 +1,7 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleStore } from "@/state/module";
+import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Textarea } from "@nextui-org/input";
 
@@ -9,11 +9,10 @@ export function EmbedBodyDescriptionInput({
   embedIndex,
 }: {
   embedIndex: number;
-  }) {
-    const module = useModuleStore((state) => state.moduleName);
-    const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
-  const description =
-    store.embeds[embedIndex].description ?? "";
+}) {
+  const module = useModuleNameStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const description = store.embeds[embedIndex].description ?? "";
   const setDescription = store.setEmbedDescription;
 
   return (

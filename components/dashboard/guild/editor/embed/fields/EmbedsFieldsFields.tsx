@@ -1,6 +1,6 @@
 import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleStore } from "@/state/module";
+import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Button } from "@nextui-org/button";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
@@ -11,7 +11,7 @@ import { EmbedFieldNameInput } from "./EmbedFieldNameInput";
 import { EmbedFieldValueInput } from "./EmbedFieldValueInput";
 
 export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
-  const module = useModuleStore((state) => state.moduleName);
+  const module = useModuleNameStore((state) => state.moduleName);
   const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
 
   const fields = store.embeds[embedIndex].fields;

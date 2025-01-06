@@ -14,7 +14,6 @@ import { LogoutIcon } from "./logoutIcon";
 import { Logo } from "@/components/icons";
 import { getUserAvatar } from "@/lib/utils";
 import { useGuildStore } from "@/state/guild";
-import { useModuleStore } from "@/state/module";
 
 const SidebarContext = createContext<{
   isOpen: boolean;

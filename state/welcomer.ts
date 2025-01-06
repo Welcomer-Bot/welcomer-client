@@ -6,6 +6,8 @@ import { immer } from "zustand/middleware/immer";
 export interface WelcomerStore extends Welcomer {
   deletedEmbeds: CompleteEmbed[];
   deletedFields: CompleteEmbedField[];
+  edited: boolean;
+  setEdited: (edited: boolean) => void;
   setGuildId: (guildId: string) => void;
   setChannelId: (channelId: string) => void;
   setContent: (content: string) => void;
@@ -73,165 +75,221 @@ const defaultField: CompleteEmbedField = {
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
-  immer((set) => ({
-    ...defaultMessage,
-    deletedEmbeds: [],
-    deletedFields: [],
-    setGuildId: (guildId) => set({ guildId }),
-    setChannelId: (channelId) => set({ channelId }),
-    setContent: (content) => set({ content }),
-    clear: () => set(defaultMessage),
-    addEmbed: (embed: CompleteEmbed) =>
+  immer((set, get) => {
+    const customSet = (fn: (state: WelcomerStore) => void) => {
       set((state) => {
-        if (!state.embeds) {
-          state.embeds = [embed];
-        } else {
-          state.embeds.push(embed);
-        }
-      }),
-    addDefaultEmbed: () =>
-      set((state) => {
-        if (!state.embeds) {
-          state.embeds = [defaultEmbed];
-        } else {
-          state.embeds.push(defaultEmbed);
-        }
-      }),
-    removeEmbed: (index) =>
-      set((state) => {
-        if (state.embeds) {
-          state.deletedEmbeds.push(state.embeds[index]);
-          state.embeds.splice(index, 1);
-        }
-      }),
-    setToPreviousEmbed: (index) =>
-      set((state) => {
-        if (state.embeds && index > 0) {
-          const temp = state.embeds[index];
-          state.embeds[index] = state.embeds[index - 1];
-          state.embeds[index - 1] = temp;
-        }
-      }),
-    setToNextEmbed: (index) =>
-      set((state) => {
-        if (state.embeds && index < state.embeds.length - 1) {
-          const temp = state.embeds[index];
-          state.embeds[index] = state.embeds[index + 1];
-          state.embeds[index + 1] = temp;
-        }
-      }),
-    clearEmbeds: () =>
-      set((state) => {
-        state.deletedEmbeds = state.embeds;
-        state.embeds = [];
-      }),
-    setEmbedTitle: (index, title) =>
-      set((state) => {
-        state.embeds[index].title = title;
-      }),
-    setEmbedDescription: (index, description) =>
-      set((state) => {
-        state.embeds[index].description = description;
-      }),
-    setEmbedColor: (index, color) =>
-      set((state) => {
-        state.embeds[index].color = color;
-      }),
-    setEmbedTimestamp: (index, timestamp) =>
-      set((state) => {
-        state.embeds[index].timestamp = timestamp;
-      }),
-    setEmbedAuthorName: (index, author) =>
-      set((state) => {
-        if (state.embeds[index].author) {
-          state.embeds[index].author.name = author;
-        } else {
-          state.embeds[index].author = { name: author };
-        }
-      }),
-    setEmbedAuthorIcon: (index, icon) =>
-      set((state) => {
-        if (state.embeds[index].author) {
-          state.embeds[index].author.iconUrl = icon;
-        } else {
-          state.embeds[index].author = { name: "", iconUrl: icon };
-        }
-      }),
-    setEmbedAuthorUrl: (index, url) =>
-      set((state) => {
-        if (state.embeds[index].author) {
-          state.embeds[index].author.url = url;
-        }
-      }),
-    setEmbedTimestampNow: (index, timestampNow) =>
-      set((state) => {
-        state.embeds[index].timestampNow = timestampNow;
-      }),
-    setEmbedFooterText: (index, text) =>
-      set((state) => {
-        if (state.embeds[index].footer) {
-          state.embeds[index].footer.text = text;
-        } else {
-          state.embeds[index].footer = { text };
-        }
-      }),
-    setEmbedFooterIcon: (index, icon) =>
-      set((state) => {
-        if (state.embeds[index].footer) {
-          state.embeds[index].footer.iconUrl = icon;
-        } else {
-          state.embeds[index].footer = { text: "", iconUrl: icon };
-        }
-      }),
-    addField: (index) =>
-      set((state) => {
-        state.embeds[index].fields.push(defaultField);
-      }),
-    clearFields: (index) =>
-      set((state) => {
-        state.deletedFields = state.embeds[index].fields;
-        state.embeds[index].fields = [];
-      }),
-    removeField: (index, fieldIndex) =>
-      set((state) => {
-        state.deletedFields.push(state.embeds[index].fields[fieldIndex]);
-        state.embeds[index].fields.splice(fieldIndex, 1);
-      }),
-    setFieldName: (index, fieldIndex, name) =>
-      set((state) => {
-        state.embeds[index].fields[fieldIndex].name = name;
-      }),
-    setFieldValue: (index, fieldIndex, value) =>
-      set((state) => {
-        state.embeds[index].fields[fieldIndex].value = value;
-      }),
-    setFieldInline: (index, fieldIndex, inline) =>
-      set((state) => {
-        state.embeds[index].fields[fieldIndex].inline = inline;
-      }),
-    setToPreviousField: (index, fieldIndex) =>
-      set((state) => {
-        if (fieldIndex > 0) {
-          const temp = state.embeds[index].fields[fieldIndex];
-          state.embeds[index].fields[fieldIndex] =
-            state.embeds[index].fields[fieldIndex - 1];
-          state.embeds[index].fields[fieldIndex - 1] = temp;
-        }
-      }),
-    setToNextField: (index, fieldIndex) =>
-      set((state) => {
-        if (fieldIndex < state.embeds[index].fields.length - 1) {
-          const temp = state.embeds[index].fields[fieldIndex];
-          state.embeds[index].fields[fieldIndex] =
-            state.embeds[index].fields[fieldIndex + 1];
-          state.embeds[index].fields[fieldIndex + 1] = temp;
-        }
-      }),
-    reset: () =>
-      set((state) => ({
-        ...state,
-        deletedEmbeds: [],
-        deletedFields: [],
-      })),
-  }))
+        fn(state);
+        state.edited = true;
+      });
+    };
+
+    return {
+      ...defaultMessage,
+      deletedEmbeds: [],
+      deletedFields: [],
+      edited: false,
+      setEdited: (edited) =>
+        set((state) => {
+          state.edited = edited;
+        }),
+      setGuildId: (guildId) =>
+        customSet((state) => {
+          state.guildId = guildId;
+        }),
+      setChannelId: (channelId) =>
+        customSet((state) => {
+          state.channelId = channelId;
+        }),
+      setContent: (content) =>
+        customSet((state) => {
+          state.content = content;
+        }),
+
+      clear: () =>
+        set((state) => {
+          Object.assign(state, defaultMessage);
+          state.deletedEmbeds = [];
+          state.deletedFields = [];
+          state.edited = false;
+        }),
+
+      addEmbed: (embed) =>
+        customSet((state) => {
+          if (!state.embeds) {
+            state.embeds = [embed];
+          } else {
+            state.embeds.push(embed);
+          }
+        }),
+
+      addDefaultEmbed: () =>
+        customSet((state) => {
+          if (!state.embeds) {
+            state.embeds = [defaultEmbed];
+          } else {
+            state.embeds.push(defaultEmbed);
+          }
+        }),
+
+      removeEmbed: (index) =>
+        customSet((state) => {
+          if (state.embeds) {
+            state.deletedEmbeds.push(state.embeds[index]);
+            state.embeds.splice(index, 1);
+          }
+        }),
+
+      setToPreviousEmbed: (index) =>
+        customSet((state) => {
+          if (state.embeds && index > 0) {
+            const temp = state.embeds[index];
+            state.embeds[index] = state.embeds[index - 1];
+            state.embeds[index - 1] = temp;
+          }
+        }),
+
+      setToNextEmbed: (index) =>
+        customSet((state) => {
+          if (state.embeds && index < state.embeds.length - 1) {
+            const temp = state.embeds[index];
+            state.embeds[index] = state.embeds[index + 1];
+            state.embeds[index + 1] = temp;
+          }
+        }),
+
+      clearEmbeds: () =>
+        customSet((state) => {
+          state.deletedEmbeds = state.embeds;
+          state.embeds = [];
+        }),
+
+      setEmbedTitle: (index, title) =>
+        customSet((state) => {
+          state.embeds[index].title = title;
+        }),
+
+      setEmbedDescription: (index, description) =>
+        customSet((state) => {
+          state.embeds[index].description = description;
+        }),
+
+      setEmbedColor: (index, color) =>
+        customSet((state) => {
+          state.embeds[index].color = color;
+        }),
+
+      setEmbedTimestamp: (index, timestamp) =>
+        customSet((state) => {
+          state.embeds[index].timestamp = timestamp;
+        }),
+
+      setEmbedTimestampNow: (index, timestampNow) =>
+        customSet((state) => {
+          state.embeds[index].timestampNow = timestampNow;
+        }),
+
+      setEmbedAuthorName: (index, author) =>
+        customSet((state) => {
+          if (state.embeds[index].author) {
+            state.embeds[index].author.name = author;
+          } else {
+            state.embeds[index].author = { name: author };
+          }
+        }),
+
+      setEmbedAuthorIcon: (index, icon) =>
+        customSet((state) => {
+          if (state.embeds[index].author) {
+            state.embeds[index].author.iconUrl = icon;
+          } else {
+            state.embeds[index].author = { name: "", iconUrl: icon };
+          }
+        }),
+
+      setEmbedAuthorUrl: (index, url) =>
+        customSet((state) => {
+          if (state.embeds[index].author) {
+            state.embeds[index].author.url = url;
+          }
+        }),
+
+      setEmbedFooterText: (index, text) =>
+        customSet((state) => {
+          if (state.embeds[index].footer) {
+            state.embeds[index].footer.text = text;
+          } else {
+            state.embeds[index].footer = { text };
+          }
+        }),
+
+      setEmbedFooterIcon: (index, icon) =>
+        customSet((state) => {
+          if (state.embeds[index].footer) {
+            state.embeds[index].footer.iconUrl = icon;
+          } else {
+            state.embeds[index].footer = { text: "", iconUrl: icon };
+          }
+        }),
+
+      addField: (index) =>
+        customSet((state) => {
+          state.embeds[index].fields.push(defaultField);
+        }),
+
+      clearFields: (index) =>
+        customSet((state) => {
+          state.deletedFields = state.embeds[index].fields;
+          state.embeds[index].fields = [];
+        }),
+
+      removeField: (index, fieldIndex) =>
+        customSet((state) => {
+          state.deletedFields.push(state.embeds[index].fields[fieldIndex]);
+          state.embeds[index].fields.splice(fieldIndex, 1);
+        }),
+
+      setFieldName: (index, fieldIndex, name) =>
+        customSet((state) => {
+          state.embeds[index].fields[fieldIndex].name = name;
+        }),
+
+      setFieldValue: (index, fieldIndex, value) =>
+        customSet((state) => {
+          state.embeds[index].fields[fieldIndex].value = value;
+        }),
+
+      setFieldInline: (index, fieldIndex, inline) =>
+        customSet((state) => {
+          state.embeds[index].fields[fieldIndex].inline = inline;
+        }),
+
+      setToPreviousField: (index, fieldIndex) =>
+        customSet((state) => {
+          if (fieldIndex > 0) {
+            const temp = state.embeds[index].fields[fieldIndex];
+            state.embeds[index].fields[fieldIndex] =
+              state.embeds[index].fields[fieldIndex - 1];
+            state.embeds[index].fields[fieldIndex - 1] = temp;
+          }
+        }),
+
+      setToNextField: (index, fieldIndex) =>
+        customSet((state) => {
+          if (fieldIndex < state.embeds[index].fields.length - 1) {
+            const temp = state.embeds[index].fields[fieldIndex];
+            state.embeds[index].fields[fieldIndex] =
+              state.embeds[index].fields[fieldIndex + 1];
+            state.embeds[index].fields[fieldIndex + 1] = temp;
+          }
+        }),
+
+      reset: () =>
+        set((state) => ({
+          ...state,
+          deletedEmbeds: [],
+          deletedFields: [],
+          edited: false,
+        })),
+    };
+  })
 );
