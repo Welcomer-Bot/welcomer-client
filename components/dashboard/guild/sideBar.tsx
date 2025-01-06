@@ -4,7 +4,7 @@ import { Divider } from "@nextui-org/divider";
 import { User as UIUser } from "@nextui-org/user";
 import { User, UserGuild } from "@prisma/client";
 import Link from "next/link";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { FaDoorOpen, FaHome } from "react-icons/fa";
 import { ImEnter } from "react-icons/im";
 
@@ -14,6 +14,7 @@ import { LogoutIcon } from "./logoutIcon";
 import { Logo } from "@/components/icons";
 import { getUserAvatar } from "@/lib/utils";
 import { useGuildStore } from "@/state/guild";
+import { useModuleNameStore } from "@/state/moduleName";
 
 const SidebarContext = createContext<{
   isOpen: boolean;
@@ -36,10 +37,12 @@ export function Sidebar({
   guilds: UserGuild[];
   user: User;
 }) {
+  const module = useModuleNameStore((state) => state.moduleName);
   const [isOpen, setIsOpen] = useState(true);
-  const [active, setActive] = useState("dashboard");
-  useGuildStore.setState({ id: currentGuild.id });
-
+  const [active, setActive] = useState(module ?? "dashboard");
+  useEffect(() => {
+    useGuildStore.setState({ id: currentGuild.id });
+  }, [currentGuild.id]);
   return (
     <aside className="h-full z-30 sticky block">
       <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
@@ -126,7 +129,7 @@ export function Sidebar({
               text="Welcomer"
             />
             <SidebarItem
-              active={active === "leave"}
+              active={active === "leaver"}
               icon={<FaDoorOpen />}
               link={`/dashboard/${currentGuild.id}/leave`}
               text="Leaver"
