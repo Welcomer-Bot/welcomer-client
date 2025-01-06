@@ -51,7 +51,7 @@ export async function createModule(
   return res;
 }
 
-export async function updateModule(store: WelcomerStore|LeaverStore, moduleName: ModuleName) {
+export async function updateModule(store: WelcomerStore|LeaverStore, moduleName: ModuleName|null) {
   try {
     const guildId = store.guildId;
     if (!guildId || !(await canUserManageGuild(guildId))) {
