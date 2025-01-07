@@ -46,120 +46,126 @@ export function Sidebar({
   useEffect(() => {
     setActive(module ?? "dashboard");
   }, [module]);
+
   return (
-    <aside className="h-full z-30 sticky block">
-      <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
-        <div className="p-4 pb-2 flex justify-between items-center align-center">
-          <div className={` items-center h-10 justify-start flex flex-row `}>
-            <Logo
-              className={`overflow-hidden transition-all ${
-                isOpen ? "w-10" : "w-0"
-              } `}
-              size={40}
-            />
-            <div
-              className={`overflow-hidden transition-all ${
-                isOpen ? "w-20 opacity-100" : "w-0 opacity-0"
-              } `}
-            >
-              <Link href="/dashboard">
-                <div className={`flex flex-col leading-3 text-center `}>
-                  <h1>Welcomer</h1>
-                  <span className="text-small text-gray-500 ">Dashboard</span>
-                </div>
-              </Link>
+    <>
+      <aside
+        className={`h-full z-30 sticky sm:block`}
+      >
+        <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
+          <div className="p-4 pb-2 flex justify-between items-center align-center">
+            <div className={` items-center h-10 justify-start flex flex-row `}>
+              <Logo
+                className={`overflow-hidden transition-all ${
+                  isOpen ? "w-10" : "w-0"
+                } `}
+                size={40}
+              />
+              <div
+                className={`overflow-hidden transition-all ${
+                  isOpen ? "w-20 opacity-100" : "w-0 opacity-0"
+                } `}
+              >
+                <Link href="/dashboard">
+                  <div className={`flex flex-col leading-3 text-center `}>
+                    <h1>Welcomer</h1>
+                    <span className="text-small text-gray-500 ">Dashboard</span>
+                  </div>
+                </Link>
+              </div>
             </div>
-          </div>
-          <Button
-            isIconOnly
-            className="p-1.5 rounded-lg"
-            onPress={() => setIsOpen(!isOpen)}
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+            <Button
+              isIconOnly
+              className="p-1.5 rounded-lg"
+              onPress={() => setIsOpen(!isOpen)}
             >
-              {isOpen ? (
-                <path
-                  d="M6 18L18 6M6 6l12 12"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              ) : (
-                <path
-                  d="M4 6h16M4 12h16m-7 6h7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              )}
-            </svg>
-          </Button>
-        </div>
-        <Divider className="mb-2" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {isOpen ? (
+                  <path
+                    d="M6 18L18 6M6 6l12 12"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                ) : (
+                  <path
+                    d="M4 6h16M4 12h16m-7 6h7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                )}
+              </svg>
+            </Button>
+          </div>
+          <Divider className="mb-2" />
 
-        <GuildSelectDropdown
-          currentGuild={currentGuild}
-          guilds={guilds}
-          isOpen={isOpen}
-        />
-        <Divider className="my-2" />
+          <GuildSelectDropdown
+            currentGuild={currentGuild}
+            guilds={guilds}
+            isOpen={isOpen}
+          />
+          <Divider className="my-2" />
 
-        <SidebarContext.Provider
-          value={{ isOpen, setIsOpen, active, setActive }}
-        >
-          <ul className="flex-1 px-3">
-            <SidebarItem
-              active={active === "home"}
-              icon={<FaHome />}
-              link={"/dashboard"}
-              text="Home"
-            />
-            <SidebarItem
-              active={active === "dashboard"}
-              icon={<FaHome />}
-              link={`/dashboard/${currentGuild.id}`}
-              text="Dashboard"
-            />
-            <SidebarItem
-              active={active === "welcomer"}
-              icon={<ImEnter />}
-              link={`/dashboard/${currentGuild.id}/welcome`}
-              text="Welcomer"
-            />
-            <SidebarItem
-              active={active === "leaver"}
-              icon={<FaDoorOpen />}
-              link={`/dashboard/${currentGuild.id}/leave`}
-              text="Leaver"
-            />
-          </ul>
-        </SidebarContext.Provider>
-        <Divider />
-        <div className="flex p-3 justify-center">
-          <div
-            className={`
+          <SidebarContext.Provider
+            value={{ isOpen, setIsOpen, active, setActive }}
+          >
+            <ul className="flex-1 px-3">
+              <SidebarItem
+                active={active === "home"}
+                icon={<FaHome />}
+                link={"/dashboard"}
+                text="Home"
+              />
+              <SidebarItem
+                active={active === "dashboard"}
+                icon={<FaHome />}
+                link={`/dashboard/${currentGuild.id}`}
+                text="Dashboard"
+              />
+              <SidebarItem
+                active={active === "welcomer"}
+                icon={<ImEnter />}
+                link={`/dashboard/${currentGuild.id}/welcome`}
+                text="Welcomer"
+              />
+              <SidebarItem
+                active={active === "leaver"}
+                icon={<FaDoorOpen />}
+                link={`/dashboard/${currentGuild.id}/leave`}
+                text="Leaver"
+              />
+            </ul>
+          </SidebarContext.Provider>
+          <Divider />
+          <div className="flex p-3 justify-center">
+            <div
+              className={`
               flex justify-between items-center
               overflow-hidden transition-all ${isOpen ? "w-48 ml-3" : "w-0"}
           `}
-          >
-            <UIUser
-              avatarProps={{
-                src: getUserAvatar(user),
-              }}
-              description={user.id}
-              name={user.username}
-            />
+            >
+              <UIUser
+                avatarProps={{
+                  src: getUserAvatar(user),
+                }}
+                description={user.id}
+                name={user.username}
+              />
+            </div>
+            <LogoutIcon />
           </div>
-          <LogoutIcon />
-        </div>
-      </nav>
-    </aside>
+        </nav>
+      </aside>
+    </>
   );
+    
 }
 
 export function SidebarItem({
