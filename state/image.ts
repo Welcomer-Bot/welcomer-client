@@ -1,6 +1,15 @@
+import { getUser } from "@/lib/dal";
 import { ImageCard, ImageCardText } from "@/lib/discord/schema";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+
+// export interface ImageCard {
+//   backgroundUrl: string;
+//   backgroundColor: string;
+//   mainText: ImageCardText;
+//   secondText: ImageCardText;
+//   nicknameText: ImageCardText;
+// }
 
 export interface ImageParams extends ImageCard {
   setBackgroundUrl: (backgroundUrl: string) => void;
@@ -24,11 +33,20 @@ const defaultSecondText: ImageCardText = {
   content: "You are the {memberCount} member!",
   color: "#ffffff",
 };
+
+const nicknameText: ImageCardText = {
+  content: "{username}",
+  color: "#ffffff",
+}
+
+
 const defaultImage: ImageCard = {
   backgroundUrl: "",
   backgroundColor: "#000000",
   mainText: defaultMainText,
   secondText: defaultSecondText,
+  nicknameText: nicknameText,
+  
 };
 
 export const useImageStore = create<ImageParams>()(

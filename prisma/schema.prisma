@@ -142,8 +142,10 @@ model ImageCard {
   id                Int           @id @default(autoincrement())
   mainTextId        Int?           @unique
   secondTextId      Int?           @unique
+  nicknameTextId      Int?          @unique
   mainText          ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id])
   secondText        ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id])
+  nicknameText          ImageCardText? @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
   backgroundColor   String?
   backgroundUrl     String?
   avatarBorderColor String?
@@ -167,6 +169,7 @@ model ImageCardText {
   weight     String?
   mainCard   ImageCard? @relation("MainTextRelation")
   secondCard ImageCard? @relation("SecondTextRelation")
+  nickname   ImageCard? @relation("NicknameRelation")
 }
 
 model User {

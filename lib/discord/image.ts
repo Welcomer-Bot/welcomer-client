@@ -18,6 +18,13 @@ export async function generateImage(msg: ImageCard) {
           font: msg.secondText.font || undefined,
         }
       : undefined,
+    nicknameText: msg.nicknameText
+      ? {
+          content: msg.nicknameText.content,
+          font: msg.nicknameText?.font || undefined,
+          color: (msg.nicknameText.color as Color) || undefined,
+        }
+      : undefined,
     backgroundColor: {
       background: msg.backgroundColor
         ? (msg.backgroundColor as Color)
