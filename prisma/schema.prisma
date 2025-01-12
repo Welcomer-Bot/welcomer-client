@@ -27,27 +27,31 @@ model Guild {
 
 model Welcomer {
   /// @zod.optional()
-  id        Int       @id @default(autoincrement())
-  guildId   String   @unique
-  channelId String?
-  content   String?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  DM        DM?
-  embeds    Embed[]
-  guild     Guild?    @relation(fields: [guildId], references: [id])
+  id            Int         @id @default(autoincrement())
+  guildId       String      @unique
+  channelId     String?
+  content       String?
+  createdAt     DateTime?   @default(now())
+  updatedAt     DateTime?   @updatedAt
+  DM            DM?
+  embeds        Embed[]
+  guild         Guild?      @relation(fields: [guildId], references: [id])
+  activeImageId Int?
+  images        ImageCard[]
 }
 
 model Leaver {
   /// @zod.optional()
-  id        Int       @id @default(autoincrement())
-  guildId   String    @unique
-  channelId String?
-  content   String?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  embeds    Embed[]
-  guild     Guild?     @relation(fields: [guildId], references: [id])
+  id            Int         @id @default(autoincrement())
+  guildId       String      @unique
+  channelId     String?
+  content       String?
+  createdAt     DateTime?   @default(now())
+  updatedAt     DateTime?   @updatedAt
+  embeds        Embed[]
+  guild         Guild?      @relation(fields: [guildId], references: [id])
+  activeImageId Int?
+  images        ImageCard[] //zod.nullable()
 }
 
 model DM {
@@ -130,6 +134,39 @@ model EmbedFooter {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   embed     Embed?    @relation(fields: [embedId], references: [id])
+}
+
+model ImageCard {
+  /// @zod.optional()
+
+  id                Int           @id @default(autoincrement())
+  mainTextId        Int?           @unique
+  secondTextId      Int?           @unique
+  mainText          ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id])
+  secondText        ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id])
+  backgroundColor   String?
+  backgroundUrl     String?
+  avatarBorderColor String?
+  textColor         String?
+  createdAt         DateTime?     @default(now())
+  updatedAt         DateTime?     @updatedAt
+  welcomerId        Int?
+  leaverId          Int?
+  welcomer          Welcomer?     @relation(fields: [welcomerId], references: [id])
+  leaver            Leaver?       @relation(fields: [leaverId], references: [id])
+}
+
+
+model ImageCardText {
+  /// @zod.optional()
+  id         Int        @id @default(autoincrement())
+  content    String
+  color      String?
+  font       String?
+  size       Int?
+  weight     String?
+  mainCard   ImageCard? @relation("MainTextRelation")
+  secondCard ImageCard? @relation("SecondTextRelation")
 }
 
 model User {

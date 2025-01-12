@@ -1,4 +1,5 @@
 import { User } from "@prisma/client";
+import { getFonts } from "font-list";
 
 import { GuildExtended } from "@/types";
 

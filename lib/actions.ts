@@ -12,6 +12,7 @@ import { canUserManageGuild } from "./dal";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
 import { LeaverStore } from "@/state/leaver";
+import {FontList, getFonts} from "font-list";
 
 export async function signIn() {
   redirect("/api/auth/login");
@@ -368,3 +369,14 @@ export async function removeModule(
     return false;
   }
 }
+
+export async function getServerFonts(): Promise<FontList> {
+  try {
+    const fonts = await getFonts({ disableQuoting: true });
+    return fonts;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+

@@ -13,6 +13,8 @@ import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended } from "@/types";
 import { Leaver, Welcomer } from "@prisma/client";
 
+
+
 export const verifySession = cache(async () => {
   const session = await getSession();
   const clientSession = await decrypt(session);
@@ -137,7 +139,7 @@ export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
   try {
     if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
-      where: { guildId },
+      where: { guildId: guildId },
       include: {
         embeds: {
           include: {
@@ -151,7 +153,7 @@ export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
     });
 
     return welcomer;
-  } catch {
+  } catch(e) {
     return null;
   }
 }
