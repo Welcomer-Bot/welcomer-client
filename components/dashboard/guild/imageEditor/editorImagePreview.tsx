@@ -18,10 +18,7 @@ export function EditorImagePreview() {
       setImg(image);
     };
     fetchImage();
-    setInterval(() => {
-      fetchImage();
-    }, 1000);
-  }, []);
+  }, [activeImage]);
   if (!img) return (<>No image to load</>);
   return (
     <Suspense fallback={<div>Loading...</div>}>

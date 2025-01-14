@@ -1,6 +1,7 @@
 "use client";
 
 import { useImageStore } from "@/state/image";
+import { CreateCardButton } from "./createCardButton";
 
 export function CardLib() {
   const cards = useImageStore((state) => state.imageCards);
@@ -23,5 +24,6 @@ export function CardLib() {
         )) : 
         <div className="text-white">No cards found</div>
         }
+        <CreateCardButton />
     </>)
 }

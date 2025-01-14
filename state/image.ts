@@ -7,6 +7,8 @@ export interface ImageStore {
   activeCard: ImageCard | null;
   setActiveCard: (index: number) => void;
   getActiveCard: () => ImageCard | null;
+  createCard: () => void;
+  deleteCard: (index: number) => void;
   setBackgroundUrl: (backgroundUrl: string) => void;
   setBackgroundColor: (backgroundColor: string) => void;
   setMainText: (mainText: ImageCardText) => void;
@@ -63,6 +65,16 @@ export const useImageStore = create<ImageStore>()(
       getActiveCard: () => {
         return get().activeCard;
       },
+      createCard: () =>
+        set((state) => {
+          state.activeCard = defaultImage;
+          state.imageCards.push(state.activeCard);
+        }),
+      deleteCard: (index) =>
+        set((state) => {
+          state.imageCards.splice(index, 1);
+          state.activeCard = null;
+        }),
       setBackgroundUrl: (backgroundUrl) =>
         setToActive((state) => {
           state.activeCard.backgroundUrl = backgroundUrl;
