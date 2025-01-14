@@ -10,15 +10,19 @@ const LazyImagePreview = lazy(() => import("./imagePreview"));
 
 export function EditorImagePreview() {
   const [img, setImg] = useState<string>();
-  const store = useImageStore();
+  const activeImage = useImageStore((state) => state.activeCard);
   useEffect(() => {
     const fetchImage = async () => {
-      const image = await generateImage(store);
+      if(!activeImage) return;
+      const image = await generateImage(activeImage);
       setImg(image);
     };
     fetchImage();
-  }, [store]);
-  if (!img) return null;
+    setInterval(() => {
+      fetchImage();
+    }, 1000);
+  }, []);
+  if (!img) return (<>No image to load</>);
   return (
     <Suspense fallback={<div>Loading...</div>}>
         <LazyImagePreview img={img} />

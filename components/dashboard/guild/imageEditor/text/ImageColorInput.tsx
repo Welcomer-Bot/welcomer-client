@@ -8,7 +8,7 @@ export function ImageColorInput({
 }: {
   textType: "mainText" | "secondText";
 }) {
-  const content = useImageStore((state) => state[textType]?.color);
+  const content = useImageStore((state) => state.activeCard ? state.activeCard[textType]?.color : "");
   const setColor =
     textType === "mainText"
       ? useImageStore((state) => state.setMainTextColor)

@@ -1,17 +1,12 @@
-import { getUser } from "@/lib/dal";
 import { ImageCard, ImageCardText } from "@/lib/discord/schema";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-// export interface ImageCard {
-//   backgroundUrl: string;
-//   backgroundColor: string;
-//   mainText: ImageCardText;
-//   secondText: ImageCardText;
-//   nicknameText: ImageCardText;
-// }
-
-export interface ImageParams extends ImageCard {
+export interface ImageStore {
+  imageCards: ImageCard[];
+  activeCard: ImageCard | null;
+  setActiveCard: (index: number) => void;
+  getActiveCard: () => ImageCard | null;
   setBackgroundUrl: (backgroundUrl: string) => void;
   setBackgroundColor: (backgroundColor: string) => void;
   setMainText: (mainText: ImageCardText) => void;
@@ -37,8 +32,7 @@ const defaultSecondText: ImageCardText = {
 const nicknameText: ImageCardText = {
   content: "{username}",
   color: "#ffffff",
-}
-
+};
 
 const defaultImage: ImageCard = {
   backgroundUrl: "",
@@ -46,51 +40,111 @@ const defaultImage: ImageCard = {
   mainText: defaultMainText,
   secondText: defaultSecondText,
   nicknameText: nicknameText,
-  
 };
 
-export const useImageStore = create<ImageParams>()(
-  immer((set) => ({
-    ...defaultImage,
-    setBackgroundUrl: (backgroundUrl) => set({ backgroundUrl }),
-    setBackgroundColor: (backgroundColor) => set({ backgroundColor }),
-    setMainTextContent: (content) =>
+export const useImageStore = create<ImageStore>()(
+  immer((set, get) => {
+    const setToActive = (
+      fn: (state: ImageStore & { activeCard: ImageCard }) => void
+    ) => {
       set((state) => {
-        if (state.mainText) {
-          state.mainText.content = content;
-        }
-      }),
-    setSecondTextContent: (content) =>
-      set((state) => {
-        if (state.secondText) {
-          state.secondText.content = content;
-        }
-      }),
-    setMainTextColor: (color) =>
-      set((state) => {
-        if (state.mainText) {
-          state.mainText.color = color;
-        }
-      }),
-    setSecondTextColor: (color) =>
-      set((state) => {
-        if (state.secondText) {
-          state.secondText.color = color;
-        }
-      }),
-    setMainTextFont: (font) =>
-      set((state) => {
-        if (state.mainText) {
-          state.mainText.font = font;
-        }
-      }),
-    setSecondTextFont: (font) =>
-      set((state) => {
-        if (state.secondText) {
-          state.secondText.font = font;
-        }
-      }),
-    setMainText: (mainText) => set({ mainText }),
-    setSecondText: (secondText) => set({ secondText }),
-  }))
+        if (!state.activeCard) return;
+        fn(state as ImageStore & { activeCard: ImageCard });
+      });
+    };
+
+    return {
+      imageCards: [],
+      activeCard: null,
+      setActiveCard: (index) =>
+        set((state) => {
+          state.activeCard = state.imageCards[index];
+        }),
+      getActiveCard: () => {
+        return get().activeCard;
+      },
+      setBackgroundUrl: (backgroundUrl) =>
+        setToActive((state) => {
+          state.activeCard.backgroundUrl = backgroundUrl;
+        }),
+      setBackgroundColor: (backgroundColor) =>
+        setToActive((state) => {
+          state.activeCard.backgroundColor = backgroundColor;
+        }),
+      setMainText: (mainText) =>
+        setToActive((state) => {
+          state.activeCard.mainText = mainText;
+        }),
+      setSecondText: (secondText) =>
+        setToActive((state) => {
+          state.activeCard.secondText = secondText;
+        }),
+      setMainTextContent: (content) =>
+        setToActive((state) => {
+          if (state.activeCard?.mainText) {
+            state.activeCard.mainText.content = content;
+          } else {
+            state.activeCard.mainText = {
+              ...defaultMainText,
+              content,
+            };
+          }
+        }),
+      setSecondTextContent: (content) =>
+        setToActive((state) => {
+          if (state.activeCard?.secondText) {
+            state.activeCard.secondText.content = content;
+          } else {
+            state.activeCard.secondText = {
+              ...defaultSecondText,
+              content,
+            };
+          }
+        }),
+      setMainTextColor: (color) =>
+        setToActive((state) => {
+          if (state.activeCard?.mainText) {
+            state.activeCard.mainText.color = color;
+          } else {
+            state.activeCard.mainText = {
+              ...defaultMainText,
+              color,
+            };
+          }
+        }),
+      setSecondTextColor: (color) =>
+        setToActive((state) => {
+          if (state.activeCard?.secondText) {
+            state.activeCard.secondText.color = color;
+          } else {
+            state.activeCard.secondText = {
+              ...defaultSecondText,
+              color,
+            };
+          }
+        }),
+      setMainTextFont: (font) =>
+        setToActive((state) => {
+          if (state.activeCard?.mainText) {
+            state.activeCard.mainText.font = font;
+          } else {
+            state.activeCard.mainText = {
+              ...defaultMainText,
+              font,
+            };
+          }
+        }),
+      setSecondTextFont: (font) =>
+        setToActive((state) => {
+          if (state.activeCard?.secondText) {
+            state.activeCard.secondText.font = font;
+          } else {
+            state.activeCard.secondText = {
+              ...defaultMainText,
+              font,
+            };
+          }
+        }),
+    };
+  })
 );
