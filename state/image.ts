@@ -1,44 +1,43 @@
-import { ImageCard, ImageCardText } from "@/lib/discord/schema";
+import { BaseCardParams, Color, TextCard } from "@welcomer-bot/card-canvas";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 export interface ImageStore {
-  imageCards: ImageCard[];
-  activeCard: ImageCard | null;
+  imageCards: (BaseCardParams & { imagePreview?: string })[];
+  activeCard: number | null;
   setActiveCard: (index: number) => void;
-  getActiveCard: () => ImageCard | null;
+  getActiveCard: () => BaseCardParams | null;
+  setPreviewImage: (image: string) => void;
   createCard: () => void;
   deleteCard: (index: number) => void;
   setBackgroundUrl: (backgroundUrl: string) => void;
-  setBackgroundColor: (backgroundColor: string) => void;
-  setMainText: (mainText: ImageCardText) => void;
-  setSecondText: (secondText: ImageCardText) => void;
+  setBackgroundColor: (backgroundColor: Color) => void;
+  setMainText: (mainText: TextCard) => void;
+  setSecondText: (secondText: TextCard) => void;
   setMainTextContent: (content: string) => void;
   setSecondTextContent: (content: string) => void;
-  setMainTextColor: (color: string) => void;
-  setSecondTextColor: (color: string) => void;
+  setMainTextColor: (color: Color) => void;
+  setSecondTextColor: (color: Color) => void;
   setMainTextFont: (font: string) => void;
   setSecondTextFont: (font: string) => void;
 }
 
-const defaultMainText: ImageCardText = {
+const defaultMainText: TextCard = {
   content: "Welcome {user} to the server!",
   color: "#ffffff",
 };
 
-const defaultSecondText: ImageCardText = {
+const defaultSecondText: TextCard = {
   content: "You are the {memberCount} member!",
   color: "#ffffff",
 };
 
-const nicknameText: ImageCardText = {
+const nicknameText: TextCard = {
   content: "{username}",
   color: "#ffffff",
 };
 
-const defaultImage: ImageCard = {
-  backgroundUrl: "",
-  backgroundColor: "#000000",
+const defaultImage: BaseCardParams & { imagePreview?: string } = {
   mainText: defaultMainText,
   secondText: defaultSecondText,
   nicknameText: nicknameText,
@@ -47,11 +46,15 @@ const defaultImage: ImageCard = {
 export const useImageStore = create<ImageStore>()(
   immer((set, get) => {
     const setToActive = (
-      fn: (state: ImageStore & { activeCard: ImageCard }) => void
+      fn: (state: ImageStore & { activeCard: number }) => void
     ) => {
       set((state) => {
-        if (!state.activeCard) return;
-        fn(state as ImageStore & { activeCard: ImageCard });
+        if (
+          state.activeCard === null ||
+          state.imageCards[state.activeCard] === undefined
+        )
+          return console.log("No active card");
+        fn(state as ImageStore & { activeCard: number });
       });
     };
 
@@ -60,43 +63,67 @@ export const useImageStore = create<ImageStore>()(
       activeCard: null,
       setActiveCard: (index) =>
         set((state) => {
-          state.activeCard = state.imageCards[index];
+          state.activeCard = index;
         }),
+
       getActiveCard: () => {
-        return get().activeCard;
+        const state = get();
+        if (state.activeCard === null) {
+          console.log("No active card, got null");
+          return null
+        };
+        return state.imageCards[state.activeCard];
       },
+      setPreviewImage: (image) =>
+        setToActive((state) => {
+          if (state.imageCards[state.activeCard]) {
+            state.imageCards[state.activeCard].imagePreview = image;
+          } else {
+            console.log("No active card");
+          }
+        }),
+
       createCard: () =>
         set((state) => {
-          state.activeCard = defaultImage;
-          state.imageCards.push(state.activeCard);
+          const index = state.imageCards.push(defaultImage);
+          state.activeCard = index - 1;
         }),
       deleteCard: (index) =>
         set((state) => {
           state.imageCards.splice(index, 1);
-          state.activeCard = null;
         }),
       setBackgroundUrl: (backgroundUrl) =>
         setToActive((state) => {
-          state.activeCard.backgroundUrl = backgroundUrl;
+          state.imageCards[state.activeCard].backgroundImgURL = backgroundUrl;
         }),
       setBackgroundColor: (backgroundColor) =>
         setToActive((state) => {
-          state.activeCard.backgroundColor = backgroundColor;
+          if (state.imageCards[state.activeCard]) {
+            if (state.imageCards[state.activeCard].backgroundColor) {
+              state.imageCards[state.activeCard].backgroundColor = {
+                background: backgroundColor,
+              };
+            } else {
+              state.imageCards[state.activeCard].backgroundColor = {
+                background: backgroundColor,
+              };
+            }
+          }
         }),
       setMainText: (mainText) =>
         setToActive((state) => {
-          state.activeCard.mainText = mainText;
+          state.imageCards[state.activeCard].mainText = mainText;
         }),
       setSecondText: (secondText) =>
         setToActive((state) => {
-          state.activeCard.secondText = secondText;
+          state.imageCards[state.activeCard].secondText = secondText;
         }),
       setMainTextContent: (content) =>
         setToActive((state) => {
-          if (state.activeCard?.mainText) {
-            state.activeCard.mainText.content = content;
+          if (state.imageCards[state.activeCard].mainText) {
+            state.imageCards[state.activeCard].mainText!.content = content;
           } else {
-            state.activeCard.mainText = {
+            state.imageCards[state.activeCard].mainText = {
               ...defaultMainText,
               content,
             };
@@ -104,10 +131,10 @@ export const useImageStore = create<ImageStore>()(
         }),
       setSecondTextContent: (content) =>
         setToActive((state) => {
-          if (state.activeCard?.secondText) {
-            state.activeCard.secondText.content = content;
+          if (state.imageCards[state.activeCard].secondText) {
+            state.imageCards[state.activeCard].secondText!.content = content;
           } else {
-            state.activeCard.secondText = {
+            state.imageCards[state.activeCard].secondText = {
               ...defaultSecondText,
               content,
             };
@@ -115,10 +142,10 @@ export const useImageStore = create<ImageStore>()(
         }),
       setMainTextColor: (color) =>
         setToActive((state) => {
-          if (state.activeCard?.mainText) {
-            state.activeCard.mainText.color = color;
+          if (state.imageCards[state.activeCard].mainText) {
+            state.imageCards[state.activeCard].mainText!.color = color;
           } else {
-            state.activeCard.mainText = {
+            state.imageCards[state.activeCard].mainText = {
               ...defaultMainText,
               color,
             };
@@ -126,10 +153,10 @@ export const useImageStore = create<ImageStore>()(
         }),
       setSecondTextColor: (color) =>
         setToActive((state) => {
-          if (state.activeCard?.secondText) {
-            state.activeCard.secondText.color = color;
+          if (state.imageCards[state.activeCard].secondText) {
+            state.imageCards[state.activeCard].secondText!.color = color;
           } else {
-            state.activeCard.secondText = {
+            state.imageCards[state.activeCard].secondText = {
               ...defaultSecondText,
               color,
             };
@@ -137,10 +164,10 @@ export const useImageStore = create<ImageStore>()(
         }),
       setMainTextFont: (font) =>
         setToActive((state) => {
-          if (state.activeCard?.mainText) {
-            state.activeCard.mainText.font = font;
+          if (state.imageCards[state.activeCard].mainText) {
+            state.imageCards[state.activeCard].mainText!.font = font;
           } else {
-            state.activeCard.mainText = {
+            state.imageCards[state.activeCard].mainText = {
               ...defaultMainText,
               font,
             };
@@ -148,11 +175,11 @@ export const useImageStore = create<ImageStore>()(
         }),
       setSecondTextFont: (font) =>
         setToActive((state) => {
-          if (state.activeCard?.secondText) {
-            state.activeCard.secondText.font = font;
+          if (state.imageCards[state.activeCard].secondText) {
+            state.imageCards[state.activeCard].secondText!.font = font;
           } else {
-            state.activeCard.secondText = {
-              ...defaultMainText,
+            state.imageCards[state.activeCard].secondText = {
+              ...defaultSecondText,
               font,
             };
           }

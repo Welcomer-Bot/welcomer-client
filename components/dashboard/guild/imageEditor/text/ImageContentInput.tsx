@@ -9,7 +9,7 @@ export function ImageContentInput({
   textType: "mainText" | "secondText";
 }) {
   const content = useImageStore(
-    (state) => state.activeCard ? state.activeCard[textType]?.content: ""
+    (state) => state.getActiveCard()![textType]?.content
   );
   const setContent =
     textType === "mainText"

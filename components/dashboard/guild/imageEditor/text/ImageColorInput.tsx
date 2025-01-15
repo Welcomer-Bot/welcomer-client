@@ -2,13 +2,14 @@
 
 import { useImageStore } from "@/state/image";
 import { Input } from "@nextui-org/input";
+import { Color } from "@welcomer-bot/card-canvas";
 
 export function ImageColorInput({
   textType,
 }: {
   textType: "mainText" | "secondText";
 }) {
-  const content = useImageStore((state) => state.activeCard ? state.activeCard[textType]?.color : "");
+  const color = useImageStore((state) => state.getActiveCard()![textType]?.color);
   const setColor =
     textType === "mainText"
       ? useImageStore((state) => state.setMainTextColor)
@@ -17,9 +18,9 @@ export function ImageColorInput({
   return (
     <Input
       type="color"
-      aria-label="Content"
-      value={content ?? ""}
-      onValueChange={(value) => setColor(value)}
+      aria-label="Color"
+      value={color ?? ""}
+      onValueChange={(value) => setColor(value as Color)}
     />
   );
 }

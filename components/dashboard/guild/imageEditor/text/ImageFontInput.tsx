@@ -11,7 +11,7 @@ export function ImageFontInput({
 }: {
   textType: "mainText" | "secondText";
 }) {
-  const font = useImageStore((state) => state.activeCard ? state.activeCard[textType]?.font: "");
+  const font = useImageStore((state) => state.getActiveCard()![textType]?.font);
   const setFont =
     textType === "mainText"
       ? useImageStore((state) => state.setMainTextFont)

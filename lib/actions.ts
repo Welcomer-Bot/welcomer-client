@@ -375,7 +375,7 @@ export async function getServerFonts(): Promise<FontList> {
     const fonts = await getFonts({ disableQuoting: true });
     return fonts;
   } catch (err) {
-    console.log(err);
+    console.log("err in getServerFonts", err);
     return [];
   }
 }

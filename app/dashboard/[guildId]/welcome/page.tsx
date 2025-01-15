@@ -15,7 +15,6 @@ export default async function Page({
 }) {
   const { guildId } = await params;
   const welcomerParams = await getWelcomer(guildId);
-  console.log(welcomerParams);
   const guild = await getGuild(guildId);
 
   if (!guild) redirect("/dashboard");
