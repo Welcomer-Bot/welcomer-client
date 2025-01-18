@@ -1,5 +1,5 @@
 import ModuleInitialiser from "@/components/dashboard/guild/moduleInitialiser";
-import { getWelcomer } from "@/lib/dal";
+import { getModuleCards, getWelcomer } from "@/lib/dal";
 
 export default async function Layout({
   children,
@@ -10,13 +10,18 @@ export default async function Layout({
     guildId: string;
   }>;
 }) {
-    const { guildId } = await params;
-    const welcomer = await getWelcomer(guildId);
-    if (!welcomer) return null;
-    
-    return (
-        <ModuleInitialiser moduleName="welcomer" moduleId={welcomer.id}>
-            {children}
-        </ModuleInitialiser>
-    );
+  const { guildId } = await params;
+  const welcomer = await getWelcomer(guildId);
+  if (!welcomer) return <div>Welcomer not enabled</div>;
+  const cards = await getModuleCards(welcomer?.id, "welcomer");
+
+  return (
+    <ModuleInitialiser
+      moduleName="welcomer"
+      moduleId={welcomer.id}
+      cards={cards}
+    >
+      {children}
+    </ModuleInitialiser>
+  );
 }

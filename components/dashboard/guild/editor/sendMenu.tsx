@@ -26,7 +26,7 @@ export default function SendMenu() {
       required
       onChange={(e) => updateChannel(e.target.value)}
       selectedKeys={[
-        currentChannel && channels?.find(({ id }) => currentChannel == id)
+        currentChannel && channels && channels?.find(({ id }) => currentChannel == id)
           ? currentChannel
           : "",
       ]}

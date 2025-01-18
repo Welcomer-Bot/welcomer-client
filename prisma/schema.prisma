@@ -1,16 +1,15 @@
 generator client {
-  provider        = "prisma-client-js"
-  // previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 generator zod {
   provider              = "zod-prisma"
   output                = "./schema"
-  modelSuffix           = "Model"
-  relationModel         = "true"
-  useDecimalJs          = "true"
-  modelCase             = "PascalCase"
   prismaJsonNullability = "true"
+  modelSuffix           = "Model"
+  useDecimalJs          = "true"
+  relationModel         = "true"
+  modelCase             = "PascalCase"
 }
 
 datasource db {
@@ -34,11 +33,11 @@ model Welcomer {
   content       String?
   createdAt     DateTime?   @default(now())
   updatedAt     DateTime?   @updatedAt
+  activeImageId Int?
   DM            DM?
   embeds        Embed[]
-  guild         Guild?      @relation(fields: [guildId], references: [id])
-  activeImageId Int?
   images        ImageCard[]
+  guild         Guild       @relation(fields: [guildId], references: [id])
 }
 
 model Leaver {
@@ -49,10 +48,10 @@ model Leaver {
   content       String?
   createdAt     DateTime?   @default(now())
   updatedAt     DateTime?   @updatedAt
-  embeds        Embed[]
-  guild         Guild?      @relation(fields: [guildId], references: [id])
   activeImageId Int?
-  images        ImageCard[] //zod.nullable()
+  embeds        Embed[]
+  images        ImageCard[]
+  guild         Guild       @relation(fields: [guildId], references: [id])
 }
 
 model DM {
@@ -139,14 +138,9 @@ model EmbedFooter {
 
 model ImageCard {
   /// @zod.optional()
-
   id                Int            @id @default(autoincrement())
   mainTextId        Int?           @unique
   secondTextId      Int?           @unique
-  nicknameTextId    Int?           @unique
-  mainText          ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id])
-  secondText        ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id])
-  nicknameText      ImageCardText? @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
   backgroundColor   String?
   backgroundUrl     String?
   avatarBorderColor String?
@@ -155,8 +149,12 @@ model ImageCard {
   updatedAt         DateTime?      @updatedAt
   welcomerId        Int?
   leaverId          Int?
-  welcomer          Welcomer?      @relation(fields: [welcomerId], references: [id])
+  nicknameTextId    Int?           @unique
   leaver            Leaver?        @relation(fields: [leaverId], references: [id])
+  mainText          ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id])
+  nicknameText      ImageCardText? @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
+  secondText        ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id])
+  welcomer          Welcomer?      @relation(fields: [welcomerId], references: [id])
 }
 
 model ImageCardText {
@@ -168,8 +166,8 @@ model ImageCardText {
   size       Int?
   weight     String?
   mainCard   ImageCard? @relation("MainTextRelation")
-  secondCard ImageCard? @relation("SecondTextRelation")
   nickname   ImageCard? @relation("NicknameRelation")
+  secondCard ImageCard? @relation("SecondTextRelation")
 }
 
 model User {

@@ -1,25 +1,25 @@
-import { ImageCard, ImageCardText } from "@/lib/discord/schema";
 import { ImageTextType } from "@/types";
-import { Color } from "@welcomer-bot/card-canvas";
+import { BaseCardParams, TextCard } from "@/lib/discord/schema";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-
+import { BackgroundBaseColor, Color } from "@welcomer-bot/card-canvas";
 export interface ImageStore {
   moduleId: number | null;
-  imageCards: (ImageCard & { imagePreview?: string })[];
+  imageCards: (BaseCardParams & { imagePreview?: string })[];
   activeCard: number | null;
-  removedText: ImageCardText[];
-  edited : boolean;
+  removedText: TextCard[];
+  edited: boolean;
   setModuleId: (id: number) => void;
+  setCards: (cards: BaseCardParams[]) => void;
   setActiveCard: (index: number) => void;
-  getActiveCard: () => ImageCard | null;
+  getActiveCard: () => BaseCardParams | null;
   setPreviewImage: (image: string) => void;
   createCard: () => void;
   deleteCard: (index: number) => void;
   setBackgroundUrl: (backgroundUrl: string) => void;
-  setBackgroundColor: (backgroundColor: Color) => void;
-  setMainText: (mainText: ImageCardText) => void;
-  setSecondText: (secondText: ImageCardText) => void;
+  setBackgroundColor: (backgroundColor: BackgroundBaseColor) => void;
+  setMainText: (mainText: TextCard) => void;
+  setSecondText: (secondText: TextCard) => void;
   setTextContent: (textType: ImageTextType, content: string) => void;
   setTextColor: (textType: ImageTextType, color: Color) => void;
   setTextFont: (textType: ImageTextType, font: string) => void;
@@ -34,25 +34,25 @@ export interface ImageStore {
   // parseCardText: (user: User, guild: UserGuild) => BaseCardParams|null;
 }
 
-const defaultMainText: ImageCardText = {
+const defaultMainText: TextCard = {
   content: "Welcome {user} to the server!",
   color: "#ffffff",
   font: "Arial",
 };
 
-const defaultSecondText: ImageCardText = {
+const defaultSecondText: TextCard = {
   content: "You are the {memberCount} member!",
   color: "#ffffff",
   font: "Arial",
 };
 
-const defaultNicknameText: ImageCardText = {
+const defaultNicknameText: TextCard = {
   content: "{username}",
   color: "#ffffff",
   font: "Arial",
 };
 
-const defaultImage: ImageCard & { imagePreview?: string } = {
+const defaultImage: BaseCardParams & { imagePreview?: string } = {
   mainText: defaultMainText,
   secondText: defaultSecondText,
   nicknameText: defaultNicknameText,
@@ -89,6 +89,10 @@ export const useImageStore = create<ImageStore>()(
           state.moduleId = id;
         }),
 
+      setCards: (cards) =>
+        set((state) => {
+          state.imageCards = cards;
+        }),
       getActiveCard: () => {
         const state = get();
         if (state.activeCard === null) {
@@ -117,7 +121,7 @@ export const useImageStore = create<ImageStore>()(
         }),
       setBackgroundUrl: (backgroundUrl) =>
         setToActive((state) => {
-          state.imageCards[state.activeCard].backgroundUrl = backgroundUrl;
+          state.imageCards[state.activeCard].backgroundImgURL = backgroundUrl;
         }),
       setBackgroundColor: (backgroundColor) =>
         setToActive((state) => {

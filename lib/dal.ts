@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 
-import { Embed } from "@/lib/discord/schema";
+import { Embed, ImageCard } from "@/lib/discord/schema";
 import {
   APIChannel,
   RESTGetAPIGuildChannelsResult,
@@ -13,8 +13,6 @@ import prisma from "./prisma";
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended } from "@/types";
 import { Leaver, Welcomer } from "@prisma/client";
-
-
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -75,8 +73,8 @@ export const getUserGuild = cache(async (guildId: string) => {
     return await prisma.userGuild.findFirst({
       where: { userId: session.userId, id: guildId },
     });
-  } catch (e){
-    console.log("Failed to get user guild",e );
+  } catch (e) {
+    console.log("Failed to get user guild", e);
     return null;
   }
 });
@@ -155,7 +153,7 @@ export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
     });
 
     return welcomer;
-  } catch(e) {
+  } catch (e) {
     return null;
   }
 }
@@ -194,7 +192,6 @@ export async function getWelcomerById(welcomerId: number) {
     return null;
   }
 }
-
 
 export async function getLeaverById(leaverId: number) {
   try {
@@ -277,6 +274,26 @@ export async function createEmbedAuthor(embedId: number, name: string) {
     });
 
     return author;
+  } catch {
+    return null;
+  }
+}
+
+export async function getModuleCards(
+  moduleId: number,
+  module: "welcomer" | "leaver"
+) : Promise<ImageCard[] | null> {
+  try {
+    const cards = await prisma.imageCard.findMany({
+      where: { [module + "Id"]: moduleId },
+      include: {
+        mainText: true,
+        secondText: true,
+        nicknameText: true,
+      },
+    });
+
+    return cards;
   } catch {
     return null;
   }

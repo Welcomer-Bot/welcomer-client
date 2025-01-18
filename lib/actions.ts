@@ -7,7 +7,7 @@ import { CompleteEmbed } from "@/prisma/schema";
 import { WelcomerStore } from "@/state/welcomer";
 import { ModuleName } from "@/types";
 import { Welcomer } from "@prisma/client";
-import { ImageCard } from "@/lib/discord/schema";
+import { BaseCardParams, ImageCard } from "@/lib/discord/schema";
 import { revalidatePath } from "next/cache";
 import { canUserManageGuild, getLeaverById, getWelcomer, getWelcomerById } from "./dal";
 import { deleteSession } from "./session";
@@ -385,7 +385,7 @@ export async function getServerFonts(): Promise<FontList> {
 
 
 export async function updateCards(store: ImageStore, moduleName: ModuleName|null) {
-  try {
+  // try {
     const moduleId = store.moduleId;
     if (!moduleId) {
       return {
@@ -421,12 +421,13 @@ export async function updateCards(store: ImageStore, moduleName: ModuleName|null
     }
 
     for (const card of store.imageCards) {
-      const cardUpdated = await createOrUpdateCard(card, moduleId);
+      const cardUpdated = await createOrUpdateCard(card, moduleId, moduleName);
       if (!cardUpdated) {
         return {
           error: "An error occurred while updating the module",
         };
       }
+      // @ts-ignore
       store.imageCards[store.imageCards.indexOf(card)] = cardUpdated;
     }
        revalidatePath(`/app/dashboard/${guildId}/image`);
@@ -434,24 +435,25 @@ export async function updateCards(store: ImageStore, moduleName: ModuleName|null
     return {
       done: true,
     };
-  } catch (error) {
-    console.log(error);
-    revalidatePath(`/app/dashboard/${store.moduleId}/image`);
+  // } catch (error) {
+  //   console.log(error);
+  //   revalidatePath(`/app/dashboard/${store.moduleId}/image`);
 
-    return {
-      error: "An error occurred while updating the image module",
-    };
-  }  
+  //   return {
+  //     error: "An error occurred while updating the image module",
+  //   };
+  // }  
 }
 
 export async function createOrUpdateCard(
-  card: ImageCard,
-  moduleId: number
+  card: BaseCardParams,
+  moduleId: number,
+  moduleName: ModuleName
 ): Promise<ImageCard | null> {
   let cardDb;
-  const createOrUpdateMainText = {
-    mainText: card.mainText
-      ? {
+  const createOrUpdateMainText = card.mainText
+    ? {
+        mainText: {
           upsert: {
             where: {
               id: card.mainText?.id ?? -1,
@@ -462,22 +464,21 @@ export async function createOrUpdateCard(
               font: card.mainText.font,
             },
             create: {
-              id: card.id,
               content: card.mainText.content,
               color: card.mainText.color,
               font: card.mainText.font,
             },
           },
-        }
-      : undefined,
-  };
+        },
+      }
+    : {};
 
-  const createOrUpdateSecondText = {
-    secondText: card.secondText
-      ? {
+  const createOrUpdateSecondText = card.secondText
+    ? {
+        secondText: {
           upsert: {
             where: {
-              id: card.secondText?.id ?? -1,
+              id: card.secondText.id ?? -1,
             },
             update: {
               content: card.secondText.content,
@@ -485,22 +486,21 @@ export async function createOrUpdateCard(
               font: card.secondText.font,
             },
             create: {
-              id: card.id,
               content: card.secondText.content,
               color: card.secondText.color,
               font: card.secondText.font,
             },
           },
-        }
-      : undefined,
-  };
+        },
+      }
+    : {};
 
-  const createOrUpdateNicknameText = {
-    nicknameText: card.nicknameText
-      ? {
+  const createOrUpdateNicknameText = card.nicknameText
+    ? {
+        nicknameText: {
           upsert: {
             where: {
-              id: card.nicknameText?.id ?? -1,
+              id: card.nicknameText.id ?? -1,
             },
             update: {
               content: card.nicknameText.content,
@@ -508,53 +508,52 @@ export async function createOrUpdateCard(
               font: card.nicknameText.font,
             },
             create: {
-              id: card.id,
               content: card.nicknameText.content,
               color: card.nicknameText.color,
               font: card.nicknameText.font,
             },
           },
-        }
-      : undefined,
-  };
+        },
+      }
+    : {};
 
-  const createMainText = {
-    mainText: card.mainText
-      ? {
+  const createMainText = card.mainText
+    ? {
+        mainText: {
           create: {
             content: card.mainText.content,
             color: card.mainText.color,
             font: card.mainText.font,
           },
-        }
-      : undefined,
-  };
+        },
+      }
+    : {};
 
-  const createSecondText = {
-    secondText: card.secondText
-      ? {
+  const createSecondText = card.secondText
+    ? {
+        secondText: {
           create: {
             content: card.secondText.content,
             color: card.secondText.color,
             font: card.secondText.font,
           },
-        }
-      : undefined,
-  };
+        },
+      }
+    : {};
 
-  const createNicknameText = {
-    nicknameText: card.nicknameText
-      ? {
+  const createNicknameText = card.nicknameText
+    ? {
+        nicknameText: {
           create: {
             content: card.nicknameText.content,
             color: card.nicknameText.color,
             font: card.nicknameText.font,
           },
-        }
-      : undefined,
-  };
+        },
+      }
+    : {};
 
-  try {
+  // try {
     if (card.id) {
       cardDb = await prisma.imageCard.update({
         where: {
@@ -565,10 +564,23 @@ export async function createOrUpdateCard(
           ...createOrUpdateSecondText,
           ...createOrUpdateNicknameText,
         },
+        include: {
+          mainText: true,
+          secondText: true,
+          nicknameText: true,
+        },
       });
-    } else {
+    } else {    
       cardDb = await prisma.imageCard.create({
         data: {
+          [moduleName]: {
+            connect: {
+              id: moduleId,
+            },
+          },
+          backgroundUrl: card.backgroundImgURL,
+          backgroundColor: typeof card.backgroundColor === 'string' ? card.backgroundColor : undefined,
+          avatarBorderColor: card.avatarBorderColor,
           ...createMainText,
           ...createSecondText,
           ...createNicknameText,
@@ -578,8 +590,8 @@ export async function createOrUpdateCard(
     return {
       ...cardDb,
     };
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+  // } catch (error) {
+  //   console.error(error);
+  //   return null;
+  // }
 }
