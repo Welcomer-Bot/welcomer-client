@@ -1,8 +1,8 @@
-import { ImageTextType } from "@/types";
 import { BaseCardParams, TextCard } from "@/lib/discord/schema";
+import { ImageTextType } from "@/types";
+import { Color } from "@welcomer-bot/card-canvas";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { BackgroundBaseColor, Color } from "@welcomer-bot/card-canvas";
 export interface ImageStore {
   moduleId: number | null;
   imageCards: (BaseCardParams & { imagePreview?: string })[];
@@ -17,7 +17,7 @@ export interface ImageStore {
   createCard: () => void;
   deleteCard: (index: number) => void;
   setBackgroundUrl: (backgroundUrl: string) => void;
-  setBackgroundColor: (backgroundColor: BackgroundBaseColor) => void;
+  setBackgroundColor: (backgroundColor: Color) => void;
   setMainText: (mainText: TextCard) => void;
   setSecondText: (secondText: TextCard) => void;
   setTextContent: (textType: ImageTextType, content: string) => void;
@@ -127,12 +127,14 @@ export const useImageStore = create<ImageStore>()(
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
             if (state.imageCards[state.activeCard].backgroundColor) {
-              state.imageCards[state.activeCard].backgroundColor =
-                backgroundColor;
+              state.imageCards[state.activeCard].backgroundColor = {
+                background: backgroundColor,
+              };
             }
           } else {
-            state.imageCards[state.activeCard].backgroundColor =
-              backgroundColor;
+            state.imageCards[state.activeCard].backgroundColor = {
+              background: backgroundColor,
+            };
           }
         }),
       setMainText: (mainText) =>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageCard } from "@/lib/discord/schema";
+import { BaseCardParams, ImageCard } from "@/lib/discord/schema";
 import { useImageStore } from "@/state/image";
 import { useModuleNameStore } from "@/state/moduleName";
 import { ModuleName } from "@/types";
@@ -14,7 +14,7 @@ export default function ModuleInitialiser({
 }: {
     moduleName: ModuleName;
     moduleId: number;
-    cards: ImageCard[]|null;
+    cards: BaseCardParams[]|null;
   children: React.ReactNode;
 }) {
   const setModuleName = useModuleNameStore((state) => state.setModuleName);

@@ -2,7 +2,7 @@
 
 import { useImageStore } from "@/state/image";
 import { Input } from "@nextui-org/input";
-import { Color } from "@welcomer-bot/card-canvas";
+import { BackgroundBaseColor, Color } from "@welcomer-bot/card-canvas";
 
 export function ImageBackgroundColorInput() {
   const color = useImageStore(
