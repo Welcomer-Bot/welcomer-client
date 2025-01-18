@@ -195,6 +195,19 @@ export async function getWelcomerById(welcomerId: number) {
   }
 }
 
+
+export async function getLeaverById(leaverId: number) {
+  try {
+    const leaver = await prisma.leaver.findUnique({
+      where: { id: leaverId },
+    });
+
+    return leaver;
+  } catch {
+    return null;
+  }
+}
+
 export async function getEmbeds(
   moduleId: string | number
 ): Promise<Embed[] | null> {

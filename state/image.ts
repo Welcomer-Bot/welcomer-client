@@ -1,21 +1,25 @@
+import { ImageCard, ImageCardText } from "@/lib/discord/schema";
 import { ImageTextType } from "@/types";
-import { BaseCardParams, Color, TextCard } from "@welcomer-bot/card-canvas";
+import { Color } from "@welcomer-bot/card-canvas";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 export interface ImageStore {
-  imageCards: (BaseCardParams & { imagePreview?: string })[];
+  moduleId: number | null;
+  imageCards: (ImageCard & { imagePreview?: string })[];
   activeCard: number | null;
-  removedText: ImageTextType[];
+  removedText: ImageCardText[];
+  edited : boolean;
+  setModuleId: (id: number) => void;
   setActiveCard: (index: number) => void;
-  getActiveCard: () => BaseCardParams | null;
+  getActiveCard: () => ImageCard | null;
   setPreviewImage: (image: string) => void;
   createCard: () => void;
   deleteCard: (index: number) => void;
   setBackgroundUrl: (backgroundUrl: string) => void;
   setBackgroundColor: (backgroundColor: Color) => void;
-  setMainText: (mainText: TextCard) => void;
-  setSecondText: (secondText: TextCard) => void;
+  setMainText: (mainText: ImageCardText) => void;
+  setSecondText: (secondText: ImageCardText) => void;
   setTextContent: (textType: ImageTextType, content: string) => void;
   setTextColor: (textType: ImageTextType, color: Color) => void;
   setTextFont: (textType: ImageTextType, font: string) => void;
@@ -30,25 +34,25 @@ export interface ImageStore {
   // parseCardText: (user: User, guild: UserGuild) => BaseCardParams|null;
 }
 
-const defaultMainText: TextCard = {
+const defaultMainText: ImageCardText = {
   content: "Welcome {user} to the server!",
   color: "#ffffff",
   font: "Arial",
 };
 
-const defaultSecondText: TextCard = {
+const defaultSecondText: ImageCardText = {
   content: "You are the {memberCount} member!",
   color: "#ffffff",
   font: "Arial",
 };
 
-const defaultNicknameText: TextCard = {
+const defaultNicknameText: ImageCardText = {
   content: "{username}",
   color: "#ffffff",
   font: "Arial",
 };
 
-const defaultImage: BaseCardParams & { imagePreview?: string } = {
+const defaultImage: ImageCard & { imagePreview?: string } = {
   mainText: defaultMainText,
   secondText: defaultSecondText,
   nicknameText: defaultNicknameText,
@@ -65,17 +69,24 @@ export const useImageStore = create<ImageStore>()(
           state.imageCards[state.activeCard] === undefined
         )
           return console.log("No active card");
+        state.edited = true;
         fn(state as ImageStore & { activeCard: number });
       });
     };
 
     return {
+      moduleId: null,
       imageCards: [],
       activeCard: null,
       removedText: [],
+      edited: false,
       setActiveCard: (index) =>
         set((state) => {
           state.activeCard = index;
+        }),
+      setModuleId: (id) =>
+        set((state) => {
+          state.moduleId = id;
         }),
 
       getActiveCard: () => {
@@ -106,20 +117,18 @@ export const useImageStore = create<ImageStore>()(
         }),
       setBackgroundUrl: (backgroundUrl) =>
         setToActive((state) => {
-          state.imageCards[state.activeCard].backgroundImgURL = backgroundUrl;
+          state.imageCards[state.activeCard].backgroundUrl = backgroundUrl;
         }),
       setBackgroundColor: (backgroundColor) =>
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
             if (state.imageCards[state.activeCard].backgroundColor) {
-              state.imageCards[state.activeCard].backgroundColor = {
-                background: backgroundColor,
-              };
-            } else {
-              state.imageCards[state.activeCard].backgroundColor = {
-                background: backgroundColor,
-              };
+              state.imageCards[state.activeCard].backgroundColor =
+                backgroundColor;
             }
+          } else {
+            state.imageCards[state.activeCard].backgroundColor =
+              backgroundColor;
           }
         }),
       setMainText: (mainText) =>
@@ -130,72 +139,6 @@ export const useImageStore = create<ImageStore>()(
         setToActive((state) => {
           state.imageCards[state.activeCard].secondText = secondText;
         }),
-      // setMainTextContent: (content) =>
-      //   setToActive((state) => {
-      //     if (state.imageCards[state.activeCard].mainText) {
-      //       state.imageCards[state.activeCard].mainText!.content = content;
-      //     } else {
-      //       state.imageCards[state.activeCard].mainText = {
-      //         ...defaultMainText,
-      //         content,
-      //       };
-      //     }
-      //   }),
-      // setSecondTextContent: (content) =>
-      //   setToActive((state) => {
-      //     if (state.imageCards[state.activeCard].secondText) {
-      //       state.imageCards[state.activeCard].secondText!.content = content;
-      //     } else {
-      //       state.imageCards[state.activeCard].secondText = {
-      //         ...defaultSecondText,
-      //         content,
-      //       };
-      //     }
-      //   }),
-      // setMainTextColor: (color) =>
-      //   setToActive((state) => {
-      //     if (state.imageCards[state.activeCard].mainText) {
-      //       state.imageCards[state.activeCard].mainText!.color = color;
-      //     } else {
-      //       state.imageCards[state.activeCard].mainText = {
-      //         ...defaultMainText,
-      //         color,
-      //       };
-      //     }
-      //   }),
-      // setSecondTextColor: (color) =>
-      //   setToActive((state) => {
-      //     if (state.imageCards[state.activeCard].secondText) {
-      //       state.imageCards[state.activeCard].secondText!.color = color;
-      //     } else {
-      //       state.imageCards[state.activeCard].secondText = {
-      //         ...defaultSecondText,
-      //         color,
-      //       };
-      //     }
-      //   }),
-      // setMainTextFont: (font) =>
-      //   setToActive((state) => {
-      //     if (state.imageCards[state.activeCard].mainText) {
-      //       state.imageCards[state.activeCard].mainText!.font = font;
-      //     } else {
-      //       state.imageCards[state.activeCard].mainText = {
-      //         ...defaultMainText,
-      //         font,
-      //       };
-      //     }
-      //   }),
-      // setSecondTextFont: (font) =>
-      //   setToActive((state) => {
-      //     if (state.imageCards[state.activeCard].secondText) {
-      //       state.imageCards[state.activeCard].secondText!.font = font;
-      //     } else {
-      //       state.imageCards[state.activeCard].secondText = {
-      //         ...defaultSecondText,
-      //         font,
-      //       };
-      //     }
-      //   }),
       setTextContent: (textType, content) =>
         setToActive((state) => {
           if (state.imageCards[state.activeCard][textType]) {
@@ -205,13 +148,13 @@ export const useImageStore = create<ImageStore>()(
               ...(textType === "mainText"
                 ? defaultMainText
                 : textType === "secondText"
-                ? defaultSecondText
-                : defaultNicknameText),
+                  ? defaultSecondText
+                  : defaultNicknameText),
               content,
             };
           }
         }),
-      
+
       setTextColor: (textType, color) =>
         setToActive((state) => {
           if (state.imageCards[state.activeCard][textType]) {
@@ -221,8 +164,8 @@ export const useImageStore = create<ImageStore>()(
               ...(textType === "mainText"
                 ? defaultMainText
                 : textType === "secondText"
-                ? defaultSecondText
-                : defaultNicknameText),
+                  ? defaultSecondText
+                  : defaultNicknameText),
               color,
             };
           }
@@ -236,24 +179,22 @@ export const useImageStore = create<ImageStore>()(
               ...(textType === "mainText"
                 ? defaultMainText
                 : textType === "secondText"
-                ? defaultSecondText
-                : defaultNicknameText),
+                  ? defaultSecondText
+                  : defaultNicknameText),
               font,
             };
           }
         }),
       removeText: (textType) =>
         setToActive((state) => {
-          state.removedText.push(textType);
+          const text = state.imageCards[state.activeCard][textType];
+          if (text) {
+            state.removedText.push(text);
+          }
           state.imageCards[state.activeCard][textType] = undefined;
         }),
       addText: (textType) =>
         setToActive((state) => {
-          if (state.removedText.includes(textType)) {
-            state.removedText = state.removedText.filter(
-              (removed) => removed !== textType
-            );
-          }
           state.imageCards[state.activeCard][textType] =
             textType === "mainText"
               ? defaultMainText

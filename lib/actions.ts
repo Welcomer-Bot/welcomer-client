@@ -7,12 +7,15 @@ import { CompleteEmbed } from "@/prisma/schema";
 import { WelcomerStore } from "@/state/welcomer";
 import { ModuleName } from "@/types";
 import { Welcomer } from "@prisma/client";
+import { ImageCard } from "@/lib/discord/schema";
 import { revalidatePath } from "next/cache";
-import { canUserManageGuild } from "./dal";
+import { canUserManageGuild, getLeaverById, getWelcomer, getWelcomerById } from "./dal";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
 import { LeaverStore } from "@/state/leaver";
 import {FontList, getFonts} from "font-list";
+import { ImageStore } from "@/state/image";
+import { DefaultCard } from "@welcomer-bot/card-canvas";
 
 export async function signIn() {
   redirect("/api/auth/login");
@@ -380,3 +383,203 @@ export async function getServerFonts(): Promise<FontList> {
   }
 }
 
+
+export async function updateCards(store: ImageStore, moduleName: ModuleName|null) {
+  try {
+    const moduleId = store.moduleId;
+    if (!moduleId) {
+      return {
+        error: "You need to select a module",
+      };
+    }
+
+    if (!moduleName) {
+      return {
+        error: "Invalid module name",
+      };
+    }
+    const module = moduleName === "welcomer" ? await getWelcomerById(moduleId) : await getLeaverById(moduleId);
+    if (!module) {
+      return {
+        error: "The module does not exist",
+      };
+    }
+    const guildId = module.guildId;
+    if (!guildId || !(await canUserManageGuild(guildId))) {
+      return {
+        error: "You do not have permission to manage this guild",
+      };
+    }
+    for (const text of store.removedText) {
+      if (text.id) {
+        await prisma.imageCardText.delete({
+          where: {
+            id: text.id,
+          },
+        });
+      }
+    }
+
+    for (const card of store.imageCards) {
+      const cardUpdated = await createOrUpdateCard(card, moduleId);
+      if (!cardUpdated) {
+        return {
+          error: "An error occurred while updating the module",
+        };
+      }
+      store.imageCards[store.imageCards.indexOf(card)] = cardUpdated;
+    }
+       revalidatePath(`/app/dashboard/${guildId}/image`);
+
+    return {
+      done: true,
+    };
+  } catch (error) {
+    console.log(error);
+    revalidatePath(`/app/dashboard/${store.moduleId}/image`);
+
+    return {
+      error: "An error occurred while updating the image module",
+    };
+  }  
+}
+
+export async function createOrUpdateCard(
+  card: ImageCard,
+  moduleId: number
+): Promise<ImageCard | null> {
+  let cardDb;
+  const createOrUpdateMainText = {
+    mainText: card.mainText
+      ? {
+          upsert: {
+            where: {
+              id: card.mainText?.id ?? -1,
+            },
+            update: {
+              content: card.mainText.content,
+              color: card.mainText.color,
+              font: card.mainText.font,
+            },
+            create: {
+              id: card.id,
+              content: card.mainText.content,
+              color: card.mainText.color,
+              font: card.mainText.font,
+            },
+          },
+        }
+      : undefined,
+  };
+
+  const createOrUpdateSecondText = {
+    secondText: card.secondText
+      ? {
+          upsert: {
+            where: {
+              id: card.secondText?.id ?? -1,
+            },
+            update: {
+              content: card.secondText.content,
+              color: card.secondText.color,
+              font: card.secondText.font,
+            },
+            create: {
+              id: card.id,
+              content: card.secondText.content,
+              color: card.secondText.color,
+              font: card.secondText.font,
+            },
+          },
+        }
+      : undefined,
+  };
+
+  const createOrUpdateNicknameText = {
+    nicknameText: card.nicknameText
+      ? {
+          upsert: {
+            where: {
+              id: card.nicknameText?.id ?? -1,
+            },
+            update: {
+              content: card.nicknameText.content,
+              color: card.nicknameText.color,
+              font: card.nicknameText.font,
+            },
+            create: {
+              id: card.id,
+              content: card.nicknameText.content,
+              color: card.nicknameText.color,
+              font: card.nicknameText.font,
+            },
+          },
+        }
+      : undefined,
+  };
+
+  const createMainText = {
+    mainText: card.mainText
+      ? {
+          create: {
+            content: card.mainText.content,
+            color: card.mainText.color,
+            font: card.mainText.font,
+          },
+        }
+      : undefined,
+  };
+
+  const createSecondText = {
+    secondText: card.secondText
+      ? {
+          create: {
+            content: card.secondText.content,
+            color: card.secondText.color,
+            font: card.secondText.font,
+          },
+        }
+      : undefined,
+  };
+
+  const createNicknameText = {
+    nicknameText: card.nicknameText
+      ? {
+          create: {
+            content: card.nicknameText.content,
+            color: card.nicknameText.color,
+            font: card.nicknameText.font,
+          },
+        }
+      : undefined,
+  };
+
+  try {
+    if (card.id) {
+      cardDb = await prisma.imageCard.update({
+        where: {
+          id: card.id,
+        },
+        data: {
+          ...createOrUpdateMainText,
+          ...createOrUpdateSecondText,
+          ...createOrUpdateNicknameText,
+        },
+      });
+    } else {
+      cardDb = await prisma.imageCard.create({
+        data: {
+          ...createMainText,
+          ...createSecondText,
+          ...createNicknameText,
+        },
+      });
+    }
+    return {
+      ...cardDb,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

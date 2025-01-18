@@ -1,6 +1,7 @@
 import { CardEditor } from "./cardEditor";
 import { CardLib } from "./cardLib";
 import { EditorImagePreview } from "./editorImagePreview";
+import SaveButton from "./saveButton";
 
 export function Editor() {
   return (
@@ -9,6 +10,7 @@ export function Editor() {
         <div className="lg:w-1/2 lg:h-full lg:overflow-y-auto no-scrollbar">
           <CardLib />
           <CardEditor />
+          <SaveButton />
         </div>
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
           <EditorImagePreview />
