@@ -18,14 +18,16 @@ export function ImageCard({
   const currentCard = useImageStore((state) => state.imageCards[index]);
   const previewImage = currentCard?.imagePreview;
   const setActiveCard = useImageStore((state) => state.setActiveCard);
+  const setPreviewImage = useImageStore((state) => state.setPreviewImage);
   useEffect(() => {
     if (previewImage) {
       setImage(previewImage);
     } else {
       if (!currentCard) return;
       const loadPreview = async () => {
-        const image = await generateImage(currentCard);
-        setImage(image);
+        const generatedImage = await generateImage(currentCard);
+        setImage(generatedImage);
+        setPreviewImage(generatedImage)
       };
       loadPreview();
     }

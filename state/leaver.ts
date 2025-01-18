@@ -60,6 +60,7 @@ const defaultMessage: Leaver = {
   channelId: "",
   content: "Goodbye {user}, we will miss you!",
   embeds: [],
+  images: [],
 };
 
 const defaultEmbed: CompleteEmbed = {

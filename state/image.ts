@@ -1,3 +1,5 @@
+import { parseText } from "@/lib/discord/text";
+import { User, UserGuild } from "@prisma/client";
 import { BaseCardParams, Color, TextCard } from "@welcomer-bot/card-canvas";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -20,6 +22,7 @@ export interface ImageStore {
   setSecondTextColor: (color: Color) => void;
   setMainTextFont: (font: string) => void;
   setSecondTextFont: (font: string) => void;
+  parseCardText: (user: User, guild: UserGuild) => string;
 }
 
 const defaultMainText: TextCard = {
@@ -184,6 +187,20 @@ export const useImageStore = create<ImageStore>()(
             };
           }
         }),
+      parseCardText(user, guild) {
+        const state = get();
+        if (state.activeCard === null) {
+          console.log("No active card, got null");
+          return null;
+        }
+        const card = state.imageCards[state.activeCard];
+        if (!card) return "";
+        return {
+          ...card,
+          mainText: card.mainText ? parseText(card.mainText.content, user, guild) : null,
+          secondText: card.secondText ? parseText(card.secondText.content, user, guild) : null,
+        }
+      },
     };
   })
 );
