@@ -10,6 +10,9 @@ export interface ModuleNameParams {
 export const useModuleNameStore = create<ModuleNameParams>()(
   immer((set, get) => ({
     moduleName: null,
-    setModuleName: (moduleName) => set({ moduleName: moduleName }),
+    setModuleName: (moduleName) =>
+      set((state) => {
+        state.moduleName = moduleName;
+      }),
   }))
 );
