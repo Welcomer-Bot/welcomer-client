@@ -1,5 +1,4 @@
-import { parseText } from "@/lib/discord/text";
-import { User, UserGuild } from "@prisma/client";
+import { ImageTextType } from "@/types";
 import { BaseCardParams, Color, TextCard } from "@welcomer-bot/card-canvas";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -7,6 +6,7 @@ import { immer } from "zustand/middleware/immer";
 export interface ImageStore {
   imageCards: (BaseCardParams & { imagePreview?: string })[];
   activeCard: number | null;
+  removedText: ImageTextType[];
   setActiveCard: (index: number) => void;
   getActiveCard: () => BaseCardParams | null;
   setPreviewImage: (image: string) => void;
@@ -16,34 +16,42 @@ export interface ImageStore {
   setBackgroundColor: (backgroundColor: Color) => void;
   setMainText: (mainText: TextCard) => void;
   setSecondText: (secondText: TextCard) => void;
-  setMainTextContent: (content: string) => void;
-  setSecondTextContent: (content: string) => void;
-  setMainTextColor: (color: Color) => void;
-  setSecondTextColor: (color: Color) => void;
-  setMainTextFont: (font: string) => void;
-  setSecondTextFont: (font: string) => void;
-  parseCardText: (user: User, guild: UserGuild) => string;
+  setTextContent: (textType: ImageTextType, content: string) => void;
+  setTextColor: (textType: ImageTextType, color: Color) => void;
+  setTextFont: (textType: ImageTextType, font: string) => void;
+  // setMainTextContent: (content: string) => void;
+  // setSecondTextContent: (content: string) => void;
+  // setMainTextColor: (color: Color) => void;
+  // setSecondTextColor: (color: Color) => void;
+  // setMainTextFont: (font: string) => void;
+  // setSecondTextFont: (font: string) => void;
+  removeText: (textType: ImageTextType) => void;
+  addText: (textType: ImageTextType) => void;
+  // parseCardText: (user: User, guild: UserGuild) => BaseCardParams|null;
 }
 
 const defaultMainText: TextCard = {
   content: "Welcome {user} to the server!",
   color: "#ffffff",
+  font: "Arial",
 };
 
 const defaultSecondText: TextCard = {
   content: "You are the {memberCount} member!",
   color: "#ffffff",
+  font: "Arial",
 };
 
-const nicknameText: TextCard = {
+const defaultNicknameText: TextCard = {
   content: "{username}",
   color: "#ffffff",
+  font: "Arial",
 };
 
 const defaultImage: BaseCardParams & { imagePreview?: string } = {
   mainText: defaultMainText,
   secondText: defaultSecondText,
-  nicknameText: nicknameText,
+  nicknameText: defaultNicknameText,
 };
 
 export const useImageStore = create<ImageStore>()(
@@ -64,6 +72,7 @@ export const useImageStore = create<ImageStore>()(
     return {
       imageCards: [],
       activeCard: null,
+      removedText: [],
       setActiveCard: (index) =>
         set((state) => {
           state.activeCard = index;
@@ -73,8 +82,8 @@ export const useImageStore = create<ImageStore>()(
         const state = get();
         if (state.activeCard === null) {
           console.log("No active card, got null");
-          return null
-        };
+          return null;
+        }
         return state.imageCards[state.activeCard];
       },
       setPreviewImage: (image) =>
@@ -121,86 +130,137 @@ export const useImageStore = create<ImageStore>()(
         setToActive((state) => {
           state.imageCards[state.activeCard].secondText = secondText;
         }),
-      setMainTextContent: (content) =>
+      // setMainTextContent: (content) =>
+      //   setToActive((state) => {
+      //     if (state.imageCards[state.activeCard].mainText) {
+      //       state.imageCards[state.activeCard].mainText!.content = content;
+      //     } else {
+      //       state.imageCards[state.activeCard].mainText = {
+      //         ...defaultMainText,
+      //         content,
+      //       };
+      //     }
+      //   }),
+      // setSecondTextContent: (content) =>
+      //   setToActive((state) => {
+      //     if (state.imageCards[state.activeCard].secondText) {
+      //       state.imageCards[state.activeCard].secondText!.content = content;
+      //     } else {
+      //       state.imageCards[state.activeCard].secondText = {
+      //         ...defaultSecondText,
+      //         content,
+      //       };
+      //     }
+      //   }),
+      // setMainTextColor: (color) =>
+      //   setToActive((state) => {
+      //     if (state.imageCards[state.activeCard].mainText) {
+      //       state.imageCards[state.activeCard].mainText!.color = color;
+      //     } else {
+      //       state.imageCards[state.activeCard].mainText = {
+      //         ...defaultMainText,
+      //         color,
+      //       };
+      //     }
+      //   }),
+      // setSecondTextColor: (color) =>
+      //   setToActive((state) => {
+      //     if (state.imageCards[state.activeCard].secondText) {
+      //       state.imageCards[state.activeCard].secondText!.color = color;
+      //     } else {
+      //       state.imageCards[state.activeCard].secondText = {
+      //         ...defaultSecondText,
+      //         color,
+      //       };
+      //     }
+      //   }),
+      // setMainTextFont: (font) =>
+      //   setToActive((state) => {
+      //     if (state.imageCards[state.activeCard].mainText) {
+      //       state.imageCards[state.activeCard].mainText!.font = font;
+      //     } else {
+      //       state.imageCards[state.activeCard].mainText = {
+      //         ...defaultMainText,
+      //         font,
+      //       };
+      //     }
+      //   }),
+      // setSecondTextFont: (font) =>
+      //   setToActive((state) => {
+      //     if (state.imageCards[state.activeCard].secondText) {
+      //       state.imageCards[state.activeCard].secondText!.font = font;
+      //     } else {
+      //       state.imageCards[state.activeCard].secondText = {
+      //         ...defaultSecondText,
+      //         font,
+      //       };
+      //     }
+      //   }),
+      setTextContent: (textType, content) =>
         setToActive((state) => {
-          if (state.imageCards[state.activeCard].mainText) {
-            state.imageCards[state.activeCard].mainText!.content = content;
+          if (state.imageCards[state.activeCard][textType]) {
+            state.imageCards[state.activeCard][textType]!.content = content;
           } else {
-            state.imageCards[state.activeCard].mainText = {
-              ...defaultMainText,
+            state.imageCards[state.activeCard][textType] = {
+              ...(textType === "mainText"
+                ? defaultMainText
+                : textType === "secondText"
+                ? defaultSecondText
+                : defaultNicknameText),
               content,
             };
           }
         }),
-      setSecondTextContent: (content) =>
+      
+      setTextColor: (textType, color) =>
         setToActive((state) => {
-          if (state.imageCards[state.activeCard].secondText) {
-            state.imageCards[state.activeCard].secondText!.content = content;
+          if (state.imageCards[state.activeCard][textType]) {
+            state.imageCards[state.activeCard][textType]!.color = color;
           } else {
-            state.imageCards[state.activeCard].secondText = {
-              ...defaultSecondText,
-              content,
-            };
-          }
-        }),
-      setMainTextColor: (color) =>
-        setToActive((state) => {
-          if (state.imageCards[state.activeCard].mainText) {
-            state.imageCards[state.activeCard].mainText!.color = color;
-          } else {
-            state.imageCards[state.activeCard].mainText = {
-              ...defaultMainText,
+            state.imageCards[state.activeCard][textType] = {
+              ...(textType === "mainText"
+                ? defaultMainText
+                : textType === "secondText"
+                ? defaultSecondText
+                : defaultNicknameText),
               color,
             };
           }
         }),
-      setSecondTextColor: (color) =>
+      setTextFont: (textType, font) =>
         setToActive((state) => {
-          if (state.imageCards[state.activeCard].secondText) {
-            state.imageCards[state.activeCard].secondText!.color = color;
+          if (state.imageCards[state.activeCard][textType]) {
+            state.imageCards[state.activeCard][textType]!.font = font;
           } else {
-            state.imageCards[state.activeCard].secondText = {
-              ...defaultSecondText,
-              color,
-            };
-          }
-        }),
-      setMainTextFont: (font) =>
-        setToActive((state) => {
-          if (state.imageCards[state.activeCard].mainText) {
-            state.imageCards[state.activeCard].mainText!.font = font;
-          } else {
-            state.imageCards[state.activeCard].mainText = {
-              ...defaultMainText,
+            state.imageCards[state.activeCard][textType] = {
+              ...(textType === "mainText"
+                ? defaultMainText
+                : textType === "secondText"
+                ? defaultSecondText
+                : defaultNicknameText),
               font,
             };
           }
         }),
-      setSecondTextFont: (font) =>
+      removeText: (textType) =>
         setToActive((state) => {
-          if (state.imageCards[state.activeCard].secondText) {
-            state.imageCards[state.activeCard].secondText!.font = font;
-          } else {
-            state.imageCards[state.activeCard].secondText = {
-              ...defaultSecondText,
-              font,
-            };
-          }
+          state.removedText.push(textType);
+          state.imageCards[state.activeCard][textType] = undefined;
         }),
-      parseCardText(user, guild) {
-        const state = get();
-        if (state.activeCard === null) {
-          console.log("No active card, got null");
-          return null;
-        }
-        const card = state.imageCards[state.activeCard];
-        if (!card) return "";
-        return {
-          ...card,
-          mainText: card.mainText ? parseText(card.mainText.content, user, guild) : null,
-          secondText: card.secondText ? parseText(card.secondText.content, user, guild) : null,
-        }
-      },
+      addText: (textType) =>
+        setToActive((state) => {
+          if (state.removedText.includes(textType)) {
+            state.removedText = state.removedText.filter(
+              (removed) => removed !== textType
+            );
+          }
+          state.imageCards[state.activeCard][textType] =
+            textType === "mainText"
+              ? defaultMainText
+              : textType === "secondText"
+                ? defaultSecondText
+                : defaultNicknameText;
+        }),
     };
   })
 );

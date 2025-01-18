@@ -2,6 +2,7 @@
 
 import { getServerFonts } from "@/lib/actions";
 import { useImageStore } from "@/state/image";
+import { ImageTextType } from "@/types";
 import { Select, SelectItem } from "@nextui-org/select";
 import { FontList } from "font-list";
 import { useEffect, useState } from "react";
@@ -9,13 +10,10 @@ import { useEffect, useState } from "react";
 export function ImageFontInput({
   textType,
 }: {
-  textType: "mainText" | "secondText";
+    textType: ImageTextType;
 }) {
   const font = useImageStore((state) => state.getActiveCard()![textType]?.font);
-  const setFont =
-    textType === "mainText"
-      ? useImageStore((state) => state.setMainTextFont)
-      : useImageStore((state) => state.setSecondTextFont);
+  const setFont = useImageStore((state) => state.setTextFont);
 
   const [fontsList, setFontsList] = useState<FontList | null>(null);
   useEffect(() => {
@@ -25,7 +23,7 @@ export function ImageFontInput({
   }, []);
 
   const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFont(e.target.value);
+    setFont(textType, e.target.value);
   };
   return (
     <Select

@@ -1,20 +1,18 @@
 "use client";
 
 import { useImageStore } from "@/state/image";
+import { ImageTextType } from "@/types";
 import { Input } from "@nextui-org/input";
 
 export function ImageContentInput({
   textType,
 }: {
-  textType: "mainText" | "secondText";
+  textType: ImageTextType
 }) {
   const content = useImageStore(
     (state) => state.getActiveCard()![textType]?.content
   );
-  const setContent =
-    textType === "mainText"
-      ? useImageStore((state) => state.setMainTextContent)
-      : useImageStore((state) => state.setSecondTextContent);
+  const setContent = useImageStore((state) => state.setTextContent);
 
   return (
     <Input
@@ -26,7 +24,7 @@ export function ImageContentInput({
           return "Content must not exceed 256 characters!";
       }}
       value={content ?? ""}
-      onValueChange={(value) => setContent(value)}
+      onValueChange={(value) => setContent(textType, value)}
     />
   );
 }

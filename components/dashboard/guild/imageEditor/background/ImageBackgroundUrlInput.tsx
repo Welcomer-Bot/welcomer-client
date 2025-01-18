@@ -8,6 +8,7 @@ export function ImageBackgroundUrlInput() {
   return (
     <Input
       type="url"
+      label="Background URL"
       aria-label="Background URL"
       value={backgroundUrl ?? ""}
       onValueChange={(value) => setBackgroundUrl(value)}

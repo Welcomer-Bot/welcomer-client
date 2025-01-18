@@ -16,3 +16,5 @@ export interface GuildExtended extends UserGuild {
 }
 
 export type ModuleName = "welcomer" | "leaver";
+
+export type ImageTextType = "mainText" | "secondText" | "nicknameText";

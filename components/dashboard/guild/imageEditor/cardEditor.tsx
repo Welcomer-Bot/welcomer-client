@@ -22,6 +22,9 @@ export function CardEditor() {
         <AccordionItem title="Second Text" aria-label="Second Text">
           <ImageTextFields textType="secondText" />
         </AccordionItem>
+        <AccordionItem title="Nickname Text" aria-label="Nickname Text">
+          <ImageTextFields textType="nicknameText" />
+        </AccordionItem>
         <AccordionItem title="Background options" aria-label="Background">
           <ImageBackgroundFields />
         </AccordionItem>
