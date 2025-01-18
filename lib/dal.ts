@@ -1,3 +1,4 @@
+"use server";
 import "server-only";
 
 import { Embed } from "@/lib/discord/schema";
@@ -74,7 +75,8 @@ export const getUserGuild = cache(async (guildId: string) => {
     return await prisma.userGuild.findFirst({
       where: { userId: session.userId, id: guildId },
     });
-  } catch {
+  } catch (e){
+    console.log("Failed to get user guild",e );
     return null;
   }
 });

@@ -15,6 +15,7 @@ import { Logo } from "@/components/icons";
 import { getUserAvatar } from "@/lib/utils";
 import { useGuildStore } from "@/state/guild";
 import { useModuleNameStore } from "@/state/moduleName";
+import { GuildExtended } from "@/types";
 
 const SidebarContext = createContext<{
   isOpen: boolean;
@@ -34,7 +35,7 @@ export function Sidebar({
   user,
 }: {
   currentGuild: UserGuild;
-  guilds: UserGuild[];
+  guilds: GuildExtended[];
   user: User;
 }) {
   const module = useModuleNameStore((state) => state.moduleName);

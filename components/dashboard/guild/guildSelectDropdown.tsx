@@ -9,6 +9,7 @@ import {
 import { UserGuild } from "@prisma/client";
 import NextLink from "next/link";
 
+import { GuildExtended } from "@/types";
 import GuildCard from "./guildCard";
 
 export function GuildSelectDropdown({
@@ -16,7 +17,7 @@ export function GuildSelectDropdown({
   currentGuild,
   isOpen,
 }: {
-  guilds: UserGuild[];
+  guilds: GuildExtended[];
   currentGuild: UserGuild;
   isOpen: boolean;
 }) {
@@ -40,13 +41,28 @@ export function GuildSelectDropdown({
         className="max-h-52 overflow-y-auto"
         variant="flat"
       >
-        {guilds.map((guild) => (
-          <DropdownItem key={guild.id} textValue={guild.id}>
-            <NextLink href={`/dashboard/${guild.id}`}>
-              <GuildCard guild={guild} />
-            </NextLink>
-          </DropdownItem>
-        ))}
+        {guilds.map((guild) => {
+          if (guild.mutual) {
+            return (
+              <DropdownItem key={guild.id} textValue={guild.id}>
+                <NextLink href={`/dashboard/${guild.id}`}>
+                  <GuildCard guild={guild} />
+                </NextLink>
+              </DropdownItem>
+            );
+          } else {
+            return (
+              <DropdownItem key={guild.id} textValue={guild.id}>
+                {/* invite link for the bot */}
+                <a
+                  href={`/api/bot/add/${guild.id}`}
+                >
+                  <GuildCard guild={guild} />
+                </a>
+              </DropdownItem>
+            );
+          }
+        })}
       </DropdownMenu>
     </Dropdown>
   );

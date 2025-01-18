@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { decrypt, getSession } from "@/lib/session";
 
-const protectedRoutes = ["/dashboard"];
-
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
+  const isProtectedRoute = path.startsWith("/dashboard");
 
   const session = await getSession();
   const sessionData = await decrypt(session);
