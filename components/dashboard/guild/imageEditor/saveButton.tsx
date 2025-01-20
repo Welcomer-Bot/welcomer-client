@@ -18,7 +18,14 @@ export default function SaveButton() {
         <Button
           color="primary"
           onPress={async () => {
-            const res = await updateCards(store, module);
+            const storeWithoutPreview = {
+              ...store,
+              imageCards: store.imageCards.map((card) => {
+                const { imagePreview, ...rest } = card;
+                return rest;
+              }),
+            }
+            const res = await updateCards(storeWithoutPreview, module);
             if (res?.error) {
               toast.error(res.error);
             } else if (res.done) {

@@ -11,6 +11,6 @@ export async function GET(
   }
   const welcomer = await getWelcomer(guildId);
   if (!welcomer) return new Response("Welcomer not found", { status: 404 });
-  const embeds = await getEmbeds(welcomer?.id);
+  const embeds = await getEmbeds(welcomer?.id, "welcomer");
   return new Response(JSON.stringify(embeds), { status: 200 });
 }

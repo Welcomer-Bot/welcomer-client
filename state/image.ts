@@ -7,6 +7,7 @@ export interface ImageStore {
   moduleId: number | null;
   imageCards: (BaseCardParams & { imagePreview?: string })[];
   activeCard: number | null;
+  removedCard: BaseCardParams[];
   removedText: TextCard[];
   edited: boolean;
   setModuleId: (id: number) => void;
@@ -15,6 +16,7 @@ export interface ImageStore {
   getActiveCard: () => BaseCardParams | null;
   setPreviewImage: (image: string) => void;
   createCard: () => void;
+  clearCards: () => void;
   deleteCard: (index: number) => void;
   setBackgroundUrl: (backgroundUrl: string) => void;
   setBackgroundColor: (backgroundColor: Color) => void;
@@ -77,6 +79,7 @@ export const useImageStore = create<ImageStore>()(
     return {
       moduleId: null,
       imageCards: [],
+      removedCard: [],
       activeCard: null,
       removedText: [],
       edited: false,
@@ -114,10 +117,21 @@ export const useImageStore = create<ImageStore>()(
         set((state) => {
           const index = state.imageCards.push(defaultImage);
           state.activeCard = index - 1;
+          state.edited = true;
+        }),
+      clearCards: () =>
+        set((state) => {
+          state.removedCard.push(...state.imageCards);
+          state.imageCards = [];
+          state.activeCard = null;
+          state.edited = true;
         }),
       deleteCard: (index) =>
         set((state) => {
+          state.removedCard.push(state.imageCards[index]);
           state.imageCards.splice(index, 1);
+          console.log("Deleted card", index);
+          state.edited = true;
         }),
       setBackgroundUrl: (backgroundUrl) =>
         setToActive((state) => {

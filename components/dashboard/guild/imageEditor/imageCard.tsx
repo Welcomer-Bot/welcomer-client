@@ -2,9 +2,11 @@
 
 import { generateImage } from "@/lib/discord/image";
 import { useImageStore } from "@/state/image";
+import { Button } from "@nextui-org/button";
 import { Card, CardFooter } from "@nextui-org/card";
 import { Skeleton } from "@nextui-org/skeleton";
 import { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 
 export function ImageCard({
   index,
@@ -19,6 +21,7 @@ export function ImageCard({
   const previewImage = currentCard?.imagePreview;
   const setActiveCard = useImageStore((state) => state.setActiveCard);
   const setPreviewImage = useImageStore((state) => state.setPreviewImage);
+  const deleteCard = useImageStore((state) => state.deleteCard);
   useEffect(() => {
     if (previewImage) {
       setImage(previewImage);
@@ -27,7 +30,7 @@ export function ImageCard({
       const loadPreview = async () => {
         const generatedImage = await generateImage(currentCard);
         setImage(generatedImage);
-        setPreviewImage(generatedImage)
+        setPreviewImage(generatedImage);
       };
       loadPreview();
     }
@@ -42,10 +45,25 @@ export function ImageCard({
       <Card className={active ? "border-2 border-primary" : ""}>
         {!image ? (
           <Skeleton>
-            <div className="w-48 h-20 bg-dark-2 rounded-lg"></div>
+            <div className="w-48 h-24 bg-dark-2 rounded-lg"></div>
           </Skeleton>
         ) : (
-          <img src={image} alt={"card " + index} />
+          <>
+            <div className="*:hover:flex">
+              <Button
+                className="absolute top-2 right-2 hidden"
+                isIconOnly
+                color="danger"
+                variant="ghost"
+                onPress={() => {
+                  deleteCard(index);
+                }}
+              >
+                <FaTrash />
+              </Button>
+            <img src={image} alt={"card " + index} />
+            </div>
+          </>
         )}
         <CardFooter>Card {index + 1}</CardFooter>
       </Card>

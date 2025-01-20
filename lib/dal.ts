@@ -12,7 +12,7 @@ import { Color, BackgroundBaseColor } from "@welcomer-bot/card-canvas";
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
-import { GuildExtended } from "@/types";
+import { GuildExtended, ModuleName } from "@/types";
 import { Leaver, Welcomer } from "@prisma/client";
 
 export const verifySession = cache(async () => {
@@ -207,18 +207,19 @@ export async function getLeaverById(leaverId: number) {
 }
 
 export async function getEmbeds(
-  moduleId: string | number
+  moduleId: string | number,
+  module: ModuleName
 ): Promise<Embed[] | null> {
   try {
     moduleId = Number(moduleId);
     const welcomerModule = await getWelcomerById(moduleId);
-    if (!welcomerModule) return null;
+    if (!welcomerModule?.guildId) return null;
 
     if (!(await canUserManageGuild(welcomerModule?.guildId))) return null;
 
     const embeds: Embed[] = await prisma.embed.findMany({
       where: {
-        OR: [{ welcomerId: moduleId }, { leaverId: moduleId }],
+        [`${module}Id`]: moduleId,
       },
     });
 

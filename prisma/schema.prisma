@@ -28,7 +28,7 @@ model Guild {
 model Welcomer {
   /// @zod.optional()
   id            Int         @id @default(autoincrement())
-  guildId       String      @unique
+  guildId       String?      @unique
   channelId     String?
   content       String?
   createdAt     DateTime?   @default(now())
@@ -37,13 +37,13 @@ model Welcomer {
   DM            DM?
   embeds        Embed[]
   images        ImageCard[]
-  guild         Guild       @relation(fields: [guildId], references: [id])
+  guild         Guild?       @relation(fields: [guildId], references: [id])
 }
 
 model Leaver {
   /// @zod.optional()
   id            Int         @id @default(autoincrement())
-  guildId       String      @unique
+  guildId       String?      @unique
   channelId     String?
   content       String?
   createdAt     DateTime?   @default(now())
@@ -51,7 +51,7 @@ model Leaver {
   activeImageId Int?
   embeds        Embed[]
   images        ImageCard[]
-  guild         Guild       @relation(fields: [guildId], references: [id])
+  guild         Guild?       @relation(fields: [guildId], references: [id])
 }
 
 model DM {
@@ -137,28 +137,26 @@ model EmbedFooter {
 }
 
 model ImageCard {
-  /// @zod.optional()
-  id                Int            @id @default(autoincrement())
-  mainTextId        Int?           @unique
-  secondTextId      Int?           @unique
-  backgroundColor   String?
+  id                Int             @id @default(autoincrement())
   backgroundUrl     String?
+  backgroundColor   String?
   avatarBorderColor String?
   textColor         String?
-  createdAt         DateTime?      @default(now())
-  updatedAt         DateTime?      @updatedAt
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime?       @updatedAt
   welcomerId        Int?
   leaverId          Int?
-  nicknameTextId    Int?           @unique
-  leaver            Leaver?        @relation(fields: [leaverId], references: [id])
-  mainText          ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id])
-  nicknameText      ImageCardText? @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
-  secondText        ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id])
-  welcomer          Welcomer?      @relation(fields: [welcomerId], references: [id])
+  mainTextId        Int?            @unique
+  secondTextId      Int?            @unique
+  nicknameTextId    Int?            @unique
+  leaver            Leaver?         @relation(fields: [leaverId], references: [id])
+  welcomer          Welcomer?       @relation(fields: [welcomerId], references: [id])
+  mainText          ImageCardText?  @relation("MainTextRelation", fields: [mainTextId], references: [id])
+  secondText        ImageCardText?  @relation("SecondTextRelation", fields: [secondTextId], references: [id])
+  nicknameText      ImageCardText?  @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
 }
 
 model ImageCardText {
-  /// @zod.optional()
   id         Int        @id @default(autoincrement())
   content    String
   color      String?
@@ -166,8 +164,8 @@ model ImageCardText {
   size       Int?
   weight     String?
   mainCard   ImageCard? @relation("MainTextRelation")
-  nickname   ImageCard? @relation("NicknameRelation")
   secondCard ImageCard? @relation("SecondTextRelation")
+  nicknameCard ImageCard? @relation("NicknameRelation")
 }
 
 model User {
