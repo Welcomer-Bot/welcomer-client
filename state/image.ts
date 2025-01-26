@@ -70,7 +70,7 @@ export const useImageStore = create<ImageStore>()(
           state.activeCard === null ||
           state.imageCards[state.activeCard] === undefined
         )
-          return console.log("No active card");
+          return;
         state.edited = true;
         fn(state as ImageStore & { activeCard: number });
       });
@@ -99,7 +99,6 @@ export const useImageStore = create<ImageStore>()(
       getActiveCard: () => {
         const state = get();
         if (state.activeCard === null) {
-          console.log("No active card, got null");
           return null;
         }
         return state.imageCards[state.activeCard];
@@ -108,8 +107,6 @@ export const useImageStore = create<ImageStore>()(
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
             state.imageCards[state.activeCard].imagePreview = image;
-          } else {
-            console.log("No active card");
           }
         }),
 

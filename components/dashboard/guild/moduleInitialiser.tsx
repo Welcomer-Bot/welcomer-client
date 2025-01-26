@@ -25,10 +25,7 @@ export default function ModuleInitialiser({
     setModuleId(moduleId);
     if (cards)
       setCards(cards);
-    console.log('ModuleInitialiser', moduleName, moduleId, cards);
-  }, [])
-
-  setModuleName(moduleName);
+  }, []);
 
   return <>{children}</>;
 }
