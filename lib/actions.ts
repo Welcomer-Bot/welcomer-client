@@ -401,7 +401,7 @@ export async function getServerFonts(): Promise<FontList> {
 }
 
 export async function updateCards(
-  store: ImageStore,
+  store: Partial<ImageStore>,
   moduleName: ModuleName | null
 ) {
   // try {
@@ -433,13 +433,13 @@ export async function updateCards(
       error: "You do not have permission to manage this guild",
     };
   }
-  const cardsToCreate = store.imageCards.filter((card) => card.id === null);
+  const cardsToCreate = store.imageCards?.filter((card) => card.id === null) ?? [];
   if ((cardsDb?.length ?? 0) + cardsToCreate.length > 5)
     return {
       error: "You cannot have more than 5 cards",
     };
 
-  for (const card of store.removedCard) {
+  for (const card of store.removedCard ?? []) {
     if (card.id) {
       const deleteCard = prisma.imageCard.delete({
         where: {
@@ -464,7 +464,7 @@ export async function updateCards(
     }
   }
 
-  for (const text of store.removedText) {
+  for (const text of store.removedText ?? []) {
     if (text.id) {
       await prisma.imageCardText.deleteMany({
         where: {
@@ -474,7 +474,7 @@ export async function updateCards(
     }
   }
 
-  for (const card of store.imageCards) {
+  for (const card of store.imageCards ?? []) {
     const cardUpdated = await createOrUpdateCard(card, moduleId, moduleName);
     if (!cardUpdated) {
       return {

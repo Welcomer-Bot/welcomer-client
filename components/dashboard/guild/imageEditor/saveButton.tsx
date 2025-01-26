@@ -1,7 +1,7 @@
 "use client";
 
 import { updateCards } from "@/lib/actions";
-import { useImageStore } from "@/state/image";
+import { ImageStore, useImageStore } from "@/state/image";
 import { useModuleNameStore } from "@/state/moduleName";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
@@ -18,8 +18,11 @@ export default function SaveButton() {
         <Button
           color="primary"
           onPress={async () => {
-            const storeWithoutPreview = {
-              ...store,
+            const storeWithoutPreview: Partial<ImageStore> = {
+              moduleId: store.moduleId,
+              activeCard: store.activeCard,
+              removedCard: store.removedCard,
+              removedText: store.removedText,
               imageCards: store.imageCards.map((card) => {
                 const { imagePreview, ...rest } = card;
                 return rest;

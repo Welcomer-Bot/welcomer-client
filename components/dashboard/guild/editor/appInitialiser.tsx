@@ -18,7 +18,9 @@ export default function AppInitializer({
   children: React.ReactNode;
 }) {
   const setModuleName = useModuleNameStore((state) => state.setModuleName);
-  setModuleName(moduleName);
+  useEffect(() => {
+    setModuleName(moduleName);
+  });
   if (moduleName === "welcomer") {
     const reset = useWelcomerStore((state) => state.reset);
     useEffect(() => {
