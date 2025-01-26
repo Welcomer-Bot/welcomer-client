@@ -1,15 +1,9 @@
-"use server";
+"use client";
 
 import { BaseCardParams, DefaultCard } from "@welcomer-bot/card-canvas";
 export async function generateImage(msg: BaseCardParams) {
   const card = new DefaultCard(msg);
-  const res = card
+  const res = await card
     .build()
-    .then((build) => {
-      return build.toDataURL();
-    })
-    .catch((err) => {
-      throw err;
-    });
-  return res;
+  return res.toDataURL();
 }

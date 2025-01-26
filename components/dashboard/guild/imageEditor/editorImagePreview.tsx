@@ -22,9 +22,9 @@ export function EditorImagePreview() {
   useEffect(() => {
     const fetchImage = async () => {
       if (!activeCard) return;
-      const image = await generateImage(activeCard);
-      setPreviewImage(image);
-      setImg(image);
+      const previewImage = await generateImage(activeCard);
+      setPreviewImage(previewImage);
+      setImg(previewImage);
     };
     fetchImage();
   }, [debounceImage]);

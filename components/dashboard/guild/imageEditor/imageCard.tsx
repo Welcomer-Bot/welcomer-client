@@ -28,9 +28,9 @@ export function ImageCard({
     } else {
       if (!currentCard) return;
       const loadPreview = async () => {
-        const generatedImage = await generateImage(currentCard);
-        setImage(generatedImage);
-        setPreviewImage(generatedImage);
+        const previewImage = await generateImage(currentCard);
+        setImage(previewImage);
+        setPreviewImage(previewImage);
       };
       loadPreview();
     }
@@ -61,7 +61,7 @@ export function ImageCard({
               >
                 <FaTrash />
               </Button>
-            <img src={image} alt={"card " + index} />
+              <img src={image} alt={`Card ${index + 1}`} />
             </div>
           </>
         )}
