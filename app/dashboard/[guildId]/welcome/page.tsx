@@ -40,7 +40,7 @@ export default async function Page({
         <WelcomeCardHeader />
         {welcomerParams ? (
           <>
-            <div className="h-fit md:h-full overflow-y-scroll md:overflow-y-hidden w-full ">
+            <div className="h-fit md:h-full md:overflow-y-clip overflow-y-scroll w-full ">
               <Divider className="mb-2" />
               <Editor />
             </div>

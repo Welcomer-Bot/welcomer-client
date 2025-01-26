@@ -18,7 +18,7 @@ export function CardEditor() {
   return (
     <>
       {/* <form className="px-5 pt-5 pb-20 space-y-5 w-full relative"> */}
-      <h1>Edit {moduleName} card</h1>
+      <h1 className="mb-3">Edit {moduleName} card</h1>
       <Accordion variant="bordered">
         <AccordionItem title="Main Text" aria-label="Main Text">
           <ImageTextFields textType="mainText" />

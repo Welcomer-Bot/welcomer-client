@@ -6,11 +6,10 @@ import SaveButton from "./saveButton";
 
 export function Editor() {
   return (
-    <div className="flex h-full w-full">
-      <div className="flex flex-col lg:flex-row h-full flex-auto w-full">
-        <div className="lg:w-1/2 lg:h-full lg:overflow-y-auto no-scrollbar px-1">
+    <div className="flex h-full w-full flex-col lg:flex-row flex-auto space-y-5 py-3">
+        <div className="lg:w-1/2 lg:h-full lg:overflow-y-auto no-scrollbar px-2">
           <CardLib />
-          <Divider className="my-3"/>
+          <Divider className="my-3" />
           <CardEditor />
           <SaveButton />
         </div>
@@ -18,6 +17,5 @@ export function Editor() {
           <EditorImagePreview />
         </div>
       </div>
-    </div>
   );
 }
