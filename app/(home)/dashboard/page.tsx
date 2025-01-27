@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { getGuilds } from "@/lib/dal";
 import { getGuildBanner, getGuildIcon } from "@/lib/utils";
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 
 export default async function Page() {
   const guilds = await getGuilds();
@@ -90,7 +91,7 @@ export default async function Page() {
                 </Link>
               ) : (
                 <Link
-                  href={`https://discord.com/api/oauth2/authorize?client_id=${process.env.AUTH_DISCORD_ID}&permissions=8&scope=bot&guild_id=${guild.id}`}
+                  href={`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot&guild_id=${guild.id}`}
                 >
                   <Button
                     className="right ml-2 font-bold"

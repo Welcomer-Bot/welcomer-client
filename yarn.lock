@@ -2611,10 +2611,10 @@
     "@typescript-eslint/types" "8.19.1"
     eslint-visitor-keys "^4.2.0"
 
-"@welcomer-bot/card-canvas@^0.1.5":
-  version "0.1.5"
-  resolved "https://npm.pkg.github.com/download/@welcomer-bot/card-canvas/0.1.5/a0566590d92345625806fb79902bb34abaa8b5a2#a0566590d92345625806fb79902bb34abaa8b5a2"
-  integrity sha512-+/59QQHmvFqpj4n4GnXPsDXYB26RGh5jiwk5Mf/Cv8IDBm12f3BVH9pWd3qDXKl2gPG3UcXZPQtxsAYYx9HoSw==
+"@welcomer-bot/card-canvas@^0.1.6":
+  version "0.1.6"
+  resolved "https://npm.pkg.github.com/download/@welcomer-bot/card-canvas/0.1.6/cc4bb7acb6da02306afafd4a5bf5f031a0e47497#cc4bb7acb6da02306afafd4a5bf5f031a0e47497"
+  integrity sha512-E0Siw5WRJnbIsNn5GyRofTgfhOySLlHp+FZkR0tN6PwUDpGqnHNgMtefvO9/+pl+V3M/aFsBNqfvyZJPWafPLA==
   dependencies:
     canvas "^3.0.1"
 
