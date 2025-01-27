@@ -5,7 +5,6 @@ import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Select, SelectItem, SelectSection } from "@nextui-org/select";
-import { APIChannel } from "discord-api-types/v10";
 
 export default function SendMenu() {
   const guildId = useGuildStore((state) => state.id);
@@ -14,19 +13,20 @@ export default function SendMenu() {
   const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
   const updateChannel = store().setChannelId;
   const currentChannel = store().channelId;
-  const channels = useGuildChannelsQuery(guildId).data as
-    | APIChannel[]
-    | undefined;
-
+  const { data: channels, error, isLoading } = useGuildChannelsQuery(guildId);
   return (
     <Select
       label="Channel"
       placeholder="Select a channel"
       disabledKeys={["0"]}
       required
+      isLoading={isLoading}
+      errorMessage={error ? "Failed to load channels" : undefined}
       onChange={(e) => updateChannel(e.target.value)}
       selectedKeys={[
-        currentChannel && channels && channels?.find(({ id }) => currentChannel == id)
+        currentChannel &&
+        channels &&
+        channels?.find(({ id }) => currentChannel == id)
           ? currentChannel
           : "",
       ]}

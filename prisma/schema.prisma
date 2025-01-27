@@ -27,31 +27,33 @@ model Guild {
 
 model Welcomer {
   /// @zod.optional()
-  id            Int         @id @default(autoincrement())
-  guildId       String?      @unique
-  channelId     String?
-  content       String?
-  createdAt     DateTime?   @default(now())
-  updatedAt     DateTime?   @updatedAt
-  DM            DM?
-  embeds        Embed[]
-  images        ImageCard[]
-  activeCardId  Int?
-  guild         Guild?       @relation(fields: [guildId], references: [id])
+  id           Int         @id @default(autoincrement())
+  guildId      String?     @unique
+  channelId    String?
+  content      String?
+  createdAt    DateTime?   @default(now())
+  updatedAt    DateTime?   @updatedAt
+  DM           DM?
+  embeds       Embed[]
+  images       ImageCard[] @relation(name: "WelcomerCard")
+  activeCardId Int?        @unique
+  activeCard   ImageCard?  @relation(fields: [activeCardId], references: [id], name: "WelcomerActiveCard")
+  guild        Guild?      @relation(fields: [guildId], references: [id])
 }
 
 model Leaver {
   /// @zod.optional()
-  id            Int         @id @default(autoincrement())
-  guildId       String?      @unique
-  channelId     String?
-  content       String?
-  createdAt     DateTime?   @default(now())
-  updatedAt     DateTime?   @updatedAt
-  embeds        Embed[]
-  images        ImageCard[]
-  activeCardId  Int?
-  guild         Guild?       @relation(fields: [guildId], references: [id])
+  id           Int         @id @default(autoincrement())
+  guildId      String?     @unique
+  channelId    String?
+  content      String?
+  createdAt    DateTime?   @default(now())
+  updatedAt    DateTime?   @updatedAt
+  embeds       Embed[]
+  images       ImageCard[]
+  activeCardId Int?        @unique
+  activeCard   ImageCard?  @relation(fields: [activeCardId], references: [id], name: "LeaverActiveCard")
+  guild        Guild?      @relation(fields: [guildId], references: [id])
 }
 
 model DM {
@@ -137,34 +139,36 @@ model EmbedFooter {
 }
 
 model ImageCard {
-  id                Int             @id @default(autoincrement())
-  backgroundUrl     String?
-  backgroundColor   String?
-  avatarBorderColor String?
-  textColor         String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime?       @updatedAt
-  welcomerId        Int?
-  leaverId          Int?
-  mainTextId        Int?            @unique
-  secondTextId      Int?            @unique
-  nicknameTextId    Int?            @unique
-  leaver            Leaver?         @relation(fields: [leaverId], references: [id])
-  welcomer          Welcomer?       @relation(fields: [welcomerId], references: [id])
-  mainText          ImageCardText?  @relation("MainTextRelation", fields: [mainTextId], references: [id])
-  secondText        ImageCardText?  @relation("SecondTextRelation", fields: [secondTextId], references: [id])
-  nicknameText      ImageCardText?  @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
+  id                 Int            @id @default(autoincrement())
+  backgroundUrl      String?
+  backgroundColor    String?
+  avatarBorderColor  String?
+  textColor          String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime?      @updatedAt
+  welcomerId         Int?
+  leaverId           Int?
+  mainTextId         Int?           @unique
+  secondTextId       Int?           @unique
+  nicknameTextId     Int?           @unique
+  leaver             Leaver?        @relation(fields: [leaverId], references: [id])
+  welcomer           Welcomer?      @relation(name: "WelcomerCard", fields: [welcomerId], references: [id])
+  mainText           ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id])
+  secondText         ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id])
+  nicknameText       ImageCardText? @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
+  welcomerActiveCard Welcomer?      @relation(name: "WelcomerActiveCard")
+  leaverActiveCard   Leaver?        @relation(name: "LeaverActiveCard")
 }
 
 model ImageCardText {
-  id         Int        @id @default(autoincrement())
-  content    String
-  color      String?
-  font       String?
-  size       Int?
-  weight     String?
-  mainCard   ImageCard? @relation("MainTextRelation")
-  secondCard ImageCard? @relation("SecondTextRelation")
+  id           Int        @id @default(autoincrement())
+  content      String
+  color        String?
+  font         String?
+  size         Int?
+  weight       String?
+  mainCard     ImageCard? @relation("MainTextRelation")
+  secondCard   ImageCard? @relation("SecondTextRelation")
   nicknameCard ImageCard? @relation("NicknameRelation")
 }
 
