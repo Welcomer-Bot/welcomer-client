@@ -3,7 +3,7 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 
 export function EmbedAuthorUrlInput({ embedIndex }: { embedIndex: number }) {
   const module = useModuleNameStore((state) => state.moduleName);

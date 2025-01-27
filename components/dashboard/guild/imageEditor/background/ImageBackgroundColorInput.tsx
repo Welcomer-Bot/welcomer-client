@@ -1,7 +1,7 @@
 "use client";
 
 import { useImageStore } from "@/state/image";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 import { BackgroundBaseColor, Color } from "@welcomer-bot/card-canvas";
 
 export function ImageBackgroundColorInput() {

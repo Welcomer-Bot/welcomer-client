@@ -1,4 +1,4 @@
-import { Divider } from "@nextui-org/divider";
+import { Divider } from "@heroui/divider";
 import { CardEditor } from "./cardEditor";
 import { CardLib } from "./cardLib";
 import { EditorImagePreview } from "./editorImagePreview";

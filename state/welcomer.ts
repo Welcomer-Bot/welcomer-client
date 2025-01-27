@@ -60,7 +60,7 @@ const defaultMessage: Welcomer = {
   channelId: "",
   content: "Welcome {user} to {guild}",
   embeds: [],
-  activeImageId: null,
+  activeCardId: null,
   images: [],
 };
 

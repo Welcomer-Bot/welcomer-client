@@ -3,9 +3,9 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { parseAbsoluteToLocal } from "@internationalized/date";
-import { Divider } from "@nextui-org/divider";
-import { DatePicker, Switch } from "@nextui-org/react";
+import { Divider } from "@heroui/divider";
+import { DatePicker, Switch } from "@heroui/react";
+import { parseAbsoluteToLocal, ZonedDateTime } from "@internationalized/date";
 import { useState } from "react";
 
 export function EmbedBodyTimestampInput({
@@ -70,7 +70,7 @@ export function EmbedBodyTimestampInput({
                     ? parseAbsoluteToLocal(new Date(timestamp).toISOString())
                     : undefined
                 }
-                onChange={(value) =>
+                onChange={(value: ZonedDateTime | null) =>
                   setTimestamp(embedIndex, value?.toDate() ?? null)
                 }
               />

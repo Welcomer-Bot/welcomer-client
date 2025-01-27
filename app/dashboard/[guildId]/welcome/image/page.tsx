@@ -1,5 +1,5 @@
 import { Editor } from "@/components/dashboard/guild/imageEditor/editor";
-import { Card } from "@nextui-org/card";
+import { Card } from "@heroui/card";
 
 export default function Page() {
   return (

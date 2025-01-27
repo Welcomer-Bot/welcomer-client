@@ -1,5 +1,5 @@
 import EditorMessagePreview from "./editorMessagePreview";
-import { Divider } from "@nextui-org/divider";
+import { Divider } from "@heroui/divider";
 import SendMenu from "@/components/dashboard/guild/editor/sendMenu";
 import ContentEditor from "./contentEditor";
 import { EmbedEditor } from "./embed/embedEditor";

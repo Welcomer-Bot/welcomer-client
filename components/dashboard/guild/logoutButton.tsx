@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 import { LogoutIcon } from "@/components/icons";
 import { signOut } from "@/lib/actions";

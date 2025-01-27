@@ -2,7 +2,7 @@
 
 import { useImageStore } from "@/state/image";
 import { ImageTextType } from "@/types";
-import { Switch } from "@nextui-org/switch";
+import { Switch } from "@heroui/switch";
 
 const textTypesToText = {
   mainText: "Main Text",

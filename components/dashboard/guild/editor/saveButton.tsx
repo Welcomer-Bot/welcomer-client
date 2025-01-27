@@ -4,8 +4,8 @@ import { updateModule } from "@/lib/actions";
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Button } from "@nextui-org/button";
-import { Card, CardBody } from "@nextui-org/card";
+import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
 import { toast } from "react-toastify";
 
 export default function SaveButton() {

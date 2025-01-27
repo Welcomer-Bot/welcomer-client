@@ -1,14 +1,14 @@
 "use client";
 
-import { Avatar } from "@nextui-org/avatar";
+import { Avatar } from "@heroui/avatar";
 import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-} from "@nextui-org/dropdown";
-import { User as UIUser } from "@nextui-org/user";
+} from "@heroui/dropdown";
+import { User as UIUser } from "@heroui/user";
 import { User } from "@prisma/client";
 
 import { signOut } from "@/lib/actions";

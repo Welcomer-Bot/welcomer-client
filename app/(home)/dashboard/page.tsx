@@ -1,6 +1,6 @@
-import { Button } from "@nextui-org/button";
-import { Card, CardBody, CardFooter } from "@nextui-org/card";
-import { Image as UIImage } from "@nextui-org/image";
+import { Button } from "@heroui/button";
+import { Card, CardBody, CardFooter } from "@heroui/card";
+import { Image as UIImage } from "@heroui/image";
 import NextImage from "next/image";
 import Link from "next/link";
 

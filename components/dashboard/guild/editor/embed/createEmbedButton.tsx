@@ -3,7 +3,7 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 export default function CreateEmbedButton() {
   const module = useModuleNameStore((state) => state.moduleName);

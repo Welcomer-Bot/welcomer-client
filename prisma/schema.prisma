@@ -181,7 +181,7 @@ model User {
   refreshToken  String?
   createdAt     DateTime?   @default(now())
   updatedAt     DateTime?   @updatedAt
-  guilds        UserGuild[]
+  guilds        UserGuild[] 
 }
 
 model UserGuild {
@@ -190,12 +190,12 @@ model UserGuild {
   icon        String?
   banner      String?
   permissions String?
-  userId      String?
   createdAt   DateTime?  @default(now())
   updatedAt   DateTime?  @updatedAt
   channels    Channels[]
-  user        User?      @relation(fields: [userId], references: [id])
+  users       User[]     
 }
+
 
 model Channels {
   id        String     @id

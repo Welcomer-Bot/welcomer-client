@@ -3,7 +3,7 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Textarea } from "@nextui-org/input";
+import { Textarea } from "@heroui/input";
 
 export default function ContentEditor() {
   const moduleName = useModuleNameStore((state) => state.moduleName);

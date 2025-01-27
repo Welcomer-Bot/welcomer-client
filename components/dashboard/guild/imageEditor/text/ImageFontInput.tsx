@@ -3,7 +3,7 @@
 import { getServerFonts } from "@/lib/actions";
 import { useImageStore } from "@/state/image";
 import { ImageTextType } from "@/types";
-import { Select, SelectItem } from "@nextui-org/select";
+import { Select, SelectItem } from "@heroui/select";
 import { FontList } from "font-list";
 import { useEffect, useState } from "react";
 

@@ -3,8 +3,8 @@
 import { updateCards } from "@/lib/actions";
 import { ImageStore, useImageStore } from "@/state/image";
 import { useModuleNameStore } from "@/state/moduleName";
-import { Button } from "@nextui-org/button";
-import { Card, CardBody } from "@nextui-org/card";
+import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
 import { toast } from "react-toastify";
 
 export default function SaveButton() {

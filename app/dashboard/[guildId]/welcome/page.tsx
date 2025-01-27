@@ -1,5 +1,5 @@
-import { Card, CardHeader } from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
+import { Card, CardHeader } from "@heroui/card";
+import { Divider } from "@heroui/divider";
 import { redirect } from "next/navigation";
 
 import RemoveModuleButton from "@/components/dashboard/guild/RemoveModuleButton";

@@ -118,33 +118,22 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // for (const guild of guilds) {
-    //   await prisma.guild.create({
-    //     data: {
-    //       id: guild.id,
-    //     },
-    //   });
-    // }
-    // add guilds to user
-    await prisma.userGuild.deleteMany({
-      where: {
-        userId: userData.id,
-      },
-    });
-
     const userGuildsData = guilds.filter((guild) => {
       return guild.owner || (Number(guild.permissions) & 0x20) === 0x20;
     });
 
     for (let i = 0; i < userGuildsData.length; i++) {
       // await createGuild(userGuildsData[i].id);
-      await prisma.userGuild.create({
-        data: {
-          userId: userData.id,
+      await prisma.userGuild.upsert({
+        where: { id: userGuildsData[i].id },
+        update: {
+          name: userGuildsData[i].name,
+          icon: userGuildsData[i].icon,
+        },
+        create: {
           id: userGuildsData[i].id,
           name: userGuildsData[i].name,
           icon: userGuildsData[i].icon,
-          permissions: userGuildsData[i].permissions?.toString(),
         },
       });
     }

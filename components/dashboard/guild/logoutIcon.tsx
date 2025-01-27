@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 import { LogoutIcon as Icon } from "@/components/icons";
 import { signOut } from "@/lib/actions";

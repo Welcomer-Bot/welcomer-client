@@ -2,7 +2,7 @@ import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAcc
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import AddEmbedFieldsButton from "./AddEmbedFieldsButton";
 import ClearEmbedFieldsButton from "./ClearEmbedFieldsButton";

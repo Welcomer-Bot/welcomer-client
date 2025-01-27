@@ -1,5 +1,5 @@
 import { useImageStore } from "@/state/image";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { FaTrash } from "react-icons/fa";
 
 export function ClearCardsButton() {

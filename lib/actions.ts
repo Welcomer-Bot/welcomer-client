@@ -433,7 +433,8 @@ export async function updateCards(
       error: "You do not have permission to manage this guild",
     };
   }
-  const cardsToCreate = store.imageCards?.filter((card) => card.id === null) ?? [];
+  const cardsToCreate =
+    store.imageCards?.filter((card) => card.id === null) ?? [];
   if ((cardsDb?.length ?? 0) + cardsToCreate.length > 5)
     return {
       error: "You cannot have more than 5 cards",
@@ -483,6 +484,30 @@ export async function updateCards(
     }
     // @ts-ignore
     store.imageCards[store.imageCards.indexOf(card)] = cardUpdated;
+  }
+  // set active card
+  if (store.activeCard && store.imageCards?.[store.activeCard]) {
+    const id = store.imageCards[store.activeCard].id;
+    console.log(store.activeCard, id);
+    if (moduleName === "welcomer") {
+      await prisma.welcomer.update({
+        where: {
+          guildId: guildId,
+        },
+        data: {
+          activeCardId: id,
+        },
+      });
+    } else if (moduleName === "leaver") {
+      await prisma.leaver.update({
+        where: {
+          guildId: guildId,
+        },
+        data: {
+          activeCardId: id,
+        },
+      });
+    }
   }
   revalidatePath(`/app/dashboard/${guildId}/image`);
 
@@ -608,45 +633,45 @@ export async function createOrUpdateCard(
     : {};
 
   // try {
-    if (card.id) {
-      cardDb = await prisma.imageCard.update({
-        where: {
-          id: card.id,
-        },
-        data: {
-          ...createOrUpdateMainText,
-          ...createOrUpdateSecondText,
-          ...createOrUpdateNicknameText,
-        },
-        include: {
-          mainText: true,
-          secondText: true,
-          nicknameText: true,
-        },
-      });
-    } else {
-      cardDb = await prisma.imageCard.create({
-        data: {
-          [moduleName]: {
-            connect: {
-              id: moduleId,
-            },
+  if (card.id) {
+    cardDb = await prisma.imageCard.update({
+      where: {
+        id: card.id,
+      },
+      data: {
+        ...createOrUpdateMainText,
+        ...createOrUpdateSecondText,
+        ...createOrUpdateNicknameText,
+      },
+      include: {
+        mainText: true,
+        secondText: true,
+        nicknameText: true,
+      },
+    });
+  } else {
+    cardDb = await prisma.imageCard.create({
+      data: {
+        [moduleName]: {
+          connect: {
+            id: moduleId,
           },
-          backgroundUrl: card.backgroundImgURL,
-          backgroundColor:
-            typeof card.backgroundColor === "string"
-              ? card.backgroundColor
-              : undefined,
-          avatarBorderColor: card.avatarBorderColor,
-          ...createMainText,
-          ...createSecondText,
-          ...createNicknameText,
         },
-      });
-    }
-    return {
-      ...cardDb,
-    };
+        backgroundUrl: card.backgroundImgURL,
+        backgroundColor:
+          typeof card.backgroundColor === "string"
+            ? card.backgroundColor
+            : undefined,
+        avatarBorderColor: card.avatarBorderColor,
+        ...createMainText,
+        ...createSecondText,
+        ...createNicknameText,
+      },
+    });
+  }
+  return {
+    ...cardDb,
+  };
   // } catch (error) {
   //   console.error(error);
   //   return null;

@@ -1,4 +1,4 @@
-import { Card, CardBody } from "@nextui-org/card";
+import { Card, CardBody } from "@heroui/card";
 import { redirect } from "next/navigation";
 
 import { getUserGuild } from "@/lib/dal";

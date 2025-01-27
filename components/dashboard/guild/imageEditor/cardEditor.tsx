@@ -1,7 +1,7 @@
 "use client";
 
 import { useImageStore } from "@/state/image";
-import { Accordion, AccordionItem } from "@nextui-org/accordion";
+import { Accordion, AccordionItem } from "@heroui/accordion";
 import { ImageBackgroundFields } from "./background/ImageBackgroundFields";
 import { ImageTextFields } from "./text/ImageTextFields";
 import { useModuleNameStore } from "@/state/moduleName";

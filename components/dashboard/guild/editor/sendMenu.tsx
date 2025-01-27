@@ -4,7 +4,7 @@ import { useGuildStore } from "@/state/guild";
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Select, SelectItem, SelectSection } from "@nextui-org/select";
+import { Select, SelectItem, SelectSection } from "@heroui/select";
 
 export default function SendMenu() {
   const guildId = useGuildStore((state) => state.id);
@@ -15,7 +15,7 @@ export default function SendMenu() {
   const currentChannel = store().channelId;
   const { data: channels, error, isLoading } = useGuildChannelsQuery(guildId);
   return (
-    <Select
+    (<Select
       label="Channel"
       placeholder="Select a channel"
       disabledKeys={["0"]}
@@ -36,7 +36,7 @@ export default function SendMenu() {
           .filter((channel) => channel.type === 4)
           .map((channel) => (
             // if category has no channels, don't show it
-            <SelectSection key={channel.id} showDivider title={channel.name}>
+            (<SelectSection key={channel.id} showDivider title={channel.name}>
               {channels
                 .filter((c) => c.type === 0)
                 .filter((c) => c.parent_id === channel.id)
@@ -45,13 +45,13 @@ export default function SendMenu() {
                     {c.name} ({c.id})
                   </SelectItem>
                 ))}
-            </SelectSection>
+            </SelectSection>)
           ))
       ) : (
         <SelectItem key={0} textValue="No channels found">
           No channels found
         </SelectItem>
       )}
-    </Select>
+    </Select>)
   );
 }

@@ -1,7 +1,7 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Divider } from "@nextui-org/divider";
-import { User as UIUser } from "@nextui-org/user";
+import { Button } from "@heroui/button";
+import { Divider } from "@heroui/divider";
+import { User as UIUser } from "@heroui/user";
 import { User, UserGuild } from "@prisma/client";
 import Link from "next/link";
 import { createContext, useContext, useEffect, useState } from "react";

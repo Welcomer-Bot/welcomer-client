@@ -1,11 +1,11 @@
 "use client";
 
 import { useImageStore } from "@/state/image";
-import { Divider } from "@nextui-org/divider";
+import { Divider } from "@heroui/divider";
 import { ClearCardsButton } from "./clearCardsButton";
 import { CreateCardButton } from "./createCardButton";
 import { ImageCard } from "./imageCard";
-import { CardHeader } from "@nextui-org/card";
+import { CardHeader } from "@heroui/card";
 
 
 export function CardLib() {

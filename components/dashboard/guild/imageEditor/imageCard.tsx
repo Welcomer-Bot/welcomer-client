@@ -2,9 +2,9 @@
 
 import { generateImage } from "@/lib/discord/image";
 import { useImageStore } from "@/state/image";
-import { Button } from "@nextui-org/button";
-import { Card, CardFooter } from "@nextui-org/card";
-import { Skeleton } from "@nextui-org/skeleton";
+import { Button } from "@heroui/button";
+import { Card, CardFooter } from "@heroui/card";
+import { Skeleton } from "@heroui/skeleton";
 import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 

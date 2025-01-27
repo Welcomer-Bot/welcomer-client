@@ -3,8 +3,8 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Accordion, AccordionItem } from "@nextui-org/accordion";
-import { Button } from "@nextui-org/button";
+import { Accordion, AccordionItem } from "@heroui/accordion";
+import { Button } from "@heroui/button";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
 import { EmbedBodyFields } from "./body/EmbedBodyFields";

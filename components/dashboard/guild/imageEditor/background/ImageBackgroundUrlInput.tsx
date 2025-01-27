@@ -1,5 +1,5 @@
 import { useImageStore } from "@/state/image";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 
 export function ImageBackgroundUrlInput() {
   const backgroundUrl = useImageStore((state) => state.getActiveCard()!.backgroundImgURL);

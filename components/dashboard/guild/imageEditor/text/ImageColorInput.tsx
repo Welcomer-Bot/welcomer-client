@@ -2,7 +2,7 @@
 
 import { useImageStore } from "@/state/image";
 import { ImageTextType } from "@/types";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 import { Color } from "@welcomer-bot/card-canvas";
 
 export function ImageColorInput({
