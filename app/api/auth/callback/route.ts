@@ -129,11 +129,21 @@ export async function GET(request: NextRequest) {
         update: {
           name: userGuildsData[i].name,
           icon: userGuildsData[i].icon,
+          users: {
+            connect: {
+              id: user.id,
+            }
+          }
         },
         create: {
           id: userGuildsData[i].id,
           name: userGuildsData[i].name,
           icon: userGuildsData[i].icon,
+          users: {
+            connect: {
+              id: user.id,
+            }
+          }
         },
       });
     }

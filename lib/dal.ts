@@ -1,13 +1,13 @@
 "use server";
 import "server-only";
 
-import { BaseCardParams, Embed, ImageCard } from "@/lib/discord/schema";
+import { BaseCardParams, Embed } from "@/lib/discord/schema";
+import { Color } from "@welcomer-bot/card-canvas";
 import {
   APIChannel,
   RESTGetAPIGuildChannelsResult,
 } from "discord-api-types/v10";
 import { cache } from "react";
-import { Color, BackgroundBaseColor } from "@welcomer-bot/card-canvas";
 
 import prisma from "./prisma";
 
@@ -58,7 +58,12 @@ export const getUserGuilds = cache(async () => {
 
   try {
     return await prisma.userGuild.findMany({
-      where: { userId: session.userId },
+      where: {
+          users: {
+            
+          some: { id: session.userId },
+          },
+      },
     });
   } catch {
     return null;
@@ -72,7 +77,12 @@ export const getUserGuild = cache(async (guildId: string) => {
 
   try {
     return await prisma.userGuild.findFirst({
-      where: { userId: session.userId, id: guildId },
+      where: {
+        id: guildId,
+        users: {
+          some: { id: session.userId },
+        },
+     }
     });
   } catch (e) {
     console.log("Failed to get user guild", e);
@@ -284,7 +294,7 @@ export async function createEmbedAuthor(embedId: number, name: string) {
 export async function getModuleCards(
   moduleId: number,
   module: "welcomer" | "leaver"
-) : Promise<BaseCardParams[] | null> {
+): Promise<BaseCardParams[] | null> {
   try {
     const cards = await prisma.imageCard.findMany({
       where: { [module + "Id"]: moduleId },
@@ -295,15 +305,39 @@ export async function getModuleCards(
       },
     });
 
-    const formattedCards = cards.map(card => ({
+    const formattedCards = cards.map((card) => ({
       ...card,
-      mainText: card.mainText ? { ...card.mainText, color: card.mainText.color as Color || undefined, font: card.mainText.font || undefined, size: card.mainText.size || undefined, weight: card.mainText.weight || undefined } : undefined,
-      secondText: card.secondText ? { ...card.secondText, color: card.secondText.color as Color || undefined, font: card.secondText.font || undefined, size: card.secondText.size || undefined, weight: card.secondText.weight || undefined } : undefined,
-      nicknameText: card.nicknameText ? { ...card.nicknameText, color: card.nicknameText.color as Color || undefined, font: card.nicknameText.font || undefined, size: card.nicknameText.size || undefined, weight: card.nicknameText.weight || undefined } : undefined,
+      mainText: card.mainText
+        ? {
+            ...card.mainText,
+            color: (card.mainText.color as Color) || undefined,
+            font: card.mainText.font || undefined,
+            size: card.mainText.size || undefined,
+            weight: card.mainText.weight || undefined,
+          }
+        : undefined,
+      secondText: card.secondText
+        ? {
+            ...card.secondText,
+            color: (card.secondText.color as Color) || undefined,
+            font: card.secondText.font || undefined,
+            size: card.secondText.size || undefined,
+            weight: card.secondText.weight || undefined,
+          }
+        : undefined,
+      nicknameText: card.nicknameText
+        ? {
+            ...card.nicknameText,
+            color: (card.nicknameText.color as Color) || undefined,
+            font: card.nicknameText.font || undefined,
+            size: card.nicknameText.size || undefined,
+            weight: card.nicknameText.weight || undefined,
+          }
+        : undefined,
       backgroundColor: {
-        background: card.backgroundColor as Color || undefined,
+        background: (card.backgroundColor as Color) || undefined,
       },
-      avatarBorderColor: card.avatarBorderColor as Color || undefined,
+      avatarBorderColor: (card.avatarBorderColor as Color) || undefined,
     }));
 
     return formattedCards;
