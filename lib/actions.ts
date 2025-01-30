@@ -404,7 +404,7 @@ export async function updateCards(
   store: Partial<ImageStore>,
   moduleName: ModuleName | null
 ) {
-  // try {
+  try {
   const moduleId = store.moduleId;
   if (!moduleId) {
     return {
@@ -486,16 +486,22 @@ export async function updateCards(
     store.imageCards[store.imageCards.indexOf(card)] = cardUpdated;
   }
   // set active card
-  if (store.activeCard && store.imageCards?.[store.activeCard]) {
-    const id = store.imageCards[store.activeCard].id;
+  console.log("store active card", store.activeCard);
+  if (store.activeCard !== null && store.activeCard !== undefined) {
+    const id = store.imageCards && store.imageCards[store.activeCard]?.id;
     console.log(store.activeCard, id);
+    if (!id) return;
     if (moduleName === "welcomer") {
       await prisma.welcomer.update({
         where: {
           guildId: guildId,
         },
         data: {
-          activeCardId: id,
+          activeCard: {
+            connect: {
+              id: id,
+            },
+          },
         },
       });
     } else if (moduleName === "leaver") {
@@ -504,7 +510,11 @@ export async function updateCards(
           guildId: guildId,
         },
         data: {
-          activeCardId: id,
+          activeCard: {
+            connect: {
+              id: id,
+            },
+          },
         },
       });
     }
@@ -514,14 +524,14 @@ export async function updateCards(
   return {
     done: true,
   };
-  // } catch (error) {
-  //   console.log(error);
-  //   revalidatePath(`/app/dashboard/${store.moduleId}/image`);
+  } catch (error) {
+    console.log(error);
+    revalidatePath(`/app/dashboard/${store.moduleId}/image`);
 
-  //   return {
-  //     error: "An error occurred while updating the image module",
-  //   };
-  // }
+    return {
+      error: "An error occurred while updating the image module",
+    };
+  }
 }
 
 export async function createOrUpdateCard(
@@ -639,6 +649,17 @@ export async function createOrUpdateCard(
         id: card.id,
       },
       data: {
+        [moduleName]: {
+          connect: {
+            id: moduleId,
+          },
+        },
+        backgroundUrl: card.backgroundImgURL,
+        backgroundColor:
+          typeof card.backgroundColor === "string"
+            ? card.backgroundColor
+            : undefined,
+        avatarBorderColor: card.avatarBorderColor,
         ...createOrUpdateMainText,
         ...createOrUpdateSecondText,
         ...createOrUpdateNicknameText,

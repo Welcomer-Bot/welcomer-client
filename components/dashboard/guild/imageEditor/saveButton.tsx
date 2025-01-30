@@ -27,11 +27,11 @@ export default function SaveButton() {
                 const { imagePreview, ...rest } = card;
                 return rest;
               }),
-            }
+            };
             const res = await updateCards(storeWithoutPreview, module);
             if (res?.error) {
               toast.error(res.error);
-            } else if (res.done) {
+            } else if (res && res.done) {
               toast.success("Settings updated successfully !");
             }
           }}
