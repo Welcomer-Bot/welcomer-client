@@ -1,14 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: 'cdn.discordapp.com',
-            }
-        ],
-    },
-    crossOrigin: 'anonymous',
-}
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.discordapp.com",
+      },
+    ],
 
-module.exports = nextConfig
+  },
+  crossOrigin: "anonymous",
+};
+
+module.exports = nextConfig;

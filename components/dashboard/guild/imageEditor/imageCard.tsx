@@ -29,6 +29,7 @@ export function ImageCard({
       if (!currentCard) return;
       const loadPreview = async () => {
         const previewImage = await generateImage(currentCard);
+        if (!previewImage) return;
         setImage(previewImage);
         setPreviewImage(previewImage);
       };
