@@ -64,7 +64,8 @@ const defaultImage: BaseCardParams & { imagePreview?: string } = {
 export const useImageStore = create<ImageStore>()(
   immer((set, get) => {
     const setToActive = (
-      fn: (state: ImageStore & { activeCard: number }) => void
+      fn: (state: ImageStore & { activeCard: number }) => void,
+      edited: boolean = true
     ) => {
       set((state) => {
         if (
@@ -72,7 +73,7 @@ export const useImageStore = create<ImageStore>()(
           state.imageCards[state.activeCard] === undefined
         )
           return;
-        state.edited = true;
+        if (edited) state.edited = true;
         fn(state as ImageStore & { activeCard: number });
       });
     };
@@ -87,10 +88,13 @@ export const useImageStore = create<ImageStore>()(
       setActiveCard: (index) =>
         set((state) => {
           state.activeCard = index;
+          state.edited = true;
         }),
       setActiveCardId: (id) =>
         set((state) => {
-          state.activeCard = state.imageCards.findIndex((card) => card.id === id);
+          state.activeCard = state.imageCards.findIndex(
+            (card) => card.id === id
+          );
         }),
       setModuleId: (id) =>
         set((state) => {
@@ -108,12 +112,12 @@ export const useImageStore = create<ImageStore>()(
         }
         return state.imageCards[state.activeCard];
       },
-      setPreviewImage: (image) =>
+      setPreviewImage: (image, edited = false) =>
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
             state.imageCards[state.activeCard].imagePreview = image;
           }
-        }),
+        }, false),
 
       createCard: () =>
         set((state) => {
@@ -132,7 +136,6 @@ export const useImageStore = create<ImageStore>()(
         set((state) => {
           state.removedCard.push(state.imageCards[index]);
           state.imageCards.splice(index, 1);
-          console.log("Deleted card", index);
           state.edited = true;
         }),
       setBackgroundUrl: (backgroundUrl) =>

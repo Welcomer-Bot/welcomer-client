@@ -40,7 +40,6 @@ export function ImageCard({
     <div
       onClick={() => {
         setActiveCard(index);
-        console.log("Card clicked");
       }}
     >
       <Card className={active ? "border-2 border-primary" : ""}>

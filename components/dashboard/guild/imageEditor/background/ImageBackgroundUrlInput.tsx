@@ -12,6 +12,7 @@ export function ImageBackgroundUrlInput() {
       aria-label="Background URL"
       value={backgroundUrl ?? ""}
       onValueChange={(value) => setBackgroundUrl(value)}
+      isClearable
     />
   );
 }
