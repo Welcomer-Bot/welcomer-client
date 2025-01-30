@@ -1,6 +1,6 @@
 "use client";
 
-import { BaseCardParams, ImageCard } from "@/lib/discord/schema";
+import { BaseCardParams } from "@/lib/discord/schema";
 import { useImageStore } from "@/state/image";
 import { useModuleNameStore } from "@/state/moduleName";
 import { ModuleName } from "@/types";
@@ -11,20 +11,23 @@ export default function ModuleInitialiser({
   moduleId,
   cards,
   children,
+  activeCardId,
 }: {
-    moduleName: ModuleName;
-    moduleId: number;
-    cards: BaseCardParams[]|null;
+  moduleName: ModuleName;
+  moduleId: number;
+  cards: BaseCardParams[] | null;
+  activeCardId?: number | null;
   children: React.ReactNode;
 }) {
   const setModuleName = useModuleNameStore((state) => state.setModuleName);
   const setModuleId = useImageStore((state) => state.setModuleId);
   const setCards = useImageStore((state) => state.setCards);
+  const setActiveCardId = useImageStore((state) => state.setActiveCardId);
   useEffect(() => {
     setModuleName(moduleName);
     setModuleId(moduleId);
-    if (cards)
-      setCards(cards);
+    if (cards) setCards(cards);
+    if (activeCardId) setActiveCardId(activeCardId);
   }, []);
 
   return <>{children}</>;

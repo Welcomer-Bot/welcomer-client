@@ -13,6 +13,7 @@ export interface ImageStore {
   setModuleId: (id: number) => void;
   setCards: (cards: BaseCardParams[]) => void;
   setActiveCard: (index: number) => void;
+  setActiveCardId: (id: number) => void;
   getActiveCard: () => BaseCardParams | null;
   setPreviewImage: (image: string) => void;
   createCard: () => void;
@@ -86,6 +87,10 @@ export const useImageStore = create<ImageStore>()(
       setActiveCard: (index) =>
         set((state) => {
           state.activeCard = index;
+        }),
+      setActiveCardId: (id) =>
+        set((state) => {
+          state.activeCard = state.imageCards.findIndex((card) => card.id === id);
         }),
       setModuleId: (id) =>
         set((state) => {

@@ -20,6 +20,7 @@ export default async function Layout({
       moduleName="welcomer"
       moduleId={welcomer?.id}
       cards={cards}
+      activeCardId={welcomer?.activeCardId}
     >
       {children}
     </ModuleInitialiser>
