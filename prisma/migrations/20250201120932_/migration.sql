@@ -117,10 +117,10 @@ CREATE TABLE "EmbedFooter" (
 -- CreateTable
 CREATE TABLE "ImageCard" (
     "id" SERIAL NOT NULL,
-    "backgroundUrl" TEXT,
+    "backgroundImgURL" TEXT,
     "backgroundColor" TEXT,
     "avatarBorderColor" TEXT,
-    "textColor" TEXT,
+    "colorTextDefault" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "welcomerId" INTEGER,
@@ -165,7 +165,6 @@ CREATE TABLE "UserGuild" (
     "icon" TEXT,
     "banner" TEXT,
     "permissions" TEXT,
-    "userId" TEXT,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
 
@@ -183,6 +182,14 @@ CREATE TABLE "Channels" (
     "updatedAt" TIMESTAMP(3),
 
     CONSTRAINT "Channels_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_UserToUserGuild" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserToUserGuild_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -220,6 +227,9 @@ CREATE UNIQUE INDEX "ImageCard_secondTextId_key" ON "ImageCard"("secondTextId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ImageCard_nicknameTextId_key" ON "ImageCard"("nicknameTextId");
+
+-- CreateIndex
+CREATE INDEX "_UserToUserGuild_B_index" ON "_UserToUserGuild"("B");
 
 -- AddForeignKey
 ALTER TABLE "Welcomer" ADD CONSTRAINT "Welcomer_activeCardId_fkey" FOREIGN KEY ("activeCardId") REFERENCES "ImageCard"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -273,7 +283,10 @@ ALTER TABLE "ImageCard" ADD CONSTRAINT "ImageCard_secondTextId_fkey" FOREIGN KEY
 ALTER TABLE "ImageCard" ADD CONSTRAINT "ImageCard_nicknameTextId_fkey" FOREIGN KEY ("nicknameTextId") REFERENCES "ImageCardText"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserGuild" ADD CONSTRAINT "UserGuild_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Channels" ADD CONSTRAINT "Channels_guildId_fkey" FOREIGN KEY ("guildId") REFERENCES "UserGuild"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Channels" ADD CONSTRAINT "Channels_guildId_fkey" FOREIGN KEY ("guildId") REFERENCES "UserGuild"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "_UserToUserGuild" ADD CONSTRAINT "_UserToUserGuild_A_fkey" FOREIGN KEY ("A") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserToUserGuild" ADD CONSTRAINT "_UserToUserGuild_B_fkey" FOREIGN KEY ("B") REFERENCES "UserGuild"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -23,6 +23,7 @@ export default function ModuleInitialiser({
   const setModuleId = useImageStore((state) => state.setModuleId);
   const setCards = useImageStore((state) => state.setCards);
   const setActiveCardId = useImageStore((state) => state.setActiveCardId);
+  useImageStore()
   useEffect(() => {
     setModuleName(moduleName);
     setModuleId(moduleId);

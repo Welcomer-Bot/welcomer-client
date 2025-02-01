@@ -3,13 +3,11 @@ generator client {
 }
 
 generator zod {
-  provider              = "zod-prisma"
-  output                = "./schema"
-  prismaJsonNullability = "true"
-  modelSuffix           = "Model"
-  useDecimalJs          = "true"
-  relationModel         = "true"
-  modelCase             = "PascalCase"
+  provider      = "zod-prisma"
+  output        = "./schema"
+  modelSuffix   = "Model"
+  relationModel = "true"
+  modelCase     = "PascalCase"
 }
 
 datasource db {
@@ -139,11 +137,13 @@ model EmbedFooter {
 }
 
 model ImageCard {
-  id                 Int            @id @default(autoincrement())
-  backgroundUrl      String?
-  backgroundColor    String?
-  avatarBorderColor  String?
-  textColor          String?
+  /// @zod.optional()
+  id Int @id @default(autoincrement())
+
+  backgroundImgURL   String? /// @zod.optional()
+  backgroundColor    String? /// @zod.optional()
+  avatarBorderColor  String? /// @zod.optional()
+  colorTextDefault   String? /// @zod.optional()
   createdAt          DateTime       @default(now())
   updatedAt          DateTime?      @updatedAt
   welcomerId         Int?
@@ -153,9 +153,9 @@ model ImageCard {
   nicknameTextId     Int?           @unique
   leaver             Leaver?        @relation(fields: [leaverId], references: [id])
   welcomer           Welcomer?      @relation(name: "WelcomerCard", fields: [welcomerId], references: [id])
-  mainText           ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id])
-  secondText         ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id])
-  nicknameText       ImageCardText? @relation("NicknameRelation", fields: [nicknameTextId], references: [id])
+  mainText           ImageCardText? @relation("MainTextRelation", fields: [mainTextId], references: [id]) /// @zod.optional()
+  secondText         ImageCardText? @relation("SecondTextRelation", fields: [secondTextId], references: [id]) /// @zod.optional()
+  nicknameText       ImageCardText? @relation("NicknameRelation", fields: [nicknameTextId], references: [id]) /// @zod.optional()
   welcomerActiveCard Welcomer?      @relation(name: "WelcomerActiveCard")
   leaverActiveCard   Leaver?        @relation(name: "LeaverActiveCard")
 }
@@ -181,7 +181,7 @@ model User {
   refreshToken  String?
   createdAt     DateTime?   @default(now())
   updatedAt     DateTime?   @updatedAt
-  guilds        UserGuild[] 
+  guilds        UserGuild[]
 }
 
 model UserGuild {
@@ -193,9 +193,8 @@ model UserGuild {
   createdAt   DateTime?  @default(now())
   updatedAt   DateTime?  @updatedAt
   channels    Channels[]
-  users       User[]     
+  users       User[]
 }
-
 
 model Channels {
   id        String     @id

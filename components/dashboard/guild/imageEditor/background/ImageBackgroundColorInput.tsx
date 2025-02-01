@@ -2,11 +2,11 @@
 
 import { useImageStore } from "@/state/image";
 import { Input } from "@heroui/input";
-import { BackgroundBaseColor, Color } from "@welcomer-bot/card-canvas";
+import { Color } from "@welcomer-bot/card-canvas";
 
 export function ImageBackgroundColorInput() {
   const color = useImageStore(
-    (state) => state.getActiveCard()!?.backgroundColor?.background
+    (state) => state.getActiveCard()?.backgroundColor
   );
   const setColor = useImageStore((state) => state.setBackgroundColor);
 

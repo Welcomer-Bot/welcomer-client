@@ -34,6 +34,7 @@ export interface ImageStore {
   // setSecondTextFont: (font: string) => void;
   removeText: (textType: ImageTextType) => void;
   addText: (textType: ImageTextType) => void;
+  toObject: () => Partial<ImageStore>;
   // parseCardText: (user: User, guild: UserGuild) => BaseCardParams|null;
 }
 
@@ -146,14 +147,9 @@ export const useImageStore = create<ImageStore>()(
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
             if (state.imageCards[state.activeCard].backgroundColor) {
-              state.imageCards[state.activeCard].backgroundColor = {
-                background: backgroundColor,
-              };
+              state.imageCards[state.activeCard].backgroundColor =
+                backgroundColor;
             }
-          } else {
-            state.imageCards[state.activeCard].backgroundColor = {
-              background: backgroundColor,
-            };
           }
         }),
       setMainText: (mainText) =>
@@ -227,6 +223,17 @@ export const useImageStore = create<ImageStore>()(
                 ? defaultSecondText
                 : defaultNicknameText;
         }),
+      toObject: () => {
+        const state = get();
+        return {
+          moduleId: state.moduleId,
+          imageCards: state.imageCards,
+          removedCard: state.removedCard,
+          removedText: state.removedText,
+          edited: state.edited,
+          activeCard: state.activeCard,
+        };
+      },
     };
   })
 );

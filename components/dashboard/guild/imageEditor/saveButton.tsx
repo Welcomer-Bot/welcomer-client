@@ -9,9 +9,10 @@ import { toast } from "react-toastify";
 
 export default function SaveButton() {
   const module = useModuleNameStore((state) => state.moduleName);
-  const store = useImageStore();
-  if (!store) return null;
-  if (store.edited === false) return null;
+  const currentStore = useImageStore();
+  if (!currentStore) return null;
+  if (currentStore.edited === false) return null;
+
   return (
     <Card className="fixed bottom-5">
       <CardBody>
@@ -19,21 +20,32 @@ export default function SaveButton() {
           color="primary"
           onPress={async () => {
             const storeWithoutPreview: Partial<ImageStore> = {
-              moduleId: store.moduleId,
-              activeCard: store.activeCard,
-              removedCard: store.removedCard,
-              removedText: store.removedText,
-              imageCards: store.imageCards.map((card) => {
+              moduleId: currentStore.moduleId,
+              activeCard: currentStore.activeCard,
+              removedCard: currentStore.removedCard,
+              removedText: currentStore.removedText,
+              imageCards: currentStore.imageCards.map((card) => {
                 const { imagePreview, ...rest } = card;
                 return rest;
               }),
             };
-            const res = await updateCards(storeWithoutPreview, module);
-            if (res?.error) {
-              toast.error(res.error);
-            } else if (res && res.done) {
+            const { store, done, error } = await updateCards(
+              storeWithoutPreview,
+              module
+            );
+            if (error) {
+              toast.error(error);
+            } else if (done) {
               toast.success("Settings updated successfully !");
             }
+            useImageStore.setState((state) => {
+              state.edited = false;
+              {
+                store?.imageCards && (state.imageCards = store.imageCards);
+              }
+              state.removedCard = [];
+              state.removedText = [];
+            });
           }}
         >
           Save changes

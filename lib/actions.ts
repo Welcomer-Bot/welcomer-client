@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import prisma from "./prisma";
 
-import { BaseCardParams, ImageCard } from "@/lib/discord/schema";
+import { BaseCardParams } from "@/lib/discord/schema";
 import { CompleteEmbed } from "@/prisma/schema";
 import { ImageStore } from "@/state/image";
 import { LeaverStore } from "@/state/leaver";
@@ -177,8 +177,6 @@ export async function updateModule(
     };
   } catch (error) {
     console.log(error);
-    revalidatePath(`/app/dashboard/${store.guildId}/welcome`);
-
     return {
       error: "An error occurred while updating the welcomer module",
     };
@@ -401,144 +399,151 @@ export async function getServerFonts(): Promise<FontList> {
 }
 
 export async function updateCards(
-  store: Partial<ImageStore>,
+  currentStore: Partial<ImageStore>,
   moduleName: ModuleName | null
-) {
-  try {
-  const moduleId = store.moduleId;
-  if (!moduleId) {
-    return {
-      error: "You need to select a module",
-    };
-  }
+): Promise<{
+  store?: Partial<ImageStore> | null;
+  done: boolean;
+  error: string | null;
+}> {
+  // try {
+    const store = currentStore;
+    const moduleId = store.moduleId;
+    if (!moduleId) {
+      throw new Error("You need to select a module");
+    }
 
-  if (!moduleName) {
-    return {
-      error: "Invalid module name",
-    };
-  }
-  const cardsDb = await getModuleCards(moduleId, moduleName);
-  const module =
-    moduleName === "welcomer"
-      ? await getWelcomerById(moduleId)
-      : await getLeaverById(moduleId);
-  if (!module) {
-    return {
-      error: "The module does not exist",
-    };
-  }
-  const guildId = module.guildId;
-  if (!guildId || !(await canUserManageGuild(guildId))) {
-    return {
-      error: "You do not have permission to manage this guild",
-    };
-  }
-  const cardsToCreate =
-    store.imageCards?.filter((card) => card.id === null) ?? [];
-  if ((cardsDb?.length ?? 0) + cardsToCreate.length > 5)
-    return {
-      error: "You cannot have more than 5 cards",
-    };
+    if (!moduleName) {
+      throw new Error("Invalid module name");
+    }
+    const cardsDb = await getModuleCards(moduleId, moduleName);
+    const module =
+      moduleName === "welcomer"
+        ? await getWelcomerById(moduleId)
+        : await getLeaverById(moduleId);
+    if (!module) {
+      throw new Error("You need to enable the module first");
+    }
+    const guildId = module.guildId;
+    if (!guildId || !(await canUserManageGuild(guildId))) {
+      throw new Error("You do not have permission to manage this guild");
+    }
+    const cardsToCreate =
+      store.imageCards?.filter((card) => card.id === null) ?? [];
+    if ((cardsDb?.length ?? 0) + cardsToCreate.length > 5)
+      throw new Error("You cannot have more than 5 cards");
 
-  for (const card of store.removedCard ?? []) {
-    if (card.id) {
-      const deleteCard = prisma.imageCard.delete({
-        where: {
-          id: card.id,
-        },
-      });
-      const deleteCardText = prisma.imageCardText.deleteMany({
-        where: {
-          OR: [
-            { id: card.mainText?.id },
-            { id: card.secondText?.id },
-            { id: card.nicknameText?.id },
-          ],
-        },
-      });
-      const res = await prisma.$transaction([deleteCard, deleteCardText]);
-      if (!res) {
-        return {
-          error: "An error occurred while updating the module",
-        };
+    for (const card of store.removedCard ?? []) {
+      if (card.id) {
+        const deleteCard = await prisma.imageCard.delete({
+          where: {
+            id: card.id,
+          },
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        });
+
+        if (deleteCard) {
+          store.removedCard?.splice(store.removedCard.indexOf(card), 1);
+        }
+      }
+    }
+
+    for (const text of store.removedText ?? []) {
+      if (text.id) {
+        await prisma.imageCardText.deleteMany({
+          where: {
+            id: text.id,
+          },
+        });
+        store.removedText?.splice(store.removedText.indexOf(text), 1);
+      }
+    }
+    const cards = []
+    if (store.imageCards) {
+      for (const card of store.imageCards) {
+        const cardUpdated = await createOrUpdateCard(
+          card,
+          moduleId,
+          moduleName
+        );
+        if (!cardUpdated) {
+          throw new Error("An error occurred while updating the image module");
+        }
+        // @ts-ignore
+        cards.push(cardUpdated)
+      }
+    // set active card
+    if (store.activeCard !== null && store.activeCard !== undefined) {
+      const id = cards[store.activeCard]?.id;
+
+      if (!id)
+        throw new Error(
+          "You need to select an image card to be the active one"
+        );
+      if (moduleName === "welcomer") {
+        await prisma.welcomer.update({
+          where: {
+            guildId: guildId,
+          },
+          data: {
+            activeCard: {
+              connect: {
+                id: id,
+              },
+            },
+          },
+        });
+      } else if (moduleName === "leaver") {
+        await prisma.leaver.update({
+          where: {
+            guildId: guildId,
+          },
+          data: {
+            activeCard: {
+              connect: {
+                id: id,
+              },
+            },
+          },
+        });
       }
     }
   }
 
-  for (const text of store.removedText ?? []) {
-    if (text.id) {
-      await prisma.imageCardText.deleteMany({
-        where: {
-          id: text.id,
-        },
-      });
-    }
-  }
-
-  for (const card of store.imageCards ?? []) {
-    const cardUpdated = await createOrUpdateCard(card, moduleId, moduleName);
-    if (!cardUpdated) {
-      return {
-        error: "An error occurred while updating the module",
-      };
-    }
-    // @ts-ignore
-    store.imageCards[store.imageCards.indexOf(card)] = cardUpdated;
-  }
-  // set active card
-  console.log("store active card", store.activeCard);
-  if (store.activeCard !== null && store.activeCard !== undefined) {
-    const id = store.imageCards && store.imageCards[store.activeCard]?.id;
-    console.log(store.activeCard, id);
-    if (!id) return;
-    if (moduleName === "welcomer") {
-      await prisma.welcomer.update({
-        where: {
-          guildId: guildId,
-        },
-        data: {
-          activeCard: {
-            connect: {
-              id: id,
-            },
-          },
-        },
-      });
-    } else if (moduleName === "leaver") {
-      await prisma.leaver.update({
-        where: {
-          guildId: guildId,
-        },
-        data: {
-          activeCard: {
-            connect: {
-              id: id,
-            },
-          },
-        },
-      });
-    }
-  }
-  revalidatePath(`/app/dashboard/${guildId}/image`);
-
-  return {
-    done: true,
-  };
-  } catch (error) {
-    console.log(error);
-    revalidatePath(`/app/dashboard/${store.moduleId}/image`);
+    revalidatePath(`/app/dashboard/${guildId}/welcome/image`);
 
     return {
-      error: "An error occurred while updating the image module",
+      store: {
+        imageCards: cards,
+      },
+      done: true,
+      error: null,
     };
-  }
+  // } catch (error) {
+  //   console.log(error);
+  //   if (error instanceof Error) {
+  //     return {
+  //       done: false,
+  //       error: error.message,
+  //     };
+  //   }
+
+  //   return {
+  //     done: false,
+  //     error: "An error occurred while updating the image module",
+  //   };
+  // }
 }
 
 export async function createOrUpdateCard(
   card: BaseCardParams,
   moduleId: number,
   moduleName: ModuleName
-): Promise<ImageCard | null> {
+): Promise<BaseCardParams | null> {
   let cardDb;
   const createOrUpdateMainText = card.mainText
     ? {
@@ -549,7 +554,7 @@ export async function createOrUpdateCard(
             },
             update: {
               content: card.mainText.content,
-              color: card.mainText.color,
+              color: card.mainText.color ?? undefined,
               font: card.mainText.font,
             },
             create: {
@@ -571,7 +576,7 @@ export async function createOrUpdateCard(
             },
             update: {
               content: card.secondText.content,
-              color: card.secondText.color,
+              color: card.secondText.color ?? undefined,
               font: card.secondText.font,
             },
             create: {
@@ -593,7 +598,7 @@ export async function createOrUpdateCard(
             },
             update: {
               content: card.nicknameText.content,
-              color: card.nicknameText.color,
+              color: card.nicknameText.color ?? undefined,
               font: card.nicknameText.font,
             },
             create: {
@@ -643,6 +648,7 @@ export async function createOrUpdateCard(
     : {};
 
   // try {
+  console.log(card.backgroundImgURL);
   if (card.id) {
     cardDb = await prisma.imageCard.update({
       where: {
@@ -654,7 +660,7 @@ export async function createOrUpdateCard(
             id: moduleId,
           },
         },
-        backgroundUrl: card.backgroundImgURL,
+        backgroundImgURL: card.backgroundImgURL,
         backgroundColor:
           typeof card.backgroundColor === "string"
             ? card.backgroundColor
@@ -678,7 +684,7 @@ export async function createOrUpdateCard(
             id: moduleId,
           },
         },
-        backgroundUrl: card.backgroundImgURL,
+        backgroundImgURL: card.backgroundImgURL,
         backgroundColor:
           typeof card.backgroundColor === "string"
             ? card.backgroundColor
@@ -688,10 +694,15 @@ export async function createOrUpdateCard(
         ...createSecondText,
         ...createNicknameText,
       },
+      include: {
+        mainText: true,
+        secondText: true,
+        nicknameText: true,
+      },
     });
   }
   return {
-    ...cardDb,
+    ...(cardDb as BaseCardParams),
   };
   // } catch (error) {
   //   console.error(error);
