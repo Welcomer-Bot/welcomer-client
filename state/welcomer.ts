@@ -7,6 +7,7 @@ export interface WelcomerStore extends Welcomer {
   deletedEmbeds: CompleteEmbed[];
   deletedFields: CompleteEmbedField[];
   edited: boolean;
+
   setEdited: (edited: boolean) => void;
   setGuildId: (guildId: string) => void;
   setChannelId: (channelId: string) => void;
@@ -52,6 +53,8 @@ export interface WelcomerStore extends Welcomer {
   setToPreviousField(index: number, fieldIndex: number): void;
   setToNextField(index: number, fieldIndex: number): void;
 
+  setActiveCardEmbedPosition(position: number): void;
+
   reset(): void;
 }
 
@@ -62,6 +65,7 @@ const defaultMessage: Welcomer = {
   embeds: [],
   activeCardId: null,
   images: [],
+  activeCardToEmbedId: null,
 };
 
 const defaultEmbed: CompleteEmbed = {
@@ -77,7 +81,7 @@ const defaultField: CompleteEmbedField = {
 };
 
 export const useWelcomerStore = create<WelcomerStore>()(
-  immer((set, get) => {
+  immer<WelcomerStore>((set, get) => {
     const customSet = (fn: (state: WelcomerStore) => void) => {
       set((state) => {
         fn(state);
@@ -90,6 +94,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
       deletedEmbeds: [],
       deletedFields: [],
       edited: false,
+      activeCardEmbedPosition: null,
       setEdited: (edited) =>
         set((state) => {
           state.edited = edited;
@@ -284,6 +289,10 @@ export const useWelcomerStore = create<WelcomerStore>()(
             state.embeds[index].fields[fieldIndex + 1] = temp;
           }
         }),
+      setActiveCardEmbedPosition: (position) =>
+        customSet((state) => {
+          state.activeCardToEmbedId = position;
+        }),
 
       reset: () =>
         set((state) => ({
@@ -291,6 +300,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,
+          activeCardToEmbedId: null,
         })),
     };
   })

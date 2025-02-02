@@ -7,6 +7,7 @@ import AppInitializer from "@/components/dashboard/guild/editor/appInitialiser";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enableModuleButton";
 import { getGuild, getWelcomer } from "@/lib/dal";
+import { CompleteWelcomer } from "@/prisma/schema";
 
 export default async function Page({
   params,
@@ -32,7 +33,7 @@ export default async function Page({
 
   return (
     <AppInitializer
-      module={welcomerParams}
+      module={welcomerParams as CompleteWelcomer}
       moduleName="welcomer"
       guildId={guildId}
     >

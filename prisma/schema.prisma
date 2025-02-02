@@ -25,33 +25,37 @@ model Guild {
 
 model Welcomer {
   /// @zod.optional()
-  id           Int         @id @default(autoincrement())
-  guildId      String?     @unique
-  channelId    String?
-  content      String?
-  createdAt    DateTime?   @default(now())
-  updatedAt    DateTime?   @updatedAt
-  DM           DM?
-  embeds       Embed[]
-  images       ImageCard[] @relation(name: "WelcomerCard")
-  activeCardId Int?        @unique
-  activeCard   ImageCard?  @relation(fields: [activeCardId], references: [id], name: "WelcomerActiveCard")
-  guild        Guild?      @relation(fields: [guildId], references: [id])
+  id                  Int         @id @default(autoincrement())
+  guildId             String?     @unique
+  channelId           String?
+  content             String?
+  createdAt           DateTime?   @default(now())
+  updatedAt           DateTime?   @updatedAt
+  DM                  DM?
+  embeds              Embed[]
+  images              ImageCard[] @relation(name: "WelcomerCard")
+  activeCardId        Int?        @unique
+  activeCardToEmbedId Int?        @unique
+  activeCardToEmbed   Embed?      @relation(fields: [activeCardToEmbedId], references: [id], name: "WelcomerActiveCardToEmbed")
+  activeCard          ImageCard?  @relation(fields: [activeCardId], references: [id], name: "WelcomerActiveCard")
+  guild               Guild?      @relation(fields: [guildId], references: [id])
 }
 
 model Leaver {
   /// @zod.optional()
-  id           Int         @id @default(autoincrement())
-  guildId      String?     @unique
-  channelId    String?
-  content      String?
-  createdAt    DateTime?   @default(now())
-  updatedAt    DateTime?   @updatedAt
-  embeds       Embed[]
-  images       ImageCard[]
-  activeCardId Int?        @unique
-  activeCard   ImageCard?  @relation(fields: [activeCardId], references: [id], name: "LeaverActiveCard")
-  guild        Guild?      @relation(fields: [guildId], references: [id])
+  id                  Int         @id @default(autoincrement())
+  guildId             String?     @unique
+  channelId           String?
+  content             String?
+  createdAt           DateTime?   @default(now())
+  updatedAt           DateTime?   @updatedAt
+  embeds              Embed[]
+  images              ImageCard[]
+  activeCardToEmbedId Int?        @unique
+  activeCardToEmbed   Embed?      @relation(fields: [activeCardToEmbedId], references: [id], name: "LeaverActiveCardToEmbed")
+  activeCardId        Int?        @unique
+  activeCard          ImageCard?  @relation(fields: [activeCardId], references: [id], name: "LeaverActiveCard")
+  guild               Guild?      @relation(fields: [guildId], references: [id])
 }
 
 model DM {
@@ -67,26 +71,28 @@ model DM {
 
 model Embed {
   /// @zod.optional()
-  id           Int          @id @default(autoincrement())
-  title        String?      @db.VarChar(256)
-  description  String?      @db.VarChar(4096)
-  timestamp    DateTime?
-  timestampNow Boolean?
-  thumbnail    String?
-  url          String?
-  created      DateTime?    @default(now())
-  updated      DateTime?    @default(now())
-  welcomerId   Int?
-  leaverId     Int?
-  DMId         Int?
-  color        String?
-  DM           DM?          @relation(fields: [DMId], references: [id])
-  leaver       Leaver?      @relation(fields: [leaverId], references: [id])
-  welcomer     Welcomer?    @relation(fields: [welcomerId], references: [id])
-  author       EmbedAuthor?
-  fields       EmbedField[]
-  footer       EmbedFooter?
-  image        EmbedImage?
+  id                      Int          @id @default(autoincrement())
+  title                   String?      @db.VarChar(256)
+  description             String?      @db.VarChar(4096)
+  timestamp               DateTime?
+  timestampNow            Boolean?
+  thumbnail               String?
+  url                     String?
+  created                 DateTime?    @default(now())
+  updated                 DateTime?    @default(now())
+  welcomerId              Int?
+  leaverId                Int?
+  DMId                    Int?
+  color                   String?
+  DM                      DM?          @relation(fields: [DMId], references: [id])
+  leaver                  Leaver?      @relation(fields: [leaverId], references: [id])
+  welcomer                Welcomer?    @relation(fields: [welcomerId], references: [id])
+  author                  EmbedAuthor?
+  fields                  EmbedField[]
+  footer                  EmbedFooter?
+  image                   EmbedImage?
+  welcomerEmbedActiveCard Welcomer?    @relation(name: "WelcomerActiveCardToEmbed")
+  leaverEmbedActiveCard   Leaver?      @relation(name: "LeaverActiveCardToEmbed")
 }
 
 model EmbedImage {

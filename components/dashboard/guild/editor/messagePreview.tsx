@@ -1,5 +1,9 @@
-import { Welcomer } from "@/lib/discord/schema";
+import { generateImage } from "@/lib/discord/image";
+import { BaseCardParams } from "@/lib/discord/schema";
+import { LeaverStore } from "@/state/leaver";
+import { WelcomerStore } from "@/state/welcomer";
 import {
+  DiscordImageAttachment,
   DiscordEmbed,
   DiscordEmbedDescription,
   DiscordEmbedField,
@@ -8,8 +12,20 @@ import {
   DiscordMessage,
   DiscordMessages,
 } from "@skyra/discord-components-react";
+import { useEffect, useState } from "react";
+export default function MessagePreview({
+  msg,
+}: {
+  msg: WelcomerStore | LeaverStore;
+}) {
+  const [image, setImage] = useState<string | undefined>(undefined);
 
-export default function MessagePreview({ msg }: { msg: Welcomer }) {
+  useEffect(() => {
+    console.log(msg)
+    if (msg.activeCard)
+      generateImage(msg.activeCard as BaseCardParams).then(setImage);
+  }, [msg.activeCard]);
+
   return (
     <>
       <DiscordMessages className="rounded-lg min-h-full">
@@ -29,6 +45,11 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                     authorUrl={embed.author?.url ?? undefined}
                     url={embed.url ?? undefined}
                     thumbnail={embed.thumbnail ?? undefined}
+                    image={
+                      msg.activeCardToEmbedId === index && image
+                        ? image
+                        : undefined
+                    }
                   >
                     <DiscordEmbedDescription slot="description">
                       {embed.description}
@@ -61,6 +82,9 @@ export default function MessagePreview({ msg }: { msg: Welcomer }) {
                 );
               })}
           </div>
+          {(msg.activeCardToEmbedId === -1 ||
+            (msg.activeCardToEmbedId == null && msg.activeCard)) &&
+            image && <DiscordImageAttachment url={image} width={300} />}
         </DiscordMessage>
       </DiscordMessages>
     </>

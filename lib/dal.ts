@@ -14,6 +14,7 @@ import prisma from "./prisma";
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended, ModuleName } from "@/types";
 import { Leaver, Welcomer } from "@prisma/client";
+import { CompleteWelcomer } from "@/prisma/schema";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -59,10 +60,9 @@ export const getUserGuilds = cache(async () => {
   try {
     return await prisma.userGuild.findMany({
       where: {
-          users: {
-            
+        users: {
           some: { id: session.userId },
-          },
+        },
       },
     });
   } catch {
@@ -82,7 +82,7 @@ export const getUserGuild = cache(async (guildId: string) => {
         users: {
           some: { id: session.userId },
         },
-     }
+      },
     });
   } catch (e) {
     console.log("Failed to get user guild", e);
@@ -146,12 +146,13 @@ export async function getUserData() {
   }
 }
 
-export async function getWelcomer(guildId: string): Promise<Welcomer | null> {
+export async function getWelcomer(guildId: string){
   try {
     if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
       where: { guildId: guildId },
       include: {
+        activeCard: true,
         embeds: {
           include: {
             fields: true,
@@ -175,6 +176,7 @@ export async function getLeaver(guildId: string): Promise<Leaver | null> {
     const leaver = await prisma.leaver.findUnique({
       where: { guildId },
       include: {
+        activeCard: true,
         embeds: {
           include: {
             fields: true,
@@ -334,10 +336,9 @@ export async function getModuleCards(
             weight: card.nicknameText.weight || undefined,
           }
         : undefined,
-      backgroundColor: {
-        background: (card.backgroundColor as Color) || undefined,
-      },
+      backgroundColor: (card.backgroundColor as Color) || undefined,
       avatarBorderColor: (card.avatarBorderColor as Color) || undefined,
+      colorTextDefault: (card.colorTextDefault as Color) || null,
     }));
 
     return formattedCards;

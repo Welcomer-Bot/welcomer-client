@@ -51,6 +51,7 @@ export interface LeaverStore extends Leaver {
   setFieldInline(index: number, fieldIndex: number, inline: boolean): void;
   setToPreviousField(index: number, fieldIndex: number): void;
   setToNextField(index: number, fieldIndex: number): void;
+  setActiveCardEmbedPosition(position: number): void;
 
   reset(): void;
 }
@@ -89,6 +90,7 @@ export const useLeaverStore = create<LeaverStore>()(
       deletedEmbeds: [],
       deletedFields: [],
       edited: false,
+      activeCardToEmbedId: null,
       setEdited: (edited) =>
         set((state) => {
           state.edited = edited;
@@ -283,6 +285,10 @@ export const useLeaverStore = create<LeaverStore>()(
             state.embeds[index].fields[fieldIndex + 1] = temp;
           }
         }),
+      setActiveCardEmbedPosition: (position) =>
+        customSet((state) => {
+          state.activeCardToEmbedId = position;
+        }),
 
       reset: () =>
         set((state) => ({
@@ -290,6 +296,7 @@ export const useLeaverStore = create<LeaverStore>()(
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,
+          activeCardToEmbedId: null,
         })),
     };
   })

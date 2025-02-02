@@ -170,6 +170,98 @@ export async function updateModule(
         });
       }
     }
+    if (store.activeCard && store.activeCardToEmbedId !== null) {
+      if (store.activeCardToEmbedId === -2) {
+        if (moduleName === "welcomer") {
+          await prisma.welcomer.update({
+            where: {
+              guildId: guildId,
+            },
+            data: {
+              activeCard: {
+                disconnect: true,
+              },
+              activeCardToEmbed: {
+                disconnect: true,
+              },
+            },
+          });
+        } else if (moduleName === "leaver") {
+          await prisma.leaver.update({
+            where: {
+              guildId: guildId,
+            },
+            data: {
+              activeCard: {
+                disconnect: true,
+              },
+              activeCardToEmbed: {
+                disconnect: true,
+              },
+            },
+          });
+        }
+      } else if (store.activeCardToEmbedId === -1) {
+        if (moduleName === "welcomer") {
+          await prisma.welcomer.update({
+            where: {
+              guildId: guildId,
+            },
+            data: {
+              activeCardToEmbed: {
+                disconnect: true,
+                // set to -1 to show on the bottom
+              },
+            },
+          });
+        } else if (moduleName === "leaver") {
+          await prisma.leaver.update({
+            where: {
+              guildId: guildId,
+            },
+            data: {
+              activeCardToEmbed: {
+                disconnect: true,
+              },
+            },
+          });
+        }
+      } else {
+        const embedId = store.activeCardToEmbedId !== undefined ? store.embeds[store.activeCardToEmbedId]?.id : undefined;
+        if (!embedId)
+          return {
+            error: "You need to select an embed to be the active one",
+          };
+        if (moduleName === "welcomer") {
+          await prisma.welcomer.update({
+            where: {
+              guildId: guildId,
+            },
+            data: {
+              activeCardToEmbed: {
+                connect: {
+                  id: embedId,
+                },
+              },
+            },
+          });
+        } else if (moduleName === "leaver") {
+          await prisma.leaver.update({
+            where: {
+              guildId: guildId,
+            },
+            data: {
+              activeCardToEmbed: {
+                connect: {
+                  id: embedId,
+                },
+              },
+            },
+          });
+        }
+      }
+    }
+
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
 
     return {
@@ -407,75 +499,71 @@ export async function updateCards(
   error: string | null;
 }> {
   // try {
-    const store = currentStore;
-    const moduleId = store.moduleId;
-    if (!moduleId) {
-      throw new Error("You need to select a module");
-    }
+  const store = currentStore;
+  const moduleId = store.moduleId;
+  if (!moduleId) {
+    throw new Error("You need to select a module");
+  }
 
-    if (!moduleName) {
-      throw new Error("Invalid module name");
-    }
-    const cardsDb = await getModuleCards(moduleId, moduleName);
-    const module =
-      moduleName === "welcomer"
-        ? await getWelcomerById(moduleId)
-        : await getLeaverById(moduleId);
-    if (!module) {
-      throw new Error("You need to enable the module first");
-    }
-    const guildId = module.guildId;
-    if (!guildId || !(await canUserManageGuild(guildId))) {
-      throw new Error("You do not have permission to manage this guild");
-    }
-    const cardsToCreate =
-      store.imageCards?.filter((card) => card.id === null) ?? [];
-    if ((cardsDb?.length ?? 0) + cardsToCreate.length > 5)
-      throw new Error("You cannot have more than 5 cards");
+  if (!moduleName) {
+    throw new Error("Invalid module name");
+  }
+  const cardsDb = await getModuleCards(moduleId, moduleName);
+  const module =
+    moduleName === "welcomer"
+      ? await getWelcomerById(moduleId)
+      : await getLeaverById(moduleId);
+  if (!module) {
+    throw new Error("You need to enable the module first");
+  }
+  const guildId = module.guildId;
+  if (!guildId || !(await canUserManageGuild(guildId))) {
+    throw new Error("You do not have permission to manage this guild");
+  }
+  const cardsToCreate =
+    store.imageCards?.filter((card) => card.id === null) ?? [];
+  if ((cardsDb?.length ?? 0) + cardsToCreate.length > 5)
+    throw new Error("You cannot have more than 5 cards");
 
-    for (const card of store.removedCard ?? []) {
-      if (card.id) {
-        const deleteCard = await prisma.imageCard.delete({
-          where: {
-            id: card.id,
-          },
-          include: {
-            mainText: true,
-            secondText: true,
-            nicknameText: true,
-          },
-        });
+  for (const card of store.removedCard ?? []) {
+    if (card.id) {
+      const deleteCard = await prisma.imageCard.delete({
+        where: {
+          id: card.id,
+        },
+        include: {
+          mainText: true,
+          secondText: true,
+          nicknameText: true,
+        },
+      });
 
-        if (deleteCard) {
-          store.removedCard?.splice(store.removedCard.indexOf(card), 1);
-        }
+      if (deleteCard) {
+        store.removedCard?.splice(store.removedCard.indexOf(card), 1);
       }
     }
+  }
 
-    for (const text of store.removedText ?? []) {
-      if (text.id) {
-        await prisma.imageCardText.deleteMany({
-          where: {
-            id: text.id,
-          },
-        });
-        store.removedText?.splice(store.removedText.indexOf(text), 1);
-      }
+  for (const text of store.removedText ?? []) {
+    if (text.id) {
+      await prisma.imageCardText.deleteMany({
+        where: {
+          id: text.id,
+        },
+      });
+      store.removedText?.splice(store.removedText.indexOf(text), 1);
     }
-    const cards = []
-    if (store.imageCards) {
-      for (const card of store.imageCards) {
-        const cardUpdated = await createOrUpdateCard(
-          card,
-          moduleId,
-          moduleName
-        );
-        if (!cardUpdated) {
-          throw new Error("An error occurred while updating the image module");
-        }
-        // @ts-ignore
-        cards.push(cardUpdated)
+  }
+  const cards = [];
+  if (store.imageCards) {
+    for (const card of store.imageCards) {
+      const cardUpdated = await createOrUpdateCard(card, moduleId, moduleName);
+      if (!cardUpdated) {
+        throw new Error("An error occurred while updating the image module");
       }
+      // @ts-ignore
+      cards.push(cardUpdated);
+    }
     // set active card
     if (store.activeCard !== null && store.activeCard !== undefined) {
       const id = cards[store.activeCard]?.id;
@@ -514,15 +602,15 @@ export async function updateCards(
     }
   }
 
-    revalidatePath(`/app/dashboard/${guildId}/welcome/image`);
+  revalidatePath(`/app/dashboard/${guildId}/welcome/image`);
 
-    return {
-      store: {
-        imageCards: cards,
-      },
-      done: true,
-      error: null,
-    };
+  return {
+    store: {
+      imageCards: cards,
+    },
+    done: true,
+    error: null,
+  };
   // } catch (error) {
   //   console.log(error);
   //   if (error instanceof Error) {

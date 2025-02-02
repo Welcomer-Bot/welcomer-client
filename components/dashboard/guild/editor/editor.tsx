@@ -4,6 +4,7 @@ import SendMenu from "@/components/dashboard/guild/editor/sendMenu";
 import ContentEditor from "./contentEditor";
 import { EmbedEditor } from "./embed/embedEditor";
 import SaveButton from "./saveButton";
+import { CardPositionEditor } from "./card/editor";
 
 export function Editor() {
   return (
@@ -15,6 +16,8 @@ export function Editor() {
             <Divider className="my-4" />
             <ContentEditor />
             <EmbedEditor />
+            <Divider className="my-4" />
+            <CardPositionEditor />
             <SaveButton/>
           </form>
         </div>

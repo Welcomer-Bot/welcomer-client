@@ -34,7 +34,7 @@ export interface ImageStore {
   // setSecondTextFont: (font: string) => void;
   removeText: (textType: ImageTextType) => void;
   addText: (textType: ImageTextType) => void;
-  toObject: () => Partial<ImageStore>;
+  reset: () => void;
   // parseCardText: (user: User, guild: UserGuild) => BaseCardParams|null;
 }
 
@@ -223,17 +223,13 @@ export const useImageStore = create<ImageStore>()(
                 ? defaultSecondText
                 : defaultNicknameText;
         }),
-      toObject: () => {
-        const state = get();
-        return {
-          moduleId: state.moduleId,
-          imageCards: state.imageCards,
-          removedCard: state.removedCard,
-          removedText: state.removedText,
-          edited: state.edited,
-          activeCard: state.activeCard,
-        };
-      },
+      reset: () =>
+        set((state) => ({
+          ...state,
+          edited: false,
+          removedCard: [],
+          removedText: [],
+        })),
     };
   })
 );

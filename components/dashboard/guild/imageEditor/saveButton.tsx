@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 export default function SaveButton() {
   const module = useModuleNameStore((state) => state.moduleName);
+  const reset = useImageStore((state) => state.reset);
   const currentStore = useImageStore();
   if (!currentStore) return null;
   if (currentStore.edited === false) return null;
@@ -38,14 +39,12 @@ export default function SaveButton() {
             } else if (done) {
               toast.success("Settings updated successfully !");
             }
-            useImageStore.setState((state) => {
-              state.edited = false;
-              {
-                store?.imageCards && (state.imageCards = store.imageCards);
-              }
-              state.removedCard = [];
-              state.removedText = [];
-            });
+            if (store) {
+              useImageStore.setState((state) => {
+                state.imageCards = store.imageCards || [];
+              });
+            }
+            reset();
           }}
         >
           Save changes
