@@ -7,6 +7,7 @@ import AppInitializer from "@/components/dashboard/guild/editor/appInitialiser";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enableModuleButton";
 import { getGuild, getLeaver } from "@/lib/dal";
+import { CompleteLeaver } from "@/prisma/schema";
 
 export default async function Page({
   params,
@@ -25,14 +26,14 @@ export default async function Page({
       {leaverParams ? (
         <RemoveModuleButton guildId={guildId} moduleName="leaver" />
       ) : (
-        <EnableModuleButton guildId={guildId} moduleName="leaver"/>
+        <EnableModuleButton guildId={guildId} moduleName="leaver" />
       )}
     </CardHeader>
   );
 
   return (
     <AppInitializer
-      module={leaverParams}
+      module={leaverParams as CompleteLeaver}
       moduleName={"leaver"}
       guildId={guildId}
     >

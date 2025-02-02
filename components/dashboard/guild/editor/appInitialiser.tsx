@@ -21,7 +21,6 @@ export default function AppInitializer({
   useEffect(() => {
     setModuleName(moduleName);
   });
-  // console.log(module)
   if (moduleName === "welcomer") {
     const reset = useWelcomerStore((state) => state.reset);
     const setActiveCardEmbedPosition = useWelcomerStore(

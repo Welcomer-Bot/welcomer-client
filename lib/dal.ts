@@ -2,7 +2,6 @@
 import "server-only";
 
 import { BaseCardParams, Embed } from "@/lib/discord/schema";
-import { Color } from "@welcomer-bot/card-canvas";
 import {
   APIChannel,
   RESTGetAPIGuildChannelsResult,
@@ -13,8 +12,7 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended, ModuleName } from "@/types";
-import { Leaver, Welcomer } from "@prisma/client";
-import { CompleteWelcomer } from "@/prisma/schema";
+import { Leaver } from "@prisma/client";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -146,13 +144,19 @@ export async function getUserData() {
   }
 }
 
-export async function getWelcomer(guildId: string){
+export async function getWelcomer(guildId: string) {
   try {
     if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
       where: { guildId: guildId },
       include: {
-        activeCard: true,
+        activeCard: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
         embeds: {
           include: {
             fields: true,
@@ -307,41 +311,7 @@ export async function getModuleCards(
       },
     });
 
-    const formattedCards = cards.map((card) => ({
-      ...card,
-      mainText: card.mainText
-        ? {
-            ...card.mainText,
-            color: (card.mainText.color as Color) || undefined,
-            font: card.mainText.font || undefined,
-            size: card.mainText.size || undefined,
-            weight: card.mainText.weight || undefined,
-          }
-        : undefined,
-      secondText: card.secondText
-        ? {
-            ...card.secondText,
-            color: (card.secondText.color as Color) || undefined,
-            font: card.secondText.font || undefined,
-            size: card.secondText.size || undefined,
-            weight: card.secondText.weight || undefined,
-          }
-        : undefined,
-      nicknameText: card.nicknameText
-        ? {
-            ...card.nicknameText,
-            color: (card.nicknameText.color as Color) || undefined,
-            font: card.nicknameText.font || undefined,
-            size: card.nicknameText.size || undefined,
-            weight: card.nicknameText.weight || undefined,
-          }
-        : undefined,
-      backgroundColor: (card.backgroundColor as Color) || undefined,
-      avatarBorderColor: (card.avatarBorderColor as Color) || undefined,
-      colorTextDefault: (card.colorTextDefault as Color) || null,
-    }));
-
-    return formattedCards;
+    return cards as BaseCardParams[];
   } catch {
     return null;
   }

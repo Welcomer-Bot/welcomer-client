@@ -736,7 +736,6 @@ export async function createOrUpdateCard(
     : {};
 
   // try {
-  console.log(card.backgroundImgURL);
   if (card.id) {
     cardDb = await prisma.imageCard.update({
       where: {

@@ -3,7 +3,6 @@ import React from "react";
 
 import { Sidebar } from "@/components/dashboard/guild/sideBar";
 import { getGuild, getGuilds, getUserData, getUserGuild } from "@/lib/dal";
-import ModuleInitialiser from "@/components/dashboard/guild/moduleInitialiser";
 
 export default async function Layout({
   children,

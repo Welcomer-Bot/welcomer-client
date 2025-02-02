@@ -88,7 +88,14 @@ export const useImageStore = create<ImageStore>()(
       edited: false,
       setActiveCard: (index) =>
         set((state) => {
-          state.activeCard = index;
+          if (state.imageCards[index] === undefined) {
+            return;
+          }
+          if (state.activeCard === index) {
+            state.activeCard = null;
+          } else {
+            state.activeCard = index;
+          }
           state.edited = true;
         }),
       setActiveCardId: (id) =>
@@ -146,11 +153,9 @@ export const useImageStore = create<ImageStore>()(
       setBackgroundColor: (backgroundColor) =>
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
-            if (state.imageCards[state.activeCard].backgroundColor) {
               state.imageCards[state.activeCard].backgroundColor =
                 backgroundColor;
             }
-          }
         }),
       setMainText: (mainText) =>
         setToActive((state) => {
