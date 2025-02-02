@@ -16,6 +16,7 @@ export function CardPositionEditor() {
     <div className="text-center w-full">
       <p>You dont have active card to show, select active card first</p>
       <Button
+        className="mt-4"
         color="primary"
         onPress={() => router.push(path + "/image")}
       >
