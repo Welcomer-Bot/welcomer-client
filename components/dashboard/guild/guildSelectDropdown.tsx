@@ -38,7 +38,7 @@ export function GuildSelectDropdown({
       </DropdownTrigger>
       <DropdownMenu
         aria-label="other guilds"
-        className="max-h-52 overflow-y-auto"
+        className="max-h-52 overflow-y-auto no-scrollbar"
         variant="flat"
       >
         {guilds.map((guild) => {
@@ -52,11 +52,12 @@ export function GuildSelectDropdown({
             );
           } else {
             return (
-              <DropdownItem key={guild.id} textValue={guild.id}>
+              <DropdownItem
+                key={guild.id}
+                textValue={guild.id}
+              >
                 {/* invite link for the bot */}
-                <a
-                  href={`/api/bot/add/${guild.id}`}
-                >
+                <a href={`/api/bot/add/${guild.id}`}>
                   <GuildCard guild={guild} />
                 </a>
               </DropdownItem>

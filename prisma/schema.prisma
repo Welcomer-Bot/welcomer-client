@@ -82,7 +82,7 @@ model Embed {
   updated                 DateTime?    @default(now())
   welcomerId              Int?
   leaverId                Int?
-  DMId                    Int?
+  DMId                    Int?         @unique
   color                   String?
   DM                      DM?          @relation(fields: [DMId], references: [id])
   leaver                  Leaver?      @relation(fields: [leaverId], references: [id])
