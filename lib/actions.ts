@@ -227,7 +227,10 @@ export async function updateModule(
           });
         }
       } else {
-        const embedId = store.activeCardToEmbedId !== undefined ? store.embeds[store.activeCardToEmbedId]?.id : undefined;
+        const embedId =
+          store.activeCardToEmbedId !== undefined
+            ? store.embeds[store.activeCardToEmbedId]?.id
+            : undefined;
         if (!embedId)
           return {
             error: "You need to select an embed to be the active one",
@@ -595,6 +598,30 @@ export async function updateCards(
               connect: {
                 id: id,
               },
+            },
+          },
+        });
+      }
+    } else {
+      if (moduleName === "welcomer") {
+        await prisma.welcomer.update({
+          where: {
+            guildId: guildId,
+          },
+          data: {
+            activeCard: {
+              disconnect: true,
+            },
+          },
+        });
+      } else if (moduleName === "leaver") {
+        await prisma.leaver.update({
+          where: {
+            guildId: guildId,
+          },
+          data: {
+            activeCard: {
+              disconnect: true,
             },
           },
         });
