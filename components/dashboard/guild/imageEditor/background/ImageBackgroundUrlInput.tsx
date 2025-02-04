@@ -1,18 +1,38 @@
 import { useImageStore } from "@/state/image";
 import { Input } from "@heroui/input";
+import { Switch } from "@heroui/switch";
+import { useEffect, useState } from "react";
 
 export function ImageBackgroundUrlInput() {
-  const backgroundUrl = useImageStore((state) => state.getActiveCard()!.backgroundImgURL);
+  const backgroundUrl = useImageStore(
+    (state) => state.getActiveCard()!.backgroundImgURL
+  );
   const setBackgroundUrl = useImageStore((state) => state.setBackgroundUrl);
+  const [enabled, setEnabled] = useState<boolean>(!!backgroundUrl);
+
+  useEffect(() => {
+    if (!enabled) {
+      setBackgroundUrl(null);
+    } else {
+      setBackgroundUrl("");
+    }
+  }, [enabled]);
 
   return (
-    <Input
-      type="url"
-      label="Background URL"
-      aria-label="Background URL"
-      value={backgroundUrl ?? ""}
-      onValueChange={(value) => setBackgroundUrl(value)}
-      isClearable
-    />
+    <>
+      <Switch isSelected={enabled} onValueChange={setEnabled}>
+        Enable background image
+      </Switch>
+      {enabled && (
+        <Input
+          type="url"
+          label="Background URL"
+          aria-label="Background URL"
+          value={backgroundUrl ?? ""}
+          onValueChange={(value) => setBackgroundUrl(value)}
+          isClearable
+        />
+      )}
+    </>
   );
 }

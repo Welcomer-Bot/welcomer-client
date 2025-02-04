@@ -19,23 +19,16 @@ export interface ImageStore {
   createCard: () => void;
   clearCards: () => void;
   deleteCard: (index: number) => void;
-  setBackgroundUrl: (backgroundUrl: string) => void;
+  setBackgroundUrl: (backgroundUrl?: string | null) => void;
   setBackgroundColor: (backgroundColor: Color) => void;
   setMainText: (mainText: TextCard) => void;
   setSecondText: (secondText: TextCard) => void;
   setTextContent: (textType: ImageTextType, content: string) => void;
   setTextColor: (textType: ImageTextType, color: Color) => void;
   setTextFont: (textType: ImageTextType, font: string) => void;
-  // setMainTextContent: (content: string) => void;
-  // setSecondTextContent: (content: string) => void;
-  // setMainTextColor: (color: Color) => void;
-  // setSecondTextColor: (color: Color) => void;
-  // setMainTextFont: (font: string) => void;
-  // setSecondTextFont: (font: string) => void;
   removeText: (textType: ImageTextType) => void;
   addText: (textType: ImageTextType) => void;
   reset: () => void;
-  // parseCardText: (user: User, guild: UserGuild) => BaseCardParams|null;
 }
 
 const defaultMainText: TextCard = {
