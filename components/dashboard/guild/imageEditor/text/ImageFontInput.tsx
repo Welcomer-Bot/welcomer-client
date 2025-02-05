@@ -7,11 +7,7 @@ import { Select, SelectItem } from "@heroui/select";
 import { FontList } from "font-list";
 import { useEffect, useState } from "react";
 
-export function ImageFontInput({
-  textType,
-}: {
-    textType: ImageTextType;
-}) {
+export function ImageFontInput({ textType }: { textType: ImageTextType }) {
   const font = useImageStore((state) => state.getActiveCard()![textType]?.font);
   const setFont = useImageStore((state) => state.setTextFont);
 
@@ -29,9 +25,10 @@ export function ImageFontInput({
     <Select
       label="Font"
       value={font ?? ""}
+      isLoading={!fontsList}
       isVirtualized
       onChange={handleSelectionChange}
-      selectedKeys={font ? [font] : []}
+      selectedKeys={font && fontsList ? [font] : []}
     >
       {fontsList
         ? fontsList.map((font) => {

@@ -1,5 +1,7 @@
 "use client";
 
+import { useLeaverStore } from "@/state/leaver";
+import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import React from "react";
@@ -9,7 +11,9 @@ export default function EmbedsAccordionWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const embedsLength = useWelcomerStore((state) => state.embeds).length;
+  const module = useModuleNameStore((state) => state.moduleName);
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const embedsLength = store.embeds.length;
 
   return (
     <Accordion variant="splitted">

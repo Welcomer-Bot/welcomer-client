@@ -25,10 +25,7 @@ export function CardPositionEditor() {
     </div>
   ) : (
     <div>
-      <Button
-        color="primary"
-        onPress={() => router.push(path + "/image")}
-      >
+      <Button color="primary" onPress={() => router.push(path + "/image")}>
         Select Active Card
       </Button>
       <RadioGroup

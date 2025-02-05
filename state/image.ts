@@ -53,6 +53,7 @@ const defaultImage: BaseCardParams & { imagePreview?: string } = {
   mainText: defaultMainText,
   secondText: defaultSecondText,
   nicknameText: defaultNicknameText,
+  backgroundImgURL: "",
 };
 
 export const useImageStore = create<ImageStore>()(
@@ -146,9 +147,9 @@ export const useImageStore = create<ImageStore>()(
       setBackgroundColor: (backgroundColor) =>
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
-              state.imageCards[state.activeCard].backgroundColor =
-                backgroundColor;
-            }
+            state.imageCards[state.activeCard].backgroundColor =
+              backgroundColor;
+          }
         }),
       setMainText: (mainText) =>
         setToActive((state) => {
@@ -210,7 +211,7 @@ export const useImageStore = create<ImageStore>()(
           if (text) {
             state.removedText.push(text);
           }
-          state.imageCards[state.activeCard][textType] = undefined;
+          state.imageCards[state.activeCard][textType] = null;
         }),
       addText: (textType) =>
         setToActive((state) => {

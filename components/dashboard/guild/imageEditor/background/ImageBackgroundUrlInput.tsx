@@ -7,17 +7,26 @@ export function ImageBackgroundUrlInput() {
   const backgroundUrl = useImageStore(
     (state) => state.getActiveCard()!.backgroundImgURL
   );
+  console.log("backgroundUrl", backgroundUrl);
   const setBackgroundUrl = useImageStore((state) => state.setBackgroundUrl);
-  const [enabled, setEnabled] = useState<boolean>(!!backgroundUrl);
+  const [enabled, setEnabled] = useState<boolean>(typeof backgroundUrl === "string");
 
   useEffect(() => {
     if (!enabled) {
       setBackgroundUrl(null);
     } else {
-      setBackgroundUrl("");
+      setBackgroundUrl(" ");
     }
+    console.log("enabled", enabled);
   }, [enabled]);
 
+  useEffect(() => {
+    if (backgroundUrl === null) {
+      setEnabled(false);
+    } else {
+      setEnabled(true);
+    }
+  }, [backgroundUrl]);
   return (
     <>
       <Switch isSelected={enabled} onValueChange={setEnabled}>

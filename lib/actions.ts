@@ -547,12 +547,14 @@ export async function updateCards(
     }
   }
 
-  for (const text of store.removedText ?? []) {
+  for (const text of store.removedText ?? []) {    
     if (text.id) {
+      console.log("removing text with id ", text.id);
       await prisma.imageCardText.deleteMany({
         where: {
           id: text.id,
         },
+        
       });
       store.removedText?.splice(store.removedText.indexOf(text), 1);
     }
@@ -660,107 +662,95 @@ export async function createOrUpdateCard(
   moduleName: ModuleName
 ): Promise<BaseCardParams | null> {
   let cardDb;
-  const createOrUpdateMainText = card.mainText
+  const connectOrCreateMainText = card.mainText
     ? {
         mainText: {
-          upsert: {
+          connectOrCreate: {
             where: {
               id: card.mainText?.id ?? -1,
             },
-            update: {
-              content: card.mainText.content,
-              color: card.mainText.color ?? undefined,
-              font: card.mainText.font,
-            },
             create: {
               content: card.mainText.content,
-              color: card.mainText.color,
-              font: card.mainText.font,
+              color: card.mainText?.color,
+              font: card.mainText?.font,
             },
           },
         },
       }
     : {};
 
-  const createOrUpdateSecondText = card.secondText
+  const connectOrCreateSecondText = card.secondText
     ? {
         secondText: {
-          upsert: {
+          connectOrCreate: {
             where: {
-              id: card.secondText.id ?? -1,
-            },
-            update: {
-              content: card.secondText.content,
-              color: card.secondText.color ?? undefined,
-              font: card.secondText.font,
+              id: card.secondText?.id ?? -1,
             },
             create: {
-              content: card.secondText.content,
-              color: card.secondText.color,
-              font: card.secondText.font,
+              content: card.secondText!.content,
+              color: card.secondText?.color,
+              font: card.secondText?.font,
             },
           },
         },
       }
     : {};
 
-  const createOrUpdateNicknameText = card.nicknameText
+  const connectOrCreateNicknameText = card.nicknameText
     ? {
         nicknameText: {
-          upsert: {
+          connectOrCreate: {
             where: {
-              id: card.nicknameText.id ?? -1,
-            },
-            update: {
-              content: card.nicknameText.content,
-              color: card.nicknameText.color ?? undefined,
-              font: card.nicknameText.font,
+              id: card.nicknameText?.id ?? -1,
             },
             create: {
-              content: card.nicknameText.content,
-              color: card.nicknameText.color,
-              font: card.nicknameText.font,
+              content: card.nicknameText!.content,
+              color: card.nicknameText?.color,
+              font: card.nicknameText?.font,
             },
           },
         },
       }
     : {};
 
-  const createMainText = card.mainText
-    ? {
-        mainText: {
-          create: {
-            content: card.mainText.content,
-            color: card.mainText.color,
-            font: card.mainText.font,
-          },
-        },
-      }
-    : {};
+  if (card.mainText?.id) {
+    await prisma.imageCardText.update({
+      where: {
+        id: card.mainText.id,
+      },
+      data: {
+        content: card.mainText.content,
+        color: card.mainText.color,
+        font: card.mainText.font,
+      },
+    })
+  }
 
-  const createSecondText = card.secondText
-    ? {
-        secondText: {
-          create: {
-            content: card.secondText.content,
-            color: card.secondText.color,
-            font: card.secondText.font,
-          },
-        },
-      }
-    : {};
+  if (card.secondText?.id) {
+    await prisma.imageCardText.update({
+      where: {
+        id: card.secondText.id,
+      },
+      data: {
+        content: card.secondText.content,
+        color: card.secondText.color,
+        font: card.secondText.font,
+      },
+    })
+  }
 
-  const createNicknameText = card.nicknameText
-    ? {
-        nicknameText: {
-          create: {
-            content: card.nicknameText.content,
-            color: card.nicknameText.color,
-            font: card.nicknameText.font,
-          },
-        },
-      }
-    : {};
+  if (card.nicknameText?.id) {
+    await prisma.imageCardText.update({
+      where: {
+        id: card.nicknameText.id,
+      },
+      data: {
+        content: card.nicknameText.content,
+        color: card.nicknameText.color,
+        font: card.nicknameText.font,
+      },
+    })
+  }
 
   // try {
   if (card.id) {
@@ -780,9 +770,9 @@ export async function createOrUpdateCard(
             ? card.backgroundColor
             : undefined,
         avatarBorderColor: card.avatarBorderColor,
-        ...createOrUpdateMainText,
-        ...createOrUpdateSecondText,
-        ...createOrUpdateNicknameText,
+        ...connectOrCreateMainText,
+        ...connectOrCreateSecondText,
+        ...connectOrCreateNicknameText,
       },
       include: {
         mainText: true,
@@ -804,9 +794,9 @@ export async function createOrUpdateCard(
             ? card.backgroundColor
             : undefined,
         avatarBorderColor: card.avatarBorderColor,
-        ...createMainText,
-        ...createSecondText,
-        ...createNicknameText,
+        ...connectOrCreateMainText,
+        ...connectOrCreateSecondText,
+        ...connectOrCreateNicknameText,
       },
       include: {
         mainText: true,
