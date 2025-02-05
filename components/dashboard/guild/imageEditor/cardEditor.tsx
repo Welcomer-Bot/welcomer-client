@@ -5,7 +5,6 @@ import { useModuleNameStore } from "@/state/moduleName";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { ImageBackgroundFields } from "./background/ImageBackgroundFields";
 import { ImageTextFields } from "./text/ImageTextFields";
-import { useEffect } from "react";
 
 export function CardEditor() {
   const currentCard = useImageStore((state) => state.getActiveCard());
@@ -19,7 +18,6 @@ export function CardEditor() {
       <div className="text-white w-full text-center">No card selected</div>
     );
 
-
   return (
     <>
       {/* <form className="px-5 pt-5 pb-20 space-y-5 w-full relative"> */}
@@ -27,6 +25,7 @@ export function CardEditor() {
       <Accordion
         variant="bordered"
         aria-label="accordion"
+        defaultSelectedKeys={"all"}
       >
         <AccordionItem title="Main Text" aria-label="Main Text" key={1}>
           <ImageTextFields textType="mainText" />

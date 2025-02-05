@@ -1,6 +1,5 @@
 "use client";
 
-import { getServerFonts } from "@/lib/actions";
 import { useImageStore } from "@/state/image";
 import { ImageTextType } from "@/types";
 import { Select, SelectItem } from "@heroui/select";
@@ -13,7 +12,8 @@ export function ImageFontInput({ textType }: { textType: ImageTextType }) {
 
   const [fontsList, setFontsList] = useState<FontList | null>(null);
   useEffect(() => {
-    getServerFonts().then((fonts) => {
+    fetch("/api/font").then(async (res) => {
+      const fonts = await res.json();
       setFontsList(fonts);
     });
   }, []);

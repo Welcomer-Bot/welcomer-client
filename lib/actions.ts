@@ -483,16 +483,6 @@ export async function removeModule(
   }
 }
 
-export async function getServerFonts(): Promise<FontList> {
-  try {
-    const fonts = await getFonts({ disableQuoting: true });
-    return fonts;
-  } catch (err) {
-    console.log("err in getServerFonts", err);
-    return [];
-  }
-}
-
 export async function updateCards(
   currentStore: Partial<ImageStore>,
   moduleName: ModuleName | null
