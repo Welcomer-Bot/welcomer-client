@@ -20,8 +20,8 @@ export type ImageCard = z.infer<typeof RelatedImageCardModel>;
 export type ImageCardText = z.infer<typeof RelatedImageCardTextModel>;
 export type BaseCardParams = BCP & {
   id?: number;
-  mainText?: TextCard;
-  secondText?: TextCard;
-  nicknameText?: TextCard;
+  mainText?: TextCard | null;
+  secondText?: TextCard | null;
+  nicknameText?: TextCard | null;
 };
 export type TextCard = TC & { id?: number };

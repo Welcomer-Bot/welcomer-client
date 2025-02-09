@@ -290,7 +290,6 @@ export async function createOrUpdateEmbed(
           upsert: {
             where: {
               embedId: embed.id,
-              [`${moduleType}Id`]: moduleId,
             },
             update: {
               name: embed.author?.name,
@@ -314,7 +313,6 @@ export async function createOrUpdateEmbed(
           upsert: {
             where: {
               embedId: embed.id,
-              [`${moduleType}Id`]: moduleId,
             },
             update: {
               text: embed.footer?.text,
@@ -389,7 +387,6 @@ export async function createOrUpdateEmbed(
       embedDb = await prisma.embed.update({
         where: {
           id: embed.id,
-          [`${moduleType}Id`]: moduleId,
         },
         data: {
           title: embed.title,

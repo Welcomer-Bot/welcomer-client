@@ -152,6 +152,12 @@ export const useWelcomerStore = create<WelcomerStore>()(
             const temp = state.embeds[index];
             state.embeds[index] = state.embeds[index - 1];
             state.embeds[index - 1] = temp;
+            if (state.activeCardToEmbedId === index) {
+              state.activeCardToEmbedId = index - 1;
+            }else if (state.activeCardToEmbedId === index - 1) {
+              state.activeCardToEmbedId = index;
+            }
+
           }
         }),
 
@@ -161,6 +167,11 @@ export const useWelcomerStore = create<WelcomerStore>()(
             const temp = state.embeds[index];
             state.embeds[index] = state.embeds[index + 1];
             state.embeds[index + 1] = temp;
+            if (state.activeCardToEmbedId === index) {
+              state.activeCardToEmbedId = index + 1;
+            } else if (state.activeCardToEmbedId === index + 1) {
+              state.activeCardToEmbedId = index;
+            }
           }
         }),
 
