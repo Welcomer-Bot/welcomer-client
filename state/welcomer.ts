@@ -114,9 +114,9 @@ export const useWelcomerStore = create<WelcomerStore>()(
         }),
       setEmbeds(embeds) {
         customSet((state) => {
-          if (embeds?.length === 0) return state.embeds = [defaultEmbed];
+          if (embeds?.length === 0) return (state.embeds = [defaultEmbed]);
           state.embeds = embeds ?? [defaultEmbed];
-          })
+        });
       },
 
       clear: () =>
@@ -161,10 +161,9 @@ export const useWelcomerStore = create<WelcomerStore>()(
             state.embeds[index - 1] = temp;
             if (state.activeCardToEmbedId === index) {
               state.activeCardToEmbedId = index - 1;
-            }else if (state.activeCardToEmbedId === index - 1) {
+            } else if (state.activeCardToEmbedId === index - 1) {
               state.activeCardToEmbedId = index;
             }
-
           }
         }),
 
@@ -319,6 +318,9 @@ export const useWelcomerStore = create<WelcomerStore>()(
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,
+          activeCardToEmbedId: null,
+          activeCardId: null,
+          activeCard: null,
         })),
     };
   })

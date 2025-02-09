@@ -157,6 +157,11 @@ export const useLeaverStore = create<LeaverStore>()(
             const temp = state.embeds[index];
             state.embeds[index] = state.embeds[index - 1];
             state.embeds[index - 1] = temp;
+            if (state.activeCardToEmbedId === index) {
+              state.activeCardToEmbedId = index - 1;
+            } else if (state.activeCardToEmbedId === index - 1) {
+              state.activeCardToEmbedId = index;
+            }
           }
         }),
 
@@ -166,6 +171,11 @@ export const useLeaverStore = create<LeaverStore>()(
             const temp = state.embeds[index];
             state.embeds[index] = state.embeds[index + 1];
             state.embeds[index + 1] = temp;
+            if (state.activeCardToEmbedId === index) {
+              state.activeCardToEmbedId = index + 1;
+            } else if (state.activeCardToEmbedId === index + 1) {
+              state.activeCardToEmbedId = index;
+            }
           }
         }),
 
@@ -300,13 +310,15 @@ export const useLeaverStore = create<LeaverStore>()(
         }),
 
       reset: () =>
-        customSet((state) => ({
+        set((state) => ({
           ...state,
           ...defaultMessage,
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,
-          // activeCardToEmbedId: null,
+          activeCardToEmbedId: null,
+          activeCardId: null,
+          activeCard: null,
         })),
     };
   })

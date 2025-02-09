@@ -600,6 +600,9 @@ export async function updateCards(
             activeCard: {
               disconnect: true,
             },
+            activeCardToEmbed: {
+              disconnect: true,
+            }
           },
         });
       } else if (moduleName === "leaver") {
@@ -611,6 +614,9 @@ export async function updateCards(
             activeCard: {
               disconnect: true,
             },
+            activeCardToEmbed: {
+              disconnect: true,
+            }
           },
         });
       }

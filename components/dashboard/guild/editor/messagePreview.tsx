@@ -21,6 +21,7 @@ export default function MessagePreview({
   const [image, setImage] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    console.log("msg", msg);
     if (msg.activeCard)
       generateImage(msg.activeCard as BaseCardParams).then(setImage);
   }, [msg.activeCard]);
@@ -81,8 +82,8 @@ export default function MessagePreview({
                 );
               })}
           </div>
-          {(msg.activeCardToEmbedId === -1 ||
-            (msg.activeCardToEmbedId == null && msg.activeCard)) &&
+          {(msg.activeCardToEmbedId === -1 && msg.activeCard ||
+            (msg.activeCardToEmbedId == null && msg.activeCard && msg.activeCardId)) &&
             image && <DiscordImageAttachment url={image} width={300} />}
         </DiscordMessage>
       </DiscordMessages>
