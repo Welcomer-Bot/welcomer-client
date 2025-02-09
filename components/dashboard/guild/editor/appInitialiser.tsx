@@ -52,6 +52,7 @@ export default function AppInitializer({
         state.guildId = guildId;
         state.channelId = module?.channelId;
         state.activeCardId = module?.activeCardId;
+        state.activeCard = module?.activeCard;
         state.activeCardToEmbedId = module?.embeds.findIndex(
           (e) => e.id === module.activeCardToEmbedId
         );
