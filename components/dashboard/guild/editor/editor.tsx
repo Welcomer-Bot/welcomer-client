@@ -18,8 +18,8 @@ export function Editor() {
             <EmbedEditor />
             <Divider className="my-4" />
             <CardPositionEditor />
-            <SaveButton/>
           </form>
+            <SaveButton/>
         </div>
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
           <EditorMessagePreview />

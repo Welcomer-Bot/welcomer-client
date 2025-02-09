@@ -10,7 +10,8 @@ export interface LeaverStore extends Leaver {
   setEdited: (edited: boolean) => void;
   setGuildId: (guildId: string) => void;
   setChannelId: (channelId: string) => void;
-  setContent: (content: string) => void;
+  setContent: (content?: string | null) => void;
+  setEmbeds: (embeds?: CompleteEmbed[] | null) => void;
 
   clear(): void;
 
@@ -107,8 +108,14 @@ export const useLeaverStore = create<LeaverStore>()(
         }),
       setContent: (content) =>
         customSet((state) => {
-          state.content = content;
+          state.content = content ?? defaultMessage.content;
         }),
+      setEmbeds(embeds) {
+        customSet((state) => {
+          if (embeds?.length === 0) return (state.embeds = [defaultEmbed]);
+          state.embeds = embeds ?? [defaultEmbed];
+        });
+      },
 
       clear: () =>
         set((state) => {

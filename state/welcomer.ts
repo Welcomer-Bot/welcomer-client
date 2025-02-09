@@ -11,8 +11,8 @@ export interface WelcomerStore extends Welcomer {
   setEdited: (edited: boolean) => void;
   setGuildId: (guildId: string) => void;
   setChannelId: (channelId: string) => void;
-  setContent: (content: string) => void;
-
+  setContent: (content?: string | null) => void;
+  setEmbeds: (embeds?: CompleteEmbed[] | null) => void;
   clear(): void;
 
   addEmbed(embed: CompleteEmbed): void;
@@ -81,8 +81,6 @@ const defaultMessage: Welcomer = {
 };
 
 
-
-
 export const useWelcomerStore = create<WelcomerStore>()(
   immer<WelcomerStore>((set, get) => {
     const customSet = (fn: (state: WelcomerStore) => void) => {
@@ -112,8 +110,14 @@ export const useWelcomerStore = create<WelcomerStore>()(
         }),
       setContent: (content) =>
         customSet((state) => {
-          state.content = content;
+          state.content = content ?? defaultMessage.content;
         }),
+      setEmbeds(embeds) {
+        customSet((state) => {
+          if (embeds?.length === 0) return state.embeds = [defaultEmbed];
+          state.embeds = embeds ?? [defaultEmbed];
+          })
+      },
 
       clear: () =>
         set((state) => {
@@ -309,9 +313,9 @@ export const useWelcomerStore = create<WelcomerStore>()(
         }),
 
       reset: () =>
-        customSet((state) => ({
-          ...state,
+        set((state) => ({
           ...defaultMessage,
+          ...state,
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,

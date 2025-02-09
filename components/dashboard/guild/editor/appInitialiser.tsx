@@ -23,6 +23,10 @@ export default function AppInitializer({
   });
   if (moduleName === "welcomer") {
     const reset = useWelcomerStore((state) => state.reset);
+    const setContent = useWelcomerStore((state) => state.setContent);
+    const setEmbeds = useWelcomerStore((state) => state.setEmbeds);
+
+
     const setActiveCardEmbedPosition = useWelcomerStore(
       (state) => state.setActiveCardEmbedPosition
     );
@@ -32,16 +36,20 @@ export default function AppInitializer({
         id: module?.id,
         guildId: guildId,
         channelId: module?.channelId,
-        ...(module?.content ? { content: module.content } : {}),
-        // ...module,
+        ...module,
       });
+      setContent(module?.content)
+      setEmbeds(module?.embeds)
       module?.activeCardToEmbedId &&
-        setActiveCardEmbedPosition(
+      setActiveCardEmbedPosition(
           module?.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
-        );
+      );
     }, [module, guildId, reset]);
   } else if (moduleName === "leaver") {
     const reset = useLeaverStore((state) => state.reset);
+    const setContent = useLeaverStore((state) => state.setContent);
+    const setEmbeds = useLeaverStore((state) => state.setEmbeds);
+
     const setActiveCardEmbedPosition = useLeaverStore(
       (state) => state.setActiveCardEmbedPosition
     );
@@ -51,12 +59,10 @@ export default function AppInitializer({
         id: module?.id,
         guildId: guildId,
         channelId: module?.channelId,
-        content: module?.content,
-        ...(module?.content ? { content: module.content } : {}),
-
-        // ...module,
+        ...module,
       });
-
+      setContent(module?.content)
+      setEmbeds(module?.embeds)
       module?.activeCardToEmbedId &&
         setActiveCardEmbedPosition(
           module?.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)

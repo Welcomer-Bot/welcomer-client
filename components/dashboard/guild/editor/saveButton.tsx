@@ -6,15 +6,24 @@ import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function SaveButton() {
   const module = useModuleNameStore((state) => state.moduleName);
   const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
-  if (!store) return null;
-  if (store.edited === false) return null;
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (store.edited) {
+      setVisible(true);
+    } else {
+      setVisible(false);
+    }
+  }, [store.edited]);
+  if (!visible) return null;
   return (
-    <Card className="fixed bottom-5">
+    <Card className={`absolute w-1/2 right-0 bottom-5`}>
       <CardBody>
         <Button
           color="primary"

@@ -10,7 +10,6 @@ import { LeaverStore } from "@/state/leaver";
 import { WelcomerStore } from "@/state/welcomer";
 import { ModuleName } from "@/types";
 import { Welcomer } from "@prisma/client";
-import { FontList, getFonts } from "font-list";
 import { revalidatePath } from "next/cache";
 import {
   canUserManageGuild,
@@ -454,6 +453,7 @@ export async function removeModule(
         where: {
           guildId: guildId,
         },
+        
         include: {
           ...embedsInclude,
           DM: true,
@@ -534,14 +534,13 @@ export async function updateCards(
     }
   }
 
-  for (const text of store.removedText ?? []) {    
+  for (const text of store.removedText ?? []) {
     if (text.id) {
       console.log("removing text with id ", text.id);
       await prisma.imageCardText.deleteMany({
         where: {
           id: text.id,
         },
-        
       });
       store.removedText?.splice(store.removedText.indexOf(text), 1);
     }
@@ -710,7 +709,7 @@ export async function createOrUpdateCard(
         color: card.mainText.color,
         font: card.mainText.font,
       },
-    })
+    });
   }
 
   if (card.secondText?.id) {
@@ -723,7 +722,7 @@ export async function createOrUpdateCard(
         color: card.secondText.color,
         font: card.secondText.font,
       },
-    })
+    });
   }
 
   if (card.nicknameText?.id) {
@@ -736,7 +735,7 @@ export async function createOrUpdateCard(
         color: card.nicknameText.color,
         font: card.nicknameText.font,
       },
-    })
+    });
   }
 
   // try {
