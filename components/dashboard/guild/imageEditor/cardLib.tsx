@@ -19,7 +19,7 @@ export function CardLib() {
       </CardHeader>
       <Divider className="mt-1" />
       {cards.length > 0 ? (
-        <div className="grid grid-cols-3 gap-4 px-2 py-4 bg-dark-3 rounded-lg">
+        <div className="grid lg:grid-cols-3 grid-cols-2 gap-4 px-2 py-4 bg-dark-3 rounded-lg">
           {cards.map((card, index) => (
             <ImageCard
               index={index}

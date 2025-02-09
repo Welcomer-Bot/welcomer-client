@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <Card
       radius="none"
-      className=" md:overflow-y-clip overflow-y-scroll h-full"
+      className=" lg:overflow-y-clip overflow-y-scroll h-full"
     >
       <Editor />
     </Card>

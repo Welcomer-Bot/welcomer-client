@@ -11,6 +11,8 @@ export function CardPositionEditor() {
   const module = useModuleNameStore((state) => state.moduleName);
   const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
   const activeCardId = store.activeCardId;
+  console.log("Module", store);
+  console.log("Active Card ID", activeCardId, module);
   const embeds = store.embeds;
   return activeCardId === null ? (
     <div className="text-center w-full">

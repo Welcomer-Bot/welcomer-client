@@ -180,13 +180,18 @@ export async function getLeaver(guildId: string): Promise<Leaver | null> {
     const leaver = await prisma.leaver.findUnique({
       where: { guildId },
       include: {
-        activeCard: true,
+        activeCard: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
         embeds: {
           include: {
             fields: true,
             author: true,
             footer: true,
-            image: true,
           },
         },
       },

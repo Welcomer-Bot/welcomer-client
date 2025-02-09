@@ -49,7 +49,6 @@ export function ImageCard({
           </Skeleton>
         ) : (
           <>
-            <div className="*:hover:flex">
               <Button
                 className="absolute top-2 right-2 hidden"
                 isIconOnly
@@ -62,7 +61,6 @@ export function ImageCard({
                 <FaTrash />
               </Button>
               <img src={image} alt={`Card ${index + 1}`} />
-            </div>
           </>
         )}
         <CardFooter>Card {index + 1}</CardFooter>

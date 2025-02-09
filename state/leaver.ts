@@ -306,7 +306,7 @@ export const useLeaverStore = create<LeaverStore>()(
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,
-          activeCardToEmbedId: null,
+          // activeCardToEmbedId: null,
         })),
     };
   })

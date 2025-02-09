@@ -23,50 +23,57 @@ export default function AppInitializer({
   });
   if (moduleName === "welcomer") {
     const reset = useWelcomerStore((state) => state.reset);
-    const setContent = useWelcomerStore((state) => state.setContent);
-    const setEmbeds = useWelcomerStore((state) => state.setEmbeds);
-
 
     const setActiveCardEmbedPosition = useWelcomerStore(
       (state) => state.setActiveCardEmbedPosition
     );
     useEffect(() => {
       reset();
-      useWelcomerStore.setState({
-        id: module?.id,
-        guildId: guildId,
-        channelId: module?.channelId,
-        ...module,
+      useWelcomerStore.setState((state) => {
+        state.id = module?.id;
+        state.guildId = guildId;
+        state.activeCardId = module?.activeCardId;
+        state.activeCardToEmbedId = module?.activeCardToEmbedId;
+        state.channelId = module?.channelId;
+        if (module?.content) {
+          state.content = module.content;
+        }
+        if (module?.embeds && module.embeds.length > 0) {
+          state.embeds = module.embeds;
+        }
+        if (module?.activeCardToEmbedId) {
+          setActiveCardEmbedPosition(
+            module.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
+          );
+        }
       });
-      setContent(module?.content)
-      setEmbeds(module?.embeds)
-      module?.activeCardToEmbedId &&
-      setActiveCardEmbedPosition(
-          module?.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
-      );
     }, [module, guildId, reset]);
   } else if (moduleName === "leaver") {
     const reset = useLeaverStore((state) => state.reset);
-    const setContent = useLeaverStore((state) => state.setContent);
-    const setEmbeds = useLeaverStore((state) => state.setEmbeds);
 
     const setActiveCardEmbedPosition = useLeaverStore(
       (state) => state.setActiveCardEmbedPosition
     );
     useEffect(() => {
       reset();
-      useLeaverStore.setState({
-        id: module?.id,
-        guildId: guildId,
-        channelId: module?.channelId,
-        ...module,
+      useLeaverStore.setState((state) => {
+        state.id = module?.id;
+        state.guildId = guildId;
+        state.channelId = module?.channelId;
+        state.activeCardId = module?.activeCardId;
+        state.activeCardToEmbedId = module?.activeCardToEmbedId;
+        if (module?.content) {
+          state.content = module.content;
+        }
+        if (module?.embeds && module.embeds.length > 0) {
+          state.embeds = module.embeds;
+        }
+        if (module?.activeCardToEmbedId) {
+          setActiveCardEmbedPosition(
+            module.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
+          );
+        }
       });
-      setContent(module?.content)
-      setEmbeds(module?.embeds)
-      module?.activeCardToEmbedId &&
-        setActiveCardEmbedPosition(
-          module?.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
-        );
     }, [module, guildId, reset]);
   }
 

@@ -12,7 +12,12 @@ export default function EnableModuleButton({
   moduleName: ModuleName;
 }) {
   return (
-    <Button color="primary" onPress={() => createModule(guildId, moduleName)}>
+    <Button
+      color="primary"
+      onPress={() => {
+        createModule(guildId, moduleName);
+      }}
+    >
       Enable {moduleName}
     </Button>
   );

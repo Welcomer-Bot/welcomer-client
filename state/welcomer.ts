@@ -319,7 +319,6 @@ export const useWelcomerStore = create<WelcomerStore>()(
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,
-          activeCardToEmbedId: null,
         })),
     };
   })

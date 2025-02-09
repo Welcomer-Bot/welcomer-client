@@ -41,7 +41,7 @@ export default async function Page({
         <WelcomeCardHeader />
         {welcomerParams ? (
           <>
-            <div className="h-fit md:h-full md:overflow-y-clip overflow-y-scroll w-full ">
+            <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll w-full ">
               <Divider className="mb-2" />
               <Editor />
             </div>
