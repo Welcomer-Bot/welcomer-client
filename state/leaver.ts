@@ -55,26 +55,28 @@ export interface LeaverStore extends Leaver {
 
   reset(): void;
 }
-
-const defaultMessage: Leaver = {
-  guildId: "",
-  channelId: "",
-  content: "Goodbye {user}, we will miss you!",
-  embeds: [],
-  images: [],
+const defaultField: CompleteEmbedField = {
+  name: "Member count",
+  value: "{membercount}",
 };
 
 const defaultEmbed: CompleteEmbed = {
   title: "Goodbye!",
   description: "Goodbye {user}, we will miss you!",
   color: "#ff0000",
-  fields: [],
+  fields: [defaultField],
 };
 
-const defaultField: CompleteEmbedField = {
-  name: "Member count",
-  value: "{membercount}",
+
+const defaultMessage: Leaver = {
+  guildId: "",
+  channelId: "",
+  content: "Goodbye {user}, we will miss you!",
+  embeds: [defaultEmbed],
+  images: [],
 };
+
+
 
 export const useLeaverStore = create<LeaverStore>()(
   immer((set, get) => {
@@ -291,8 +293,9 @@ export const useLeaverStore = create<LeaverStore>()(
         }),
 
       reset: () =>
-        set((state) => ({
+        customSet((state) => ({
           ...state,
+          ...defaultMessage,
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,

@@ -32,13 +32,13 @@ export default function AppInitializer({
         id: module?.id,
         guildId: guildId,
         channelId: module?.channelId,
-        content: module?.content,
-        ...module,
+        ...(module?.content ? { content: module.content } : {}),
+        // ...module,
       });
       module?.activeCardToEmbedId &&
-      setActiveCardEmbedPosition(
+        setActiveCardEmbedPosition(
           module?.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
-      );
+        );
     }, [module, guildId, reset]);
   } else if (moduleName === "leaver") {
     const reset = useLeaverStore((state) => state.reset);
@@ -52,7 +52,9 @@ export default function AppInitializer({
         guildId: guildId,
         channelId: module?.channelId,
         content: module?.content,
-        ...module,
+        ...(module?.content ? { content: module.content } : {}),
+
+        // ...module,
       });
 
       module?.activeCardToEmbedId &&

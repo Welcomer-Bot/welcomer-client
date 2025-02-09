@@ -58,27 +58,30 @@ export interface WelcomerStore extends Welcomer {
   reset(): void;
 }
 
-const defaultMessage: Welcomer = {
-  guildId: "",
-  channelId: "",
-  content: "Welcome {user} to {guild}",
-  embeds: [],
-  activeCardId: null,
-  images: [],
-  activeCardToEmbedId: null,
+const defaultField: CompleteEmbedField = {
+  name: "New member count",
+  value: "{membercount}",
 };
 
 const defaultEmbed: CompleteEmbed = {
   title: "Welcome to the server!",
   description: "Welcome {user} to {guild}",
   color: "#ffffff",
-  fields: [],
+  fields: [defaultField],
 };
 
-const defaultField: CompleteEmbedField = {
-  name: "New member count",
-  value: "{membercount}",
+const defaultMessage: Welcomer = {
+  guildId: "",
+  channelId: "",
+  content: "Welcome {user} to {guild}",
+  embeds: [defaultEmbed],
+  activeCardId: null,
+  images: [],
+  activeCardToEmbedId: null,
 };
+
+
+
 
 export const useWelcomerStore = create<WelcomerStore>()(
   immer<WelcomerStore>((set, get) => {
@@ -306,8 +309,9 @@ export const useWelcomerStore = create<WelcomerStore>()(
         }),
 
       reset: () =>
-        set((state) => ({
+        customSet((state) => ({
           ...state,
+          ...defaultMessage,
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,
