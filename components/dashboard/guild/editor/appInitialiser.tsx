@@ -23,37 +23,28 @@ export default function AppInitializer({
   });
   if (moduleName === "welcomer") {
     const reset = useWelcomerStore((state) => state.reset);
-
-    const setActiveCardEmbedPosition = useWelcomerStore(
-      (state) => state.setActiveCardEmbedPosition
-    );
     useEffect(() => {
       reset();
       useWelcomerStore.setState((state) => {
         state.id = module?.id;
         state.guildId = guildId;
         state.activeCardId = module?.activeCardId;
-        state.activeCardToEmbedId = module?.activeCardToEmbedId;
+        state.activeCardToEmbedId = module?.embeds.findIndex(
+          (e) => e.id === module.activeCardToEmbedId
+        );
         state.channelId = module?.channelId;
+        state.activeCard = module?.activeCard;
         if (module?.content) {
           state.content = module.content;
         }
         if (module?.embeds && module.embeds.length > 0) {
           state.embeds = module.embeds;
         }
-        if (module?.activeCardToEmbedId) {
-          setActiveCardEmbedPosition(
-            module.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
-          );
-        }
       });
     }, [module, guildId, reset]);
   } else if (moduleName === "leaver") {
     const reset = useLeaverStore((state) => state.reset);
 
-    const setActiveCardEmbedPosition = useLeaverStore(
-      (state) => state.setActiveCardEmbedPosition
-    );
     useEffect(() => {
       reset();
       useLeaverStore.setState((state) => {
@@ -61,17 +52,14 @@ export default function AppInitializer({
         state.guildId = guildId;
         state.channelId = module?.channelId;
         state.activeCardId = module?.activeCardId;
-        state.activeCardToEmbedId = module?.activeCardToEmbedId;
+        state.activeCardToEmbedId = module?.embeds.findIndex(
+          (e) => e.id === module.activeCardToEmbedId
+        );
         if (module?.content) {
           state.content = module.content;
         }
         if (module?.embeds && module.embeds.length > 0) {
           state.embeds = module.embeds;
-        }
-        if (module?.activeCardToEmbedId) {
-          setActiveCardEmbedPosition(
-            module.embeds.findIndex((e) => e.id === module.activeCardToEmbedId)
-          );
         }
       });
     }, [module, guildId, reset]);

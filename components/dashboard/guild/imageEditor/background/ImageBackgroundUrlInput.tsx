@@ -7,7 +7,6 @@ export function ImageBackgroundUrlInput() {
   const backgroundUrl = useImageStore(
     (state) => state.getActiveCard()!.backgroundImgURL
   );
-  console.log("backgroundUrl", backgroundUrl);
   const setBackgroundUrl = useImageStore((state) => state.setBackgroundUrl);
   const [enabled, setEnabled] = useState<boolean>(typeof backgroundUrl === "string");
 
@@ -17,7 +16,6 @@ export function ImageBackgroundUrlInput() {
     } else {
       setBackgroundUrl(" ");
     }
-    console.log("enabled", enabled);
   }, [enabled]);
 
   useEffect(() => {

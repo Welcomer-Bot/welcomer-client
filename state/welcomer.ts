@@ -95,7 +95,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
       deletedEmbeds: [],
       deletedFields: [],
       edited: false,
-      activeCardEmbedPosition: null,
+      activeCardToEmbedId: null,
       setEdited: (edited) =>
         set((state) => {
           state.edited = edited;

@@ -11,9 +11,9 @@ export function CardPositionEditor() {
   const module = useModuleNameStore((state) => state.moduleName);
   const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
   const activeCardId = store.activeCardId;
-  console.log("Module", store);
-  console.log("Active Card ID", activeCardId, module);
   const embeds = store.embeds;
+  // console.log("store", store)
+
   return activeCardId === null ? (
     <div className="text-center w-full">
       <p>You dont have active card to show, select active card first</p>
@@ -34,7 +34,7 @@ export function CardPositionEditor() {
         label="Card Position"
         value={
           store.activeCardToEmbedId?.toString() ||
-          (store.activeCardToEmbedId == null && store.activeCard ? "-1" : null)
+          (store.activeCardToEmbedId == null && store.activeCardId ? "-1" : null)
         }
         onValueChange={(value) => {
           store.setActiveCardEmbedPosition(Number(value));
