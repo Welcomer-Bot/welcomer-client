@@ -12,7 +12,7 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended, ModuleName } from "@/types";
-import { Leaver } from "@prisma/client";
+import { Leaver, Period } from "@prisma/client";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -320,4 +320,20 @@ export async function getModuleCards(
   } catch {
     return null;
   }
+}
+
+
+export async function getGuildStats(
+  guildId: string,
+  period: Period,
+  module: ModuleName
+) {
+  if (!(await canUserManageGuild(guildId))) return;
+  return await prisma.guildStats.findUnique({
+    where: {
+      id: guildId,
+      period,
+      module,
+    }
+  })
 }
