@@ -2,7 +2,6 @@
 
 ## TODO
 
-- add sitemap
 - add premium features
 - add legal pages
 
