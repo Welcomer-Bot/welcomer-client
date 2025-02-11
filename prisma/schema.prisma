@@ -16,13 +16,13 @@ datasource db {
 }
 
 model Guild {
-  id        String      @id @unique
-  createdAt DateTime?   @default(now())
-  updatedAt DateTime?   @updatedAt
-  leaver    Leaver?
-  welcomer  Welcomer?
-  stats     GuildStats?
-  premium   Boolean     @default(false)
+  id           String      @id @unique
+  createdAt    DateTime?   @default(now())
+  updatedAt    DateTime?   @updatedAt
+  leaver       Leaver?
+  welcomer     Welcomer?
+  stats        GuildStats?
+  premium      Boolean     @default(false)
 }
 
 enum Period {
@@ -38,16 +38,16 @@ enum Module {
 }
 
 model GuildStats {
-  id                String @unique
+  guildId           String @unique
   period            Period
   module            Module
-  guild             Guild  @relation(fields: [id], references: [id])
+  guild             Guild? @relation(fields: [guildId], references: [id])
   generatedImages   Int    @default(0)
   generatedEmbeds   Int    @default(0)
   generatedMessages Int    @default(0)
   membersEvent      Int    @default(0)
 
-  @@id([id, period, module])
+  @@id([guildId, period, module])
 }
 
 model Welcomer {
@@ -63,9 +63,9 @@ model Welcomer {
   images              ImageCard[] @relation(name: "WelcomerCard")
   activeCardId        Int?        @unique
   activeCardToEmbedId Int?        @unique
-  activeCardToEmbed   Embed?      @relation(fields: [activeCardToEmbedId], references: [id], name: "WelcomerActiveCardToEmbed")
-  activeCard          ImageCard?  @relation(fields: [activeCardId], references: [id], name: "WelcomerActiveCard")
-  guild               Guild?      @relation(fields: [guildId], references: [id])
+  activeCardToEmbed   Embed?      @relation(fields: [activeCardToEmbedId], references: [id], name: "WelcomerActiveCardToEmbed", onDelete: Cascade)
+  activeCard          ImageCard?  @relation(fields: [activeCardId], references: [id], name: "WelcomerActiveCard", onDelete: Cascade)
+  guild               Guild?      @relation(fields: [guildId], references: [id], onDelete: Cascade)
 }
 
 model Leaver {
@@ -79,10 +79,10 @@ model Leaver {
   embeds              Embed[]
   images              ImageCard[]
   activeCardToEmbedId Int?        @unique
-  activeCardToEmbed   Embed?      @relation(fields: [activeCardToEmbedId], references: [id], name: "LeaverActiveCardToEmbed")
+  activeCardToEmbed   Embed?      @relation(fields: [activeCardToEmbedId], references: [id], name: "LeaverActiveCardToEmbed", onDelete: Cascade)
   activeCardId        Int?        @unique
-  activeCard          ImageCard?  @relation(fields: [activeCardId], references: [id], name: "LeaverActiveCard")
-  guild               Guild?      @relation(fields: [guildId], references: [id])
+  activeCard          ImageCard?  @relation(fields: [activeCardId], references: [id], name: "LeaverActiveCard", onDelete: Cascade)
+  guild               Guild?      @relation(fields: [guildId], references: [id], onDelete: Cascade)
 }
 
 model DM {

@@ -331,7 +331,7 @@ export async function getGuildStats(
   if (!(await canUserManageGuild(guildId))) return;
   return await prisma.guildStats.findUnique({
     where: {
-      id: guildId,
+      guildId,
       period,
       module,
     }

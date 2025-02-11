@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getGuildStats, getUserGuild } from "@/lib/dal";
 import GuildCard from "@/components/dashboard/guild/guildCard";
+import { fetchGuildStats } from "@/lib/dto";
 
 export default async function Page({
   params,
@@ -11,12 +12,12 @@ export default async function Page({
 }) {
   const { guildId } = await params;
   const guild = await getUserGuild(guildId);
-  const stats = await getGuildStats(guildId, "DAILY", "welcomer")
+  const stats = await fetchGuildStats(guildId, "welcomer");
 
   if (!guild) redirect("/dashboard");
 
   return (
-    <Card>
+    <Card className="mx-5 my-3">
       <CardHeader>
         <GuildCard guild={guild} />
       </CardHeader>
@@ -25,29 +26,31 @@ export default async function Page({
             <p>
               Member Count: {guild.memberCount}
             </p>
-      {stats ? (
-            <div>
+          {
+            stats && stats.map((stat) => stat && (
+              <div key={stat.period}>
               <h2>Daily stats</h2>
               <div className="grid grid-cols-3">
                 <Card>
                   <CardHeader>Members welcomed</CardHeader>
-                  <CardBody>{stats.membersEvent}</CardBody>
+                  <CardBody>{stat.membersEvent}</CardBody>
                 </Card>
                 <Card>
                   <CardHeader>Generated Messages</CardHeader>
-                  <CardBody>{stats.generatedMessages}</CardBody>
+                  <CardBody>{stat.generatedMessages}</CardBody>
                 </Card>
                 <Card>
                   <CardHeader>Generated Images</CardHeader>
-                  <CardBody>{stats.generatedImages}</CardBody>
+                  <CardBody>{stat.generatedImages}</CardBody>
                 </Card>
                 <Card>
                   <CardHeader>Generated Embeds</CardHeader>
-                  <CardBody>{stats.generatedEmbeds}</CardBody>
+                  <CardBody>{stat.generatedEmbeds}</CardBody>
                 </Card>
               </div>
             </div>
-            ) : null}
+            ))
+            }
           </CardBody>
         </>
     </Card>
