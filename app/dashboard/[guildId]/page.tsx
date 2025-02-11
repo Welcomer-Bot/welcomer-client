@@ -1,7 +1,8 @@
-import { Card, CardBody } from "@heroui/card";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { redirect } from "next/navigation";
 
 import { getUserGuild } from "@/lib/dal";
+import GuildCard from "@/components/dashboard/guild/guildCard";
 
 export default async function Page({
   params,
@@ -14,10 +15,12 @@ export default async function Page({
   if (!guild) redirect("/dashboard");
 
   return (
-    <>
+
       <Card>
-        <CardBody>{guild.name}</CardBody>
+      <CardHeader>
+        <GuildCard guild={guild}/>
+      </CardHeader>
+      
       </Card>
-    </>
   );
 }

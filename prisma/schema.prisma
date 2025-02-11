@@ -16,11 +16,38 @@ datasource db {
 }
 
 model Guild {
-  id        String    @id @unique
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  id        String      @id @unique
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
   leaver    Leaver?
   welcomer  Welcomer?
+  stats     GuildStats?
+  premium   Boolean     @default(false)
+}
+
+enum Period {
+  DAILY
+  WEEKLY
+  MONTHLY
+  TOTAL
+}
+
+enum Module {
+  WELCOMER
+  LEAVER
+}
+
+model GuildStats {
+  id                String @unique
+  period            Period
+  module            Module
+  guild             Guild  @relation(fields: [id], references: [id])
+  generatedImages   Int    @default(0)
+  generatedEmbeds   Int    @default(0)
+  generatedMessages Int    @default(0)
+  membersEvent      Int    @default(0)
+
+  @@id([id, period, module])
 }
 
 model Welcomer {
@@ -193,9 +220,11 @@ model User {
 model UserGuild {
   id          String     @id
   name        String
+  description String?
   icon        String?
   banner      String?
   permissions String?
+  memberCount Int        @default(0)
   createdAt   DateTime?  @default(now())
   updatedAt   DateTime?  @updatedAt
   channels    Channels[]
