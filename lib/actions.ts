@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import prisma from "./prisma";
 
 import { BaseCardParams } from "@/lib/discord/schema";
 import { CompleteEmbed } from "@/prisma/schema";
@@ -13,10 +12,27 @@ import { Welcomer } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import {
   canUserManageGuild,
+  createEmbed,
+  createImageCard,
+  createLeaver,
+  createWelcomer,
+  deleteCard,
+  deleteCardText,
+  deleteEmbed,
+  deleteEmbedField,
+  deleteLeaver,
+  deleteWelcomer,
   getEmbeds,
   getLeaverById,
   getModuleCards,
   getWelcomerById,
+  updateEmbed,
+  updateImageCard,
+  updateImageCardText,
+  updateLeaver,
+  updateLeaverChannelAndContent,
+  updateWelcomer,
+  updateWelcomerChannelAndContent,
 } from "./dal";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
@@ -39,17 +55,9 @@ export async function createModule(
   }
   let res;
   if (moduleName === "welcomer") {
-    res = await prisma.welcomer.create({
-      data: {
-        guildId: guildId,
-      },
-    });
+    res = await createWelcomer(guildId);
   } else if (moduleName === "leaver") {
-    res = await prisma.leaver.create({
-      data: {
-        guildId: guildId,
-      },
-    });
+    res = await createLeaver(guildId);
   } else {
     throw new Error("Invalid module name");
   }
@@ -85,25 +93,17 @@ export async function updateModule(
     }
     let module;
     if (moduleName === "welcomer") {
-      module = await prisma.welcomer.update({
-        where: {
-          guildId: guildId,
-        },
-        data: {
-          channelId: store.channelId,
-          content: store.content,
-        },
-      });
+      module = await updateWelcomerChannelAndContent(
+        guildId,
+        store.channelId,
+        store.content
+      );
     } else if (moduleName === "leaver") {
-      module = await prisma.leaver.update({
-        where: {
-          guildId: guildId,
-        },
-        data: {
-          channelId: store.channelId,
-          content: store.content,
-        },
-      });
+      module = await updateLeaverChannelAndContent(
+        guildId,
+        store.channelId,
+        store.content
+      );
     } else {
       return {
         error: "Invalid module name",
@@ -142,18 +142,7 @@ export async function updateModule(
           return {
             error: "You cannot delete an embed that is not in the module",
           };
-        await prisma.embed.delete({
-          where: {
-            id: embed.id,
-            [`${moduleName}Id`]: module.id,
-          },
-          include: {
-            author: true,
-            footer: true,
-            fields: true,
-            image: true,
-          },
-        });
+        await deleteEmbed(embed.id, moduleName, module.id);
       }
     }
     for (const field of store.deletedFields) {
@@ -162,108 +151,92 @@ export async function updateModule(
           return {
             error: "You cannot delete a field that is not in the embed",
           };
-        await prisma.embedField.delete({
-          where: {
-            id: field.id,
-          },
-        });
+        await deleteEmbedField(field.id);
       }
     }
     if (store.activeCard && store.activeCardToEmbedId !== null) {
       if (store.activeCardToEmbedId === -2) {
         if (moduleName === "welcomer") {
-          await prisma.welcomer.update({
-            where: {
-              guildId: guildId,
-            },
-            data: {
+          await updateWelcomer(
+            guildId,
+
+            {
               activeCard: {
                 disconnect: true,
               },
               activeCardToEmbed: {
                 disconnect: true,
               },
-            },
-          });
-        } else if (moduleName === "leaver") {
-          await prisma.leaver.update({
-            where: {
-              guildId: guildId,
-            },
-            data: {
-              activeCard: {
-                disconnect: true,
-              },
-              activeCardToEmbed: {
-                disconnect: true,
-              },
-            },
-          });
+            }
+          );
         }
-      } else if (store.activeCardToEmbedId === -1) {
-        if (moduleName === "welcomer") {
-          await prisma.welcomer.update({
-            where: {
-              guildId: guildId,
+      } else if (moduleName === "leaver") {
+        await updateLeaver(
+          guildId,
+
+          {
+            activeCard: {
+              disconnect: true,
             },
-            data: {
-              activeCardToEmbed: {
-                disconnect: true,
-                // set to -1 to show on the bottom
-              },
+            activeCardToEmbed: {
+              disconnect: true,
             },
-          });
-        } else if (moduleName === "leaver") {
-          await prisma.leaver.update({
-            where: {
-              guildId: guildId,
-            },
-            data: {
-              activeCardToEmbed: {
-                disconnect: true,
-              },
-            },
-          });
+          }
+        );
+      }
+    } else if (store.activeCardToEmbedId === -1) {
+      if (moduleName === "welcomer") {
+        await updateWelcomer(guildId, {
+          activeCardToEmbed: {
+            disconnect: true,
+            // set to -1 to show on the bottom
+          },
+        });
+      }
+    } else if (moduleName === "leaver") {
+      await updateLeaver(
+        guildId,
+
+        {
+          activeCardToEmbed: {
+            disconnect: true,
+          },
         }
-      } else {
-        const embedId =
-          store.activeCardToEmbedId !== undefined
-            ? store.embeds[store.activeCardToEmbedId]?.id
-            : undefined;
-        if (!embedId)
-          return {
-            error: "You need to select an embed to be the active one",
-          };
-        if (moduleName === "welcomer") {
-          await prisma.welcomer.update({
-            where: {
-              guildId: guildId,
-            },
-            data: {
-              activeCardToEmbed: {
-                connect: {
-                  id: embedId,
-                },
+      );
+    } else {
+      const embedId =
+        store.activeCardToEmbedId &&
+        store.embeds[store.activeCardToEmbedId]?.id;
+      if (!embedId)
+        return {
+          error: "You need to select an embed to be the active one",
+        };
+      if (moduleName === "welcomer") {
+        await updateWelcomer(
+          guildId,
+
+          {
+            activeCardToEmbed: {
+              connect: {
+                id: embedId,
               },
             },
-          });
-        } else if (moduleName === "leaver") {
-          await prisma.leaver.update({
-            where: {
-              guildId: guildId,
-            },
-            data: {
-              activeCardToEmbed: {
-                connect: {
-                  id: embedId,
-                },
+          }
+        );
+      } else if (moduleName === "leaver") {
+        await updateLeaver(
+          guildId,
+
+          {
+            activeCardToEmbed: {
+              connect: {
+                id: embedId,
               },
             },
-          });
-        }
+          }
+        );
       }
     }
-
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
 
     return {
@@ -383,11 +356,7 @@ export async function createOrUpdateEmbed(
 
   try {
     if (embed.id) {
-      embedDb = await prisma.embed.update({
-        where: {
-          id: embed.id,
-        },
-        data: {
+      embedDb = await updateEmbed(embed.id, moduleType, moduleId, {
           title: embed.title,
           description: embed.description,
           color: embed.color,
@@ -395,16 +364,11 @@ export async function createOrUpdateEmbed(
           ...createOrUpdateAuthor,
           ...createOrUpdateFooter,
           ...createOrUpdateFields,
-        },
-        include: {
-          fields: true,
-          author: true,
-          footer: true,
-        },
-      });
+        },    
+      );
     } else {
-      embedDb = await prisma.embed.create({
-        data: {
+      embedDb = await createEmbed(
+        {
           [`${moduleType}Id`]: moduleId,
           title: embed.title,
           description: embed.description,
@@ -414,16 +378,9 @@ export async function createOrUpdateEmbed(
           ...createFooter,
           ...createFields,
         },
-        include: {
-          fields: true,
-          author: true,
-          footer: true,
-        },
-      });
+      )
     }
-    return {
-      ...embedDb,
-    };
+    return embedDb as CompleteEmbed;
   } catch (error) {
     console.error(error);
     return null;
@@ -449,25 +406,9 @@ export async function removeModule(
   };
   try {
     if (moduleName === "welcomer") {
-      await prisma.welcomer.delete({
-        where: {
-          guildId: guildId,
-        },
-        
-        include: {
-          ...embedsInclude,
-          DM: true,
-        },
-      });
+      await deleteWelcomer(guildId);
     } else if (moduleName === "leaver") {
-      await prisma.leaver.delete({
-        where: {
-          guildId: guildId,
-        },
-        include: {
-          ...embedsInclude,
-        },
-      });
+      await deleteLeaver(guildId);
     } else {
       throw new Error("Invalid module name");
     }
@@ -517,18 +458,9 @@ export async function updateCards(
 
   for (const card of store.removedCard ?? []) {
     if (card.id) {
-      const deleteCard = await prisma.imageCard.delete({
-        where: {
-          id: card.id,
-        },
-        include: {
-          mainText: true,
-          secondText: true,
-          nicknameText: true,
-        },
-      });
+      const deletedCard = await deleteCard(card.id);
 
-      if (deleteCard) {
+      if (deletedCard) {
         store.removedCard?.splice(store.removedCard.indexOf(card), 1);
       }
     }
@@ -536,12 +468,7 @@ export async function updateCards(
 
   for (const text of store.removedText ?? []) {
     if (text.id) {
-      console.log("removing text with id ", text.id);
-      await prisma.imageCardText.deleteMany({
-        where: {
-          id: text.id,
-        },
-      });
+      await deleteCardText(text.id);
       store.removedText?.splice(store.removedText.indexOf(text), 1);
     }
   }
@@ -552,7 +479,6 @@ export async function updateCards(
       if (!cardUpdated) {
         throw new Error("An error occurred while updating the image module");
       }
-      // @ts-ignore
       cards.push(cardUpdated);
     }
     // set active card
@@ -564,61 +490,41 @@ export async function updateCards(
           "You need to select an image card to be the active one"
         );
       if (moduleName === "welcomer") {
-        await prisma.welcomer.update({
-          where: {
-            guildId: guildId,
-          },
-          data: {
-            activeCard: {
-              connect: {
-                id: id,
-              },
+        await updateWelcomer(guildId, {
+          activeCard: {
+            connect: {
+              id: id,
             },
           },
         });
       } else if (moduleName === "leaver") {
-        await prisma.leaver.update({
-          where: {
-            guildId: guildId,
-          },
-          data: {
-            activeCard: {
-              connect: {
-                id: id,
-              },
+        await updateLeaver(guildId, {
+          activeCard: {
+            connect: {
+              id: id,
             },
           },
         });
       }
     } else {
       if (moduleName === "welcomer") {
-        await prisma.welcomer.update({
-          where: {
-            guildId: guildId,
-          },
-          data: {
+        await updateWelcomer(guildId, {
             activeCard: {
               disconnect: true,
             },
             activeCardToEmbed: {
               disconnect: true,
-            }
-          },
-        });
+            },
+          })
       } else if (moduleName === "leaver") {
-        await prisma.leaver.update({
-          where: {
-            guildId: guildId,
-          },
-          data: {
+        await updateLeaver(guildId,  {
             activeCard: {
               disconnect: true,
             },
             activeCardToEmbed: {
               disconnect: true,
-            }
-          },
-        });
+            },
+          })
       }
     }
   }
@@ -706,75 +612,38 @@ export async function createOrUpdateCard(
     : {};
 
   if (card.mainText?.id) {
-    await prisma.imageCardText.update({
-      where: {
-        id: card.mainText.id,
-      },
-      data: {
-        content: card.mainText.content,
-        color: card.mainText.color,
-        font: card.mainText.font,
-      },
-    });
+    await updateImageCardText(card.mainText.id, card.mainText)
   }
 
   if (card.secondText?.id) {
-    await prisma.imageCardText.update({
-      where: {
-        id: card.secondText.id,
-      },
-      data: {
-        content: card.secondText.content,
-        color: card.secondText.color,
-        font: card.secondText.font,
-      },
-    });
+    await updateImageCardText(card.secondText.id, card.secondText)
   }
 
   if (card.nicknameText?.id) {
-    await prisma.imageCardText.update({
-      where: {
-        id: card.nicknameText.id,
-      },
-      data: {
-        content: card.nicknameText.content,
-        color: card.nicknameText.color,
-        font: card.nicknameText.font,
-      },
-    });
+    await updateImageCardText(card.nicknameText.id, card.nicknameText)
   }
 
   // try {
   if (card.id) {
-    cardDb = await prisma.imageCard.update({
-      where: {
-        id: card.id,
-      },
-      data: {
-        [moduleName]: {
-          connect: {
-            id: moduleId,
-          },
+    cardDb = await updateImageCard(card.id, {
+      [moduleName]: {
+        connect: {
+          id: moduleId,
         },
-        backgroundImgURL: card.backgroundImgURL,
-        backgroundColor:
-          typeof card.backgroundColor === "string"
-            ? card.backgroundColor
-            : undefined,
-        avatarBorderColor: card.avatarBorderColor,
-        ...connectOrCreateMainText,
-        ...connectOrCreateSecondText,
-        ...connectOrCreateNicknameText,
       },
-      include: {
-        mainText: true,
-        secondText: true,
-        nicknameText: true,
-      },
+      backgroundImgURL: card.backgroundImgURL,
+      backgroundColor:
+        typeof card.backgroundColor === "string"
+          ? card.backgroundColor
+          : undefined,
+      avatarBorderColor: card.avatarBorderColor,
+      ...connectOrCreateMainText,
+      ...connectOrCreateSecondText,
+      ...connectOrCreateNicknameText,
     });
   } else {
-    cardDb = await prisma.imageCard.create({
-      data: {
+    cardDb = await createImageCard(
+      {
         [moduleName]: {
           connect: {
             id: moduleId,
@@ -789,13 +658,7 @@ export async function createOrUpdateCard(
         ...connectOrCreateMainText,
         ...connectOrCreateSecondText,
         ...connectOrCreateNicknameText,
-      },
-      include: {
-        mainText: true,
-        secondText: true,
-        nicknameText: true,
-      },
-    });
+      });
   }
   return {
     ...(cardDb as BaseCardParams),

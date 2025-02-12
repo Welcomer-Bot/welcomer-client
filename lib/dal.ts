@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 
-import { BaseCardParams, Embed } from "@/lib/discord/schema";
+import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
 import {
   APIChannel,
   RESTGetAPIGuildChannelsResult,
@@ -12,7 +12,7 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended, ModuleName } from "@/types";
-import { Leaver, Period } from "@prisma/client";
+import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -322,18 +322,253 @@ export async function getModuleCards(
   }
 }
 
-
 export async function getGuildStats(
   guildId: string,
   period: Period,
   module: ModuleName
 ) {
-  if (!(await canUserManageGuild(guildId))) return;
+  if (!(await canUserManageGuild(guildId))) return null;
   return await prisma.guildStats.findUnique({
     where: {
+      guildId_period_module: {
+        guildId,
+        period,
+        module,
+      },
+    },
+  });
+}
+
+export async function createModuleStat(
+  guildId: string,
+  period: Period,
+  module: ModuleName
+) {
+  return await prisma.guildStats.upsert({
+    where: {
+      guildId_period_module: {
+        guildId,
+        period,
+        module,
+      },
+    },
+    create: {
       guildId,
       period,
       module,
-    }
-  })
+    },
+    update: {},
+  });
+}
+
+export async function createModuleStats(guildId: string, module: ModuleName) {
+  Object.values(Period).forEach(async (period) => {
+    await createModuleStat(guildId, period, module);
+  });
+}
+
+export async function createWelcomer(guildId: string) {
+  const welcomer = await prisma.welcomer.create({
+    data: {
+      guildId,
+    },
+  });
+  await createModuleStats(guildId, "welcomer");
+  return welcomer;
+}
+
+export async function createLeaver(guildId: string) {
+  const leaver = await prisma.leaver.create({
+    data: {
+      guildId,
+    },
+  });
+  await createModuleStats(guildId, "leaver");
+  return leaver;
+}
+
+export async function updateWelcomer(
+  guildId: string,
+  data: Prisma.XOR<
+    Prisma.WelcomerUpdateInput,
+    Prisma.WelcomerUncheckedUpdateInput
+  >
+) {
+  return await prisma.welcomer.update({
+    where: {
+      guildId: guildId,
+    },
+    data,
+  });
+}
+
+export async function updateWelcomerChannelAndContent(
+  guildId: string,
+  channelId: string,
+  content: string | null | undefined
+) {
+  const data: Partial<Welcomer> = {
+    channelId,
+    content,
+  };
+  return updateWelcomer(guildId, data);
+}
+
+export async function updateLeaver(
+  guildId: string,
+  data: Prisma.XOR<Prisma.LeaverUpdateInput, Prisma.LeaverUncheckedUpdateInput>
+) {
+  return await prisma.leaver.update({
+    where: {
+      guildId: guildId,
+    },
+    data,
+  });
+}
+export async function updateLeaverChannelAndContent(
+  guildId: string,
+  channelId: string,
+  content: string | null | undefined
+) {
+  const data: Partial<Leaver> = {
+    channelId,
+    content,
+  };
+  return updateLeaver(guildId, data);
+}
+
+const includeAllEmbeds: Prisma.EmbedInclude = {
+  author: true,
+  footer: true,
+  fields: true,
+  image: true,
+  DM: true,
+};
+
+export async function deleteEmbed(
+  embedId: number,
+  moduleName: ModuleName,
+  moduleId: number
+) {
+  return await prisma.embed.delete({
+    where: {
+      id: embedId,
+      [`${moduleName}Id`]: moduleId,
+    },
+    include: includeAllEmbeds,
+  });
+}
+
+export async function updateEmbed(
+  embedId: number,
+  moduleName: ModuleName,
+  moduleId: number,
+  data: Prisma.XOR<Prisma.EmbedUpdateInput, Prisma.EmbedUncheckedUpdateInput>
+) {
+  return await prisma.embed.update({
+    where: {
+      id: embedId,
+      [`${moduleName}Id`]: moduleId,
+    },
+    data,
+    include: includeAllEmbeds,
+  });
+}
+
+export async function createEmbed(
+  data: Prisma.XOR<Prisma.EmbedCreateInput, Prisma.EmbedUncheckedCreateInput>
+) {
+  return await prisma.embed.create({
+    data,
+    include: includeAllEmbeds,
+  });
+}
+
+export async function deleteEmbedField(fieldId: number) {
+  return await prisma.embedField.delete({
+    where: {
+      id: fieldId,
+    },
+  });
+}
+
+export async function deleteWelcomer(guildId: string) {
+  return await prisma.welcomer.delete({
+    where: {
+      guildId,
+    },
+  });
+}
+
+export async function deleteLeaver(guildId: string) {
+  return await prisma.leaver.delete({
+    where: {
+      guildId,
+    },
+  });
+}
+
+export async function deleteCard(cardId: number) {
+  return await prisma.imageCard.delete({
+    where: {
+      id: cardId,
+    },
+  });
+}
+
+export async function deleteCardText(textId: number) {
+  return await prisma.imageCardText.delete({
+    where: {
+      id: textId,
+    },
+  });
+}
+
+export async function updateImageCardText(textId: number, text: TextCard) {
+  return await prisma.imageCardText.update({
+    where: {
+      id: textId,
+    },
+    data: {
+      content: text.content,
+      color: text.color,
+      font: text.font,
+    },
+  });
+}
+
+export async function updateImageCard(
+  cardId: number,
+  data: Prisma.XOR<
+    Prisma.ImageCardUpdateInput,
+    Prisma.ImageCardUncheckedUpdateInput
+  >
+) {
+  return await prisma.imageCard.update({
+    where: {
+      id: cardId,
+    },
+    data,
+    include: {
+      mainText: true,
+      secondText: true,
+      nicknameText: true,
+    },
+  });
+}
+
+export async function createImageCard(
+  data: Prisma.XOR<
+    Prisma.ImageCardCreateInput,
+    Prisma.ImageCardUncheckedCreateInput
+  >
+) {
+  return await prisma.imageCard.create({
+    data,
+    include: {
+      mainText: true,
+      secondText: true,
+      nicknameText: true,
+    },
+  });
 }

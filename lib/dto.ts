@@ -1,13 +1,23 @@
 import { ModuleName } from "@/types";
-import { Period } from "@prisma/client";
+import { GuildStats, Period } from "@prisma/client";
 import "server-only";
 import { getGuildStats } from "./dal";
 
+type StatsDictionary = {
+  [key in Period]: GuildStats | null;
+};
 
-export async function fetchGuildStats(guildId: string, type: ModuleName) {
-    const res = []
-    for (const period of Object.values(Period)) {
-        res.push(await getGuildStats(guildId, period, type));
-    }
-    return res;
+export async function fetchGuildStats(
+  guildId: string,
+  type: ModuleName
+): Promise<StatsDictionary> {
+  const res: StatsDictionary = {} as StatsDictionary;
+
+  await Promise.all(
+    Object.values(Period).map(async (period) => {
+      res[period] = await getGuildStats(guildId, period, type);
+    })
+  );
+
+  return res;
 }

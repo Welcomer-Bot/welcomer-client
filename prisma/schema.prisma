@@ -16,13 +16,13 @@ datasource db {
 }
 
 model Guild {
-  id           String      @id @unique
-  createdAt    DateTime?   @default(now())
-  updatedAt    DateTime?   @updatedAt
-  leaver       Leaver?
-  welcomer     Welcomer?
-  stats        GuildStats?
-  premium      Boolean     @default(false)
+  id        String      @id @unique
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
+  leaver    Leaver?
+  welcomer  Welcomer?
+  stats     GuildStats[]
+  premium   Boolean     @default(false)
 }
 
 enum Period {
@@ -38,7 +38,7 @@ enum Module {
 }
 
 model GuildStats {
-  guildId           String @unique
+  guildId           String
   period            Period
   module            Module
   guild             Guild? @relation(fields: [guildId], references: [id])
