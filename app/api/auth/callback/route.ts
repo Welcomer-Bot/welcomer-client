@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userGuilds = await fetch("https://discord.com/api/users/@me/guilds", {
+    const userGuilds = await fetch("https://discord.com/api/users/@me/guilds?with_counts=true", {
       headers: {
         authorization: `${tokenData.token_type} ${tokenData.access_token}`,
       },
@@ -129,6 +129,7 @@ export async function GET(request: NextRequest) {
         update: {
           name: userGuildsData[i].name,
           icon: userGuildsData[i].icon,
+          memberCount: userGuildsData[i].approximate_member_count,
           users: {
             connect: {
               id: user.id,
@@ -139,6 +140,7 @@ export async function GET(request: NextRequest) {
           id: userGuildsData[i].id,
           name: userGuildsData[i].name,
           icon: userGuildsData[i].icon,
+          memberCount: userGuildsData[i].approximate_member_count,
           users: {
             connect: {
               id: user.id,
