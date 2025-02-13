@@ -15,7 +15,9 @@ export default function SaveButton() {
   if (currentStore.edited === false) return null;
 
   return (
-    <Card className="fixed bottom-5">
+    <Card
+      className={`absolute lg:w-1/2 w-3/4 lg:right-0 bottom-5 z-50 left-1/2 transform -translate-x-1/2 lg:translate-x-0`}
+    >
       <CardBody>
         <Button
           color="primary"

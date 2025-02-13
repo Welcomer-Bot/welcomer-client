@@ -23,9 +23,10 @@ export default async function Page({
         <GuildCard guild={guild} />
       </CardHeader>
       <>
-        <CardBody>
-          <p className="mb-5">Member Count: {guild.memberCount}</p>
-            <StatsViewer guildId={guild.id} module={"welcomer"} />
+        <CardBody className="space-y-5">
+          <p>Member Count: {guild.memberCount}</p>
+          <StatsViewer guildId={guild.id} module={"welcomer"} />
+          <StatsViewer guildId={guild.id} module={"leaver"} />
         </CardBody>
       </>
     </Card>
