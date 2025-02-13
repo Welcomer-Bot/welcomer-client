@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Embed } from "./discord/schema";
 import { APIChannel } from "discord-api-types/v10";
+import { GuildStats, Period } from "@prisma/client";
+import { ModuleName } from "@/types";
 
 export function useGuildChannelsQuery(guildId: string | null) {
   return useQuery({
@@ -22,4 +24,18 @@ export function useWelcomerEmbedsQuery(guildId: string | null) {
       return await embeds.json() as Embed[];
     },
   });
+}
+
+export function usePeriodStatsQuery(guildId: string, period: Period = "DAILY", moduleName: ModuleName) {
+  return useQuery({
+    queryKey: ["stats", guildId, period, moduleName],
+    queryFn: async () => {
+      const res = await fetch(`/api/guild/${guildId}/stats?period=${period}&moduleName=${moduleName}`)
+      if (!res.ok) {
+        throw res;
+      }
+      return res.json() as Promise<GuildStats>;
+    }
+  })
+
 }

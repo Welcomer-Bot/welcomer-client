@@ -21,3 +21,12 @@ export async function fetchGuildStats(
 
   return res;
 }
+
+export async function fetchGuildStat(
+  guildId: string,
+  period: Period,
+  type: ModuleName
+) {
+      return await getGuildStats(guildId, period, type);
+
+}

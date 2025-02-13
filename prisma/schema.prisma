@@ -46,7 +46,7 @@ model GuildStats {
   generatedEmbeds   Int    @default(0)
   generatedMessages Int    @default(0)
   membersEvent      Int    @default(0)
-
+  date              DateTime  @default(dbgenerated("now()"))
   @@id([guildId, period, module])
 }
 
