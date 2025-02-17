@@ -15,43 +15,43 @@ export default function SaveButton() {
   if (currentStore.edited === false) return null;
 
   return (
-    <Card
-      className={`absolute lg:w-1/2 w-3/4 lg:right-0 bottom-5 z-50 left-1/2 transform -translate-x-1/2 lg:translate-x-0`}
-    >
-      <CardBody>
-        <Button
-          color="primary"
-          onPress={async () => {
-            const storeWithoutPreview: Partial<ImageStore> = {
-              moduleId: currentStore.moduleId,
-              activeCard: currentStore.activeCard,
-              removedCard: currentStore.removedCard,
-              removedText: currentStore.removedText,
-              imageCards: currentStore.imageCards.map((card) => {
-                const { imagePreview, ...rest } = card;
-                return rest;
-              }),
-            };
-            const { store, done, error } = await updateCards(
-              storeWithoutPreview,
-              module
-            );
-            if (error) {
-              toast.error(error);
-            } else if (done) {
-              toast.success("Settings updated successfully !");
-            }
-            if (store) {
-              useImageStore.setState((state) => {
-                state.imageCards = store.imageCards || [];
-              });
-            }
-            reset();
-          }}
-        >
-          Save changes
-        </Button>
-      </CardBody>
-    </Card>
+    <div className="absolute lg:w-1/2 w-3/4 lg:right-0 bottom-5 z-50 left-1/2 transform -translate-x-1/2 lg:translate-x-0">
+      <Card>
+        <CardBody>
+          <Button
+            color="primary"
+            onPress={async () => {
+              const storeWithoutPreview: Partial<ImageStore> = {
+                moduleId: currentStore.moduleId,
+                activeCard: currentStore.activeCard,
+                removedCard: currentStore.removedCard,
+                removedText: currentStore.removedText,
+                imageCards: currentStore.imageCards.map((card) => {
+                  const { imagePreview, ...rest } = card;
+                  return rest;
+                }),
+              };
+              const { store, done, error } = await updateCards(
+                storeWithoutPreview,
+                module
+              );
+              if (error) {
+                toast.error(error);
+              } else if (done) {
+                toast.success("Settings updated successfully !");
+              }
+              if (store) {
+                useImageStore.setState((state) => {
+                  state.imageCards = store.imageCards || [];
+                });
+              }
+              reset();
+            }}
+          >
+            Save changes
+          </Button>
+        </CardBody>
+      </Card>
+    </div>
   );
 }
