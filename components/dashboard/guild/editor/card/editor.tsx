@@ -2,7 +2,8 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
-import { Button, Radio, RadioGroup } from "@heroui/react";
+import { Button } from "@heroui/button";
+import { Radio, RadioGroup } from "@heroui/radio";
 import { usePathname, useRouter } from "next/navigation";
 
 export function CardPositionEditor() {

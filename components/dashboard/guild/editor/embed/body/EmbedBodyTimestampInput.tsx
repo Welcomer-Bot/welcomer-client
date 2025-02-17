@@ -3,8 +3,9 @@
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { DatePicker } from "@heroui/date-picker";
 import { Divider } from "@heroui/divider";
-import { DatePicker, Switch } from "@heroui/react";
+import { Switch } from "@heroui/switch";
 import { parseAbsoluteToLocal, ZonedDateTime } from "@internationalized/date";
 import { useState } from "react";
 
