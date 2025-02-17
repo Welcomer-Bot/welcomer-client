@@ -20,7 +20,7 @@ export default async function Page({
 
   if (!guild) redirect("/dashboard");
 
-  const WelcomeCardHeader = () => (
+  const LeaverCardHeader = () => (
     <CardHeader className="flex justify-between">
       <p>Leaver module status</p>
       {leaverParams ? (
@@ -38,7 +38,7 @@ export default async function Page({
       guildId={guildId}
     >
       <Card radius="none" className="w-full h-full">
-        <WelcomeCardHeader />
+        <LeaverCardHeader />
         {leaverParams ? (
           <>
             <div className="h-fit md:h-full overflow-y-scroll md:overflow-y-hidden w-full ">

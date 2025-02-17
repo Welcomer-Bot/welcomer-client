@@ -25,7 +25,7 @@ export default async function Layout({
   const user = await getUserData();
 
   return (
-    <div className="flex h-full w-full">
+    <div className="flex h-full w-full  overflow-hidden">
       <Sidebar currentGuild={userGuild} guilds={otherGuilds} user={user!} />
       <div className="w-full h-screen">{children}</div>
     </div>

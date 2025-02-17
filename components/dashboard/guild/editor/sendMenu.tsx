@@ -14,6 +14,8 @@ export default function SendMenu() {
   const updateChannel = store().setChannelId;
   const currentChannel = store().channelId;
   const { data: channels, error, isLoading } = useGuildChannelsQuery(guildId);
+  console.log(channels);
+  
   return (
     (<Select
       label="Channel"
@@ -39,7 +41,7 @@ export default function SendMenu() {
             (<SelectSection key={channel.id} showDivider title={channel.name}>
               {channels
                 .filter((c) => c.type === 0)
-                .filter((c) => c.parent_id === channel.id)
+                .filter((c) => c.parentId === channel.id)
                 .map((c) => (
                   <SelectItem key={c.id} textValue={c.name}>
                     {c.name} ({c.id})
