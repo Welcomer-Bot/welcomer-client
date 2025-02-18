@@ -1,12 +1,9 @@
 import { User } from "@prisma/client";
-import { getFonts } from "font-list";
 
 import { GuildExtended } from "@/types";
 
 export function getGuildIcon(guild: GuildExtended) {
-  return guild.icon
-    ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
-    : "/logo32.svg";
+  return `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`;
 }
 
 export function getUserAvatar(user: User) {
@@ -18,7 +15,7 @@ export function getUserAvatar(user: User) {
 export function getGuildBanner(guild: GuildExtended) {
   return guild.banner
     ? `https://cdn.discordapp.com/banners/${guild.id}/${guild.banner}.png`
-    : getGuildIcon(guild);
+    : "/logo32.svg";
 }
 
 export function getUniqueId(): number {

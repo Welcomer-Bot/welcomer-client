@@ -67,13 +67,13 @@ export default async function Page() {
                 <UIImage
                   alt="Guild Icon"
                   as={NextImage}
-                  classNames={{
-                    img: "border-solid border-1 border-white shadow-2xl",
-                    wrapper: "mr-3 w-12 h-12",
-                  }}
+                  radius="lg"
+                  aria-label={guild.name[0]}
+                  className="border-white border-solid border-small mr-3"
+                  removeWrapper
+                  width={48}
                   height={48}
                   src={getGuildIcon(guild)}
-                  width={48}
                 />
               ) : (
                 <div className="w-12 h-12 shrink-0 border-solid border-2 border-white shadow-2xl rounded-large flex justify-center items-center mr-3">

@@ -1,8 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { Embed } from "./discord/schema";
-import { APIChannel } from "discord-api-types/v10";
+import { APIChannel, ChannelType } from "discord-api-types/v10";
 import { GuildStats, Period } from "@prisma/client";
 import { ModuleName } from "@/types";
+import {GuildBasedChannel} from "discord.js";
+
+interface channelQuery  {
+  id: string,
+  name: string,
+  type: ChannelType,
+}
 
 export function useGuildChannelsQuery(guildId: string | null) {
   return useQuery({
@@ -10,7 +17,7 @@ export function useGuildChannelsQuery(guildId: string | null) {
     queryFn: async () => {
       if (!guildId) return null;
       const response = await fetch(`/api/guild/${guildId}/channels`);
-      return response.json() as Promise<APIChannel[]>;
+      return response.json() as Promise<GuildBasedChannel[]>;
     },
   });
 }

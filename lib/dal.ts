@@ -2,10 +2,6 @@
 import "server-only";
 
 import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
-import {
-  APIChannel,
-  RESTGetAPIGuildChannelsResult,
-} from "discord-api-types/v10";
 import { cache } from "react";
 
 import prisma from "./prisma";
@@ -13,6 +9,7 @@ import prisma from "./prisma";
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended, ModuleName } from "@/types";
 import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
+import { APIChannel, GuildTextChannelType } from "discord-api-types/v10";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -121,8 +118,26 @@ export async function getGuild(guildId: string) {
     if (!(await canUserManageGuild(guildId))) return null;
     return await prisma.guild.findUnique({
       where: { id: guildId },
+      include: {
+        welcomer: true,
+        leaver: true,
+      },
     });
   } catch {
+    return null;
+  }
+}
+
+export async function getChannel(channelId: string) {
+  try {
+    const channel = await prisma.channels.findUnique({
+      where: {
+        id: channelId,
+      },
+    });
+    return channel;
+  } catch (error) {
+    console.log(error);
     return null;
   }
 }
@@ -250,27 +265,22 @@ export async function getEmbeds(
   }
 }
 
-export async function getGuildChannels(guildId: string): Promise<APIChannel[]> {
+export async function getGuildChannels(guildId: string) {
   // get guild channels from discord api
   try {
-    if (!(await canUserManageGuild(guildId)))
-      throw new Error("You do not have permission to manage this guild");
-    const data = await fetch(
-      "https://discord.com/api/guilds/" + guildId + "/channels",
+    let res = await fetch(
+      process.env.INTERNAL_API_BASE_URL + `/channels?guildId=${guildId}`,
       {
         headers: {
-          authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
-        },
-        next: {
-          revalidate: 60,
+          Authorization: `${process.env.SERVER_TOKEN}`,
         },
       }
     );
-
-    const channels: RESTGetAPIGuildChannelsResult = await data.json();
-
-    return channels;
-  } catch {
+    let data = await res.json();
+    console.log(data)
+    return data;
+  } catch (err){
+    console.log(err)
     throw new Error("Failed to fetch guild channels");
   }
 }

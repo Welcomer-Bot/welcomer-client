@@ -20,7 +20,6 @@ export function EditorImagePreview() {
   }, [activeCard]);
 
   useEffect(() => {
-    // console.log("updating image", activeCard);
     const fetchImage = async () => {
       if (!activeCard) return;
       const previewImage = await generateImage(activeCard);
