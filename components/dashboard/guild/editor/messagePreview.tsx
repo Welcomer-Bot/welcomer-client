@@ -21,7 +21,6 @@ export default function MessagePreview({
   const [image, setImage] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    console.log("msg", msg);
     if (msg.activeCard)
       generateImage(msg.activeCard as BaseCardParams).then(setImage);
   }, [msg.activeCard]);

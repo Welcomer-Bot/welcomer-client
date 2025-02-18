@@ -14,7 +14,6 @@ export default function SendMenu() {
   const updateChannel = store().setChannelId;
   const currentChannel = store().channelId;
   const { data: channels, error, isLoading } = useGuildChannelsQuery(guildId);
-  console.log(channels);
   
   return (
     (<Select
