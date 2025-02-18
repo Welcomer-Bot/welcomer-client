@@ -28,14 +28,15 @@ model Guild {
 model GuildStats {
   period            Period
   module            Module
-  generatedImages   Int    @default(0)
-  generatedEmbeds   Int    @default(0)
-  generatedMessages Int    @default(0)
-  membersEvent      Int    @default(0)
+  generatedImages   Int      @default(0)
+  generatedEmbeds   Int      @default(0)
+  generatedMessages Int      @default(0)
+  membersEvent      Int      @default(0)
   guildId           String
-  guild             Guild  @relation(fields: [guildId], references: [id])
+  createdAt         DateTime @default(now())
+  guild             Guild    @relation(fields: [guildId], references: [id])
 
-  @@id([guildId, period, module])
+  @@id([guildId, period, module, createdAt])
 }
 
 model Welcomer {
