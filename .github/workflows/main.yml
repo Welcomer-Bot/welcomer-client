@@ -15,10 +15,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: npm install
+        run: yarn
 
       - name: Build Next.js app
-        run: npm run build
+        run: yarn build
 
       - name: SSH Deploy
         # Use the 'appleboy/ssh-action' action for SSH deployment
@@ -30,6 +30,6 @@ jobs:
           script: |
             cd /var/www/welcomer-client
             git pull
-            npm install
-            npm run build
+            yarn
+            yarn build
             pm2 restart welcomer-client
