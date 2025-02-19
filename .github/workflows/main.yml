@@ -23,7 +23,7 @@ jobs:
         run: yarn
 
       - name: Build Next.js app
-        run: yarn build
+        run: yarn prisma generate && yarn build
 
       - name: SSH Deploy
         # Use the 'appleboy/ssh-action' action for SSH deployment
@@ -36,5 +36,6 @@ jobs:
             cd /var/www/welcomer-client
             git pull
             yarn
+            yarn prisma generate
             yarn build
             pm2 restart welcomer-client
