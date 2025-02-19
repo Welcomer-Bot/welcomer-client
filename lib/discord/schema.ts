@@ -18,7 +18,10 @@ export type FullEmbed = z.infer<typeof RelatedEmbedModel>;
 export type Embed = z.infer<typeof EmbedModel>;
 export type ImageCard = z.infer<typeof RelatedImageCardModel>;
 export type ImageCardText = z.infer<typeof RelatedImageCardTextModel>;
-export type BaseCardParams = BCP & {
+export type BaseCardParams = Omit<
+  BCP,
+  "mainText" | "secondText" | "nicknameText"
+> & {
   id?: number;
   mainText?: TextCard | null;
   secondText?: TextCard | null;
