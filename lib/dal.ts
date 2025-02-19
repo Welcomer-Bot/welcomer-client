@@ -332,48 +332,44 @@ export async function getModuleCards(
   }
 }
 
-export async function getGuildStats(
+export async function getLatestGuildStats(
   guildId: string,
   period: Period,
   module: ModuleName
 ) {
-  if (!(await canUserManageGuild(guildId))) return null;
-  return await prisma.guildStats.findUnique({
+  return await prisma.guildStats.findFirst({
     where: {
-      guildId_period_module: {
-        guildId,
-        period,
-        module,
-      },
-    },
-  });
-}
-
-export async function createModuleStat(
-  guildId: string,
-  period: Period,
-  module: ModuleName
-) {
-  return await prisma.guildStats.upsert({
-    where: {
-      guildId_period_module: {
-        guildId,
-        period,
-        module,
-      },
-    },
-    create: {
       guildId,
       period,
       module,
     },
-    update: {},
+    orderBy: {
+      createdAt: "desc",
+    },
   });
+}
+export async function createGuildStats(
+  guildId: string,
+  period: Period,
+  module: ModuleName,
+) {
+  const latestStats = await getLatestGuildStats(guildId, period, module);
+
+  if (!latestStats) {
+    return await prisma.guildStats.create({
+      data: {
+        guildId,
+        period,
+        module,
+        createdAt: new Date(),
+      },
+    });
+  }
 }
 
 export async function createModuleStats(guildId: string, module: ModuleName) {
   Object.values(Period).forEach(async (period) => {
-    await createModuleStat(guildId, period, module);
+    await createGuildStats(guildId, period, module);
   });
 }
 
