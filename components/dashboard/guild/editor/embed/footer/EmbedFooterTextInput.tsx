@@ -6,8 +6,10 @@ import { useWelcomerStore } from "@/state/welcomer";
 import { Input } from "@heroui/input";
 
 export function EmbedFooterNameInput({ embedIndex }: { embedIndex: number }) {
-  const module = useModuleNameStore((state) => state.moduleName);
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
   const footer = store.embeds[embedIndex].footer?.text;
 
   const setFooter = store.setEmbedFooterText;

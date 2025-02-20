@@ -1,15 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { Embed } from "./discord/schema";
-import { APIChannel, ChannelType } from "discord-api-types/v10";
-import { GuildStats, Period } from "@prisma/client";
 import { ModuleName } from "@/types";
-import {GuildBasedChannel} from "discord.js";
+import { GuildStats, Period } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
+import { GuildBasedChannel } from "discord.js";
+import { Embed } from "./discord/schema";
 
-interface channelQuery  {
-  id: string,
-  name: string,
-  type: ChannelType,
-}
 
 export function useGuildChannelsQuery(guildId: string | null) {
   return useQuery({

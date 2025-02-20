@@ -27,7 +27,7 @@ export function EditorImagePreview() {
       setImg(previewImage);
     };
     fetchImage();
-  }, [debounceImage]);
+  }, [debounceImage, setPreviewImage, activeCard]);
   if (!img) return <>No image to load</>;
   return (
     <Suspense fallback={<div>Loading...</div>}>

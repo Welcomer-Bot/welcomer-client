@@ -91,15 +91,15 @@ export async function updateModule(
           : "" + messageValidated.error.errors[0].message,
       };
     }
-    let module;
+    let libModule;
     if (moduleName === "welcomer") {
-      module = await updateWelcomerChannelAndContent(
+      libModule = await updateWelcomerChannelAndContent(
         guildId,
         store.channelId,
         store.content
       );
     } else if (moduleName === "leaver") {
-      module = await updateLeaverChannelAndContent(
+      libModule = await updateLeaverChannelAndContent(
         guildId,
         store.channelId,
         store.content
@@ -109,7 +109,7 @@ export async function updateModule(
         error: "Invalid module name",
       };
     }
-    const embeds = await getEmbeds(module.id, moduleName);
+    const embeds = await getEmbeds(libModule.id, moduleName);
     const embedsToCreate = store.embeds.filter((embed) => embed.id === null);
     if ((embeds?.length ?? 0) + embedsToCreate.length > 10)
       return {
@@ -119,14 +119,14 @@ export async function updateModule(
       if (
         embed.id &&
         embed[`${moduleName}Id`] &&
-        module.id != embed[`${moduleName}Id`]
+        libModule.id != embed[`${moduleName}Id`]
       )
         return {
           error: "You cannot update an embed that is not in the module",
         };
       const embedUpdated = await createOrUpdateEmbed(
         embed,
-        module.id,
+        libModule.id,
         moduleName
       );
       if (!embedUpdated) {
@@ -138,11 +138,11 @@ export async function updateModule(
     }
     for (const embed of store.deletedEmbeds) {
       if (embed.id) {
-        if (embed[`${moduleName}Id`] && module.id != embed[`${moduleName}Id`])
+        if (embed[`${moduleName}Id`] && libModule.id != embed[`${moduleName}Id`])
           return {
             error: "You cannot delete an embed that is not in the module",
           };
-        await deleteEmbed(embed.id, moduleName, module.id);
+        await deleteEmbed(embed.id, moduleName, libModule.id);
       }
     }
     for (const field of store.deletedFields) {
@@ -259,44 +259,44 @@ export async function createOrUpdateEmbed(
   const createOrUpdateAuthor = {
     author: embed.author?.name
       ? {
-          upsert: {
-            where: {
-              embedId: embed.id,
-            },
-            update: {
-              name: embed.author?.name,
-              iconUrl: embed.author?.iconUrl,
-              url: embed.author?.url,
-            },
-            create: {
-              id: embed.id,
-              name: embed.author?.name,
-              iconUrl: embed.author?.iconUrl,
-              url: embed.author?.url,
-            },
+        upsert: {
+          where: {
+            embedId: embed.id,
           },
-        }
+          update: {
+            name: embed.author?.name,
+            iconUrl: embed.author?.iconUrl,
+            url: embed.author?.url,
+          },
+          create: {
+            id: embed.id,
+            name: embed.author?.name,
+            iconUrl: embed.author?.iconUrl,
+            url: embed.author?.url,
+          },
+        },
+      }
       : undefined,
   };
 
   const createOrUpdateFooter = {
     footer: embed.footer?.text
       ? {
-          upsert: {
-            where: {
-              embedId: embed.id,
-            },
-            update: {
-              text: embed.footer?.text,
-              iconUrl: embed.footer?.iconUrl,
-            },
-            create: {
-              id: embed.id,
-              text: embed.footer?.text,
-              iconUrl: embed.footer?.iconUrl,
-            },
+        upsert: {
+          where: {
+            embedId: embed.id,
           },
-        }
+          update: {
+            text: embed.footer?.text,
+            iconUrl: embed.footer?.iconUrl,
+          },
+          create: {
+            id: embed.id,
+            text: embed.footer?.text,
+            iconUrl: embed.footer?.iconUrl,
+          },
+        },
+      }
       : undefined,
   };
 
@@ -324,23 +324,23 @@ export async function createOrUpdateEmbed(
   const createAuthor = {
     author: embed.author?.name
       ? {
-          create: {
-            name: embed.author?.name,
-            iconUrl: embed.author?.iconUrl,
-            url: embed.author?.url,
-          },
-        }
+        create: {
+          name: embed.author?.name,
+          iconUrl: embed.author?.iconUrl,
+          url: embed.author?.url,
+        },
+      }
       : undefined,
   };
 
   const createFooter = {
     footer: embed.footer?.text
       ? {
-          create: {
-            text: embed.footer?.text,
-            iconUrl: embed.footer?.iconUrl,
-          },
-        }
+        create: {
+          text: embed.footer?.text,
+          iconUrl: embed.footer?.iconUrl,
+        },
+      }
       : undefined,
   };
 
@@ -357,14 +357,14 @@ export async function createOrUpdateEmbed(
   try {
     if (embed.id) {
       embedDb = await updateEmbed(embed.id, moduleType, moduleId, {
-          title: embed.title,
-          description: embed.description,
-          color: embed.color,
-          timestamp: embed.timestamp,
-          ...createOrUpdateAuthor,
-          ...createOrUpdateFooter,
-          ...createOrUpdateFields,
-        },    
+        title: embed.title,
+        description: embed.description,
+        color: embed.color,
+        timestamp: embed.timestamp,
+        ...createOrUpdateAuthor,
+        ...createOrUpdateFooter,
+        ...createOrUpdateFields,
+      },
       );
     } else {
       embedDb = await createEmbed(
@@ -394,16 +394,6 @@ export async function removeModule(
   if (!(await canUserManageGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
-  const embedsInclude = {
-    embeds: {
-      include: {
-        fields: true,
-        author: true,
-        footer: true,
-        image: true,
-      },
-    },
-  };
   try {
     if (moduleName === "welcomer") {
       await deleteWelcomer(guildId);
@@ -440,14 +430,14 @@ export async function updateCards(
     throw new Error("Invalid module name");
   }
   const cardsDb = await getModuleCards(moduleId, moduleName);
-  const module =
+  const welcomeOrLeaveModule =
     moduleName === "welcomer"
       ? await getWelcomerById(moduleId)
       : await getLeaverById(moduleId);
-  if (!module) {
+  if (!welcomeOrLeaveModule) {
     throw new Error("You need to enable the module first");
   }
-  const guildId = module.guildId;
+  const guildId = welcomeOrLeaveModule.guildId;
   if (!guildId || !(await canUserManageGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
@@ -509,22 +499,22 @@ export async function updateCards(
     } else {
       if (moduleName === "welcomer") {
         await updateWelcomer(guildId, {
-            activeCard: {
-              disconnect: true,
-            },
-            activeCardToEmbed: {
-              disconnect: true,
-            },
-          })
+          activeCard: {
+            disconnect: true,
+          },
+          activeCardToEmbed: {
+            disconnect: true,
+          },
+        })
       } else if (moduleName === "leaver") {
-        await updateLeaver(guildId,  {
-            activeCard: {
-              disconnect: true,
-            },
-            activeCardToEmbed: {
-              disconnect: true,
-            },
-          })
+        await updateLeaver(guildId, {
+          activeCard: {
+            disconnect: true,
+          },
+          activeCardToEmbed: {
+            disconnect: true,
+          },
+        })
       }
     }
   }
@@ -562,53 +552,53 @@ export async function createOrUpdateCard(
   let cardDb;
   const connectOrCreateMainText = card.mainText
     ? {
-        mainText: {
-          connectOrCreate: {
-            where: {
-              id: card.mainText?.id ?? -1,
-            },
-            create: {
-              content: card.mainText.content,
-              color: card.mainText?.color,
-              font: card.mainText?.font,
-            },
+      mainText: {
+        connectOrCreate: {
+          where: {
+            id: card.mainText?.id ?? -1,
+          },
+          create: {
+            content: card.mainText.content,
+            color: card.mainText?.color,
+            font: card.mainText?.font,
           },
         },
-      }
+      },
+    }
     : {};
 
   const connectOrCreateSecondText = card.secondText
     ? {
-        secondText: {
-          connectOrCreate: {
-            where: {
-              id: card.secondText?.id ?? -1,
-            },
-            create: {
-              content: card.secondText!.content,
-              color: card.secondText?.color,
-              font: card.secondText?.font,
-            },
+      secondText: {
+        connectOrCreate: {
+          where: {
+            id: card.secondText?.id ?? -1,
+          },
+          create: {
+            content: card.secondText!.content,
+            color: card.secondText?.color,
+            font: card.secondText?.font,
           },
         },
-      }
+      },
+    }
     : {};
 
   const connectOrCreateNicknameText = card.nicknameText
     ? {
-        nicknameText: {
-          connectOrCreate: {
-            where: {
-              id: card.nicknameText?.id ?? -1,
-            },
-            create: {
-              content: card.nicknameText!.content,
-              color: card.nicknameText?.color,
-              font: card.nicknameText?.font,
-            },
+      nicknameText: {
+        connectOrCreate: {
+          where: {
+            id: card.nicknameText?.id ?? -1,
+          },
+          create: {
+            content: card.nicknameText!.content,
+            color: card.nicknameText?.color,
+            font: card.nicknameText?.font,
           },
         },
-      }
+      },
+    }
     : {};
 
   if (card.mainText?.id) {

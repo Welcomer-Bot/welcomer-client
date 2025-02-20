@@ -17,7 +17,7 @@ export default function EditorMessagePreview() {
   const state = store();
   useEffect(() => {
     debouncedSetMessage(state);
-  }, [state]);
+  }, [state, debouncedSetMessage]);
 
   if (!msg) return null;
   return (

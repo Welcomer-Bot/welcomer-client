@@ -18,13 +18,16 @@ export default function AppInitializer({
   children: React.ReactNode;
 }) {
   const setModuleName = useModuleNameStore((state) => state.setModuleName);
+  const resetWelcomer = useWelcomerStore((state) => state.reset);
+  const resetLeaver = useLeaverStore((state) => state.reset);
+
   useEffect(() => {
     setModuleName(moduleName);
-  });
-  if (moduleName === "welcomer") {
-    const reset = useWelcomerStore((state) => state.reset);
-    useEffect(() => {
-      reset();
+  }, [moduleName, setModuleName]);
+
+  useEffect(() => {
+    if (moduleName === "welcomer") {
+      resetWelcomer();
       useWelcomerStore.setState((state) => {
         state.id = module?.id;
         state.guildId = guildId;
@@ -41,12 +44,8 @@ export default function AppInitializer({
           state.embeds = module.embeds;
         }
       });
-    }, [module, guildId, reset]);
-  } else if (moduleName === "leaver") {
-    const reset = useLeaverStore((state) => state.reset);
-
-    useEffect(() => {
-      reset();
+    } else if (moduleName === "leaver") {
+      resetLeaver();
       useLeaverStore.setState((state) => {
         state.id = module?.id;
         state.guildId = guildId;
@@ -63,8 +62,8 @@ export default function AppInitializer({
           state.embeds = module.embeds;
         }
       });
-    }, [module, guildId, reset]);
-  }
+    }
+  }, [module, guildId, moduleName, resetWelcomer, resetLeaver]);
 
   return <>{children}</>;
 }

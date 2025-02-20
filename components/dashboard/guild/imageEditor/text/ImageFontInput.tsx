@@ -33,7 +33,7 @@ export function ImageFontInput({ textType }: { textType: ImageTextType }) {
       {fontsList
         ? fontsList.map((font) => {
             return (
-              <SelectItem key={font} value={font} textValue={font}>
+              <SelectItem key={font} textValue={font}>
                 <div style={{ fontFamily: font }}>{font}</div>
               </SelectItem>
             );

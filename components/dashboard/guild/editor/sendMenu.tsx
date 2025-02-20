@@ -8,9 +8,9 @@ import { Select, SelectItem, SelectSection } from "@heroui/select";
 
 export default function SendMenu() {
   const guildId = useGuildStore((state) => state.id);
-  const module = useModuleNameStore((state) => state.moduleName);
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
 
-  const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
+  const store = currentModuleName === "welcomer" ? useWelcomerStore : useLeaverStore;
   const updateChannel = store().setChannelId;
   const currentChannel = store().channelId;
   const { data: channels, error, isLoading } = useGuildChannelsQuery(guildId);

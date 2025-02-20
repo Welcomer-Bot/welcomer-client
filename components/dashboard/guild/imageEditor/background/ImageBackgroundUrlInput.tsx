@@ -16,7 +16,7 @@ export function ImageBackgroundUrlInput() {
     } else {
       setBackgroundUrl(" ");
     }
-  }, [enabled]);
+  }, [enabled, setBackgroundUrl]);
 
   useEffect(() => {
     if (backgroundUrl === null) {

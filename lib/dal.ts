@@ -9,7 +9,6 @@ import prisma from "./prisma";
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended, ModuleName } from "@/types";
 import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
-import { APIChannel, GuildTextChannelType } from "discord-api-types/v10";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -184,7 +183,7 @@ export async function getWelcomer(guildId: string) {
     });
 
     return welcomer;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -268,7 +267,7 @@ export async function getEmbeds(
 export async function getGuildChannels(guildId: string) {
   // get guild channels from discord api
   try {
-    let res = await fetch(
+    const res = await fetch(
       process.env.INTERNAL_API_BASE_URL + `/channels?guildId=${guildId}`,
       {
         headers: {
@@ -276,10 +275,10 @@ export async function getGuildChannels(guildId: string) {
         },
       }
     );
-    let data = await res.json();
+    const data = await res.json();
     console.log(data)
     return data;
-  } catch (err){
+  } catch (err) {
     console.log(err)
     throw new Error("Failed to fetch guild channels");
   }

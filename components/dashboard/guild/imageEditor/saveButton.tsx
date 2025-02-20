@@ -8,7 +8,7 @@ import { Card, CardBody } from "@heroui/card";
 import { toast } from "react-toastify";
 
 export default function SaveButton() {
-  const module = useModuleNameStore((state) => state.moduleName);
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
   const reset = useImageStore((state) => state.reset);
   const currentStore = useImageStore();
   if (!currentStore) return null;
@@ -26,14 +26,14 @@ export default function SaveButton() {
                 activeCard: currentStore.activeCard,
                 removedCard: currentStore.removedCard,
                 removedText: currentStore.removedText,
-                imageCards: currentStore.imageCards.map((card) => {
-                  const { imagePreview, ...rest } = card;
-                  return rest;
-                }),
+                imageCards: currentStore.imageCards.map(
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  ({ imagePreview, ...rest }) => rest
+                ),
               };
               const { store, done, error } = await updateCards(
                 storeWithoutPreview,
-                module
+                currentModuleName
               );
               if (error) {
                 toast.error(error);

@@ -5,6 +5,7 @@ import { useImageStore } from "@/state/image";
 import { Button } from "@heroui/button";
 import { Card, CardFooter } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 
@@ -35,7 +36,7 @@ export function ImageCard({
       };
       loadPreview();
     }
-  }, [previewImage]);
+  }, [previewImage, currentCard, setPreviewImage]);
   return (
     <div
       onClick={() => {
@@ -60,7 +61,7 @@ export function ImageCard({
               >
                 <FaTrash />
               </Button>
-              <img src={image} alt={`Card ${index + 1}`} />
+              <Image src={image} alt={`Card ${index + 1}`} />
           </>
         )}
         <CardFooter>Card {index + 1}</CardFooter>
