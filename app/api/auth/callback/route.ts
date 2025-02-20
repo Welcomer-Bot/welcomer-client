@@ -2,7 +2,7 @@ import {
   RESTGetAPICurrentUserGuildsResult,
   RESTGetAPIUserResult,
 } from "discord-api-types/v10";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 import prisma from "@/lib/prisma";
 import { createSession } from "@/lib/session";
@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
   if (!code) {
     return redirect(
 
-        "/auth/error?error=codeMissing&error_description=The+authorization+code+is+missing",
-    
+      "/auth/error?error=codeMissing&error_description=The+authorization+code+is+missing",
+
     );
   }
 
@@ -54,12 +54,20 @@ export async function GET(request: NextRequest) {
     const tokenData = await tokenResponse.json();
 
     if (tokenData.error) {
-      const url = new URL(
-        `/auth/error?error=${tokenData.error}&error_description=${tokenData.error_description}`,
-        new URL(REDIRECT_URI).origin,
-      );
 
-      return NextResponse.redirect(url);
+      return new Response(
+        JSON.stringify({
+          error: "invalid_grant",
+          error_description: "The authorization code is invalid or expired",
+        }),
+        {
+          status: 400,
+          statusText: "Bad Request",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
 
     const userResponse = await fetch("https://discord.com/api/users/@me", {
@@ -71,12 +79,19 @@ export async function GET(request: NextRequest) {
     const userData: RESTGetAPIUserResult = await userResponse.json();
 
     if (!userData.id) {
-      return NextResponse.redirect(
-        new URL(
-          "/auth/error?error=userDataMissing&error_description=An+error+occured+while+fetching+user+data",
-          new URL(REDIRECT_URI).origin,
+      return new Response(
+        JSON.stringify({
+          error: "userDataMissing",
+          error_description: "An error occurred while fetching user data",
+        }),
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-        ),
+        }
       );
     }
 
@@ -87,12 +102,18 @@ export async function GET(request: NextRequest) {
     });
 
     if (!userGuilds.ok) {
-      return NextResponse.redirect(
-        new URL(
-          "/auth/error?error=guildsDataMissing&error_description=An+error+occured+while+fetching+user+guilds",
-          new URL(REDIRECT_URI).origin,
-
-        ),
+      return new Response(
+        JSON.stringify({
+          error: "userGuildsDataMissing",
+          error_description: "An error occurred while fetching user guilds data",
+        }),
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
     }
     const guilds: RESTGetAPICurrentUserGuildsResult = await userGuilds.json();
@@ -151,14 +172,32 @@ export async function GET(request: NextRequest) {
 
   } catch (e) {
     console.log(e);
-    
-    return NextResponse.redirect(
-      new URL(
-        "/auth/error?error=authFailed&error_description=An+unknown+error+occured+while+authenticating",
-        new URL(REDIRECT_URI).origin,
 
-      ),
+    return new Response(
+      JSON.stringify({
+        error: "internalServerError",
+        error_description: "An internal server error occurred",
+      }),
+      {
+        status: 500,
+        statusText: "Internal Server Error",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
-  return redirect("/dashboard")
+  return new Response(
+    JSON.stringify({
+      success: true,
+    }),
+    {
+      status: 200,
+      statusText: "OK",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
 }
