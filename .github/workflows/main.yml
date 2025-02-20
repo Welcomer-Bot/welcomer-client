@@ -36,7 +36,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }} # Your server's IP address
           username: ${{ secrets.USERNAME }} # Your server's username
-          key: ${{ secrets.SSH_PRIVATE_KEY }} # Your server's SSH private key
+          password: ${{ secrets.PASSWORD }} # Your server's SSH private key
           script: |
             cd /var/www/welcomer-client
             git pull
