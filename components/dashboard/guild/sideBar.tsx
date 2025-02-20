@@ -38,15 +38,15 @@ export function Sidebar({
   guilds: GuildExtended[];
   user: User;
 }) {
-  const module = useModuleNameStore((state) => state.moduleName);
+  const currentModule = useModuleNameStore((state) => state.moduleName);
   const [isOpen, setIsOpen] = useState(true);
-  const [active, setActive] = useState(module ?? "dashboard");
+  const [active, setActive] = useState(currentModule ?? "dashboard");
   useEffect(() => {
     useGuildStore.setState({ id: currentGuild.id });
   }, [currentGuild.id]);
   useEffect(() => {
-    setActive(module ?? "dashboard");
-  }, [module]);
+    setActive(currentModule ?? "dashboard");
+  }, [currentModule]);
 
   return (
     <>

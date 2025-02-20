@@ -12,7 +12,7 @@ export async function GET(
   try {
     const channels = await getGuildChannels(guildId);
     return new Response(JSON.stringify(channels), { status: 200 });
-  } catch (error) {
+  } catch {
     return new Response("Internal Server Error", { status: 500 });
   }
 }

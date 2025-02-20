@@ -11,8 +11,10 @@ export default function EmbedsAccordionWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const module = useModuleNameStore((state) => state.moduleName);
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
   const embedsLength = store.embeds.length;
 
   return (

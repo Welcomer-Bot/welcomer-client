@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         "Content-Type": "image/png",
       },
     });
-  } catch (error) {
+  } catch {
     return new Response("Failed to fetch image", { status: 500 });
   }
 }

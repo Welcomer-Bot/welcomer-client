@@ -12,12 +12,14 @@ import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
 import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
 export default function EmbedsViewer() {
-  const module = useModuleNameStore((state) => state.moduleName);
-  const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
-  const embeds = store().embeds;
-  const removeEmbed = store().removeEmbed;
-  const setToPrevious = store().setToPreviousEmbed;
-  const setToNext = store().setToNextEmbed;
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const embeds = store.embeds;
+  const removeEmbed = store.removeEmbed;
+  const setToPrevious = store.setToPreviousEmbed;
+  const setToNext = store.setToNextEmbed;
 
   return (
     <>

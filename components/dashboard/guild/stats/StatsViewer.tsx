@@ -3,10 +3,10 @@
 import { usePeriodStatsQuery } from "@/lib/queries";
 import { ModuleName } from "@/types";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { GuildStats, Period } from "@prisma/client";
-import { useEffect, useState } from "react";
-import PeriodSelector from "./PeriodSelector";
 import { Skeleton } from "@heroui/skeleton";
+import { Period } from "@prisma/client";
+import { useState } from "react";
+import PeriodSelector from "./PeriodSelector";
 
 export default function StatsViewer({
   guildId,

@@ -9,8 +9,10 @@ import { usePathname, useRouter } from "next/navigation";
 export function CardPositionEditor() {
   const router = useRouter();
   const path = usePathname();
-  const module = useModuleNameStore((state) => state.moduleName);
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
   const activeCardId = store.activeCardId;
   const embeds = store.embeds;
 

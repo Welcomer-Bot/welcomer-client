@@ -9,8 +9,10 @@ import { Card, CardBody } from "@heroui/card";
 import { toast } from "react-toastify";
 
 export default function SaveButton() {
-  const module = useModuleNameStore((state) => state.moduleName);
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
 
   if (!store.edited) return null;
   return (
@@ -21,7 +23,7 @@ export default function SaveButton() {
         <Button
           color="primary"
           onPress={async () => {
-            const res = await updateModule(store, module);
+            const res = await updateModule(store, currentModuleName);
             if (res?.error) {
               toast.error(res.error);
             } else if (res.done) {

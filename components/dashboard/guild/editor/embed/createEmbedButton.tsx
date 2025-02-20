@@ -6,8 +6,10 @@ import { useWelcomerStore } from "@/state/welcomer";
 import { Button } from "@heroui/button";
 
 export default function CreateEmbedButton() {
-  const module = useModuleNameStore((state) => state.moduleName);
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
   const addDefaultEmbed = store.addDefaultEmbed;
   const embedsLength = store.embeds.length;
   return (

@@ -10,8 +10,10 @@ export default function AddEmbedFieldsButton({
 }: {
   embedIndex: number;
 }) {
-  const module = useModuleNameStore((state) => state.moduleName);
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
 
   const addField = store.addField;
   const fieldsLength = store.embeds[embedIndex].fields.length;

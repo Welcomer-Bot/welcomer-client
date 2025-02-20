@@ -1,24 +1,16 @@
-import pluginNext from '@next/eslint-plugin-next';
-import parser from '@typescript-eslint/parser';
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
 
-/** @type {import('eslint').Linter.Config} */
-const config = {
-  languageOptions: {
-    parser,
-    parserOptions: {
-      ecmaVersion: 2020,
-      sourceType: 'module',
-      ecmaFeatures: {
-        jsx: true,
-      },
-    },
-  },
-  plugins: {
-    '@next/next': pluginNext,
-  },
-  rules: {
-    ...pluginNext.configs.recommended.rules,
-    },
-};
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-export default config;
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
+];
+
+export default eslintConfig;

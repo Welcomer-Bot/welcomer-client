@@ -29,7 +29,7 @@ export default function ModuleInitialiser({
     setModuleId(moduleId);
     if (cards) setCards(cards);
     if (activeCardId) setActiveCardId(activeCardId);
-  }, []);
+  }, [setModuleId, setModuleName, setCards, setActiveCardId, moduleName, moduleId, cards, activeCardId]);
 
   return <>{children}</>;
 }

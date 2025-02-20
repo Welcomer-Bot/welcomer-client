@@ -1,16 +1,14 @@
 "use client";
 
-import { useWelcomerStore } from "@/state/welcomer";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import React from "react";
 
 export default function EmbedsFieldsAccordionWrapper({
-  embedId,
   index,
   children,
 }: {
-    embedId: number;
-    index: number;
+  embedId: number;
+  index: number;
   children: React.ReactNode;
 }) {
   return (
