@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 import { createSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
@@ -21,23 +22,17 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     if (error == "access_denied") {
-      return NextResponse.redirect(new URL("/", request.nextUrl));
+      return redirect("/");
     }
 
-    return NextResponse.redirect(
-      new URL(
-        `/auth/error?error=${error}&error_description=${error_description}`,
-        request.nextUrl,
-      ),
-    );
+    return redirect(`/auth/error?error=${error}&error_description=${error_description}`);
   }
 
   if (!code) {
-    return NextResponse.redirect(
-      new URL(
+    return redirect(
+
         "/auth/error?error=codeMissing&error_description=The+authorization+code+is+missing",
-        request.nextUrl,
-      ),
+    
     );
   }
 
@@ -61,7 +56,7 @@ export async function GET(request: NextRequest) {
     if (tokenData.error) {
       const url = new URL(
         `/auth/error?error=${tokenData.error}&error_description=${tokenData.error_description}`,
-        request.nextUrl,
+        new URL(REDIRECT_URI).origin,
       );
 
       return NextResponse.redirect(url);
@@ -79,7 +74,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           "/auth/error?error=userDataMissing&error_description=An+error+occured+while+fetching+user+data",
-          request.nextUrl,
+          new URL(REDIRECT_URI).origin,
+
         ),
       );
     }
@@ -94,7 +90,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           "/auth/error?error=guildsDataMissing&error_description=An+error+occured+while+fetching+user+guilds",
-          request.nextUrl,
+          new URL(REDIRECT_URI).origin,
+
         ),
       );
     }
@@ -152,15 +149,16 @@ export async function GET(request: NextRequest) {
 
     await createSession(user.id);
 
-    return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
   } catch (e) {
     console.log(e);
-
+    
     return NextResponse.redirect(
       new URL(
         "/auth/error?error=authFailed&error_description=An+unknown+error+occured+while+authenticating",
-        request.nextUrl,
+        new URL(REDIRECT_URI).origin,
+
       ),
     );
   }
+  return redirect("/dashboard")
 }
