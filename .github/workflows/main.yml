@@ -1,0 +1,46 @@
+name: Deployment Workflow
+
+# Trigger this workflow on pushes to the specified branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Authenticate with GitHub Packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+          echo "@welcomer-bot:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build Next.js app
+        run: yarn prisma generate && yarn build
+
+      - name: SSH Deploy
+        # Use the 'appleboy/ssh-action' action for SSH deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }} # Your server's IP address
+          username: ${{ secrets.USERNAME }} # Your server's username
+          password: ${{ secrets.PASSWORD }} # Your server's SSH private key
+          script: |
+            cd /var/www/welcomer-client
+            git pull
+            yarn
+            yarn prisma generate
+            yarn build
+            pm2 restart welcomer-client
