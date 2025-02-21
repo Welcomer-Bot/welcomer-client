@@ -17,7 +17,7 @@ export default function StatsViewer({
 }) {
   const [period, setPeriod] = useState<Period>(Period.DAILY);
   const { data, isLoading } = usePeriodStatsQuery(guildId, period, module);
-
+  console.log(data);
   return (
     <Card className="grid gap-5 px-5 pb-5">
       <CardHeader className="flex justify-between">
@@ -60,6 +60,7 @@ export default function StatsViewer({
           </Card>
         </div>
       ) : (
+          data ? (
         <div className="grid  md:grid-cols-4 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="text-gray-400 text-sm">
@@ -85,7 +86,10 @@ export default function StatsViewer({
             </CardHeader>
             <CardBody>{data?.generatedEmbeds}</CardBody>
           </Card>
-        </div>
+        </div >
+          ) : (
+            <p className="flex justify-center align-middle">No data for this module </p>
+          )
       )}
     </Card>
   );

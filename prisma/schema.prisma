@@ -221,6 +221,14 @@ model UserGuild {
   updatedAt   DateTime?  @updatedAt
   channels    Channels[]
   users       User[]     @relation("UserToUserGuild")
+  betaGuild  betaGuild?
+}
+
+model betaGuild {
+  id        String     @id
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
+  guild     UserGuild? @relation(fields: [id], references: [id])
 }
 
 model Channels {
@@ -244,3 +252,4 @@ enum Module {
   welcomer
   leaver
 }
+

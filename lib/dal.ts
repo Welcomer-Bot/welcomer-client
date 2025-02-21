@@ -64,6 +64,44 @@ export const getUserGuilds = cache(async () => {
   }
 });
 
+export const getUserGuildsByUserId = cache(async (userId: string) => {
+  const session = await verifySession();
+
+  if (!session) return null;
+  try {
+    return await prisma.userGuild.findMany({
+      where: {
+        users: {
+          some: { id: userId },
+        },
+      },
+      include: {
+        betaGuild: true,
+      }
+    });
+  } catch {
+    return null;
+  }
+});
+
+export const getUsers = cache(async () => {
+  try {
+    return await prisma.user.findMany();
+  } catch {
+    return null;
+  }
+});
+
+export const getUserById = cache(async (userId: string) => {
+  try {
+    return await prisma.user.findUnique({
+      where: { id: userId },
+    });
+  } catch {
+    return null;
+  }
+});
+
 export const getUserGuild = cache(async (guildId: string) => {
   const session = await verifySession();
 
@@ -111,6 +149,33 @@ export const getGuilds = cache(async () => {
     return null;
   }
 });
+
+export async function getGuildsByUserId(userId: string) {
+  try {
+    const userGuilds = await getUserGuildsByUserId(userId);
+
+    if (!userGuilds) return null;
+
+    return await Promise.all(
+      userGuilds.map(async (userGuild: GuildExtended) => {
+        const guild = await prisma.guild.findUnique({
+          where: { id: userGuild.id },
+        });
+
+        if (guild) {
+          userGuild.mutual = true;
+        }
+
+        return userGuild;
+      })
+    );
+  } catch {
+    return null;
+  }
+}
+
+
+
 
 export async function getGuild(guildId: string) {
   try {
@@ -576,4 +641,21 @@ export async function createImageCard(
       nicknameText: true,
     },
   });
+}
+
+
+export async function addGuildToBeta(guildId: string) {
+  return await prisma.betaGuild.create({
+    data: {
+      id: guildId
+    },
+  })
+}
+
+export async function removeGuildToBeta(guildId: string) {
+  return await prisma.betaGuild.delete({
+    where: {
+      id: guildId
+   }
+  })
 }
