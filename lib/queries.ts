@@ -48,7 +48,7 @@ export function useUserQuery(userId: string) {
       if (!res.ok) {
         throw res;
       }
-      return res.json() as Promise<User & { guilds: (UserGuild & { betaGuild: betaGuild, mutual: boolean })[] }>;
+      return res.json() as Promise<User & { guilds: (UserGuild & { betaGuild: betaGuild, mutual: boolean })[] | null }>;
     },
   });
 }

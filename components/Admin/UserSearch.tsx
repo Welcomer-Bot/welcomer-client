@@ -35,9 +35,9 @@ export default function UserSearch({ users }: { users: User[] }) {
           <div>
             {" "}
             <div className="space-y-4">
-              {data.guilds.map((guild) => (
+              { data.guilds ? data.guilds.map((guild) => (
                 <GuildCard guild={guild} key={guild.id} />
-              ))}
+              )): <p>No guilds found</p>}
             </div>
           </div>
         ) : (
