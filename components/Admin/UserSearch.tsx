@@ -1,14 +1,31 @@
 "use client";
 
-import { useUserQuery } from "@/lib/queries";
+import { fetchUserDataAdmin } from "@/lib/dto";
+import { GuildExtended } from "@/types";
 import { Autocomplete, AutocompleteItem, Card } from "@heroui/react";
 import { User } from "@prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GuildCard from "./GuildCard";
-
 export default function UserSearch({ users }: { users: User[] }) {
   const [value, setValue] = useState<React.Key | null>(null);
-  const { data, isLoading } = useUserQuery(value?.toString() || "");
+  const [user, setUser] = useState<
+    | (User & {
+        guilds: GuildExtended[] | null;
+      })
+    | null
+  >(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const updateStats = async () => {
+      setIsLoading(true);
+      const updatedUser = await fetchUserDataAdmin(value as string);
+      setUser(updatedUser);
+      setIsLoading(false);
+    };
+    updateStats();
+  }, [value]);
+
   return (
     <>
       <Autocomplete
@@ -31,13 +48,17 @@ export default function UserSearch({ users }: { users: User[] }) {
           <p>Select a user</p>
         ) : isLoading ? (
           <p>Loading...</p>
-        ) : data ? (
+        ) : user ? (
           <div>
             {" "}
             <div className="space-y-4">
-              { data.guilds ? data.guilds.map((guild) => (
-                <GuildCard guild={guild} key={guild.id} />
-              )): <p>No guilds found</p>}
+              {user.guilds ? (
+                user.guilds.map((guild) => (
+                  <GuildCard guild={guild} key={guild.id} />
+                ))
+              ) : (
+                <p>No guilds found</p>
+              )}
             </div>
           </div>
         ) : (

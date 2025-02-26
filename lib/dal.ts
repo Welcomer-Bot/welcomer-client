@@ -9,6 +9,7 @@ import prisma from "./prisma";
 import { decrypt, getSession } from "@/lib/session";
 import { GuildExtended, ModuleName } from "@/types";
 import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
+import { GuildBasedChannel } from "discord.js";
 
 export const verifySession = cache(async () => {
   const session = await getSession();
@@ -340,11 +341,13 @@ export async function getGuildChannels(guildId: string) {
         },
       }
     );
-    const data = await res.json();
-    console.log(data)
+
+    if (!res.ok) return [];
+    const data = await res.json() as GuildBasedChannel[];
     return data;
-  } catch (err) {
-    console.log(err)
+  } catch {
+    // console.log(err)
+    return [];
     throw new Error("Failed to fetch guild channels");
   }
 }
@@ -656,6 +659,23 @@ export async function removeGuildToBeta(guildId: string) {
   return await prisma.betaGuild.delete({
     where: {
       id: guildId
-   }
+    }
+  })
+}
+
+export async function getAllGuildStatsSinceTime(guildId: string,
+  period: Period,
+  module: ModuleName,
+  since: Date
+) {
+  return await prisma.guildStats.findMany({
+    where: {
+      guildId,
+      period,
+      module,
+      createdAt: {
+        gte: since
+      }
+    }
   })
 }

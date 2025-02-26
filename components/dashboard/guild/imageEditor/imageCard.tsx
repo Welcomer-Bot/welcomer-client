@@ -61,7 +61,7 @@ export function ImageCard({
               >
                 <FaTrash />
               </Button>
-              <Image src={image} alt={`Card ${index + 1}`} />
+              <Image src={image} alt={`Card ${index + 1}`} width={800} height={350}/>
           </>
         )}
         <CardFooter>Card {index + 1}</CardFooter>

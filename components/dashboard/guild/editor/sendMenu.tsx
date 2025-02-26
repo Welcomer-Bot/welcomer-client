@@ -1,28 +1,41 @@
 "use client";
-import { useGuildChannelsQuery } from "@/lib/queries";
+import { fetchGuildChannels } from "@/lib/dto";
 import { useGuildStore } from "@/state/guild";
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
+import { GuildBasedChannel } from "discord.js";
+import { useEffect, useState } from "react";
 
 export default function SendMenu() {
   const guildId = useGuildStore((state) => state.id);
   const currentModuleName = useModuleNameStore((state) => state.moduleName);
 
-  const store = currentModuleName === "welcomer" ? useWelcomerStore : useLeaverStore;
+  const store =
+    currentModuleName === "welcomer" ? useWelcomerStore : useLeaverStore;
   const updateChannel = store().setChannelId;
   const currentChannel = store().channelId;
-  const { data: channels, error, isLoading } = useGuildChannelsQuery(guildId);
-  
+  const [channels, setChannels] = useState<GuildBasedChannel[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const updateStats = async () => {
+      setIsLoading(true);
+      const updatedChannels = await fetchGuildChannels(guildId);
+      setChannels(updatedChannels);
+      setIsLoading(false);
+    };
+    updateStats();
+  }, [guildId]);
+
   return (
-    (<Select
+    <Select
       label="Channel"
       placeholder="Select a channel"
       disabledKeys={["0"]}
       required
       isLoading={isLoading}
-      errorMessage={error ? "Failed to load channels" : undefined}
       onChange={(e) => updateChannel(e.target.value)}
       selectedKeys={[
         currentChannel &&
@@ -37,7 +50,7 @@ export default function SendMenu() {
           .filter((channel) => channel.type === 4)
           .map((channel) => (
             // if category has no channels, don't show it
-            (<SelectSection key={channel.id} showDivider title={channel.name}>
+            <SelectSection key={channel.id} showDivider title={channel.name}>
               {channels
                 .filter((c) => c.type === 0)
                 .filter((c) => c.parentId === channel.id)
@@ -46,13 +59,13 @@ export default function SendMenu() {
                     {c.name} ({c.id})
                   </SelectItem>
                 ))}
-            </SelectSection>)
+            </SelectSection>
           ))
       ) : (
         <SelectItem key={0} textValue="No channels found">
           No channels found
         </SelectItem>
       )}
-    </Select>)
+    </Select>
   );
 }

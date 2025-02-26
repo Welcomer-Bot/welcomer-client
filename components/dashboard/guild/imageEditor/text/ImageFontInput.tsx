@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchFontList } from "@/lib/dto";
 import { useImageStore } from "@/state/image";
 import { ImageTextType } from "@/types";
 import { Select, SelectItem } from "@heroui/select";
@@ -11,11 +12,15 @@ export function ImageFontInput({ textType }: { textType: ImageTextType }) {
   const setFont = useImageStore((state) => state.setTextFont);
 
   const [fontsList, setFontsList] = useState<FontList | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
-    fetch("/api/font").then(async (res) => {
-      const fonts = await res.json();
-      setFontsList(fonts);
-    });
+    const updateStats = async () => {
+      setIsLoading(true);
+      const updatedChannels = await fetchFontList();
+      setFontsList(updatedChannels);
+      setIsLoading(false);
+    };
+    updateStats();
   }, []);
 
   const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -25,7 +30,7 @@ export function ImageFontInput({ textType }: { textType: ImageTextType }) {
     <Select
       label="Font"
       value={font ?? ""}
-      isLoading={!fontsList}
+      isLoading={isLoading}
       isVirtualized
       onChange={handleSelectionChange}
       selectedKeys={font && fontsList ? [font] : []}

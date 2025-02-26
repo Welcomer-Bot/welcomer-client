@@ -5,27 +5,15 @@ import {
   removeGuildToBetaAction,
 } from "@/lib/discord/guild";
 import { getGuildIcon } from "@/lib/utils";
+import { GuildExtended } from "@/types";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
-import { betaGuild, UserGuild } from "@prisma/client";
-import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { toast } from "react-toastify";
 
-export default function GuildCard({
-  guild,
-}: {
-  guild: UserGuild & {betaGuild: betaGuild,  mutual: boolean }
-}) {
-  const queryClient = useQueryClient();
-
-  const invalidateQueries = () => {
-    queryClient.invalidateQueries({ queryKey: ["admin_user"] });
-  };
-
+export default function GuildCard({ guild }: { guild: GuildExtended }) {
   const handleRemoveFromBeta = async () => {
     const res = await removeGuildToBetaAction(guild.id);
     if (res) {
-      invalidateQueries();
       toast.success("Guild removed from beta program");
     } else {
       toast.error("Failed to remove guild from beta program");
@@ -36,7 +24,6 @@ export default function GuildCard({
   const handleAddToBeta = async () => {
     const res = await addGuildToBetaAction(guild.id);
     if (res) {
-      invalidateQueries();
       toast.success("Guild added to beta program");
     } else {
       toast.error("Failed to add guild to beta program");
@@ -70,36 +57,38 @@ export default function GuildCard({
       <CardBody>
         <p>Member count: {guild.memberCount}</p>
         <div>
-
-        {guild.betaGuild ? (
-          <Button
-          className="max-w-xs"
-          color="danger"
-          variant="ghost"
-          onPress={handleRemoveFromBeta}
-          >
-            Leave beta program
-          </Button>
-        ) : (
-          <Button
-          className="max-w-xs"
-          color="primary"
-          onPress={handleAddToBeta}
-          >
-            Integrate guild to beta program
-          </Button>
+          {guild.betaGuild ? (
+            <Button
+              className="max-w-xs"
+              color="danger"
+              variant="ghost"
+              onPress={handleRemoveFromBeta}
+            >
+              Leave beta program
+            </Button>
+          ) : (
+            <Button
+              className="max-w-xs"
+              color="primary"
+              onPress={handleAddToBeta}
+            >
+              Integrate guild to beta program
+            </Button>
           )}
-          {guild.mutual && <Button onPress={async() => {
-            const res = await leaveGuildAction(guild.id);
-            if (res) {
-              toast.success("Left guild");
-            } else {
-              toast.error("Failed to leave guild");
-            }
-            invalidateQueries();
-          }}>
-            Leave guild
-          </Button>}
+          {guild.mutual && (
+            <Button
+              onPress={async () => {
+                const res = await leaveGuildAction(guild.id);
+                if (res) {
+                  toast.success("Left guild");
+                } else {
+                  toast.error("Failed to leave guild");
+                }
+              }}
+            >
+              Leave guild
+            </Button>
+          )}
         </div>
       </CardBody>
     </Card>

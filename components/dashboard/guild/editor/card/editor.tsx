@@ -47,7 +47,7 @@ export function CardPositionEditor() {
             {`Embed ${index + 1}`}
           </Radio>
         ))}
-        <Radio value={"-1"}>On the message bottom</Radio>
+        <Radio value={"-1"}>Outside the embeds</Radio>
         <Radio value={"-2"}>Do not show card</Radio>
       </RadioGroup>
     </div>
