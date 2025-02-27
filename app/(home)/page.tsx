@@ -1,8 +1,15 @@
 "use client";
 
 import { Button, Card, CardBody } from "@heroui/react";
-import { FaCheckCircle, FaClock, FaMailBulk, FaShieldAlt, FaStar } from "react-icons/fa";
-import { ImWarning } from "react-icons/im";
+import { redirect } from "next/navigation";
+import {
+  FaCheckCircle,
+  FaClock,
+  FaCode,
+  FaMailBulk,
+  FaShieldAlt,
+  FaStar,
+} from "react-icons/fa";
 
 export default function WelcomerBetaLanding() {
   return (
@@ -16,7 +23,12 @@ export default function WelcomerBetaLanding() {
           Be the first to test new features and receive{" "}
           <strong>Welcomer Premium for life</strong>!
         </p>
-        <Button className="mt-6 px-6 py-3 text-lg bg-blue-600 hover:bg-blue-700">
+        <Button
+          className="mt-6 px-6 py-3 text-lg bg-blue-600 hover:bg-blue-700"
+          onPress={() => {
+            redirect("/support");
+          }}
+        >
           Join the Beta
         </Button>
       </section>
@@ -66,7 +78,12 @@ export default function WelcomerBetaLanding() {
           <li>✅ Sign up using the form.</li>
           <li>✅ Get access and start testing!</li>
         </ol>
-        <Button className="mt-6 px-6 py-3 text-lg bg-green-600 hover:bg-green-700">
+        <Button
+          className="mt-6 px-6 py-3 text-lg bg-green-600 hover:bg-green-700"
+          onPress={() => {
+            redirect("/support");
+          }}
+        >
           Sign Up Now
         </Button>
       </section>
@@ -76,12 +93,7 @@ export default function WelcomerBetaLanding() {
         <h2 className="text-3xl font-bold">What Our Testers Say 🚀</h2>
         <div className="mt-8 space-y-6">
           <div className="text-lg italic">
-            &quot;Welcomer completely transformed my server’s onboarding! The
-            beta is amazing. 👏&quot; – User123
-          </div>
-          <div className="text-lg italic">
-            &quot;Super smooth, easy to use, and packed with new options!
-            😍&quot; – ServerOwnerX
+            We are waiting for your feedback!
           </div>
         </div>
       </section>
@@ -122,7 +134,7 @@ const advantages = [
   {
     title: "Help Improve the Bot",
     description: "Provide feedback and shape Welcomer's future.",
-    icon: <ImWarning className="h-10 w-10 text-red-500" />,
+    icon: <FaCode className="h-10 w-10 text-emerald-500" />,
   },
 ];
 
@@ -141,5 +153,11 @@ const features = [
     title: "Smarter User Detection",
     description: "Improved tracking for a better welcome experience.",
     icon: <FaShieldAlt className="h-10 w-10 text-teal-500" />,
+  },
+  {
+    title: "Statistics Are Back !",
+    description:
+      "You have waited for it, they are back ! Statistics and insights about your server.",
+    icon: <FaStar className="h-10 w-10 text-yellow-500" />,
   },
 ];
