@@ -43,5 +43,5 @@ jobs:
             yarn
             yarn prisma generate
             rm -r .next
-            yarn build next_build
+            yarn build
             pm2 restart welcomer-client
