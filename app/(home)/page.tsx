@@ -52,7 +52,7 @@ export default function WelcomerBetaLanding() {
       {/* Features Section */}
       <section className="py-20 px-6  bg-gray-900 text-center">
         <h2 className="text-3xl font-bold">Exclusive Beta Features</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 justify-center text-center col-span-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 justify-center text-center col-span-3">
           {features.map((feature, index) => (
             <Card
               key={index}
