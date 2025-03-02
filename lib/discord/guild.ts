@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { addGuildToBeta, getUser, removeGuildToBeta } from "../dal";
 
+
 export async function addGuildToBetaAction(guildId: string): Promise<boolean> {
     const user = await getUser();
     if (!user || user.id !== "479216487173980160") return false;

@@ -10,10 +10,9 @@ const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 
 export default async function Page() {
   const guilds = await getGuilds();
-
   if (!guilds || guilds?.length === 0) {
     return (
-      <div className="flex flex-col items-center h-3/4 justify-center gap-4 py-8 md:py-10">
+      <div className="flex flex-col items-center flex-wrap h-full justify-center gap-4 py-8 md:py-10">
         <div className="inline-block justify-center text-wrap">
           No guilds found
         </div>

@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  try {
+  // try {
     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       body: new URLSearchParams({
@@ -142,13 +142,10 @@ export async function GET(request: NextRequest) {
 
     for (let i = 0; i < userGuildsData.length; i++) {
       // await createGuild(userGuildsData[i].id);
-      await prisma.userGuild.upsert({
+      await prisma.guild.upsert({
         where: { id: userGuildsData[i].id },
         update: {
-          name: userGuildsData[i].name,
-          icon: userGuildsData[i].icon,
-          memberCount: userGuildsData[i].approximate_member_count,
-          users: {
+          User: {
             connect: {
               id: user.id,
             }
@@ -159,34 +156,34 @@ export async function GET(request: NextRequest) {
           name: userGuildsData[i].name,
           icon: userGuildsData[i].icon,
           memberCount: userGuildsData[i].approximate_member_count,
-          users: {
+          User: {
             connect: {
               id: user.id,
             }
-          }
+          },
         },
       });
     }
 
     await createSession(user.id);
 
-  } catch (e) {
-    console.log(e);
+  // } catch (e) {
+  //   console.log(e);
 
-    return new Response(
-      JSON.stringify({
-        error: "internalServerError",
-        error_description: "An internal server error occurred",
-      }),
-      {
-        status: 500,
-        statusText: "Internal Server Error",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
+  //   return new Response(
+  //     JSON.stringify({
+  //       error: "internalServerError",
+  //       error_description: "An internal server error occurred",
+  //     }),
+  //     {
+  //       status: 500,
+  //       statusText: "Internal Server Error",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   );
+  // }
   return new Response(
     JSON.stringify({
       success: true,

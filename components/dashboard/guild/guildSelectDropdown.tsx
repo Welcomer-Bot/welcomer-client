@@ -11,6 +11,7 @@ import NextLink from "next/link";
 
 import { GuildExtended } from "@/types";
 import GuildCard from "./guildCard";
+import { inviteBotToGuild } from "@/lib/discord/invite";
 
 export function GuildSelectDropdown({
   guilds,
@@ -57,7 +58,7 @@ export function GuildSelectDropdown({
                 textValue={guild.id}
               >
                 {/* invite link for the bot */}
-                <a href={`/api/bot/add/${guild.id}`}>
+                <a href={inviteBotToGuild(guild.id)}>
                   <GuildCard guild={guild} />
                 </a>
               </DropdownItem>

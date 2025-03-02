@@ -16,27 +16,45 @@ datasource db {
 }
 
 model Guild {
-  id        String       @id @unique
-  createdAt DateTime?    @default(now())
-  updatedAt DateTime?    @updatedAt
-  premium   Boolean      @default(false)
-  stats     GuildStats[]
-  leaver    Leaver?
-  welcomer  Welcomer?
+  id          String       @id @unique
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
+  premium     Boolean      @default(false)
+  banner      String?
+  description String?
+  icon        String?
+  memberCount Int          @default(0)
+  name        String
+  permissions String?
+  Channels    Channels[]
+  stats       GuildStats[]
+  leaver      Leaver?
+  welcomer    Welcomer?
+  betaGuild   betaGuild?
+  User        User[]       @relation("UserToGuild")
+  BotGuild    BotGuild?
+}
+
+model BotGuild {
+  id        String    @id
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  guild     Guild     @relation(fields: [id], references: [id])
 }
 
 model GuildStats {
+  id                Int      @default(autoincrement())
   period            Period
   module            Module
   generatedImages   Int      @default(0)
   generatedEmbeds   Int      @default(0)
   generatedMessages Int      @default(0)
   membersEvent      Int      @default(0)
-  guildId           String
+  guildId           String?
   createdAt         DateTime @default(now())
-  guild             Guild    @relation(fields: [guildId], references: [id])
+  guild             Guild?   @relation(fields: [guildId], references: [id])
 
-  @@id([guildId, period, module, createdAt])
+  @@id([id, period, module, createdAt])
 }
 
 model Welcomer {
@@ -198,47 +216,32 @@ model ImageCardText {
 }
 
 model User {
-  id            String      @id
+  id            String    @id
   username      String?
   discriminator String?
   avatar        String?
   accessToken   String?
   refreshToken  String?
-  createdAt     DateTime?   @default(now())
-  updatedAt     DateTime?   @updatedAt
-  guilds        UserGuild[] @relation("UserToUserGuild")
-}
-
-model UserGuild {
-  id          String     @id
-  name        String
-  description String?
-  icon        String?
-  banner      String?
-  permissions String?
-  memberCount Int        @default(0)
-  createdAt   DateTime?  @default(now())
-  updatedAt   DateTime?  @updatedAt
-  channels    Channels[]
-  users       User[]     @relation("UserToUserGuild")
-  betaGuild  betaGuild?
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  Guild         Guild[]   @relation("UserToGuild")
 }
 
 model betaGuild {
-  id        String     @id
-  createdAt DateTime?  @default(now())
-  updatedAt DateTime?  @updatedAt
-  guild     UserGuild? @relation(fields: [id], references: [id])
+  id        String    @id
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  guild     Guild     @relation(fields: [id], references: [id])
 }
 
 model Channels {
-  id        String     @id
+  id        String    @id
   name      String
   guildId   String?
-  createdAt DateTime?  @default(now())
-  updatedAt DateTime?  @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime?
   type      Int
-  guild     UserGuild? @relation(fields: [guildId], references: [id])
+  Guild     Guild?    @relation(fields: [guildId], references: [id], onDelete: Cascade)
 }
 
 enum Period {
@@ -252,4 +255,3 @@ enum Module {
   welcomer
   leaver
 }
-

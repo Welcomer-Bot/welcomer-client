@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchGuildStat } from "@/lib/dto";
+import { fetchAllGuildStatsSinceTime, fetchGuildStat } from "@/lib/dto";
 import { ModuleName } from "@/types";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
@@ -23,6 +23,8 @@ export default function StatsViewer({
     const updateStats = async () => {
       setIsLoading(true)
       const updatedData = await fetchGuildStat(guildId, period, module);
+      const chartData = await fetchAllGuildStatsSinceTime(guildId, period, module, new Date("12/05/24"))
+      console.log(chartData);
       setData(updatedData);
       setIsLoading(false)
     };

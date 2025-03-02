@@ -53,9 +53,9 @@ export const getUserGuilds = cache(async () => {
   if (!session) return null;
 
   try {
-    return await prisma.userGuild.findMany({
+    return await prisma.guild.findMany({
       where: {
-        users: {
+        User: {
           some: { id: session.userId },
         },
       },
@@ -65,14 +65,79 @@ export const getUserGuilds = cache(async () => {
   }
 });
 
-export const getUserGuildsByUserId = cache(async (userId: string) => {
+export const getBotGuilds = cache(async () => {
+  try {
+    return await prisma.guild.findMany({
+      where: {
+        BotGuild: {
+          isNot: null,
+        },
+      },
+      include: {
+        BotGuild: true,
+      }
+    });
+  } catch {
+    return null;
+  }
+});
+
+export const getGuilds = cache(async () => {
+  try {
+    const session = await verifySession();
+
+    if (!session) return null;
+
+    const guilds = await getUserGuilds();
+
+    if (!guilds) return null;
+
+    return await Promise.all(
+      guilds.map(async (guild: GuildExtended) => {
+        const botGuild = await prisma.guild.findUnique({
+          where: { id: guild.id, BotGuild: { isNot: null } },
+
+        });
+        if (botGuild) {
+          guild.mutual = true;
+        }
+        return guild;
+      })
+    );
+  } catch {
+    return null;
+  }
+});
+
+
+export const getUserGuild = cache(async (guildId: string) => {
+  const session = await verifySession();
+
+  if (!session) return null;
+
+  try {
+    return await prisma.guild.findFirst({
+      where: {
+        id: guildId,
+        User: {
+          some: { id: session.userId },
+        },
+      },
+    });
+  } catch (e) {
+    console.log("Failed to get user guild", e);
+    return null;
+  }
+});
+
+export const getUserGuildsById = cache(async (userId: string) => {
   const session = await verifySession();
 
   if (!session) return null;
   try {
-    return await prisma.userGuild.findMany({
+    return await prisma.guild.findMany({
       where: {
-        users: {
+        User: {
           some: { id: userId },
         },
       },
@@ -103,71 +168,26 @@ export const getUserById = cache(async (userId: string) => {
   }
 });
 
-export const getUserGuild = cache(async (guildId: string) => {
-  const session = await verifySession();
 
-  if (!session) return null;
 
-  try {
-    return await prisma.userGuild.findFirst({
-      where: {
-        id: guildId,
-        users: {
-          some: { id: session.userId },
-        },
-      },
-    });
-  } catch (e) {
-    console.log("Failed to get user guild", e);
-    return null;
-  }
-});
-
-export const getGuilds = cache(async () => {
-  try {
-    const session = await verifySession();
-
-    if (!session) return null;
-
-    const userGuilds = await getUserGuilds();
-
-    if (!userGuilds) return null;
-
-    return await Promise.all(
-      userGuilds.map(async (userGuild: GuildExtended) => {
-        const guild = await prisma.guild.findUnique({
-          where: { id: userGuild.id },
-        });
-
-        if (guild) {
-          userGuild.mutual = true;
-        }
-
-        return userGuild;
-      })
-    );
-  } catch {
-    return null;
-  }
-});
 
 export async function getGuildsByUserId(userId: string) {
   try {
-    const userGuilds = await getUserGuildsByUserId(userId);
+    const guilds = await getUserGuildsById(userId);
 
-    if (!userGuilds) return null;
+    if (!guilds) return null;
 
     return await Promise.all(
-      userGuilds.map(async (userGuild: GuildExtended) => {
-        const guild = await prisma.guild.findUnique({
-          where: { id: userGuild.id },
+      guilds.map(async (guild: GuildExtended) => {
+        const botGuild = await prisma.guild.findUnique({
+          where: { id: guild.id },
         });
 
-        if (guild) {
-          userGuild.mutual = true;
+        if (botGuild) {
+          guild.mutual = true;
         }
 
-        return userGuild;
+        return guild;
       })
     );
   } catch {
@@ -348,7 +368,6 @@ export async function getGuildChannels(guildId: string) {
   } catch {
     // console.log(err)
     return [];
-    throw new Error("Failed to fetch guild channels");
   }
 }
 

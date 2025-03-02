@@ -2,7 +2,7 @@
 import { ModuleName } from "@/types";
 import { GuildStats, Period } from "@prisma/client";
 import { getFonts } from "font-list";
-import { canUserManageGuild, getAllGuildStatsSinceTime, getGuild, getGuildChannels, getGuildsByUserId, getLatestGuildStats, getUser, getUserById } from "./dal";
+import { canUserManageGuild, getAllGuildStatsSinceTime, getGuildChannels, getGuildsByUserId, getLatestGuildStats, getUser, getUserById } from "./dal";
 
 type StatsDictionary = {
   [key in Period]: GuildStats | null;
@@ -37,10 +37,10 @@ export async function fetchAllGuildStatsSinceTime(guildId: string,
   type: ModuleName,
   since: Date
 ) {
-  const guild = await getGuild(guildId)
-  if (!guild?.premium) {
-    throw new Error("This feature requires premium subscription");
-  }
+  // const guild = await getGuild(guildId)
+  // if (!guild?.premium) {
+  //   return null;
+  // }
   return await getAllGuildStatsSinceTime(guildId, period, type, since)
 }
 
