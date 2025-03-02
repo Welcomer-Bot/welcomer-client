@@ -1,6 +1,6 @@
-import { User, UserGuild } from "@prisma/client";
+import { User, Guild } from "@prisma/client";
 
-export async function parseText(text: string, user: User, guild: UserGuild) {
+export async function parseText(text: string, user: User, guild: Guild) {
   return text
     .replaceAll(/{user}/g, user.username!)
     .replaceAll(/{id}/g, user.id)

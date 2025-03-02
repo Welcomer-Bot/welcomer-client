@@ -2,7 +2,7 @@
 import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
 import { User as UIUser } from "@heroui/user";
-import { User, UserGuild } from "@prisma/client";
+import { User, Guild } from "@prisma/client";
 import Link from "next/link";
 import { createContext, useContext, useEffect, useState } from "react";
 import { FaDoorOpen, FaHome } from "react-icons/fa";
@@ -34,7 +34,7 @@ export function Sidebar({
   guilds,
   user,
 }: {
-  currentGuild: UserGuild;
+  currentGuild: Guild;
   guilds: GuildExtended[];
   user: User;
 }) {

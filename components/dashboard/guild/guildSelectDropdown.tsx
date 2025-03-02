@@ -6,7 +6,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/dropdown";
-import { UserGuild } from "@prisma/client";
+import { Guild } from "@prisma/client";
 import NextLink from "next/link";
 
 import { GuildExtended } from "@/types";
@@ -19,7 +19,7 @@ export function GuildSelectDropdown({
   isOpen,
 }: {
   guilds: GuildExtended[];
-  currentGuild: UserGuild;
+  currentGuild: Guild;
   isOpen: boolean;
 }) {
   return (

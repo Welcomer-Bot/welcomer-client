@@ -1,5 +1,5 @@
 import { Card, CardBody } from "@heroui/card";
-import { UserGuild } from "@prisma/client";
+import { Guild } from "@prisma/client";
 import Image from "next/image";
 
 import { getGuildIcon } from "@/lib/utils";
@@ -8,7 +8,7 @@ export default function GuildCard({
   guild,
   isOpen = true,
 }: {
-  guild: UserGuild;
+  guild: Guild;
   isOpen?: boolean;
 }) {
   return (
