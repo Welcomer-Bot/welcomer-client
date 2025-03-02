@@ -13,7 +13,7 @@ import {
 
 export default function WelcomerBetaLanding() {
   return (
-    <div className="h-full w-full bg-gray-900 text-white">
+    <div className="h-full w-full px-0 bg-gray-900 text-white">
       {/* Hero Section */}
       <section className="py-20 text-center align-middle justify-center px-6">
         <h1 className="text-4xl font-bold">
@@ -39,7 +39,7 @@ export default function WelcomerBetaLanding() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
           {advantages.map((adv, index) => (
             <Card key={index} className="bg-gray-700 p-6">
-              <CardBody className="flex flex-col items-center">
+              <CardBody className="flex flex-col items-center justify-center text-center">
                 {adv.icon}
                 <h3 className="text-xl font-semibold mt-4">{adv.title}</h3>
                 <p className="mt-2 text-gray-300">{adv.description}</p>
@@ -50,12 +50,15 @@ export default function WelcomerBetaLanding() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-6 text-center">
+      <section className="py-20 px-6  bg-gray-900 text-center">
         <h2 className="text-3xl font-bold">Exclusive Beta Features</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 justify-center text-center col-span-3">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-gray-700 p-6">
-              <CardBody className="flex flex-col items-center">
+            <Card
+              key={index}
+              className="bg-gray-700 p-6 flex items-center justify-center text-center"
+            >
+              <CardBody className="flex flex-col items-center text-center">
                 {feature.icon}
                 <h3 className="text-xl font-semibold mt-4">{feature.title}</h3>
                 <p className="mt-2 text-gray-300">{feature.description}</p>
@@ -66,7 +69,7 @@ export default function WelcomerBetaLanding() {
       </section>
 
       {/* How to Join? */}
-      <section className="py-20 px-6 text-center">
+      <section className="py-20 px-6  bg-gray-800  text-center">
         <h2 className="text-3xl font-bold">
           How to Join the Beta in 3 Simple Steps?
         </h2>
@@ -75,7 +78,7 @@ export default function WelcomerBetaLanding() {
             ✅ Ensure your server meets the requirements (200+ members, active,
             no NSFW content).
           </li>
-          <li>✅ Sign up using the form.</li>
+          <li>✅ Join the support server and open a ticket</li>
           <li>✅ Get access and start testing!</li>
         </ol>
         <Button
@@ -89,7 +92,7 @@ export default function WelcomerBetaLanding() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-6 bg-gray-800 text-center">
+      <section className="py-20 px-6  bg-gray-900 text-center">
         <h2 className="text-3xl font-bold">What Our Testers Say 🚀</h2>
         <div className="mt-8 space-y-6">
           <div className="text-lg italic">
@@ -99,7 +102,7 @@ export default function WelcomerBetaLanding() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-6 text-center">
+      <section className="py-20 px-6  bg-gray-800 text-center">
         <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
         <div className="mt-6 space-y-4">
           <p>

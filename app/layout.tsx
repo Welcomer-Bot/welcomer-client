@@ -33,16 +33,16 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <head />
-      <body>
+      <body
+        className={clsx(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
         <Providers
-          themeProps={{ attribute: "class", defaultTheme: "dark", children }}
+          themeProps={{ attribute: "class", defaultTheme: "dark" }}
         >
-          <div
-            className={clsx(
-              "h-screen w-screen overflow-y-auto bg-background font-sans antialiased",
-              fontSans.variable
-            )}
-          >
+          <div className="relative flex flex-col h-screen">
             {children}
           </div>
           <ToastContainer />

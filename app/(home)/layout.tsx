@@ -1,16 +1,17 @@
-import Link from "next/link";
+import { Link } from "@heroui/link";
 
 import { Navbar } from "@/components/navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col h-full">
+    <>
       <Navbar />
-      <main className="content-center h-full justify-center">
+      <main className="flex-grow">
         {children}
       </main>
-      <footer className="w-full flex items-center justify-center py-3 bottom-0">
+      <footer className="w-full flex items-center justify-center py-3">
         <Link
+          isExternal
           className="flex items-center gap-1 text-current"
           href="https://github.com/Welcomer-Bot"
           title="Welcomer bot github"
@@ -19,6 +20,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <p className="text-primary">Welcomer</p>
         </Link>
       </footer>
-    </div>
+    </>
   );
 }
