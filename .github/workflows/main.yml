@@ -42,5 +42,6 @@ jobs:
             git pull
             yarn
             yarn prisma generate
-            yarn build
+            rm -r .next
+            yarn build next_build
             pm2 restart welcomer-client
