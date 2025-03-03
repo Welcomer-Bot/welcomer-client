@@ -8,6 +8,7 @@ import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://beta.welcomer.app"),
   title: {
     default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
@@ -15,6 +16,9 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   icons: {
     icon: "/favicon.ico",
+  },
+  openGraph: {
+    images: "/opengraph-image.png",
   },
 };
 
