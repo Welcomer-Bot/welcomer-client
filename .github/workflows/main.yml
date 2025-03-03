@@ -43,6 +43,5 @@ jobs:
             yarn
             yarn prisma generate
             pm2 stop welcomer-client
-            rm -r .next
             yarn build
             pm2 restart welcomer-client
