@@ -16,9 +16,10 @@ import { Suspense } from "react";
 
 import NavbarUser from "./navbarUser";
 
-import { DiscordIcon, GithubIcon, Logo } from "@/components/icons";
+import { DiscordIcon, GithubIcon } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
+import Image from "next/image";
 
 export const Navbar = () => {
   return (
@@ -26,7 +27,7 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
+            <Image src="/logo.svg" alt={"Welcomer logo"} width={40} height={40} />
             <p className="font-bold text-inherit">Welcomer</p>
           </NextLink>
         </NavbarBrand>
@@ -36,7 +37,7 @@ export const Navbar = () => {
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                  "data-[active=true]:text-primary data-[active=true]:font-medium"
                 )}
                 color="foreground"
                 href={item.href}

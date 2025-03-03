@@ -3,7 +3,9 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
   name: "Welcomer",
   description:
-    "Welcomer bot is a fully customizable discord bot made to welcome users as you wish !",
+    "Join Welcomer beta and get early access to the most powerful discord bot for welcoming new members. Welcomer is a bot that helps you welcome new members to your server and helps you manage your server. Welcome new members with a fully customisable welcome message, custom image backgrounds, custom fonts, and more.",
+  logo: "/logo.svg",
+  
   navItems: [
     {
       label: "Home",
