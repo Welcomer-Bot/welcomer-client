@@ -55,7 +55,7 @@ export default class Guild implements GuildObject {
         return fetchWidget(this.id);
     }
 
-    public setMutual(mutual: boolean) {
+    public async setMutual(mutual: boolean) {
         this.mutual = mutual;
     }
 

@@ -51,10 +51,11 @@ export const getGuilds = cache(async () => {
     guilds = guilds.filter((guild) => {
       return (guild.owner || (guild.permissions && ((Number(guild.permissions) & 0x20) === 0x20)));
     });
-    guilds.forEach(async (guild) => {
+
+    await Promise.all(guilds.map(async (guild) => {
       const botGuild = await getGuild(guild.id);
-      guild.setMutual(!!botGuild);
-    })
+      await guild.setMutual(!!botGuild);
+    }));
     return guilds;
   } catch {
     return null;
