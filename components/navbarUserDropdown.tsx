@@ -1,20 +1,18 @@
 "use client";
-
-import { Avatar } from "@heroui/avatar";
 import {
+  Avatar,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-} from "@heroui/dropdown";
-import { User as UIUser } from "@heroui/user";
-import { User } from "@prisma/client";
+  User as UIUser,
+} from "@heroui/react";
 
 import { signOut } from "@/lib/actions";
-import { getUserAvatar } from "@/lib/utils";
+import { UserObject } from "@/lib/discord/user";
 
-export default function NavbarUserDropdown({ user }: { user: User }) {
+export default function NavbarUserDropdown({ user }: { user: UserObject }) {
   if (!user) return null;
 
   return (
@@ -27,7 +25,7 @@ export default function NavbarUserDropdown({ user }: { user: User }) {
           className="transition-transform"
           name={user.username || "Discord User"}
           size="sm"
-          src={getUserAvatar(user)}
+          src={user.avatarUrl}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="Profile Actions" variant="flat">
@@ -35,7 +33,7 @@ export default function NavbarUserDropdown({ user }: { user: User }) {
           <DropdownItem key="profile" isReadOnly className="h-14 gap-2">
             <UIUser
               avatarProps={{
-                src: getUserAvatar(user),
+                src: user.avatarUrl,
                 size: "sm",
                 showFallback: true,
                 isBordered: true,

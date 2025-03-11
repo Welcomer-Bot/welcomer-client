@@ -1,4 +1,6 @@
-import { User, Guild } from "@prisma/client";
+import Guild from "./guild";
+import User from "./user";
+
 
 export async function parseText(text: string, user: User, guild: Guild) {
   return text

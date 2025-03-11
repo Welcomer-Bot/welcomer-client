@@ -82,7 +82,7 @@ const defaultMessage: Welcomer = {
 
 
 export const useWelcomerStore = create<WelcomerStore>()(
-  immer<WelcomerStore>((set, get) => {
+  immer<WelcomerStore>((set) => {
     const customSet = (fn: (state: WelcomerStore) => void) => {
       set((state) => {
         fn(state);

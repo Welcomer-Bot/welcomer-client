@@ -1,4 +1,3 @@
-import { betaGuild, Guild } from "@prisma/client";
 import { JWTPayload } from "jose";
 import { SVGProps } from "react";
 
@@ -7,13 +6,8 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export interface SessionPayload extends JWTPayload {
-  userId: string;
+  id: string;
   expiresAt: Date;
-}
-
-export interface GuildExtended extends Guild {
-  mutual?: boolean;
-  betaGuild?: betaGuild | null;
 }
 
 export type ModuleName = "welcomer" | "leaver";

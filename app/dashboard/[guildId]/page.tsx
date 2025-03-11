@@ -4,8 +4,9 @@ import { redirect } from "next/navigation";
 import GuildCard from "@/components/dashboard/guild/guildCard";
 import ManageButton from "@/components/dashboard/guild/manageButton";
 import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
-import { getChannel, getGuild, getUserGuild } from "@/lib/dal";
 import { DiscordMention } from "@skyra/discord-components-react";
+import { getUserGuild } from "@/lib/discord/user";
+import { getLeaver, getWelcomer } from "@/lib/dal";
 
 export default async function Page({
   params,
@@ -14,19 +15,20 @@ export default async function Page({
 }) {
   const { guildId } = await params;
   const guild = await getUserGuild(guildId);
-  const guildModules = await getGuild(guildId);
-  const welcomerChannel = guildModules?.welcomer?.channelId ? await getChannel(guildModules.welcomer.channelId) : null;
-  const leaverChannel = guildModules?.leaver?.channelId
-    ? await getChannel(guildModules.leaver.channelId)
+  if (!guild) redirect("/dashboard");
+  const welcomer = await getWelcomer(guildId);
+  const leaver = await getLeaver(guildId);
+  const welcomerChannel = welcomer?.channelId ? await guild.getChannel(welcomer.channelId) : null;
+  const leaverChannel = leaver?.channelId
+    ? await guild.getChannel(leaver.channelId)
     : null;
 
-  if (!guild) redirect("/dashboard");
 
   return (
     <div className="overflow-y-scroll h-full no-scrollbar">
       <Card className="sm:mx-5 sm:my-3">
         <CardHeader>
-          <GuildCard guild={guild} />
+          <GuildCard guild={guild.toObject()} />
         </CardHeader>
         <>
           <CardBody className="space-y-5">
@@ -37,7 +39,7 @@ export default async function Page({
                 <CardBody className="flex flex-row justify-between">
                   <div>
                     <p>
-                      Status: {guildModules?.welcomer ? "Enabled" : "Disabled"}
+                      Status: {welcomer ? "Enabled" : "Disabled"}
                     </p>
                     <p>
                       Channel:{" "}
@@ -58,7 +60,7 @@ export default async function Page({
                 <CardBody className="flex flex-row justify-between">
                   <div>
                     <p>
-                      Status: {guildModules?.leaver ? "Enabled" : "Disabled"}
+                      Status: {leaver ? "Enabled" : "Disabled"}
                     </p>
                     <p>
                       Channel:{" "}

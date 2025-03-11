@@ -14,7 +14,7 @@ export default function ModuleInitialiser({
   activeCardId,
 }: {
   moduleName: ModuleName;
-  moduleId: number;
+  moduleId: string;
   cards: BaseCardParams[] | null;
   activeCardId?: number | null;
   children: React.ReactNode;

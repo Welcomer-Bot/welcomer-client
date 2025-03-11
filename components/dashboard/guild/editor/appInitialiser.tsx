@@ -29,7 +29,6 @@ export default function AppInitializer({
     if (moduleName === "welcomer") {
       resetWelcomer();
       useWelcomerStore.setState((state) => {
-        state.id = module?.id;
         state.guildId = guildId;
         state.activeCardId = module?.activeCardId;
         state.activeCardToEmbedId = module?.embeds.findIndex(
@@ -47,7 +46,6 @@ export default function AppInitializer({
     } else if (moduleName === "leaver") {
       resetLeaver();
       useLeaverStore.setState((state) => {
-        state.id = module?.id;
         state.guildId = guildId;
         state.channelId = module?.channelId;
         state.activeCardId = module?.activeCardId;

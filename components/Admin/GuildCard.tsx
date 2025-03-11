@@ -1,44 +1,17 @@
-"use client";
-import {
-  addGuildToBetaAction,
-  leaveGuildAction,
-  removeGuildToBetaAction,
-} from "@/lib/discord/guild";
-import { getGuildIcon } from "@/lib/utils";
-import { GuildExtended } from "@/types";
+import Guild from "@/lib/discord/guild";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import Image from "next/image";
 import { toast } from "react-toastify";
 
-export default function GuildCard({ guild }: { guild: GuildExtended }) {
-  const handleRemoveFromBeta = async () => {
-    const res = await removeGuildToBetaAction(guild.id);
-    if (res) {
-      toast.success("Guild removed from beta program");
-    } else {
-      toast.error("Failed to remove guild from beta program");
-    }
-    return res;
-  };
-
-  const handleAddToBeta = async () => {
-    const res = await addGuildToBetaAction(guild.id);
-    if (res) {
-      toast.success("Guild added to beta program");
-    } else {
-      toast.error("Failed to add guild to beta program");
-    }
-    return res;
-  };
-
+export default function GuildCard({ guild }: { guild: Guild }) {
   return (
     <Card>
       <CardHeader className="flex flex-row space-x-5">
         <div>
-          {guild.icon ? (
+          {guild.iconUrl ? (
             <Image
               className="rounded-lg"
-              src={getGuildIcon(guild)}
+              src={guild.iconUrl}
               alt={`${guild.id} icon`}
               width={48}
               height={48}
@@ -57,12 +30,12 @@ export default function GuildCard({ guild }: { guild: GuildExtended }) {
       <CardBody>
         <p>Member count: {guild.memberCount}</p>
         <div>
-          {guild.betaGuild ? (
+          {guild.beta ? (
             <Button
               className="max-w-xs"
               color="danger"
               variant="ghost"
-              onPress={handleRemoveFromBeta}
+              onPress={() => guild.enrollToBetaProgram()}
             >
               Leave beta program
             </Button>
@@ -70,7 +43,7 @@ export default function GuildCard({ guild }: { guild: GuildExtended }) {
             <Button
               className="max-w-xs"
               color="primary"
-              onPress={handleAddToBeta}
+              onPress={() => guild.removeFromBetaProgram()}
             >
               Integrate guild to beta program
             </Button>
@@ -78,7 +51,7 @@ export default function GuildCard({ guild }: { guild: GuildExtended }) {
           {guild.mutual && (
             <Button
               onPress={async () => {
-                const res = await leaveGuildAction(guild.id);
+                const res = await guild.leave();
                 if (res) {
                   toast.success("Left guild");
                 } else {

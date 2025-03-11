@@ -3,35 +3,31 @@ import "server-only";
 
 import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
 import { cache } from "react";
-
+import { getUser, getUserGuild, getUserGuilds } from "./discord/user";
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
-import { GuildExtended, ModuleName } from "@/types";
+import { ModuleName, SessionPayload } from "@/types";
 import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
-import { GuildBasedChannel } from "discord.js";
+import { getGuild } from "./discord/guild";
 
-export const verifySession = cache(async () => {
+export const verifySession = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession();
   const clientSession = await decrypt(session);
 
-  if (!clientSession?.userId) {
+  if (!clientSession?.id) {
     return null;
   }
 
-  return { isAuth: true, userId: clientSession.userId as string };
+  return clientSession;
 });
 
-export const getUser = cache(async () => {
+export const fetchUserFromSession = cache(async () => {
   const session = await verifySession();
-
   if (!session) return null;
   try {
-    const data = await prisma.user.findMany({
-      where: { id: session.userId },
-    });
-
-    return data[0];
+    const user = await getUser(session.id);
+    return user;
   } catch {
     return null;
   }
@@ -40,209 +36,31 @@ export const getUser = cache(async () => {
 export const canUserManageGuild = cache(async (guildId: string) => {
   try {
     const guild = await getUserGuild(guildId);
-
     return !!guild;
   } catch {
     return false;
   }
 });
 
-export const getUserGuilds = cache(async () => {
-  const session = await verifySession();
-
-  if (!session) return null;
-
-  try {
-    return await prisma.guild.findMany({
-      where: {
-        User: {
-          some: { id: session.userId },
-        },
-      },
-    });
-  } catch {
-    return null;
-  }
-});
-
-export const getBotGuilds = cache(async () => {
-  try {
-    return await prisma.guild.findMany({
-      where: {
-        BotGuild: {
-          isNot: null,
-        },
-      },
-      include: {
-        BotGuild: true,
-      }
-    });
-  } catch {
-    return null;
-  }
-});
 
 export const getGuilds = cache(async () => {
   try {
-    const session = await verifySession();
-
-    if (!session) return null;
-
-    const guilds = await getUserGuilds();
-
+    let guilds = await getUserGuilds();
     if (!guilds) return null;
 
-    return await Promise.all(
-      guilds.map(async (guild: GuildExtended) => {
-        const botGuild = await prisma.guild.findUnique({
-          where: { id: guild.id, BotGuild: { isNot: null } },
-
-        });
-        if (botGuild) {
-          guild.mutual = true;
-        }
-        return guild;
-      })
-    );
+    guilds = guilds.filter((guild) => {
+      return (guild.owner || (guild.permissions && ((Number(guild.permissions) & 0x20) === 0x20)));
+    });
+    guilds.forEach(async (guild) => {
+      const botGuild = await getGuild(guild.id);
+      guild.setMutual(!!botGuild);
+    })
+    return guilds;
   } catch {
     return null;
   }
 });
 
-
-export const getUserGuild = cache(async (guildId: string) => {
-  const session = await verifySession();
-
-  if (!session) return null;
-
-  try {
-    return await prisma.guild.findFirst({
-      where: {
-        id: guildId,
-        User: {
-          some: { id: session.userId },
-        },
-      },
-    });
-  } catch (e) {
-    console.log("Failed to get user guild", e);
-    return null;
-  }
-});
-
-export const getUserGuildsById = cache(async (userId: string) => {
-  const session = await verifySession();
-
-  if (!session) return null;
-  try {
-    return await prisma.guild.findMany({
-      where: {
-        User: {
-          some: { id: userId },
-        },
-      },
-      include: {
-        betaGuild: true,
-      }
-    });
-  } catch {
-    return null;
-  }
-});
-
-export const getUsers = cache(async () => {
-  try {
-    return await prisma.user.findMany();
-  } catch {
-    return null;
-  }
-});
-
-export const getUserById = cache(async (userId: string) => {
-  try {
-    return await prisma.user.findUnique({
-      where: { id: userId },
-    });
-  } catch {
-    return null;
-  }
-});
-
-
-
-
-export async function getGuildsByUserId(userId: string) {
-  try {
-    const guilds = await getUserGuildsById(userId);
-
-    if (!guilds) return null;
-
-    return await Promise.all(
-      guilds.map(async (guild: GuildExtended) => {
-        const botGuild = await prisma.guild.findUnique({
-          where: { id: guild.id },
-        });
-
-        if (botGuild) {
-          guild.mutual = true;
-        }
-
-        return guild;
-      })
-    );
-  } catch {
-    return null;
-  }
-}
-
-
-
-
-export async function getGuild(guildId: string) {
-  try {
-    if (!(await canUserManageGuild(guildId))) return null;
-    return await prisma.guild.findUnique({
-      where: { id: guildId },
-      include: {
-        welcomer: true,
-        leaver: true,
-      },
-    });
-  } catch {
-    return null;
-  }
-}
-
-export async function getChannel(channelId: string) {
-  try {
-    const channel = await prisma.channels.findUnique({
-      where: {
-        id: channelId,
-      },
-    });
-    return channel;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-}
-
-export async function getUserData() {
-  const session = await verifySession();
-
-  if (!session) return null;
-
-  try {
-    const data = await prisma.user.findMany({
-      where: { id: session.userId },
-    });
-    const user = data[0];
-
-    return user;
-  } catch {
-    return null;
-  }
-}
 
 export async function getWelcomer(guildId: string) {
   try {
@@ -303,37 +121,14 @@ export async function getLeaver(guildId: string): Promise<Leaver | null> {
   }
 }
 
-export async function getWelcomerById(welcomerId: number) {
-  try {
-    const welcomer = await prisma.welcomer.findUnique({
-      where: { id: welcomerId },
-    });
-
-    return welcomer;
-  } catch {
-    return null;
-  }
-}
-
-export async function getLeaverById(leaverId: number) {
-  try {
-    const leaver = await prisma.leaver.findUnique({
-      where: { id: leaverId },
-    });
-
-    return leaver;
-  } catch {
-    return null;
-  }
-}
 
 export async function getEmbeds(
-  moduleId: string | number,
+  moduleId: string,
   module: ModuleName
 ): Promise<Embed[] | null> {
   try {
-    moduleId = Number(moduleId);
-    const welcomerModule = await getWelcomerById(moduleId);
+    moduleId = moduleId
+    const welcomerModule = await getWelcomer(moduleId);
     if (!welcomerModule?.guildId) return null;
 
     if (!(await canUserManageGuild(welcomerModule?.guildId))) return null;
@@ -347,27 +142,6 @@ export async function getEmbeds(
     return embeds;
   } catch {
     return null;
-  }
-}
-
-export async function getGuildChannels(guildId: string) {
-  // get guild channels from discord api
-  try {
-    const res = await fetch(
-      process.env.INTERNAL_API_BASE_URL + `/channels?guildId=${guildId}`,
-      {
-        headers: {
-          Authorization: `${process.env.SERVER_TOKEN}`,
-        },
-      }
-    );
-
-    if (!res.ok) return [];
-    const data = await res.json() as GuildBasedChannel[];
-    return data;
-  } catch {
-    // console.log(err)
-    return [];
   }
 }
 
@@ -399,7 +173,7 @@ export async function createEmbedAuthor(embedId: number, name: string) {
 }
 
 export async function getModuleCards(
-  moduleId: number,
+  moduleId: string,
   module: "welcomer" | "leaver"
 ): Promise<BaseCardParams[] | null> {
   try {
@@ -540,7 +314,7 @@ const includeAllEmbeds: Prisma.EmbedInclude = {
 export async function deleteEmbed(
   embedId: number,
   moduleName: ModuleName,
-  moduleId: number
+  moduleId: string
 ) {
   return await prisma.embed.delete({
     where: {
@@ -554,7 +328,7 @@ export async function deleteEmbed(
 export async function updateEmbed(
   embedId: number,
   moduleName: ModuleName,
-  moduleId: number,
+  moduleId: string,
   data: Prisma.XOR<Prisma.EmbedUpdateInput, Prisma.EmbedUncheckedUpdateInput>
 ) {
   return await prisma.embed.update({
@@ -666,6 +440,14 @@ export async function createImageCard(
 }
 
 
+export async function getGuildBeta(guildId: string) {
+  return await prisma.betaGuild.findUnique({
+    where: {
+      id: guildId
+    }
+  })
+}
+
 export async function addGuildToBeta(guildId: string) {
   return await prisma.betaGuild.create({
     data: {
@@ -695,6 +477,16 @@ export async function getAllGuildStatsSinceTime(guildId: string,
       createdAt: {
         gte: since
       }
+    }
+  })
+}
+
+export async function getSessionData() {
+  const session = await verifySession();
+  if (!session) return null;
+  return await prisma.session.findUnique({
+    where: {
+      id: session.id
     }
   })
 }

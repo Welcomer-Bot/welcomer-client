@@ -1,14 +1,13 @@
 import { Card, CardBody } from "@heroui/card";
-import { Guild } from "@prisma/client";
 import Image from "next/image";
 
-import { getGuildIcon } from "@/lib/utils";
+import { GuildObject } from "@/lib/discord/guild";
 
 export default function GuildCard({
   guild,
   isOpen = true,
 }: {
-  guild: Guild;
+  guild: GuildObject;
   isOpen?: boolean;
 }) {
   return (
@@ -17,13 +16,19 @@ export default function GuildCard({
         className={`items-baseline transition-all ${isOpen ? "" : "m-0 p-0 w-full items-center"}`}
       >
         <div className="flex transition-all items-center">
-          <Image
-            alt={guild.name}
-            className={`rounded-full w-10 h-10`}
-            height={40}
-            src={getGuildIcon(guild)}
-            width={40}
-          />
+          {guild.iconUrl ? (
+            <Image
+              alt={guild.name}
+              className={`rounded-full w-10 h-10`}
+              height={40}
+              src={guild.iconUrl}
+              width={40}
+            />
+          ) : (
+            <div className="w-10 h-10 shrink-0 border-solid border-1 border-white shadow-2xl rounded-large flex justify-center items-center mr-3">
+              {guild.name[0]}
+            </div>
+          )}
           <div
             className={`truncate transition-all ${isOpen ? "w-48 ml-2" : "w-0 ml-0"}`}
           >

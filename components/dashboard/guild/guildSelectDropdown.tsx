@@ -6,20 +6,19 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/dropdown";
-import { Guild } from "@prisma/client";
 import NextLink from "next/link";
 
-import { GuildExtended } from "@/types";
-import GuildCard from "./guildCard";
+import { GuildObject } from "@/lib/discord/guild";
 import { inviteBotToGuild } from "@/lib/discord/invite";
+import GuildCard from "./guildCard";
 
 export function GuildSelectDropdown({
   guilds,
   currentGuild,
   isOpen,
 }: {
-  guilds: GuildExtended[];
-  currentGuild: Guild;
+  guilds: GuildObject[];
+  currentGuild: GuildObject;
   isOpen: boolean;
 }) {
   return (
@@ -53,14 +52,15 @@ export function GuildSelectDropdown({
             );
           } else {
             return (
-              <DropdownItem
-                key={guild.id}
-                textValue={guild.id}
-              >
+              <DropdownItem key={guild.id} textValue={guild.id}>
                 {/* invite link for the bot */}
-                <a href={inviteBotToGuild(guild.id)}>
+                <div
+                  onClick={async () => {
+                    await inviteBotToGuild(guild.id);
+                  }}
+                >
                   <GuildCard guild={guild} />
-                </a>
+                </div>
               </DropdownItem>
             );
           }

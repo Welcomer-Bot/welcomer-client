@@ -23,9 +23,9 @@ import {
   deleteLeaver,
   deleteWelcomer,
   getEmbeds,
-  getLeaverById,
+  getLeaver,
   getModuleCards,
-  getWelcomerById,
+  getWelcomer,
   updateEmbed,
   updateImageCard,
   updateImageCardText,
@@ -109,7 +109,7 @@ export async function updateModule(
         error: "Invalid module name",
       };
     }
-    const embeds = await getEmbeds(libModule.id, moduleName);
+    const embeds = await getEmbeds(libModule.guildId, moduleName);
     const embedsToCreate = store.embeds.filter((embed) => embed.id === null);
     if ((embeds?.length ?? 0) + embedsToCreate.length > 10)
       return {
@@ -119,14 +119,14 @@ export async function updateModule(
       if (
         embed.id &&
         embed[`${moduleName}Id`] &&
-        libModule.id != embed[`${moduleName}Id`]
+        libModule.guildId != embed[`${moduleName}Id`]
       )
         return {
           error: "You cannot update an embed that is not in the module",
         };
       const embedUpdated = await createOrUpdateEmbed(
         embed,
-        libModule.id,
+        libModule.guildId,
         moduleName
       );
       if (!embedUpdated) {
@@ -138,11 +138,11 @@ export async function updateModule(
     }
     for (const embed of store.deletedEmbeds) {
       if (embed.id) {
-        if (embed[`${moduleName}Id`] && libModule.id != embed[`${moduleName}Id`])
+        if (embed[`${moduleName}Id`] && libModule.guildId != embed[`${moduleName}Id`])
           return {
             error: "You cannot delete an embed that is not in the module",
           };
-        await deleteEmbed(embed.id, moduleName, libModule.id);
+        await deleteEmbed(embed.id, moduleName, libModule.guildId);
       }
     }
     for (const field of store.deletedFields) {
@@ -252,7 +252,7 @@ export async function updateModule(
 
 export async function createOrUpdateEmbed(
   embed: CompleteEmbed,
-  moduleId: number,
+  moduleId: string,
   moduleType: "welcomer" | "leaver"
 ): Promise<CompleteEmbed | null> {
   let embedDb;
@@ -432,8 +432,8 @@ export async function updateCards(
   const cardsDb = await getModuleCards(moduleId, moduleName);
   const welcomeOrLeaveModule =
     moduleName === "welcomer"
-      ? await getWelcomerById(moduleId)
-      : await getLeaverById(moduleId);
+      ? await getWelcomer(moduleId)
+      : await getLeaver(moduleId);
   if (!welcomeOrLeaveModule) {
     throw new Error("You need to enable the module first");
   }
@@ -546,7 +546,7 @@ export async function updateCards(
 
 export async function createOrUpdateCard(
   card: BaseCardParams,
-  moduleId: number,
+  moduleId: string,
   moduleName: ModuleName
 ): Promise<BaseCardParams | null> {
   let cardDb;
