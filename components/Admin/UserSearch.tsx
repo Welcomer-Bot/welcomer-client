@@ -1,27 +1,26 @@
 "use client";
 
-import { fetchUserDataAdmin } from "@/lib/dto";
-import { GuildExtended } from "@/types";
+import { getUserData, getGuildsByUserId } from "@/lib/dal";
+import { GuildObject } from "@/lib/discord/guild";
+import { UserObject } from "@/lib/discord/user";
 import { Autocomplete, AutocompleteItem, Card } from "@heroui/react";
 import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import GuildCard from "./GuildCard";
 export default function UserSearch({ users }: { users: User[] }) {
   const [value, setValue] = useState<React.Key | null>(null);
-  const [user, setUser] = useState<
-    | (User & {
-        guilds: GuildExtended[] | null;
-      })
-    | null
-  >(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [user, setUser] = useState<UserObject | null>(null);
+  const [guilds, setGuilds] = useState<GuildObject[] | null>([]);
   useEffect(() => {
     const updateStats = async () => {
-      setIsLoading(true);
-      const updatedUser = await fetchUserDataAdmin(value as string);
+      if (!value) {
+        setUser(null);
+        return;
+      }
+      const updatedUser = await getUserData(value as string);
+      const guilds = await getGuildsByUserId(value as string);
+      setGuilds(guilds);
       setUser(updatedUser);
-      setIsLoading(false);
     };
     updateStats();
   }, [value]);
@@ -44,25 +43,12 @@ export default function UserSearch({ users }: { users: User[] }) {
         ))}
       </Autocomplete>
       <Card>
-        {!value ? (
-          <p>Select a user</p>
-        ) : isLoading ? (
-          <p>Loading...</p>
+        {guilds ? (
+          guilds.map((guild) => <GuildCard key={guild.id} guild={guild} />)
         ) : user ? (
-          <div>
-            {" "}
-            <div className="space-y-4">
-              {user.guilds ? (
-                user.guilds.map((guild) => (
-                  <GuildCard guild={guild} key={guild.id} />
-                ))
-              ) : (
-                <p>No guilds found</p>
-              )}
-            </div>
-          </div>
+          <p>No guilds found for this user</p>
         ) : (
-          <p>User not found</p>
+          <p>Search for a user to see their guilds</p>
         )}
       </Card>
     </>

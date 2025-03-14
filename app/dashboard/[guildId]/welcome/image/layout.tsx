@@ -13,12 +13,12 @@ export default async function Layout({
   const { guildId } = await params;
   const welcomer = await getWelcomer(guildId);
   if (!welcomer) return <div>Module not found, please enable it first</div>;
-  const cards = await getModuleCards(welcomer?.id, "welcomer");
+  const cards = await getModuleCards(welcomer?.guildId, "welcomer");
 
   return (
     <ModuleInitialiser
       moduleName="welcomer"
-      moduleId={welcomer?.id}
+      moduleId={welcomer?.guildId}
       cards={cards}
       activeCardId={welcomer?.activeCardId}
     >

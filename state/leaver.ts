@@ -80,7 +80,7 @@ const defaultMessage: Leaver = {
 
 
 export const useLeaverStore = create<LeaverStore>()(
-  immer((set, get) => {
+  immer((set) => {
     const customSet = (fn: (state: LeaverStore) => void) => {
       set((state) => {
         fn(state);

@@ -1,33 +1,17 @@
 "use client";
-import { fetchGuildChannels } from "@/lib/dto";
-import { useGuildStore } from "@/state/guild";
 import { useLeaverStore } from "@/state/leaver";
 import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
-import { GuildBasedChannel } from "discord.js";
-import { useEffect, useState } from "react";
+import { APIChannel } from "discord.js";
 
-export default function SendMenu() {
-  const guildId = useGuildStore((state) => state.id);
+export default function SendMenu({ channels }: { channels: APIChannel[] }) {
   const currentModuleName = useModuleNameStore((state) => state.moduleName);
 
   const store =
     currentModuleName === "welcomer" ? useWelcomerStore : useLeaverStore;
   const updateChannel = store().setChannelId;
   const currentChannel = store().channelId;
-  const [channels, setChannels] = useState<GuildBasedChannel[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const updateStats = async () => {
-      setIsLoading(true);
-      const updatedChannels = await fetchGuildChannels(guildId);
-      setChannels(updatedChannels);
-      setIsLoading(false);
-    };
-    updateStats();
-  }, [guildId]);
 
   return (
     <Select
@@ -35,7 +19,6 @@ export default function SendMenu() {
       placeholder="Select a channel"
       disabledKeys={["0"]}
       required
-      isLoading={isLoading}
       onChange={(e) => updateChannel(e.target.value)}
       selectedKeys={[
         currentChannel &&
@@ -53,7 +36,7 @@ export default function SendMenu() {
             <SelectSection key={channel.id} showDivider title={channel.name}>
               {channels
                 .filter((c) => c.type === 0)
-                .filter((c) => c.parentId === channel.id)
+                .filter((c) => c.parent_id === channel.id)
                 .map((c) => (
                   <SelectItem key={c.id} textValue={c.name}>
                     {c.name} ({c.id})

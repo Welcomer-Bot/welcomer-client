@@ -2,7 +2,6 @@
 import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
 import { User as UIUser } from "@heroui/user";
-import { User, Guild } from "@prisma/client";
 import Link from "next/link";
 import { createContext, useContext, useEffect, useState } from "react";
 import { FaDoorOpen, FaHome } from "react-icons/fa";
@@ -12,10 +11,10 @@ import { GuildSelectDropdown } from "./guildSelectDropdown";
 import { LogoutIcon } from "./logoutIcon";
 
 import { Logo } from "@/components/icons";
-import { getUserAvatar } from "@/lib/utils";
+import { GuildObject } from "@/lib/discord/guild";
+import { UserObject } from "@/lib/discord/user";
 import { useGuildStore } from "@/state/guild";
 import { useModuleNameStore } from "@/state/moduleName";
-import { GuildExtended } from "@/types";
 
 const SidebarContext = createContext<{
   isOpen: boolean;
@@ -34,9 +33,9 @@ export function Sidebar({
   guilds,
   user,
 }: {
-  currentGuild: Guild;
-  guilds: GuildExtended[];
-  user: User;
+  currentGuild: GuildObject;
+  guilds: GuildObject[];
+  user: UserObject;
 }) {
   const currentModule = useModuleNameStore((state) => state.moduleName);
   const [isOpen, setIsOpen] = useState(true);
@@ -50,9 +49,7 @@ export function Sidebar({
 
   return (
     <>
-      <aside
-        className={`h-full z-30 sticky sm:block`}
-      >
+      <aside className={`h-full z-30 sticky sm:block`}>
         <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
           <div className="p-4 pb-2 flex justify-between items-center align-center">
             <div className={` items-center h-10 justify-start flex flex-row `}>
@@ -154,7 +151,7 @@ export function Sidebar({
             >
               <UIUser
                 avatarProps={{
-                  src: getUserAvatar(user),
+                  src: user.avatarUrl,
                 }}
                 description={user.id}
                 name={user.username}
@@ -166,7 +163,6 @@ export function Sidebar({
       </aside>
     </>
   );
-    
 }
 
 export function SidebarItem({

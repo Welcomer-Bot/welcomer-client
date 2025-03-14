@@ -5,7 +5,7 @@ import NextImage from "next/image";
 import Link from "next/link";
 
 import { getGuilds } from "@/lib/dal";
-import { getGuildBanner, getGuildIcon } from "@/lib/utils";
+import { getGuildBanner } from "@/lib/utils";
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 
 export default async function Page() {
@@ -41,7 +41,7 @@ export default async function Page() {
               }}
             />
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              {guild.icon ? (
+              {guild.iconUrl ? (
                 <UIImage
                   alt="Guild Icon"
                   as={NextImage}
@@ -50,7 +50,7 @@ export default async function Page() {
                     wrapper: "w-16 h-16",
                   }}
                   height={64}
-                  src={getGuildIcon(guild)}
+                  src={guild.iconUrl}
                   width={64}
                 />
               ) : (
@@ -62,7 +62,7 @@ export default async function Page() {
           </CardBody>
           <CardFooter className="flex items-center justify-between">
             <div className="flex flex-row items-center truncate">
-              {guild.icon ? (
+              {guild.iconUrl ? (
                 <UIImage
                   alt="Guild Icon"
                   as={NextImage}
@@ -72,7 +72,7 @@ export default async function Page() {
                   removeWrapper
                   width={48}
                   height={48}
-                  src={getGuildIcon(guild)}
+                  src={guild.iconUrl}
                 />
               ) : (
                 <div className="w-12 h-12 shrink-0 border-solid border-2 border-white shadow-2xl rounded-large flex justify-center items-center mr-3">
@@ -88,7 +88,7 @@ export default async function Page() {
                     Manage
                   </Button>
                 </Link>
-              ) : (
+              ) : guild.beta ? (
                 <Link
                   href={`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot&guild_id=${guild.id}`}
                 >
@@ -98,6 +98,16 @@ export default async function Page() {
                     type="submit"
                   >
                     Invite Bot
+                  </Button>
+                </Link>
+              ) : (
+                <Link href={`/support`}>
+                  <Button
+                    className="right ml-2 font-bold"
+                    color="default"
+                    type="submit"
+                  >
+                    Request Beta Access
                   </Button>
                 </Link>
               )}

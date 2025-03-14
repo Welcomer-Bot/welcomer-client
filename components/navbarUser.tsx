@@ -1,12 +1,11 @@
 import NavbarUserDropdown from "./navbarUserDropdown";
 import { SignIn } from "./signinButton";
 
-import { getUser } from "@/lib/dal";
+import { fetchUserFromSession } from "@/lib/dal";
 import React from "react";
 
 export default async function NavbarUser(): Promise<React.ReactElement> {
-  const user = await getUser();
-
+  const user = await fetchUserFromSession();
   if (!user)
     return (
       <div>
@@ -16,7 +15,7 @@ export default async function NavbarUser(): Promise<React.ReactElement> {
 
   return (
     <span>
-      <NavbarUserDropdown user={user} />
+      <NavbarUserDropdown user={user.toObject()} />
     </span>
   );
 }

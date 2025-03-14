@@ -8,8 +8,7 @@ export default async function middleware(req: NextRequest) {
 
   const session = await getSession();
   const sessionData = await decrypt(session);
-
-  if (isProtectedRoute && !sessionData?.userId) {
+  if (isProtectedRoute && !sessionData?.id) {
     return NextResponse.redirect(new URL("/api/auth/login", req.nextUrl));
   }
 

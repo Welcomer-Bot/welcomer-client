@@ -1,9 +1,9 @@
 import UserSearch from "@/components/Admin/UserSearch";
-import { getUser, getUsers } from "@/lib/dal";
+import { fetchUserFromSession, getUsers } from "@/lib/dal";
 import { notFound } from "next/navigation";
 
 export default async function Page() {
-  const user = await getUser();
+  const user = await fetchUserFromSession();
   if (!user || user.id !== "479216487173980160") {
     notFound();
   }

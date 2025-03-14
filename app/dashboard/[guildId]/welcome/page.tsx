@@ -6,9 +6,9 @@ import RemoveModuleButton from "@/components/dashboard/guild/RemoveModuleButton"
 import AppInitializer from "@/components/dashboard/guild/editor/appInitialiser";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enableModuleButton";
-import { getGuild, getWelcomer } from "@/lib/dal";
+import { getWelcomer } from "@/lib/dal";
 import { CompleteWelcomer } from "@/prisma/schema";
-
+import { getGuild } from "@/lib/discord/guild";
 export default async function Page({
   params,
 }: {
@@ -43,7 +43,7 @@ export default async function Page({
           <>
             <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll w-full ">
               <Divider className="mb-2" />
-              <Editor />
+              <Editor guild={guild}/>
             </div>
           </>
         ) : null}

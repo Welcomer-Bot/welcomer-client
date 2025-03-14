@@ -13,7 +13,7 @@ export interface GuildParams extends Guild {
 export const useGuildStore = create<GuildParams>()(
   immer(
     persist(
-      (set, get) => ({
+      (set) => ({
         id: "",
         name: "",
         icon: "",

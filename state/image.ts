@@ -4,13 +4,13 @@ import { Color } from "@welcomer-bot/card-canvas";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 export interface ImageStore {
-  moduleId: number | null;
+  moduleId: string | null;
   imageCards: (BaseCardParams & { imagePreview?: string })[];
   activeCard: number | null;
   removedCard: BaseCardParams[];
   removedText: TextCard[];
   edited: boolean;
-  setModuleId: (id: number) => void;
+  setModuleId: (id: string) => void;
   setCards: (cards: BaseCardParams[]) => void;
   setActiveCard: (index: number) => void;
   setActiveCardId: (id: number) => void;
@@ -114,7 +114,7 @@ export const useImageStore = create<ImageStore>()(
         }
         return state.imageCards[state.activeCard];
       },
-      setPreviewImage: (image, edited = false) =>
+      setPreviewImage: (image) =>
         setToActive((state) => {
           if (state.imageCards[state.activeCard]) {
             state.imageCards[state.activeCard].imagePreview = image;
