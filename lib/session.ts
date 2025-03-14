@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import "server-only";
 
 import { SessionPayload } from "@/types";
+import { getUserByAccessToken } from "./discord/user";
 import prisma from "./prisma";
 
 const secretKey = process.env.SESSION_SECRET;
@@ -56,11 +57,20 @@ export async function createSession(code: string) {
   }
 
   const { access_token, expires_in } = tokenResponse;
-
+  const user = await getUserByAccessToken(access_token);
+  if (!user) {
+    return null;
+  }
   const dbSession = await prisma.session.create({
     data: {
       accessToken: access_token,
       expiresAt: new Date(Date.now() + expires_in * 1000),
+      user: {
+        connectOrCreate: {
+          where: { id: user.id },
+          create: { id: user.id, username: user.username },
+        },
+      },
     },
   })
   const session = await encrypt({ id: dbSession.id, expiresAt: dbSession.expiresAt });

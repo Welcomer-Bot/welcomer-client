@@ -3,7 +3,7 @@ import "server-only";
 
 import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
 import { cache } from "react";
-import { getUser, getUserGuild, getUserGuilds } from "./discord/user";
+import { getUser, getUserByAccessToken, getUserGuild, getUserGuilds, getUserGuildsByAccessToken } from "./discord/user";
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
@@ -458,11 +458,16 @@ export async function addGuildToBeta(guildId: string) {
 }
 
 export async function removeGuildToBeta(guildId: string) {
-  return await prisma.betaGuild.delete({
-    where: {
-      id: guildId
-    }
-  })
+  try {
+    
+    return await prisma.betaGuild.delete({
+      where: {
+        id: guildId
+      }
+    })
+  } catch {
+    return false;
+  }
 }
 
 export async function getAllGuildStatsSinceTime(guildId: string,
@@ -490,4 +495,69 @@ export async function getSessionData() {
       id: session.id
     }
   })
+}
+
+
+export async function getUsers() {
+  return await prisma.user.findMany();
+}
+
+export async function getUserBaseData(id: string) {
+  return await prisma.user.findUnique({
+    where: {
+      id: id
+    }
+  })
+}
+
+export async function getSessionDataById(id: string) {
+  return await prisma.session.findFirst({
+    where: {
+      userId: id
+    }
+  })
+}
+
+export async function getUserData(id: string) {
+  const data = await getSessionDataById(id);
+  if (!data) return null;
+  const user = await getUserByAccessToken(data.accessToken)
+  if (!user) return null;
+  return user.toObject();
+}
+
+export async function getGuildsByUserId(userId: string) {
+  console.log(userId)
+  try {
+    const data = await getSessionDataById(userId);
+    if (!data) return null;
+    let guilds = await getUserGuildsByAccessToken(data.accessToken)
+    if (!guilds) return null;
+
+    guilds = guilds.filter((guild) => {
+      return (guild.owner || (guild.permissions && ((Number(guild.permissions) & 0x20) === 0x20)));
+    });
+
+    await Promise.all(guilds.map(async (guild) => {
+      const botGuild = await getGuild(guild.id);
+      await guild.setMutual(!!botGuild);
+    }));
+    return guilds.map(guild => guild.toObject());
+  } catch {
+    return null;
+  }
+
+
+
+
+
+  // const data = await getSessionDataById(userId);
+  // if (!data) return null;
+  // let guilds = await getUserGuildsByAccessToken(data.accessToken)
+  // if (!guilds) return null;
+  // guilds = guilds.filter((guild) => {
+  //   return (guild.owner || (guild.permissions && ((Number(guild.permissions) & 0x20) === 0x20)));
+  // });
+
+  // return guilds.map(guild => guild.toObject());
 }

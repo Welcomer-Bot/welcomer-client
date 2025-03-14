@@ -188,6 +188,16 @@ model Session {
   expiresAt   DateTime
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id        String    @id
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  sessions  Session[]
+  username  String?
 }
 
 model betaGuild {

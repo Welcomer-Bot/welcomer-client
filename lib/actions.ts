@@ -214,7 +214,6 @@ export async function updateModule(
       if (moduleName === "welcomer") {
         await updateWelcomer(
           guildId,
-
           {
             activeCardToEmbed: {
               connect: {
@@ -618,7 +617,7 @@ export async function createOrUpdateCard(
     cardDb = await updateImageCard(card.id, {
       [moduleName]: {
         connect: {
-          id: moduleId,
+          guildId: moduleId,
         },
       },
       backgroundImgURL: card.backgroundImgURL,
@@ -636,7 +635,7 @@ export async function createOrUpdateCard(
       {
         [moduleName]: {
           connect: {
-            id: moduleId,
+            guildId: moduleId,
           },
         },
         backgroundImgURL: card.backgroundImgURL,

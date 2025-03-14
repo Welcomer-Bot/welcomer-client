@@ -65,6 +65,15 @@ export async function getUser(sessionId: string) {
     return newUser;
 }
 
+export async function getUserByAccessToken(accessToken: string) {   
+    const rest = new REST({ version: "10" }).setToken(accessToken);
+    const data = await rest.get(Routes.user(), { auth: true, authPrefix: "Bearer" }) as
+        RESTGetAPIUserResult | RESTError;
+    if (!data || "message" in data) return null;
+
+    return new User(data);
+}
+
 export async function getUserGuild(guildId: string) {
     const userGuilds = await getUserGuilds()
     if (!userGuilds) return null;
@@ -82,4 +91,11 @@ export async function getUserGuilds() {
     return data.map(guild => new Guild(guild));
 }
 
-
+export async function getUserGuildsByAccessToken(accessToken: string) {
+    const rest = new REST({ version: "10" }).setToken(accessToken);
+    const data = await rest.get(`${Routes.userGuilds()}?with_counts=true`, { auth: true, authPrefix: "Bearer" }) as RESTGetAPICurrentUserGuildsResult | RESTError;
+    if (!data || "message" in data) return null;
+    
+    return data.map(guild => new Guild(guild));
+}
+    

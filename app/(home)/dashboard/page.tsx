@@ -88,7 +88,7 @@ export default async function Page() {
                     Manage
                   </Button>
                 </Link>
-              ) : (
+              ) : guild.beta ? (
                 <Link
                   href={`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot&guild_id=${guild.id}`}
                 >
@@ -98,6 +98,16 @@ export default async function Page() {
                     type="submit"
                   >
                     Invite Bot
+                  </Button>
+                </Link>
+              ) : (
+                <Link href={`/support`}>
+                  <Button
+                    className="right ml-2 font-bold"
+                    color="default"
+                    type="submit"
+                  >
+                    Request Beta Access
                   </Button>
                 </Link>
               )}

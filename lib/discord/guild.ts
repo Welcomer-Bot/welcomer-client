@@ -85,7 +85,7 @@ export default class Guild implements GuildObject {
             for (const channel of data) {
                 this.channelCache.set(channel.id, channel);
             }
-        } catch (error){
+        } catch (error) {
             console.error(error)
         }
         return this.channelCache;
@@ -99,15 +99,18 @@ export default class Guild implements GuildObject {
     }
 
     public async enrollToBetaProgram() {
+        this.beta = true;
         return !!await addGuildToBeta(this.id)
     }
 
     public async removeFromBetaProgram() {
+        this.beta = false;
         return !!await removeGuildToBeta(this.id)
     }
 
     public async leave() {
-        return await leaveGuild(this.id)
+        return !!await leaveGuild(this.id)
+        
     }
 }
 
@@ -131,8 +134,8 @@ export async function getGuild(guildId: string) {
 
 export async function leaveGuild(guildId: string) {
     try {
-
-        const data = await rest.delete(`${Routes.guild(guildId)}`) as RESTGetAPIGuildResult | RESTError;
+        console.log("leaving guild")
+        const data = await rest.delete(`${Routes.userGuild(guildId)}`) as RESTGetAPIGuildResult | RESTError;
         if (!data || "message" in data) return null;
 
         cache.delete(guildId)
