@@ -110,7 +110,7 @@ export default class Guild implements GuildObject {
 
     public async leave() {
         return !!await leaveGuild(this.id)
-        
+
     }
 }
 
@@ -134,12 +134,10 @@ export async function getGuild(guildId: string) {
 
 export async function leaveGuild(guildId: string) {
     try {
-        console.log("leaving guild")
         const data = await rest.delete(`${Routes.userGuild(guildId)}`) as RESTGetAPIGuildResult | RESTError;
         if (!data || "message" in data) return null;
 
         cache.delete(guildId)
-
         return !!data
     } catch {
         return false;

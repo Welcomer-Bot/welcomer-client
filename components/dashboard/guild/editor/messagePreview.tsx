@@ -28,7 +28,7 @@ export default function MessagePreview({
   return (
     <>
       <DiscordMessages className="rounded-lg min-h-full">
-        <DiscordMessage author="Welcomer" avatar="/logo32.svg" bot verified>
+        <DiscordMessage author="Welcomer" avatar="/logo.svg" bot verified>
           {msg.content}
           {((msg.activeCardToEmbedId === -1 && msg.activeCard) ||
             (msg.activeCardToEmbedId == null &&

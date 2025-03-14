@@ -73,7 +73,7 @@ export async function getUserByAccessToken(accessToken: string) {
 
     return new User(data);
 }
-
+// TODO: implement cache
 export async function getUserGuild(guildId: string) {
     const userGuilds = await getUserGuilds()
     if (!userGuilds) return null;
