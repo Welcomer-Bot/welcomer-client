@@ -450,11 +450,16 @@ export async function getGuildBeta(guildId: string) {
 }
 
 export async function addGuildToBeta(guildId: string) {
-  return await prisma.betaGuild.create({
-    data: {
-      id: guildId
-    },
-  })
+  try {
+    
+    return await prisma.betaGuild.create({
+      data: {
+        id: guildId
+      },
+    })
+  } catch {
+    return false;
+  }
 }
 
 export async function removeGuildToBeta(guildId: string) {

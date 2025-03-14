@@ -48,7 +48,7 @@ export default function UserSearch({ users }: { users: User[] }) {
         ) : user ? (
           <p>No guilds found for this user</p>
         ) : (
-          <p>Search for a user to see their guilds</p>
+          <p>No session for this user</p>
         )}
       </Card>
     </>

@@ -9,12 +9,8 @@ export default function Page({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { code, error, error_description, state } = use(searchParams);
-  const router = useRouter();
-  console.log("code", code);
-  console.log("error", error);
-  console.log("error_description", error_description);
-  console.log("state", state);
+  const { code, error, error_description } = use(searchParams);
+  const router = useRouter()
 
   useEffect(() => {
     if (error) {
