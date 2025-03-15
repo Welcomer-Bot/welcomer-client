@@ -1,16 +1,18 @@
 "use client";
+import { Avatar } from "@heroui/avatar";
 import {
-  Avatar,
+
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-  User as UIUser,
-} from "@heroui/react";
+
+} from "@heroui/dropdown";
 
 import { signOut } from "@/lib/actions";
 import { UserObject } from "@/lib/discord/user";
+import { User as UIUser } from "@heroui/user";
 
 export default function NavbarUserDropdown({ user }: { user: UserObject }) {
   if (!user) return null;

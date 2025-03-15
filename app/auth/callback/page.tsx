@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Card, CardBody } from "@heroui/react";
+import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
 import { use, useEffect } from "react";
 

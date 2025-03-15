@@ -3,7 +3,8 @@
 import { getUserData, getGuildsByUserId } from "@/lib/dal";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
-import { Autocomplete, AutocompleteItem, Card } from "@heroui/react";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { Card } from "@heroui/card";
 import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import GuildCard from "./GuildCard";

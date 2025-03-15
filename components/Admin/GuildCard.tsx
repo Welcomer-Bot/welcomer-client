@@ -6,7 +6,8 @@ import {
   removeGuildFromBetaProgram,
 } from "@/lib/admin/actions";
 import { GuildObject } from "@/lib/discord/guild";
-import { Button, Card, CardBody, CardHeader } from "@heroui/react";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Button } from "@heroui/button";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "react-toastify";

@@ -1,6 +1,6 @@
 "use client";
-
-import { Button, Card, CardBody } from "@heroui/react";
+import {Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
 import { redirect } from "next/navigation";
 import {
   FaCheckCircle,

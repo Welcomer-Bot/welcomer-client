@@ -1,3 +1,4 @@
+const { withSentryConfig } = require("@sentry/nextjs");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -11,15 +12,11 @@ const nextConfig = {
   crossOrigin: "anonymous",
 };
 
-module.exports = nextConfig;
-
 // Injected content via Sentry wizard below
 
-const { withSentryConfig } = require("@sentry/nextjs");
-
-module.exports = withSentryConfig(module.exports, {
+module.exports = withSentryConfig(nextConfig, {
   // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options
+  // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
   org: "welcomer",
   project: "website",
@@ -31,12 +28,7 @@ module.exports = withSentryConfig(module.exports, {
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
   // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: true,
-
-  // Automatically annotate React components to show their full name in breadcrumbs and session replay
-  reactComponentAnnotation: {
-    enabled: true,
-  },
+  widenClientFileUpload: false,
 
   // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
   // This can increase your server load as well as your hosting bill.
