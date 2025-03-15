@@ -1,9 +1,13 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
+import { createDBSession } from "@/lib/dal";
 import { createSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
+const REDIRECT_URI = process.env.REDIRECT_URI!;
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
@@ -29,7 +33,59 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const session = await createSession(code);
+    const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
+      method: "POST",
+      body: new URLSearchParams({
+        client_id: DISCORD_CLIENT_ID!,
+        client_secret: DISCORD_CLIENT_SECRET!,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: REDIRECT_URI!,
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }).then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return NextResponse.json(
+          {
+            error: "internalServerError",
+            error_description: "An internal server error occurred",
+          },
+          {
+            status: 500,
+          })
+      }
+      );
+
+    if (!tokenResponse) {
+      return NextResponse.json(
+        {
+          error: "internalServerError",
+          error_description: "An internal server error occurred",
+        },
+        {
+          status: 500,
+        }
+      )
+    }
+
+    const { access_token, expires_in } = tokenResponse;
+    const dbSession = await createDBSession(access_token, expires_in);
+    if (!dbSession) {
+      return NextResponse.json(
+        {
+          error: "internalServerError",
+          error_description: "An internal server error occurred",
+        },
+        {
+          status: 500,
+        }
+      )
+    }
+
+    const session = await createSession(dbSession);
 
     if (!session) {
 

@@ -3,13 +3,9 @@ import { cookies } from "next/headers";
 import "server-only";
 
 import { SessionPayload } from "@/types";
-import { createDBSession } from "./dal";
-
+import { Session } from "@prisma/client";
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
-const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
-const REDIRECT_URI = process.env.REDIRECT_URI!;
 
 export async function encrypt(payload: SessionPayload) {
   return new SignJWT(payload)
@@ -31,35 +27,7 @@ export async function decrypt(session: string | undefined = ""): Promise<Session
   }
 }
 
-export async function createSession(code: string) {
-  const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
-    method: "POST",
-    body: new URLSearchParams({
-      client_id: DISCORD_CLIENT_ID!,
-      client_secret: DISCORD_CLIENT_SECRET!,
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: REDIRECT_URI!,
-    }),
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  }).then((res) => res.json())
-    .catch((e) => {
-      console.error(e);
-      return null;
-    }
-    );
-
-  if (!tokenResponse) {
-    return null;
-  }
-
-  const { access_token, expires_in } = tokenResponse;
-  const dbSession = await createDBSession(access_token, expires_in);
-  if (!dbSession) {
-    return null;
-  }
+export async function createSession(dbSession: Session) {
   const session = await encrypt({ id: dbSession.id, expiresAt: dbSession.expiresAt });
   ((await cookies()).set("session", session, {
     httpOnly: true,
