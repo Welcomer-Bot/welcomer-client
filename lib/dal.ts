@@ -451,7 +451,7 @@ export async function getGuildBeta(guildId: string) {
 
 export async function addGuildToBeta(guildId: string) {
   try {
-    
+
     return await prisma.betaGuild.create({
       data: {
         id: guildId
@@ -464,7 +464,7 @@ export async function addGuildToBeta(guildId: string) {
 
 export async function removeGuildToBeta(guildId: string) {
   try {
-    
+
     return await prisma.betaGuild.delete({
       where: {
         id: guildId
@@ -565,4 +565,25 @@ export async function getGuildsByUserId(userId: string) {
   // });
 
   // return guilds.map(guild => guild.toObject());
+}
+
+
+export async function createDBSession(access_token: string, expires: number) {
+  const user = await getUserByAccessToken(access_token);
+  if (!user) {
+    return null;
+  }
+  const dbSession = await prisma.session.create({
+    data: {
+      accessToken: access_token,
+      expiresAt: new Date(Date.now() + expires * 1000),
+      user: {
+        connectOrCreate: {
+          where: { id: user.id },
+          create: { id: user.id, username: user.username },
+        },
+      },
+    },
+  })
+  return dbSession;
 }
