@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 import GuildCard from "@/components/dashboard/guild/guildCard";
 import ManageButton from "@/components/dashboard/guild/manageButton";
 import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
-import { DiscordMention } from "@skyra/discord-components-react";
-import { getUserGuild } from "@/lib/discord/user";
 import { getLeaver, getWelcomer } from "@/lib/dal";
+import { getUserGuild } from "@/lib/discord/user";
+import { DiscordMention } from "@skyra/discord-components-react";
 
 export default async function Page({
   params,
@@ -18,17 +18,18 @@ export default async function Page({
   if (!guild) redirect("/dashboard");
   const welcomer = await getWelcomer(guildId);
   const leaver = await getLeaver(guildId);
-  const welcomerChannel = welcomer?.channelId ? await guild.getChannel(welcomer.channelId) : null;
+  const welcomerChannel = welcomer?.channelId
+    ? await guild.getChannel(welcomer.channelId)
+    : null;
   const leaverChannel = leaver?.channelId
     ? await guild.getChannel(leaver.channelId)
     : null;
-
 
   return (
     <div className="overflow-y-scroll h-full no-scrollbar">
       <Card className="sm:mx-5 sm:my-3">
         <CardHeader>
-          <GuildCard guild={guild.toObject()} />
+          <GuildCard guild={guild} />
         </CardHeader>
         <>
           <CardBody className="space-y-5">
@@ -38,9 +39,7 @@ export default async function Page({
                 <CardHeader>Welcomer status</CardHeader>
                 <CardBody className="flex flex-row justify-between">
                   <div>
-                    <p>
-                      Status: {welcomer ? "Enabled" : "Disabled"}
-                    </p>
+                    <p>Status: {welcomer ? "Enabled" : "Disabled"}</p>
                     <p>
                       Channel:{" "}
                       {welcomerChannel ? (
@@ -59,9 +58,7 @@ export default async function Page({
                 <CardHeader>Leaver status</CardHeader>
                 <CardBody className="flex flex-row justify-between">
                   <div>
-                    <p>
-                      Status: {leaver ? "Enabled" : "Disabled"}
-                    </p>
+                    <p>Status: {leaver ? "Enabled" : "Disabled"}</p>
                     <p>
                       Channel:{" "}
                       {leaverChannel ? (

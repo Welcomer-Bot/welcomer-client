@@ -54,7 +54,6 @@ export interface WelcomerStore extends Welcomer {
   setToNextField(index: number, fieldIndex: number): void;
 
   setActiveCardEmbedPosition(position: number): void;
-
   reset(): void;
 }
 

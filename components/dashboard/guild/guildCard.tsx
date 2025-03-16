@@ -1,13 +1,13 @@
 import { Card, CardBody } from "@heroui/card";
 import Image from "next/image";
 
-import { GuildObject } from "@/lib/discord/guild";
+import Guild from "@/lib/discord/guild";
 
 export default function GuildCard({
   guild,
   isOpen = true,
 }: {
-  guild: GuildObject;
+  guild: Guild;
   isOpen?: boolean;
 }) {
   return (

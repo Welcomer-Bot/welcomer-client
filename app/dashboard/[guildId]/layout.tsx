@@ -13,6 +13,7 @@ export default async function Layout({
   children: React.ReactNode;
   params: Promise<{
     guildId: string;
+    module: string;
   }>;
 }) {
   const user = await fetchUserFromSession();
@@ -29,7 +30,11 @@ export default async function Layout({
 
   return (
     <div className="flex h-full w-full  overflow-hidden">
-      <Sidebar currentGuild={userGuild.toObject()} guilds={otherGuilds.map((guild) => guild.toObject())} user={user.toObject()} />
+      <Sidebar
+        currentGuild={userGuild.toObject()}
+        guilds={otherGuilds.map((guild) => guild.toObject())}
+        user={user.toObject()}
+      />
       <div className="w-full h-screen">{children}</div>
     </div>
   );

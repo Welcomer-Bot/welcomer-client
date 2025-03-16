@@ -3,10 +3,10 @@ import { REST } from "@discordjs/rest";
 import { type APIUser, type RESTError, type RESTGetAPICurrentUserGuildsResult, type RESTGetAPIUserResult, Routes } from "discord-api-types/v10";
 import { getSessionData } from "../dal";
 import { getUserAvatar } from "../utils";
-import Guild from "./guild";
+import Guild, { guildCache } from "./guild";
 
 
-const cache = new Collection<string, User>();
+const userCache = new Collection<string, User>();
 
 export interface UserObject {
     id: string;
@@ -51,7 +51,7 @@ export default class User implements UserObject {
 }
 
 export async function getUser(sessionId: string) {
-    const user = cache.get(sessionId);
+    const user = userCache.get(sessionId);
     if (user) return user;
     const sessionData = await getSessionData();
     if (!sessionData) return null;
@@ -60,12 +60,12 @@ export async function getUser(sessionId: string) {
     if (!data || "message" in data) return null;
 
     const newUser = new User(data);
-    cache.set(sessionId, newUser);
+    userCache.set(sessionId, newUser);
 
     return newUser;
 }
 
-export async function getUserByAccessToken(accessToken: string) {   
+export async function getUserByAccessToken(accessToken: string) {
     const rest = new REST({ version: "10" }).setToken(accessToken);
     const data = await rest.get(Routes.user(), { auth: true, authPrefix: "Bearer" }) as
         RESTGetAPIUserResult | RESTError;
@@ -75,27 +75,38 @@ export async function getUserByAccessToken(accessToken: string) {
 }
 // TODO: implement cache
 export async function getUserGuild(guildId: string) {
+    const guilds = guildCache.get(guildId);
+    if (guilds) return guilds;
     const userGuilds = await getUserGuilds()
     if (!userGuilds) return null;
-    return userGuilds.find(guild => guild.id === guildId);
 
+    for (const guild of userGuilds) {
+        guildCache.set(guild.id, guild);
+    }
+    return guildCache.get(guildId);
 }
 
 export async function getUserGuilds() {
+
     const sessionData = await getSessionData();
     if (!sessionData) return null;
-    const rest = new REST({ version: "10" }).setToken(sessionData.accessToken);
-    const data = await rest.get(Routes.userGuilds(), { auth: true, authPrefix: "Bearer" }) as RESTGetAPICurrentUserGuildsResult | RESTError;
-    if (!data || "message" in data) return null;
+    try {
 
-    return data.map(guild => new Guild(guild));
+        const rest = new REST({ version: "10" }).setToken(sessionData.accessToken);
+        const data = await rest.get(`${Routes.userGuilds()}?with_counts=true`, { auth: true, authPrefix: "Bearer" }) as RESTGetAPICurrentUserGuildsResult | RESTError;
+        if (!data || "message" in data) return null;
+
+        return data.map(guild => new Guild(guild));
+    } catch {
+        return null;
+    }
 }
 
 export async function getUserGuildsByAccessToken(accessToken: string) {
     const rest = new REST({ version: "10" }).setToken(accessToken);
     const data = await rest.get(`${Routes.userGuilds()}?with_counts=true`, { auth: true, authPrefix: "Bearer" }) as RESTGetAPICurrentUserGuildsResult | RESTError;
     if (!data || "message" in data) return null;
-    
+
     return data.map(guild => new Guild(guild));
 }
-    
+

@@ -4,7 +4,8 @@ import { addGuildToBeta, getGuildBeta, removeGuildToBeta } from "../dal";
 import { getGuildBanner, getGuildIcon } from "../utils";
 import rest from "./rest";
 import { fetchWidget } from "./widget";
-const cache = new Collection<string, Guild>();
+
+export const guildCache = new Collection<string, Guild>();
 
 export type GuildObject = {
     id: string;
@@ -115,7 +116,7 @@ export default class Guild implements GuildObject {
 }
 
 export async function getGuild(guildId: string) {
-    const guild = cache.get(guildId);
+    const guild = guildCache.get(guildId);
     if (guild) return guild;
 
     try {
@@ -124,7 +125,7 @@ export async function getGuild(guildId: string) {
         if (!data || "message" in data) return null;
 
         const newGuild = new Guild(data);
-        cache.set(guildId, newGuild);
+        guildCache.set(guildId, newGuild);
 
         return newGuild;
     } catch {
@@ -137,7 +138,7 @@ export async function leaveGuild(guildId: string) {
         const data = await rest.delete(`${Routes.userGuild(guildId)}`) as RESTGetAPIGuildResult | RESTError;
         if (!data || "message" in data) return null;
 
-        cache.delete(guildId)
+        guildCache.delete(guildId)
         return !!data
     } catch {
         return false;
