@@ -21,8 +21,10 @@ export default function EditorMessagePreview() {
 
   if (!msg) return null;
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LazyMessagePreview msg={msg} />
-    </Suspense>
+    <div className="overflow-x-scroll">
+      <Suspense fallback={<div>Loading...</div>}>
+        <LazyMessagePreview msg={msg} />
+      </Suspense>
+    </div>
   );
 }

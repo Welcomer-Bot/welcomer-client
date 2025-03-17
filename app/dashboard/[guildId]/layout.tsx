@@ -27,15 +27,16 @@ export default async function Layout({
 
   const otherGuilds =
     (await getGuilds())?.filter((g) => g.id !== userGuild.id) ?? [];
-
   return (
-    <div className="flex h-full w-full  overflow-hidden">
+    <div className="flex h-full w-full overflow-hidden">
       <Sidebar
         currentGuild={userGuild.toObject()}
         guilds={otherGuilds.map((guild) => guild.toObject())}
         user={user.toObject()}
       />
-      <div className="w-full h-screen">{children}</div>
+      <div className="w-full h-screen overflow-y-visible overflow-x-hidden">
+        {children}
+      </div>
     </div>
   );
 }

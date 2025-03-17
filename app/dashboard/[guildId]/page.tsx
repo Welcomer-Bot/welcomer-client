@@ -26,7 +26,7 @@ export default async function Page({
     : null;
 
   return (
-    <div className="overflow-y-scroll h-full no-scrollbar">
+    <div className="w-full h-full no-scrollbar">
       <Card className="sm:mx-5 sm:my-3">
         <CardHeader>
           <GuildCard guild={guild} />

@@ -10,13 +10,9 @@ import { createContext, useState } from "react";
 export const SidebarContext = createContext<{
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  active: string|null;
-  setActive: React.Dispatch<React.SetStateAction<string|null>>;
 }>({
   isOpen: true,
   setIsOpen: () => {},
-  active: null,
-  setActive: () => {},
 });
 
 export function Providers({
@@ -27,10 +23,9 @@ export function Providers({
   themeProps: ThemeProviderProps;
 }) {
   const [isOpen, setIsOpen] = useState(true);
-  const [active, setActive] = useState<string | null>(null);
   return (
     <HeroUIProvider>
-      <SidebarContext.Provider value={{ isOpen, setIsOpen, active, setActive }}>
+      <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
         <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
       </SidebarContext.Provider>
     </HeroUIProvider>

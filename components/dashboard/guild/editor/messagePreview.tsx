@@ -3,12 +3,12 @@ import { BaseCardParams } from "@/lib/discord/schema";
 import { LeaverStore } from "@/state/leaver";
 import { WelcomerStore } from "@/state/welcomer";
 import {
-  DiscordImageAttachment,
   DiscordEmbed,
   DiscordEmbedDescription,
   DiscordEmbedField,
   DiscordEmbedFields,
   DiscordEmbedFooter,
+  DiscordImageAttachment,
   DiscordMessage,
   DiscordMessages,
 } from "@skyra/discord-components-react";
@@ -27,7 +27,7 @@ export default function MessagePreview({
 
   return (
     <>
-      <DiscordMessages className="rounded-lg min-h-full">
+      <DiscordMessages className="rounded-lg min-h-full w-full min-w-fit">
         <DiscordMessage author="Welcomer" avatar="/logo.svg" bot verified>
           {msg.content}
           {((msg.activeCardToEmbedId === -1 && msg.activeCard) ||

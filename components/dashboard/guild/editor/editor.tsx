@@ -14,7 +14,11 @@ export async function Editor({ guild }: { guild: Guild }) {
       <div className="flex flex-col lg:flex-row h-full flex-auto w-full">
         <div className="lg:w-1/2 lg:h-full lg:overflow-y-scroll no-scrollbar lg:pb-24">
           <form className="px-5 pt-5 lg:pb-20 space-y-5 w-full relative">
-            <SendMenu channels={guild.channels ? Array.from(guild.channelCache.values()): []} />
+            <SendMenu
+              channels={
+                guild.channels ? Array.from(guild.channelCache.values()) : []
+              }
+            />
             <Divider className="my-4" />
             <ContentEditor />
             <EmbedEditor />
