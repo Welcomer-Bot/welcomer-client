@@ -78,6 +78,7 @@ export async function updateModule(
         error: "You do not have permission to manage this guild",
       };
     }
+    console.log(new Date().toISOString(), "guild ok")
     if (!store.channelId) {
       return {
         error: "You need to select a channel",
@@ -109,7 +110,12 @@ export async function updateModule(
         error: "Invalid module name",
       };
     }
+
+    console.log(new Date().toISOString(), "updated channel and content")
+
     const embeds = await getEmbeds(libModule.guildId, moduleName);
+    console.log(new Date().toISOString(), "gettings embeds")
+
     const embedsToCreate = store.embeds.filter((embed) => embed.id === null);
     if ((embeds?.length ?? 0) + embedsToCreate.length > 10)
       return {
@@ -136,6 +142,8 @@ export async function updateModule(
       }
       store.embeds[store.embeds.indexOf(embed)] = embedUpdated;
     }
+    console.log(new Date().toISOString(), "updated embeds")
+
     for (const embed of store.deletedEmbeds) {
       if (embed.id) {
         if (embed[`${moduleName}Id`] && libModule.guildId != embed[`${moduleName}Id`])
@@ -145,6 +153,8 @@ export async function updateModule(
         await deleteEmbed(embed.id, moduleName, libModule.guildId);
       }
     }
+    console.log(new Date().toISOString(), "deleted embeds")
+
     for (const field of store.deletedFields) {
       if (field.id) {
         if (field.embedId && !(field.embedId in store.embeds))
@@ -154,6 +164,8 @@ export async function updateModule(
         await deleteEmbedField(field.id);
       }
     }
+    console.log(new Date().toISOString(), "updated embeds fields")
+
     if (store.activeCard && store.activeCardToEmbedId !== null) {
       if (store.activeCardToEmbedId === -2) {
         if (moduleName === "welcomer") {
@@ -236,6 +248,8 @@ export async function updateModule(
         );
       }
     }
+    console.log(new Date().toISOString(), "updated welcomer 2")
+
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
 
     return {

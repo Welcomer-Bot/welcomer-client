@@ -54,6 +54,7 @@ export interface WelcomerStore extends Welcomer {
   setToNextField(index: number, fieldIndex: number): void;
 
   setActiveCardEmbedPosition(position: number): void;
+  toObject(): Welcomer & { deletedEmbeds: CompleteEmbed[]; deletedFields: CompleteEmbedField[] };
   reset(): void;
 }
 
@@ -81,7 +82,7 @@ const defaultMessage: Welcomer = {
 
 
 export const useWelcomerStore = create<WelcomerStore>()(
-  immer<WelcomerStore>((set) => {
+  immer<WelcomerStore>((set, get) => {
     const customSet = (fn: (state: WelcomerStore) => void) => {
       set((state) => {
         fn(state);
@@ -309,6 +310,27 @@ export const useWelcomerStore = create<WelcomerStore>()(
         customSet((state) => {
           state.activeCardToEmbedId = position;
         }),
+      
+      toObject: () => {
+        // get all the properties of the store expect the methods
+        const {guildId, deletedEmbeds, deletedFields, embeds, images, DM, activeCard, activeCardId, activeCardToEmbed, activeCardToEmbedId, channelId, content, createdAt, updatedAt} = get();
+        return {
+          guildId,
+          deletedEmbeds,
+          deletedFields,
+          embeds,
+          images,
+          DM,
+          activeCard,
+          activeCardId,
+          activeCardToEmbed,
+          activeCardToEmbedId,
+          channelId,
+          content,
+          createdAt,
+          updatedAt,
+        };
+      },
 
       reset: () =>
         set((state) => ({
