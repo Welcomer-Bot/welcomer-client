@@ -30,6 +30,17 @@ jobs:
       - name: Build Next.js app
         run: yarn prisma generate && yarn build
 
+      - name: SFTP Deploy
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.5
+        with:
+          username: ${{ secrets.USERNAME }} 
+          server: ${{ secrets.HOST }}
+          password: ${{ secrets.PASSWORD }}
+          local_path: '.next/*'
+          remote_path: '/var/www/welcomer-client'
+          rsyncArgs: '--exclude=*.map'
+          sftpArgs: '-o ConnectTimeout=5'
+
       - name: SSH Deploy
         # Use the 'appleboy/ssh-action' action for SSH deployment
         uses: appleboy/ssh-action@master
@@ -39,9 +50,6 @@ jobs:
           password: ${{ secrets.PASSWORD }} # Your server's SSH private key
           script: |
             cd /var/www/welcomer-client
-            git pull
             yarn
             yarn prisma generate
-            pm2 stop welcomer-client
-            yarn build
             pm2 restart welcomer-client
