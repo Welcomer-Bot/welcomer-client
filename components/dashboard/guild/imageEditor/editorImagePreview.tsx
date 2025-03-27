@@ -9,6 +9,7 @@ const LazyImagePreview = lazy(() => import("./imagePreview"));
 export function EditorImagePreview() {
   const [img, setImg] = useState<string>();
   const activeCard = useImageStore((state) => state.getActiveCard());
+  const guildId = useImageStore((state) => state.moduleId);
   const [debounceImage, setDebounceImage] = useState(activeCard);
   const setPreviewImage = useImageStore((state) => state.setPreviewImage);
 
@@ -20,14 +21,16 @@ export function EditorImagePreview() {
   }, [activeCard]);
 
   useEffect(() => {
+    console.log("Image preview", debounceImage);
     const fetchImage = async () => {
       if (!activeCard) return;
-      const previewImage = await generateImage(activeCard);
+      if (!guildId) return;
+      const previewImage = await generateImage(activeCard, guildId);
       setPreviewImage(previewImage);
       setImg(previewImage);
     };
     fetchImage();
-  }, [debounceImage, setPreviewImage, activeCard]);
+  }, [activeCard, debounceImage, guildId, setPreviewImage]);
   if (!img) return <>No image to load</>;
   return (
     <Suspense fallback={<div>Loading...</div>}>

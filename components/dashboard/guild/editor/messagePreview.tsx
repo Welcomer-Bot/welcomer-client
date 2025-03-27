@@ -1,5 +1,4 @@
 import { generateImage } from "@/lib/discord/image";
-import { BaseCardParams } from "@/lib/discord/schema";
 import { LeaverStore } from "@/state/leaver";
 import { WelcomerStore } from "@/state/welcomer";
 import {
@@ -12,6 +11,7 @@ import {
   DiscordMessage,
   DiscordMessages,
 } from "@skyra/discord-components-react";
+import { BaseCardParams } from "@welcomer-bot/card-canvas";
 import { useEffect, useState } from "react";
 export default function MessagePreview({
   msg,
@@ -21,9 +21,19 @@ export default function MessagePreview({
   const [image, setImage] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (msg.activeCard)
-      generateImage(msg.activeCard as BaseCardParams).then(setImage);
-  }, [msg.activeCard]);
+    if (msg.activeCard) {
+      const loadImage = async () => {
+        if (!msg.activeCard) return;
+        if (!msg.guildId) return;
+        const image = await generateImage(
+          msg.activeCard as BaseCardParams,
+          msg.guildId
+        );
+        setImage(image);
+      };
+      loadImage();
+    }
+  }, [msg.activeCard, msg.guildId]);
 
   return (
     <>

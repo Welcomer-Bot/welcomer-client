@@ -1,15 +1,7 @@
-import { REST } from "@discordjs/rest";
-import {
-  type APIUser,
-  type RESTError,
-  type RESTGetAPICurrentUserGuildsResult,
-  type RESTGetAPIUserResult,
-  Routes,
-} from "discord-api-types/v10";
-import { cache } from "react";
-import { getSessionData } from "../dal";
+"server-only";
+
+import { type APIUser } from "discord-api-types/v10";
 import { getUserAvatar } from "../utils";
-import Guild from "./guild";
 
 export interface UserObject {
   id: string;
@@ -52,44 +44,3 @@ export default class User implements UserObject {
     };
   }
 }
-
-export const getUser = cache(async () => {
-  const sessionData = await getSessionData();
-  if (!sessionData || !sessionData.accessToken) return null;
-  return getUserByAccessToken(sessionData.accessToken);
-});
-
-export const getUserByAccessToken = cache(async (accessToken: string) => {
-  const rest = new REST({ version: "10" }).setToken(accessToken);
-  const data = (await rest.get(Routes.user(), {
-    auth: true,
-    authPrefix: "Bearer",
-  })) as RESTGetAPIUserResult | RESTError;
-  if (!data || "message" in data) return null;
-
-  return new User(data);
-});
-
-export const getUserGuild = cache(async (guildId: string) => {
-  const userGuilds = await getUserGuilds();
-  if (!userGuilds) return null;
-
-  return userGuilds.find((guild) => guild.id === guildId) || null;
-});
-
-export const getUserGuilds = cache(async () => {
-  const sessionData = await getSessionData();
-  if (!sessionData || !sessionData.accessToken) return null;
-  return getUserGuildsByAccessToken(sessionData.accessToken);
-});
-
-export const getUserGuildsByAccessToken = cache(async (accessToken: string) => {
-  const rest = new REST({ version: "10" }).setToken(accessToken);
-  const data = (await rest.get(`${Routes.userGuilds()}?with_counts=true`, {
-    auth: true,
-    authPrefix: "Bearer",
-  })) as RESTGetAPICurrentUserGuildsResult | RESTError;
-  if (!data || "message" in data) return null;
-
-  return data.map((guild) => new Guild(guild));
-});

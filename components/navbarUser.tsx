@@ -6,7 +6,6 @@ import React from "react";
 
 export default async function NavbarUser(): Promise<React.ReactElement> {
   const user = await fetchUserFromSession();
-  console.log("NavbarUser", user);
   if (!user)
     return (
       <div>

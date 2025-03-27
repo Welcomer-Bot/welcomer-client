@@ -24,6 +24,7 @@ import {
   getEmbeds,
   getLeaver,
   getModuleCards,
+  getUserGuild,
   getWelcomer,
   updateEmbed,
   updateImageCard,
@@ -33,7 +34,7 @@ import {
   updateWelcomer,
   updateWelcomerChannelAndContent,
 } from "./dal";
-import { getUserGuild } from "./discord/user";
+
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
 

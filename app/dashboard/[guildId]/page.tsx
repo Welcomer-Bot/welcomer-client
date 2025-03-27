@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import GuildCard from "@/components/dashboard/guild/guildCard";
 import ManageButton from "@/components/dashboard/guild/manageButton";
 import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
-import { getLeaver, getWelcomer } from "@/lib/dal";
-import { getGuild } from "@/lib/discord/guild";
+import { getGuild, getLeaver, getWelcomer } from "@/lib/dal";
+
 import { DiscordMention } from "@skyra/discord-components-react";
 
 export default async function Page({

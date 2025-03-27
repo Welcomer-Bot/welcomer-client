@@ -2,14 +2,25 @@
 import "server-only";
 
 import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
+import {
+  type RESTError,
+  RESTGetAPICurrentUserGuildsResult,
+  RESTGetAPIGuildChannelsResult,
+  type RESTGetAPIGuildResult,
+  RESTGetAPIUserResult,
+  Routes,
+} from "discord-api-types/v10";
 import { cache } from "react";
-import { getUser, getUserByAccessToken, getUserGuilds, getUserGuildsByAccessToken } from "./discord/user";
+import { REST } from "@discordjs/rest";
+
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { ModuleName, SessionPayload } from "@/types";
 import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
-import { getGuild } from "./discord/guild";
+import rest from "./discord/rest";
+import Guild from "./discord/guild";
+import User from "./discord/user";
 
 export const verifySession = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession();
@@ -39,19 +50,23 @@ export const getGuilds = cache(async () => {
     if (!guilds) return null;
 
     guilds = guilds.filter((guild) => {
-      return (guild.owner || (guild.permissions && ((Number(guild.permissions) & 0x20) === 0x20)));
+      return (
+        guild.owner ||
+        (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
+      );
     });
 
-    await Promise.all(guilds.map(async (guild) => {
-      const botGuild = await getGuild(guild.id);
-      await guild.setMutual(!!botGuild);
-    }));
+    await Promise.all(
+      guilds.map(async (guild) => {
+        const botGuild = await getGuild(guild.id);
+        await guild.setMutual(!!botGuild);
+      })
+    );
     return guilds;
   } catch {
     return null;
   }
 });
-
 
 export async function getWelcomer(guildId: string) {
   try {
@@ -109,7 +124,6 @@ export async function getLeaver(guildId: string): Promise<Leaver | null> {
     return null;
   }
 }
-
 
 export async function getEmbeds(
   moduleId: string,
@@ -194,7 +208,7 @@ export async function getLatestGuildStats(
 export async function createGuildStats(
   guildId: string,
   period: Period,
-  module: ModuleName,
+  module: ModuleName
 ) {
   const latestStats = await getLatestGuildStats(guildId, period, module);
 
@@ -422,24 +436,22 @@ export async function createImageCard(
   });
 }
 
-
 export async function getGuildBeta(guildId: string) {
   return await prisma.betaGuild.findUnique({
     where: {
-      id: guildId
-    }
-  })
+      id: guildId,
+    },
+  });
 }
 
 export async function addGuildToBeta(guildId: string) {
   try {
-
     return await prisma.betaGuild.create({
       data: {
-        id: guildId
+        id: guildId,
       },
-    })
-  } catch (err){
+    });
+  } catch (err) {
     console.error(err);
     return false;
   }
@@ -447,18 +459,18 @@ export async function addGuildToBeta(guildId: string) {
 
 export async function removeGuildToBeta(guildId: string) {
   try {
-
     return await prisma.betaGuild.delete({
       where: {
-        id: guildId
-      }
-    })
+        id: guildId,
+      },
+    });
   } catch {
     return false;
   }
 }
 
-export async function getAllGuildStatsSinceTime(guildId: string,
+export async function getAllGuildStatsSinceTime(
+  guildId: string,
   period: Period,
   module: ModuleName,
   since: Date
@@ -469,10 +481,10 @@ export async function getAllGuildStatsSinceTime(guildId: string,
       period,
       module,
       createdAt: {
-        gte: since
-      }
-    }
-  })
+        gte: since,
+      },
+    },
+  });
 }
 
 export async function getSessionData() {
@@ -480,11 +492,10 @@ export async function getSessionData() {
   if (!session) return null;
   return await prisma.session.findUnique({
     where: {
-      id: session.id
-    }
-  })
+      id: session.id,
+    },
+  });
 }
-
 
 export async function getUsers() {
   return await prisma.user.findMany();
@@ -493,51 +504,52 @@ export async function getUsers() {
 export async function getUserBaseData(id: string) {
   return await prisma.user.findUnique({
     where: {
-      id: id
-    }
-  })
+      id: id,
+    },
+  });
 }
 
 export async function getSessionDataById(id: string) {
   return await prisma.session.findFirst({
     where: {
-      userId: id
-    }
-  })
+      userId: id,
+    },
+  });
 }
 
 export async function getUserData(id: string) {
   const data = await getSessionDataById(id);
   if (!data) return null;
-  const user = await getUserByAccessToken(data.accessToken)
+  const user = await getUserByAccessToken(data.accessToken);
   if (!user) return null;
   return user.toObject();
 }
 
 export async function getGuildsByUserId(userId: string) {
-  console.log(userId)
+  console.log(userId);
   try {
     const data = await getSessionDataById(userId);
     if (!data) return null;
-    let guilds = await getUserGuildsByAccessToken(data.accessToken)
+    let guilds = await getUserGuildsByAccessToken(data.accessToken);
     if (!guilds) return null;
 
     guilds = guilds.filter((guild) => {
-      return (guild.owner || (guild.permissions && ((Number(guild.permissions) & 0x20) === 0x20)));
+      return (
+        guild.owner ||
+        (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
+      );
     });
 
-    await Promise.all(guilds.map(async (guild) => {
-      const botGuild = await getGuild(guild.id);
-      await guild.setMutual(!!botGuild);
-    }));
-    return guilds.map(guild => guild.toObject());
+    await Promise.all(
+      guilds.map(async (guild) => {
+        const botGuild = await getGuild(guild.id);
+        await guild.setMutual(!!botGuild);
+      })
+    );
+    return guilds.map((guild) => guild.toObject());
   } catch {
     return null;
   }
-
-
-
-
 
   // const data = await getSessionDataById(userId);
   // if (!data) return null;
@@ -549,7 +561,6 @@ export async function getGuildsByUserId(userId: string) {
 
   // return guilds.map(guild => guild.toObject());
 }
-
 
 export async function createDBSession(access_token: string, expires: number) {
   const user = await getUserByAccessToken(access_token);
@@ -567,6 +578,89 @@ export async function createDBSession(access_token: string, expires: number) {
         },
       },
     },
-  })
+  });
   return dbSession;
 }
+
+export const getGuild = cache(async (guildId: string) => {
+  try {
+    const data = (await rest.get(
+      `${Routes.guild(guildId)}?with_counts=true`
+    )) as RESTGetAPIGuildResult | RESTError;
+    if (!data || "message" in data) return null;
+
+    const guild = new Guild(data);
+
+    return guild;
+  } catch {
+    return null;
+  }
+});
+
+export const leaveGuild = cache(async (guildId: string) => {
+  try {
+    const data = (await rest.delete(`${Routes.userGuild(guildId)}`)) as
+      | RESTGetAPIGuildResult
+      | RESTError;
+    if (!data || "message" in data) return null;
+
+    return !!data;
+  } catch {
+    return false;
+  }
+});
+
+export const getChannels = cache(async (guildId: string) => {
+  try {
+    const data = (await rest.get(
+      `${Routes.guildChannels(guildId)}?with_counts=true`
+    )) as RESTGetAPIGuildChannelsResult | RESTError;
+    if (!data || "message" in data) return null;
+
+    return data;
+  } catch {
+    return null;
+  }
+});
+
+
+export const getUser = cache(async () => {
+  const sessionData = await getSessionData();
+  if (!sessionData || !sessionData.accessToken) return null;
+  return getUserByAccessToken(sessionData.accessToken);
+});
+
+export const getUserByAccessToken = cache(async (accessToken: string) => {
+  const rest = new REST({ version: "10" }).setToken(accessToken);
+  const data = (await rest.get(Routes.user(), {
+    auth: true,
+    authPrefix: "Bearer",
+  })) as RESTGetAPIUserResult | RESTError;
+  if (!data || "message" in data) return null;
+
+  return new User(data);
+});
+
+export const getUserGuild = cache(async (guildId: string) => {
+  const userGuilds = await getUserGuilds();
+  if (!userGuilds) return null;
+
+  return userGuilds.find((guild) => guild.id === guildId) || null;
+});
+
+export const getUserGuilds = cache(async () => {
+  const sessionData = await getSessionData();
+  if (!sessionData || !sessionData.accessToken) return null;
+  return getUserGuildsByAccessToken(sessionData.accessToken);
+});
+
+export const getUserGuildsByAccessToken = cache(async (accessToken: string) => {
+  const rest = new REST({ version: "10" }).setToken(accessToken);
+  const data = (await rest.get(`${Routes.userGuilds()}?with_counts=true`, {
+    auth: true,
+    authPrefix: "Bearer",
+  })) as RESTGetAPICurrentUserGuildsResult | RESTError;
+  if (!data || "message" in data) return null;
+
+  return data.map((guild) => new Guild(guild));
+});

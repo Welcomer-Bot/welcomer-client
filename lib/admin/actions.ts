@@ -1,7 +1,8 @@
 'use server'
 
 import { revalidatePath } from "next/cache";
-import { getUserGuild } from "../discord/user";
+import { getUserGuild } from "../dal";
+
 
 
 export async function removeGuildFromBetaProgram(guildId: string) {

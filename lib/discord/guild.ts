@@ -1,16 +1,8 @@
-import {
-  APIChannel,
-  APIGuild,
-  type RESTAPIPartialCurrentUserGuild,
-  type RESTError,
-  RESTGetAPIGuildChannelsResult,
-  type RESTGetAPIGuildResult,
-  Routes,
-} from "discord-api-types/v10";
-import { cache } from "react";
-import { addGuildToBeta, getGuildBeta, removeGuildToBeta } from "../dal";
+"server-only";
+
+import { APIChannel, APIGuild, RESTAPIPartialCurrentUserGuild } from "discord-api-types/v10";
+import { addGuildToBeta, getChannels, getGuildBeta, leaveGuild, removeGuildToBeta } from "../dal";
 import { getGuildBanner, getGuildIcon } from "../utils";
-import rest from "./rest";
 import { fetchWidget } from "./widget";
 
 export type GuildObject = {
@@ -109,44 +101,3 @@ export default class Guild implements GuildObject {
     return !!(await leaveGuild(this.id));
   }
 }
-
-export const getGuild = cache(async (guildId: string) => {
-  try {
-    const data = (await rest.get(
-      `${Routes.guild(guildId)}?with_counts=true`
-    )) as RESTGetAPIGuildResult | RESTError;
-    if (!data || "message" in data) return null;
-
-    const guild = new Guild(data);
-
-    return guild;
-  } catch {
-    return null;
-  }
-});
-
-export const leaveGuild = cache(async (guildId: string) => {
-  try {
-    const data = (await rest.delete(`${Routes.userGuild(guildId)}`)) as
-      | RESTGetAPIGuildResult
-      | RESTError;
-    if (!data || "message" in data) return null;
-
-    return !!data;
-  } catch {
-    return false;
-  }
-});
-
-export const getChannels = cache(async (guildId: string) => {
-  try {
-    const data = (await rest.get(
-      `${Routes.guildChannels(guildId)}?with_counts=true`
-    )) as RESTGetAPIGuildChannelsResult | RESTError;
-    if (!data || "message" in data) return null;
-
-    return data;
-  } catch {
-    return null;
-  }
-});

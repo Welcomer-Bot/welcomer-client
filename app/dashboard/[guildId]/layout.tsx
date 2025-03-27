@@ -2,9 +2,8 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 import { Sidebar } from "@/components/dashboard/guild/sideBar";
-import { fetchUserFromSession, getGuilds } from "@/lib/dal";
-import { getGuild } from "@/lib/discord/guild";
-import { getUserGuild } from "@/lib/discord/user";
+import { fetchUserFromSession, getGuild, getGuilds, getUserGuild } from "@/lib/dal";
+
 
 
 type Params = Promise<{ guildId: string, module: string }>;

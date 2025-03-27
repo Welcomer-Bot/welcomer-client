@@ -11,6 +11,7 @@ import { CardHeader } from "@heroui/card";
 export function CardLib() {
   const cards = useImageStore((state) => state.imageCards);
   const activeCard = useImageStore((state) => state.activeCard);
+  const moduleId = useImageStore((state) => state.moduleId);
 
   return (
     <>
@@ -25,6 +26,7 @@ export function CardLib() {
               index={index}
               key={index}
               active={activeCard === index}
+              guildId={moduleId || ""}
             />
           ))}
         </div>

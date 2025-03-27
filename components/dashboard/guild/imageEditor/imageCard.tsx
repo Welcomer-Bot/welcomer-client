@@ -12,10 +12,12 @@ import { FaTrash } from "react-icons/fa";
 export function ImageCard({
   index,
   active = false,
+  guildId,
 }: {
   img?: string;
   index: number;
   active?: boolean;
+  guildId: string;
 }) {
   const [image, setImage] = useState<string | null>(null);
   const currentCard = useImageStore((state) => state.imageCards[index]);
@@ -24,19 +26,21 @@ export function ImageCard({
   const setPreviewImage = useImageStore((state) => state.setPreviewImage);
   const deleteCard = useImageStore((state) => state.deleteCard);
   useEffect(() => {
+    console.log("Image card", previewImage);
     if (previewImage) {
       setImage(previewImage);
     } else {
       if (!currentCard) return;
+      if (!guildId) return;
       const loadPreview = async () => {
-        const previewImage = await generateImage(currentCard);
+        const previewImage = await generateImage(currentCard, guildId);
         if (!previewImage) return;
         setImage(previewImage);
         setPreviewImage(previewImage);
       };
       loadPreview();
     }
-  }, [previewImage, currentCard, setPreviewImage]);
+  }, [previewImage, currentCard, guildId, setPreviewImage]);
   return (
     <div
       onClick={() => {
@@ -50,18 +54,23 @@ export function ImageCard({
           </Skeleton>
         ) : (
           <>
-              <Button
-                className="absolute top-2 right-2 hidden"
-                isIconOnly
-                color="danger"
-                variant="ghost"
-                onPress={() => {
-                  deleteCard(index);
-                }}
-              >
-                <FaTrash />
-              </Button>
-              <Image src={image} alt={`Card ${index + 1}`} width={800} height={350}/>
+            <Button
+              className="absolute top-2 right-2 hidden"
+              isIconOnly
+              color="danger"
+              variant="ghost"
+              onPress={() => {
+                deleteCard(index);
+              }}
+            >
+              <FaTrash />
+            </Button>
+            <Image
+              src={image}
+              alt={`Card ${index + 1}`}
+              width={800}
+              height={350}
+            />
           </>
         )}
         <CardFooter>Card {index + 1}</CardFooter>
