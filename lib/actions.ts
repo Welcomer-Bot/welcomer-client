@@ -11,7 +11,6 @@ import { ModuleName } from "@/types";
 import { Welcomer } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import {
-  canUserManageGuild,
   createEmbed,
   createImageCard,
   createLeaver,
@@ -34,6 +33,7 @@ import {
   updateWelcomer,
   updateWelcomerChannelAndContent,
 } from "./dal";
+import { getUserGuild } from "./discord/user";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
 
@@ -50,7 +50,7 @@ export async function createModule(
   guildId: string,
   moduleName: ModuleName
 ): Promise<Welcomer> {
-  if (!guildId || !(await canUserManageGuild(guildId))) {
+  if (!await getUserGuild(guildId)) {
     throw new Error("You do not have permission to manage this guild");
   }
   let res;
@@ -71,36 +71,39 @@ export async function updateModule(
   store: WelcomerStore | LeaverStore,
   moduleName: ModuleName | null
 ) {
+  const guildId = store.guildId;
+  if (!guildId) {
+    return {
+      error: "You need to select a guild",
+    };
+  }
+  if (!await getUserGuild(guildId)) {
+    return {
+      error: "You do not have permission to manage this guild",
+    };
+  }
+  if (!store.channelId) {
+    return {
+      error: "You need to select a channel",
+    };
+  }
+  const messageValidated = MessageSchema.safeParse(store);
+  if (!messageValidated.success) {
+    return {
+      error: messageValidated.error.errors[0].path[-1]
+        ? messageValidated.error.errors[0].path[-1] + ": "
+        : "" + messageValidated.error.errors[0].message,
+    };
+  }
   try {
-    const guildId = store.guildId;
-    if (!guildId || !(await canUserManageGuild(guildId))) {
-      return {
-        error: "You do not have permission to manage this guild",
-      };
-    }
-    console.log(new Date().toISOString(), "guild ok")
-    if (!store.channelId) {
-      return {
-        error: "You need to select a channel",
-      };
-    }
-    const messageValidated = MessageSchema.safeParse(store);
-    if (!messageValidated.success) {
-      return {
-        error: messageValidated.error.errors[0].path[-1]
-          ? messageValidated.error.errors[0].path[-1] + ": "
-          : "" + messageValidated.error.errors[0].message,
-      };
-    }
-    let libModule;
     if (moduleName === "welcomer") {
-      libModule = await updateWelcomerChannelAndContent(
+      await updateWelcomerChannelAndContent(
         guildId,
         store.channelId,
         store.content
       );
     } else if (moduleName === "leaver") {
-      libModule = await updateLeaverChannelAndContent(
+      await updateLeaverChannelAndContent(
         guildId,
         store.channelId,
         store.content
@@ -111,13 +114,12 @@ export async function updateModule(
       };
     }
 
-    console.log(new Date().toISOString(), "updated channel and content")
-
-    const embeds = await getEmbeds(libModule.guildId, moduleName);
-    console.log(new Date().toISOString(), "gettings embeds")
-
+    const embeds = await getEmbeds(guildId, moduleName);
     const embedsToCreate = store.embeds.filter((embed) => embed.id === null);
-    if ((embeds?.length ?? 0) + embedsToCreate.length > 10)
+    const embedsToDelete = store.deletedEmbeds.filter(
+      (embed) => embed.id !== null
+    );
+    if ((embeds?.length ?? 0) + embedsToCreate.length - embedsToDelete.length > 10)
       return {
         error: "You cannot have more than 10 embeds",
       };
@@ -125,14 +127,15 @@ export async function updateModule(
       if (
         embed.id &&
         embed[`${moduleName}Id`] &&
-        libModule.guildId != embed[`${moduleName}Id`]
+        guildId != embed[`${moduleName}Id`]
       )
         return {
           error: "You cannot update an embed that is not in the module",
         };
+      if (embeds && embed && embed.id && embed === embeds[embed.id]) continue;
       const embedUpdated = await createOrUpdateEmbed(
         embed,
-        libModule.guildId,
+        guildId,
         moduleName
       );
       if (!embedUpdated) {
@@ -142,19 +145,16 @@ export async function updateModule(
       }
       store.embeds[store.embeds.indexOf(embed)] = embedUpdated;
     }
-    console.log(new Date().toISOString(), "updated embeds")
 
     for (const embed of store.deletedEmbeds) {
       if (embed.id) {
-        if (embed[`${moduleName}Id`] && libModule.guildId != embed[`${moduleName}Id`])
+        if (embed[`${moduleName}Id`] && guildId != embed[`${moduleName}Id`])
           return {
             error: "You cannot delete an embed that is not in the module",
           };
-        await deleteEmbed(embed.id, moduleName, libModule.guildId);
+        await deleteEmbed(embed.id, moduleName, guildId);
       }
     }
-    console.log(new Date().toISOString(), "deleted embeds")
-
     for (const field of store.deletedFields) {
       if (field.id) {
         if (field.embedId && !(field.embedId in store.embeds))
@@ -164,7 +164,6 @@ export async function updateModule(
         await deleteEmbedField(field.id);
       }
     }
-    console.log(new Date().toISOString(), "updated embeds fields")
 
     if (store.activeCard && store.activeCardToEmbedId !== null) {
       if (store.activeCardToEmbedId === -2) {
@@ -248,8 +247,6 @@ export async function updateModule(
         );
       }
     }
-    console.log(new Date().toISOString(), "updated welcomer 2")
-
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
 
     return {
@@ -404,7 +401,7 @@ export async function removeModule(
   guildId: string,
   moduleName: ModuleName
 ): Promise<boolean> {
-  if (!(await canUserManageGuild(guildId))) {
+  if (!await getUserGuild(guildId)) {
     throw new Error("You do not have permission to manage this guild");
   }
   try {
@@ -413,7 +410,7 @@ export async function removeModule(
     } else if (moduleName === "leaver") {
       await deleteLeaver(guildId);
     } else {
-      throw new Error("Invalid module name");
+      throw new Error("Invalid module");
     }
 
     revalidatePath(`/app/dashboard/${guildId}/welcome`);
@@ -451,7 +448,7 @@ export async function updateCards(
     throw new Error("You need to enable the module first");
   }
   const guildId = welcomeOrLeaveModule.guildId;
-  if (!guildId || !(await canUserManageGuild(guildId))) {
+  if (!guildId || !(await getUserGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
   const cardsToCreate =

@@ -1,3 +1,5 @@
+"use client";
+
 import { BaseCardParams, DefaultCard } from "@welcomer-bot/card-canvas";
 export async function generateImage(msg: BaseCardParams) {
   if (msg.backgroundImgURL && msg.backgroundImgURL.startsWith("http")) {

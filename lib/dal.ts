@@ -3,7 +3,7 @@ import "server-only";
 
 import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
 import { cache } from "react";
-import { getUser, getUserByAccessToken, getUserGuild, getUserGuilds, getUserGuildsByAccessToken } from "./discord/user";
+import { getUser, getUserByAccessToken, getUserGuilds, getUserGuildsByAccessToken } from "./discord/user";
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
@@ -33,16 +33,6 @@ export const fetchUserFromSession = cache(async () => {
   }
 });
 
-export const canUserManageGuild = cache(async (guildId: string) => {
-  try {
-    const guild = await getUserGuild(guildId);
-    return !!guild;
-  } catch {
-    return false;
-  }
-});
-
-
 export const getGuilds = cache(async () => {
   try {
     let guilds = await getUserGuilds();
@@ -65,7 +55,6 @@ export const getGuilds = cache(async () => {
 
 export async function getWelcomer(guildId: string) {
   try {
-    if (!(await canUserManageGuild(guildId))) return null;
     const welcomer = await prisma.welcomer.findUnique({
       where: { guildId: guildId },
       include: {
@@ -95,7 +84,6 @@ export async function getWelcomer(guildId: string) {
 
 export async function getLeaver(guildId: string): Promise<Leaver | null> {
   try {
-    if (!(await canUserManageGuild(guildId))) return null;
     const leaver = await prisma.leaver.findUnique({
       where: { guildId },
       include: {
@@ -128,12 +116,6 @@ export async function getEmbeds(
   module: ModuleName
 ): Promise<Embed[] | null> {
   try {
-    moduleId = moduleId
-    const welcomerModule = await getWelcomer(moduleId);
-    if (!welcomerModule?.guildId) return null;
-
-    if (!(await canUserManageGuild(welcomerModule?.guildId))) return null;
-
     const embeds: Embed[] = await prisma.embed.findMany({
       where: {
         [`${module}Id`]: moduleId,
@@ -457,7 +439,8 @@ export async function addGuildToBeta(guildId: string) {
         id: guildId
       },
     })
-  } catch {
+  } catch (err){
+    console.error(err);
     return false;
   }
 }
