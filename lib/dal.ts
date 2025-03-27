@@ -26,7 +26,7 @@ export const fetchUserFromSession = cache(async () => {
   const session = await verifySession();
   if (!session) return null;
   try {
-    const user = await getUser(session.id);
+    const user = await getUser();
     return user;
   } catch {
     return null;

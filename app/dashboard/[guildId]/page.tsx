@@ -5,7 +5,7 @@ import GuildCard from "@/components/dashboard/guild/guildCard";
 import ManageButton from "@/components/dashboard/guild/manageButton";
 import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
 import { getLeaver, getWelcomer } from "@/lib/dal";
-import { getUserGuild } from "@/lib/discord/user";
+import { getGuild } from "@/lib/discord/guild";
 import { DiscordMention } from "@skyra/discord-components-react";
 
 export default async function Page({
@@ -14,7 +14,7 @@ export default async function Page({
   params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
-  const guild = await getUserGuild(guildId);
+  const guild = await getGuild(guildId);
   if (!guild) redirect("/dashboard");
   const welcomer = await getWelcomer(guildId);
   const leaver = await getLeaver(guildId);

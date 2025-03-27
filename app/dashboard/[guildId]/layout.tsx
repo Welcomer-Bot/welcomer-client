@@ -6,20 +6,25 @@ import { fetchUserFromSession, getGuilds } from "@/lib/dal";
 import { getGuild } from "@/lib/discord/guild";
 import { getUserGuild } from "@/lib/discord/user";
 
+
+type Params = Promise<{ guildId: string, module: string }>;
+
 export default async function Layout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{
-    guildId: string;
-    module: string;
-  }>;
+  params: Params;
 }) {
   const user = await fetchUserFromSession();
   if (!user) redirect("/dashboard");
   const { guildId } = await params;
-  const userGuild = await getUserGuild(guildId);
+  let userGuild = await getUserGuild(guildId);
+  //TODO: add user admin schema
+  if (user.id == "479216487173980160") {
+    userGuild = await getGuild(guildId);
+  }
+    
   if (!userGuild) redirect("/dashboard");
 
   const guild = await getGuild(guildId);

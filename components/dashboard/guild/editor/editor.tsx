@@ -16,7 +16,7 @@ export async function Editor({ guild }: { guild: Guild }) {
           <form className="px-5 pt-5 lg:pb-20 space-y-5 w-full relative">
             <SendMenu
               channels={
-                guild.channels ? Array.from(guild.channelCache.values()) : []
+                guild.channels
               }
             />
             <Divider className="my-4" />
