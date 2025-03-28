@@ -33,7 +33,8 @@ export function ImageCard({
       setDebounceImage(currentCard);
     }, 500);
     return () => clearTimeout(timeout);
-  }, [currentCard, debounceImage]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCard]);
 
   useEffect(() => {
     if (!debounceImage) return;
