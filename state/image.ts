@@ -14,7 +14,7 @@ export interface ImageStore {
   setCards: (cards: BaseCardParams[]) => void;
   setActiveCard: (index: number) => void;
   setActiveCardId: (id: number) => void;
-  getActiveCard: () => BaseCardParams | null;
+  getActiveCard: () => (BaseCardParams & { imagePreview?: string }) | null;
   setPreviewImage: (image: string) => void;
   createCard: () => void;
   clearCards: () => void;

@@ -25,22 +25,27 @@ export function ImageCard({
   const setActiveCard = useImageStore((state) => state.setActiveCard);
   const setPreviewImage = useImageStore((state) => state.setPreviewImage);
   const deleteCard = useImageStore((state) => state.deleteCard);
+  const [debounceImage, setDebounceImage] = useState(currentCard);
+
   useEffect(() => {
-    console.log("Image card", previewImage);
-    if (previewImage) {
+    if (!debounceImage) return setDebounceImage(currentCard);
+    const timeout = setTimeout(() => {
+      setDebounceImage(currentCard);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [currentCard, debounceImage]);
+
+  useEffect(() => {
+    if (!debounceImage) return;
+    if (!guildId) return;
+    const loadPreview = async () => {
+      const previewImage = await generateImage(debounceImage, guildId);
+      if (!previewImage) return;
       setImage(previewImage);
-    } else {
-      if (!currentCard) return;
-      if (!guildId) return;
-      const loadPreview = async () => {
-        const previewImage = await generateImage(currentCard, guildId);
-        if (!previewImage) return;
-        setImage(previewImage);
-        setPreviewImage(previewImage);
-      };
-      loadPreview();
-    }
-  }, [previewImage, currentCard, guildId, setPreviewImage]);
+      setPreviewImage(previewImage);
+    };
+    loadPreview();
+  }, [debounceImage, guildId, previewImage, setPreviewImage]);
   return (
     <div
       onClick={() => {

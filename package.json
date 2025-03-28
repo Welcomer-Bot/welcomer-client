@@ -20,7 +20,7 @@
     "@prisma/client": "6.5.0",
     "@sentry/nextjs": "^9.5.0",
     "@skyra/discord-components-react": "4.0.0-alpha.37",
-    "@welcomer-bot/card-canvas": "^0.2.0",
+    "@welcomer-bot/card-canvas": "^0.2.2",
     "clsx": "2.1.1",
     "date-fns": "^4.1.0",
     "debounce": "^2.2.0",
