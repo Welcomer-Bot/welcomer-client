@@ -53,6 +53,7 @@ export interface LeaverStore extends Leaver {
   setToPreviousField(index: number, fieldIndex: number): void;
   setToNextField(index: number, fieldIndex: number): void;
   setActiveCardEmbedPosition(position: number): void;
+  toObject(): Leaver & { deletedEmbeds: CompleteEmbed[]; deletedFields: CompleteEmbedField[] };
 
   reset(): void;
 }
@@ -80,7 +81,7 @@ const defaultMessage: Leaver = {
 
 
 export const useLeaverStore = create<LeaverStore>()(
-  immer((set) => {
+  immer<LeaverStore>((set, get) => {
     const customSet = (fn: (state: LeaverStore) => void) => {
       set((state) => {
         fn(state);
@@ -308,6 +309,40 @@ export const useLeaverStore = create<LeaverStore>()(
         customSet((state) => {
           state.activeCardToEmbedId = position;
         }),
+
+      toObject: () => {
+        // get all the properties of the store expect the methods
+        const {
+          guildId,
+          deletedEmbeds,
+          deletedFields,
+          embeds,
+          images,
+          activeCard,
+          activeCardId,
+          activeCardToEmbed,
+          activeCardToEmbedId,
+          channelId,
+          content,
+          createdAt,
+          updatedAt,
+        } = get();
+        return {
+          guildId,
+          deletedEmbeds,
+          deletedFields,
+          embeds,
+          images,
+          activeCard,
+          activeCardId,
+          activeCardToEmbed,
+          activeCardToEmbedId,
+          channelId,
+          content,
+          createdAt,
+          updatedAt,
+        };
+      },
 
       reset: () =>
         set((state) => ({

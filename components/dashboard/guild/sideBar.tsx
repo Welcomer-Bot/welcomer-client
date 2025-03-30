@@ -33,9 +33,11 @@ export function Sidebar({
   const { isOpen, setIsOpen } = useContext(SidebarContext);
   return (
     <>
-      <aside className={`h-full z-30 sticky sm:block`}>
-        <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
-          <div className="p-4 pb-2 flex justify-between items-center align-center">
+      <aside
+        className={`sm:h-full h-fit z-30 sm:sticky sm:w-auto w-full bottom-0`}
+      >
+        <nav className="sm:h-full flex flex-row sm:flex-col bg-slate-800 border-r border-slate-700 shadow-sm sm:py-0 py-2 rounded-t-md">
+          <div className="p-4 pb-2  justify-between items-center align-center sm:flex hidden">
             <div className={` items-center h-10 justify-start flex flex-row `}>
               <Logo
                 className={`overflow-hidden transition-all ${
@@ -58,7 +60,7 @@ export function Sidebar({
             </div>
             <Button
               isIconOnly
-              className="p-1.5 rounded-lg"
+              className="p-1.5 rounded-lg hidden sm:block"
               onPress={() => setIsOpen(!isOpen)}
             >
               <svg
@@ -86,16 +88,18 @@ export function Sidebar({
               </svg>
             </Button>
           </div>
-          <Divider className="mb-2" />
+          <Divider className="mb-2 sm:block hidden" />
 
-          <GuildSelectDropdown
-            currentGuild={currentGuild}
-            guilds={guilds}
-            isOpen={isOpen}
-          />
-          <Divider className="my-2" />
+          <div className="sm:block hidden">
+            <GuildSelectDropdown
+              currentGuild={currentGuild}
+              guilds={guilds}
+              isOpen={isOpen}
+            />
+          </div>
+          <Divider className="mb-2 sm:block hidden" />
 
-          <ul className="flex-1 px-3">
+          <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3">
             <SidebarItem
               active={active === "home"}
               icon={<FaHome />}
@@ -122,8 +126,9 @@ export function Sidebar({
             />
           </ul>
 
-          <Divider />
-          <div className="flex p-3 justify-center">
+          <Divider className="sm:block hidden" />
+
+          <div className="p-3 justify-center sm:flex hidden">
             <div
               className={`
               flex justify-between items-center
@@ -173,7 +178,7 @@ export function SidebarItem({
       >
         {icon}
         <span
-          className={`overflow-hidden transition-all ${
+          className={`overflow-hidden transition-all sm:block hidden ${
             isOpen ? "w-48 ml-3" : "w-0"
           }`}
         >

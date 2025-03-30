@@ -5,9 +5,11 @@ import { ImageStore, useImageStore } from "@/state/image";
 import { useModuleNameStore } from "@/state/moduleName";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function SaveButton() {
+  const [isLoading, setIsLoading] = useState(false);
   const currentModuleName = useModuleNameStore((state) => state.moduleName);
   const reset = useImageStore((state) => state.reset);
   const currentStore = useImageStore();
@@ -19,8 +21,10 @@ export default function SaveButton() {
       <Card>
         <CardBody>
           <Button
+            isLoading={isLoading}
             color="primary"
             onPress={async () => {
+              setIsLoading(true);
               const storeWithoutPreview: Partial<ImageStore> = {
                 moduleId: currentStore.moduleId,
                 activeCard: currentStore.activeCard,
@@ -31,7 +35,7 @@ export default function SaveButton() {
                   ({ imagePreview, ...rest }) => rest
                 ),
               };
-              const { store, done, error } = await updateCards(
+              const { done, error } = await updateCards(
                 storeWithoutPreview,
                 currentModuleName
               );
@@ -39,13 +43,14 @@ export default function SaveButton() {
                 toast.error(error);
               } else if (done) {
                 toast.success("Settings updated successfully !");
+                reset();
               }
-              if (store) {
-                useImageStore.setState((state) => {
-                  state.imageCards = store.imageCards || [];
-                });
-              }
-              reset();
+              // if (store) {
+              //   useImageStore.setState((state) => {
+              //     state.imageCards = store.imageCards || [];
+              //   });
+              // }
+              setIsLoading(false);
             }}
           >
             Save changes

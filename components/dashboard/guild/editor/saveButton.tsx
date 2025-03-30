@@ -6,10 +6,12 @@ import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function SaveButton() {
   const currentModuleName = useModuleNameStore((state) => state.moduleName);
+  const [isLoading, setIsLoading] = useState(false);
   const welcomerStore = useWelcomerStore();
   const leaverStore = useLeaverStore();
   const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
@@ -22,14 +24,17 @@ export default function SaveButton() {
       <CardBody>
         <Button
           color="primary"
+          isLoading={isLoading}
           onPress={async () => {
-            const res = await updateModule(store, currentModuleName);
+            setIsLoading(true);
+            const res = await updateModule(store.toObject(), currentModuleName);
             if (res?.error) {
               toast.error(res.error);
             } else if (res.done) {
               toast.success("Settings updated successfully !");
               store.setEdited(false);
             }
+            setIsLoading(false);
           }}
         >
           Save changes

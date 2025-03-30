@@ -1,14 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { Welcomer, Leaver } from "@/lib/discord/schema";
 
 import { BaseCardParams } from "@/lib/discord/schema";
-import { CompleteEmbed } from "@/prisma/schema";
+import { CompleteEmbed, CompleteEmbedField } from "@/prisma/schema";
 import { ImageStore } from "@/state/image";
-import { LeaverStore } from "@/state/leaver";
-import { WelcomerStore } from "@/state/welcomer";
 import { ModuleName } from "@/types";
-import { Welcomer } from "@prisma/client";
+
 import { revalidatePath } from "next/cache";
 import {
   createEmbed,
@@ -50,26 +49,25 @@ export async function signOut() {
 export async function createModule(
   guildId: string,
   moduleName: ModuleName
-): Promise<Welcomer> {
+): Promise<void> {
   if (!await getUserGuild(guildId)) {
     throw new Error("You do not have permission to manage this guild");
   }
-  let res;
   if (moduleName === "welcomer") {
-    res = await createWelcomer(guildId);
+    await createWelcomer(guildId);
   } else if (moduleName === "leaver") {
-    res = await createLeaver(guildId);
+    await createLeaver(guildId);
   } else {
     throw new Error("Invalid module name");
   }
 
   revalidatePath(`/app/dashboard/${guildId}/welcome`);
-
-  return res;
 }
-
 export async function updateModule(
-  store: WelcomerStore | LeaverStore,
+  store: (Welcomer | Leaver) & {
+    deletedEmbeds: CompleteEmbed[];
+    deletedFields: CompleteEmbedField[];
+  },
   moduleName: ModuleName | null
 ) {
   const guildId = store.guildId;
@@ -78,7 +76,7 @@ export async function updateModule(
       error: "You need to select a guild",
     };
   }
-  if (!await getUserGuild(guildId)) {
+  if (!(await getUserGuild(guildId))) {
     return {
       error: "You do not have permission to manage this guild",
     };
@@ -88,6 +86,7 @@ export async function updateModule(
       error: "You need to select a channel",
     };
   }
+  console.log("store", store);
   const messageValidated = MessageSchema.safeParse(store);
   if (!messageValidated.success) {
     return {
@@ -120,7 +119,10 @@ export async function updateModule(
     const embedsToDelete = store.deletedEmbeds.filter(
       (embed) => embed.id !== null
     );
-    if ((embeds?.length ?? 0) + embedsToCreate.length - embedsToDelete.length > 10)
+    if (
+      (embeds?.length ?? 0) + embedsToCreate.length - embedsToDelete.length >
+      10
+    )
       return {
         error: "You cannot have more than 10 embeds",
       };
@@ -224,16 +226,13 @@ export async function updateModule(
           error: "You need to select an embed to be the active one",
         };
       if (moduleName === "welcomer") {
-        await updateWelcomer(
-          guildId,
-          {
-            activeCardToEmbed: {
-              connect: {
-                id: embedId,
-              },
+        await updateWelcomer(guildId, {
+          activeCardToEmbed: {
+            connect: {
+              id: embedId,
             },
-          }
-        );
+          },
+        });
       } else if (moduleName === "leaver") {
         await updateLeaver(
           guildId,

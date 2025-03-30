@@ -231,7 +231,7 @@ export const MessageSchema = z
       .refine((value) => !value || value.length <= 10, {
         message: "Message embeds must be less than 10.",
       }),
-    files: z
+    images: z
       .array(
         z.object({
           attachment: z.string(),
@@ -243,16 +243,26 @@ export const MessageSchema = z
       .refine((value) => !value || value.length <= 10, {
         message: "Message files must be less than 10.",
       }),
+    activeCard: z
+      .object({
+        id: z.number(),
+        welcomerId: z.string().optional().nullable(),
+        leaverId: z.string().optional().nullable(), 
+
+      })
   })
-    .refine((value) => {
-  // Check if at least one of content, embeds, or files is present and not empty
-  const hasContent = value.content && value.content.trim().length > 0;
-  const hasEmbeds = value.embeds && value.embeds.length > 0;
-  const hasFiles = value.files && value.files.length > 0;
-  return hasContent || hasEmbeds || hasFiles;
-}, {
-  message: "Message must have at least one of content, embeds, or files.",
-})
+  .refine(
+    (value) => {
+      // Check if at least one of content, embeds, or files is present and not empty
+      const hasContent = value.content && value.content.trim().length > 0;
+      const hasEmbeds = value.embeds && value.embeds.length > 0;
+      const hasFiles = (value.images && value.images.length > 0) || value.activeCard?.welcomerId || value.activeCard?.leaverId;
+      return hasContent || hasEmbeds || hasFiles;
+    },
+    {
+      message: "Message must have at least one of content, embeds, or files.",
+    }
+  )
   .refine(
     (value) =>
       (value.content?.length || 0) +
