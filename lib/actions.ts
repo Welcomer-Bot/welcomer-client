@@ -86,7 +86,6 @@ export async function updateModule(
       error: "You need to select a channel",
     };
   }
-  console.log("store", store);
   const messageValidated = MessageSchema.safeParse(store);
   if (!messageValidated.success) {
     return {

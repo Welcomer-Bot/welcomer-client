@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchAllGuildStatsSinceTime, fetchGuildStat } from "@/lib/dto";
+import { fetchGuildStat } from "@/lib/dto";
 import { ModuleName } from "@/types";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
@@ -17,16 +17,16 @@ export default function StatsViewer({
 }) {
   const [period, setPeriod] = useState<Period>(Period.DAILY);
   const [data, setData] = useState<GuildStats | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const updateStats = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       const updatedData = await fetchGuildStat(guildId, period, module);
-      const chartData = await fetchAllGuildStatsSinceTime(guildId, period, module, new Date("12/05/24"))
-      console.log(chartData);
+      // const chartData = await fetchAllGuildStatsSinceTime(guildId, period, module, new Date("12/05/24"))
+      // console.log(chartData);
       setData(updatedData);
-      setIsLoading(false)
+      setIsLoading(false);
     };
     updateStats();
   }, [period, guildId, module]);
