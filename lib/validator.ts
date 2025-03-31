@@ -249,7 +249,7 @@ export const MessageSchema = z
         welcomerId: z.string().optional().nullable(),
         leaverId: z.string().optional().nullable(), 
 
-      })
+      }).optional().nullable(),
   })
   .refine(
     (value) => {

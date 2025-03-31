@@ -2,6 +2,7 @@
 import "server-only";
 
 import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
+import { REST } from "@discordjs/rest";
 import {
   type RESTError,
   RESTGetAPICurrentUserGuildsResult,
@@ -11,15 +12,14 @@ import {
   Routes,
 } from "discord-api-types/v10";
 import { cache } from "react";
-import { REST } from "@discordjs/rest";
 
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import { ModuleName, SessionPayload } from "@/types";
 import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
-import rest from "./discord/rest";
 import Guild from "./discord/guild";
+import rest from "./discord/rest";
 import User from "./discord/user";
 
 export const verifySession = cache(async (): Promise<SessionPayload | null> => {
@@ -43,7 +43,6 @@ export const fetchUserFromSession = cache(async () => {
     return null;
   }
 });
-
 
 export const getGuilds = cache(async () => {
   try {
@@ -223,10 +222,44 @@ export async function createModuleStats(guildId: string, module: ModuleName) {
   });
 }
 
+const defaultWelcomerMessage = {
+  content: "Welcome {user} to {guild}",
+  embedTitle: "Welcome to the server!",
+  embedDescription: "Welcome {user} to {guild}",
+  embedFieldName: "New member count",
+  embedFieldValue: "{membercount}",
+};
+
+const defaultLeaverMessage = {
+  content: "Goodbye {user} from {guild}",
+  embedTitle: "Goodbye from the server",
+  embedDescription: "Goodbye {user} from {guild}",
+  embedFieldName: "Remaining member count",
+  embedFieldValue: "{membercount}",
+};
+
 export async function createWelcomer(guildId: string) {
   const welcomer = await prisma.welcomer.create({
     data: {
       guildId,
+      content: defaultWelcomerMessage.content,
+
+      embeds: {
+        create: [
+          {
+            title: defaultWelcomerMessage.embedTitle,
+            description: defaultWelcomerMessage.embedDescription,
+            fields: {
+              create: [
+                {
+                  name: defaultWelcomerMessage.embedFieldName,
+                  value: defaultWelcomerMessage.embedFieldValue,
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
   });
   await createModuleStats(guildId, "welcomer");
@@ -237,6 +270,24 @@ export async function createLeaver(guildId: string) {
   const leaver = await prisma.leaver.create({
     data: {
       guildId,
+      content: defaultLeaverMessage.content,
+
+      embeds: {
+        create: [
+          {
+            title: defaultLeaverMessage.embedTitle,
+            description: defaultLeaverMessage.embedDescription,
+            fields: {
+              create: [
+                {
+                  name: defaultLeaverMessage.embedFieldName,
+                  value: defaultLeaverMessage.embedFieldValue,
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
   });
   await createModuleStats(guildId, "leaver");
@@ -616,7 +667,6 @@ export const getChannels = cache(async (guildId: string) => {
   }
 });
 
-
 export const getUser = cache(async () => {
   const sessionData = await getSessionData();
   if (!sessionData || !sessionData.accessToken) return null;
@@ -655,10 +705,10 @@ export const getUserGuildsByAccessToken = cache(async (accessToken: string) => {
   })) as RESTGetAPICurrentUserGuildsResult | RESTError;
   if (!data || "message" in data) return null;
   const guilds = data.filter((guild) => {
-   return (
-     guild.owner ||
-     (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
-   );
- });
+    return (
+      guild.owner ||
+      (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
+    );
+  });
   return guilds.map((guild) => new Guild(guild));
 });

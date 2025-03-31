@@ -79,6 +79,17 @@ const defaultMessage: Leaver = {
 };
 
 
+const emptyMessage: Leaver = {
+  guildId: "",
+  channelId: "",
+  content: null,
+  embeds: [],
+  activeCardId: null,
+  images: [],
+  activeCardToEmbedId: null,
+};
+
+
 
 export const useLeaverStore = create<LeaverStore>()(
   immer<LeaverStore>((set, get) => {
@@ -90,7 +101,7 @@ export const useLeaverStore = create<LeaverStore>()(
     };
 
     return {
-      ...defaultMessage,
+      ...emptyMessage,
       deletedEmbeds: [],
       deletedFields: [],
       edited: false,
@@ -347,7 +358,7 @@ export const useLeaverStore = create<LeaverStore>()(
       reset: () =>
         set((state) => ({
           ...state,
-          ...defaultMessage,
+          ...emptyMessage,
           deletedEmbeds: [],
           deletedFields: [],
           edited: false,

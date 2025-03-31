@@ -145,7 +145,6 @@ export async function updateModule(
           error: "An error occurred while updating the module",
         };
       }
-      store.embeds[store.embeds.indexOf(embed)] = embedUpdated;
     }
 
     for (const embed of store.deletedEmbeds) {
@@ -246,6 +245,7 @@ export async function updateModule(
         );
       }
     }
+    revalidatePath(`/app/dashboard/${guildId}/welcome`);
     return {
       done: true,
     };

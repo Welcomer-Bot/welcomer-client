@@ -54,7 +54,10 @@ export interface WelcomerStore extends Welcomer {
   setToNextField(index: number, fieldIndex: number): void;
 
   setActiveCardEmbedPosition(position: number): void;
-  toObject(): Welcomer & { deletedEmbeds: CompleteEmbed[]; deletedFields: CompleteEmbedField[] };
+  toObject(): Welcomer & {
+    deletedEmbeds: CompleteEmbed[];
+    deletedFields: CompleteEmbedField[];
+  };
   reset(): void;
 }
 
@@ -80,6 +83,15 @@ const defaultMessage: Welcomer = {
   activeCardToEmbedId: null,
 };
 
+const emptyMessage: Welcomer = {
+  guildId: "",
+  channelId: "",
+  content: null,
+  embeds: [],
+  activeCardId: null,
+  images: [],
+  activeCardToEmbedId: null,
+};
 
 export const useWelcomerStore = create<WelcomerStore>()(
   immer<WelcomerStore>((set, get) => {
@@ -91,7 +103,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
     };
 
     return {
-      ...defaultMessage,
+      ...emptyMessage,
       deletedEmbeds: [],
       deletedFields: [],
       edited: false,
@@ -310,10 +322,25 @@ export const useWelcomerStore = create<WelcomerStore>()(
         customSet((state) => {
           state.activeCardToEmbedId = position;
         }),
-      
+
       toObject: () => {
         // get all the properties of the store expect the methods
-        const {guildId, deletedEmbeds, deletedFields, embeds, images, DM, activeCard, activeCardId, activeCardToEmbed, activeCardToEmbedId, channelId, content, createdAt, updatedAt} = get();
+        const {
+          guildId,
+          deletedEmbeds,
+          deletedFields,
+          embeds,
+          images,
+          DM,
+          activeCard,
+          activeCardId,
+          activeCardToEmbed,
+          activeCardToEmbedId,
+          channelId,
+          content,
+          createdAt,
+          updatedAt,
+        } = get();
         return {
           guildId,
           deletedEmbeds,
@@ -334,7 +361,7 @@ export const useWelcomerStore = create<WelcomerStore>()(
 
       reset: () =>
         set((state) => ({
-          ...defaultMessage,
+          ...emptyMessage,
           ...state,
           deletedEmbeds: [],
           deletedFields: [],

@@ -26,6 +26,7 @@ export default function AppInitializer({
   }, [moduleName, setModuleName]);
 
   useEffect(() => {
+    console.log("App Initializer", moduleName, module);
     if (moduleName === "welcomer") {
       resetWelcomer();
       useWelcomerStore.setState((state) => {
@@ -38,9 +39,13 @@ export default function AppInitializer({
         state.activeCard = module?.activeCard;
         if (module?.content) {
           state.content = module.content;
+        } else {
+          state.content = null;
         }
         if (module?.embeds && module.embeds.length > 0) {
           state.embeds = module.embeds;
+        } else {
+          state.embeds = [];
         }
       });
     } else if (moduleName === "leaver") {

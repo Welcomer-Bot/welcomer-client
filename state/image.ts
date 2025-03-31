@@ -38,7 +38,7 @@ const defaultMainText: TextCard = {
 };
 
 const defaultSecondText: TextCard = {
-  content: "You are the {memberCount} member!",
+  content: "You are the {membercount} member!",
   color: "#ffffff",
   font: "Arial",
 };

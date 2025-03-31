@@ -6,7 +6,6 @@ import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
-import { revalidatePath } from "next/cache";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -34,7 +33,7 @@ export default function SaveButton() {
             } else if (res.done) {
               toast.success("Settings updated successfully !");
               store.setEdited(false);
-              revalidatePath(`/dashboard/guild/${store.guildId}`);
+              // reset();
             }
             setIsLoading(false);
           }}
