@@ -60,7 +60,36 @@ export default function MessagePreview({
         inline?: boolean;
       }[];
     }[];
-  }>(msg);
+  }>({
+    content: msg.content ?? null,
+    embeds: msg.embeds?.map((embed) => ({
+      timestampNow: embed.timestampNow ?? undefined,
+      timestamp: embed.timestamp ? embed.timestamp.toISOString() : null,
+      url: embed.url ?? null,
+      thumbnail: embed.thumbnail ?? null,
+      color: embed.color ?? null,
+      description: embed.description ?? null,
+      title: embed.title ?? null,
+      footer: embed.footer
+        ? {
+            text: embed.footer.text ?? null,
+            iconUrl: embed.footer.iconUrl ?? null,
+          }
+        : undefined,
+      author: embed.author
+        ? {
+            name: embed.author.name ?? null,
+            iconUrl: embed.author.iconUrl ?? null,
+            url: embed.author.url ?? null,
+          }
+        : undefined,
+      fields: embed.fields?.map((field) => ({
+        name: field.name,
+        value: field.value ?? null,
+        inline: field.inline ?? false,
+      })),
+    })),
+  });
   useEffect(() => {
     if (msg.activeCard) {
       const loadImage = async () => {
