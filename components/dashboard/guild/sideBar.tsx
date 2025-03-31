@@ -36,8 +36,8 @@ export function Sidebar({
       <aside
         className={`sm:h-full h-fit z-30 sm:sticky sm:w-auto w-full bottom-0`}
       >
-        <nav className="sm:h-full flex flex-row sm:flex-col bg-slate-800 border-r border-slate-700 shadow-sm sm:py-0 py-2 rounded-t-md">
-          <div className="p-4 pb-2  justify-between items-center align-center sm:flex hidden">
+        <nav className="sm:h-full flex flex-row sm:flex-col bg-slate-800 border-r border-slate-700 shadow-sm sm:py-0 py-2 rounded-t-md sm:rounded-t-none">
+          <div className="p-4 pb-2 justify-between items-center align-center sm:flex hidden">
             <div className={` items-center h-10 justify-start flex flex-row `}>
               <Logo
                 className={`overflow-hidden transition-all ${
@@ -89,14 +89,11 @@ export function Sidebar({
             </Button>
           </div>
           <Divider className="mb-2 sm:block hidden" />
-
-          <div className="sm:block hidden">
             <GuildSelectDropdown
               currentGuild={currentGuild}
               guilds={guilds}
               isOpen={isOpen}
             />
-          </div>
           <Divider className="mb-2 sm:block hidden" />
 
           <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3">
@@ -187,7 +184,7 @@ export function SidebarItem({
 
         {!isOpen && (
           <div
-            className={`absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
+            className={`hidden sm:absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
           >
             {text}
           </div>
