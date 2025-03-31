@@ -27,6 +27,8 @@ export function parseMessageText(
   guild: GuildObject
 ) {
   let replacedText;
+
+  // Replace {user} with a DiscordMention
   replacedText = reactStringReplace(
     parseText(text, user, guild),
     /({user})/g,
@@ -36,46 +38,97 @@ export function parseMessageText(
       </DiscordMention>
     )
   );
+
+  // Replace multiline code blocks (```code```)
   replacedText = reactStringReplace(
     replacedText,
-    /(\`\`\`.+\`\`\`)/g,
+    /```([\s\S]+?)```/g,
     (match, i) => (
       <DiscordCode multiline key={match + i}>
-        {match.replaceAll(/`/g, "")}
+        {match}
       </DiscordCode>
     )
   );
 
-  replacedText = reactStringReplace(replacedText, /(\_.+\_)/g, (match, i) => (
-    <DiscordItalic key={match + i}>{match.replaceAll(/_/g, "")}</DiscordItalic>
-  ));
-    replacedText = reactStringReplace(
-      replacedText,
-      /(\*\*\*.+\*\*\*)/g,
-      (match, i) => (
-        <DiscordBold key={match + i}>
-          <DiscordItalic>{match.replaceAll(/\*\*/g, "")}</DiscordItalic>
-        </DiscordBold>
-      )
-    );
-  
-   replacedText = reactStringReplace(
-     replacedText,
-     /(\*\*.+\*\*)/g,
-     (match, i) => (
-       <DiscordBold key={match + i}>
-         {match.replaceAll(/\*\*/g, "")}
-       </DiscordBold>
-     )
-   );
+  // Replace inline code (`code`)
+  replacedText = reactStringReplace(
+    replacedText,
+    /`([^`]+)`/g,
+    (match, i) => (
+      <DiscordCode key={match + i}>{match}</DiscordCode>
+    )
+  );
 
-  replacedText = reactStringReplace(replacedText, /(\*.+[^\*]\*)/g, (match, i) => (
-    <DiscordItalic key={match + i}>{match.replaceAll(/\*/g, "")}</DiscordItalic>
-  ));
+  // Replace bold italic underline (**_***text***_**)
+  replacedText = reactStringReplace(
+    replacedText,
+    /\*\*\_\*\*\*(.+?)\*\*\*\_\*\*/g,
+    (match, i) => (
+      <DiscordBold key={match + i}>
+        <DiscordItalic>
+          <u>{match}</u>
+        </DiscordItalic>
+      </DiscordBold>
+    )
+  );
 
- 
+  // Replace bold underline (**_text_**)
+  replacedText = reactStringReplace(
+    replacedText,
+    /\*\*\_(.+?)\_\*\*/g,
+    (match, i) => (
+      <DiscordBold key={match + i}>
+        <u>{match}</u>
+      </DiscordBold>
+    )
+  );
 
+  // Replace bold italic (***text***)
+  replacedText = reactStringReplace(
+    replacedText,
+    /\*\*\*(.+?)\*\*\*/g,
+    (match, i) => (
+      <DiscordBold key={match + i}>
+        <DiscordItalic>{match}</DiscordItalic>
+      </DiscordBold>
+    )
+  );
 
+  // Replace bold (**text**)
+  replacedText = reactStringReplace(
+    replacedText,
+    /\*\*(.+?)\*\*/g,
+    (match, i) => (
+      <DiscordBold key={match + i}>{match}</DiscordBold>
+    )
+  );
+
+  // Replace italic (*text*)
+  replacedText = reactStringReplace(
+    replacedText,
+    /\*(.+?)\*/g,
+    (match, i) => (
+      <DiscordItalic key={match + i}>{match}</DiscordItalic>
+    )
+  );
+
+  // Replace underline (__text__)
+  replacedText = reactStringReplace(
+    replacedText,
+    /\_\_(.+?)\_\_/g,
+    (match, i) => (
+      <u key={match + i}>{match}</u>
+    )
+  );
+
+  // Replace strikethrough (~~text~~)
+  replacedText = reactStringReplace(
+    replacedText,
+    /\~\~(.+?)\~\~/g,
+    (match, i) => (
+      <s key={match + i}>{match}</s>
+    )
+  );
 
   return replacedText;
 }
