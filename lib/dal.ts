@@ -44,18 +44,11 @@ export const fetchUserFromSession = cache(async () => {
   }
 });
 
+
 export const getGuilds = cache(async () => {
   try {
-    let guilds = await getUserGuilds();
+    const guilds = await getUserGuilds();
     if (!guilds) return null;
-
-    guilds = guilds.filter((guild) => {
-      return (
-        guild.owner ||
-        (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
-      );
-    });
-
     await Promise.all(
       guilds.map(async (guild) => {
         const botGuild = await getGuild(guild.id);
@@ -661,6 +654,11 @@ export const getUserGuildsByAccessToken = cache(async (accessToken: string) => {
     authPrefix: "Bearer",
   })) as RESTGetAPICurrentUserGuildsResult | RESTError;
   if (!data || "message" in data) return null;
-
-  return data.map((guild) => new Guild(guild));
+  const guilds = data.filter((guild) => {
+   return (
+     guild.owner ||
+     (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
+   );
+ });
+  return guilds.map((guild) => new Guild(guild));
 });

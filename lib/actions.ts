@@ -1,7 +1,7 @@
 "use server";
 
+import { Leaver, Welcomer } from "@/lib/discord/schema";
 import { redirect } from "next/navigation";
-import { Welcomer, Leaver } from "@/lib/discord/schema";
 
 import { BaseCardParams } from "@/lib/discord/schema";
 import { CompleteEmbed, CompleteEmbedField } from "@/prisma/schema";
@@ -50,7 +50,7 @@ export async function createModule(
   guildId: string,
   moduleName: ModuleName
 ): Promise<void> {
-  if (!await getUserGuild(guildId)) {
+  if (!(await getUserGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
   if (moduleName === "welcomer") {
@@ -246,8 +246,6 @@ export async function updateModule(
         );
       }
     }
-    revalidatePath(`/app/dashboard/${guildId}/welcome`);
-
     return {
       done: true,
     };
@@ -268,44 +266,44 @@ export async function createOrUpdateEmbed(
   const createOrUpdateAuthor = {
     author: embed.author?.name
       ? {
-        upsert: {
-          where: {
-            embedId: embed.id,
+          upsert: {
+            where: {
+              embedId: embed.id,
+            },
+            update: {
+              name: embed.author?.name,
+              iconUrl: embed.author?.iconUrl,
+              url: embed.author?.url,
+            },
+            create: {
+              id: embed.id,
+              name: embed.author?.name,
+              iconUrl: embed.author?.iconUrl,
+              url: embed.author?.url,
+            },
           },
-          update: {
-            name: embed.author?.name,
-            iconUrl: embed.author?.iconUrl,
-            url: embed.author?.url,
-          },
-          create: {
-            id: embed.id,
-            name: embed.author?.name,
-            iconUrl: embed.author?.iconUrl,
-            url: embed.author?.url,
-          },
-        },
-      }
+        }
       : undefined,
   };
 
   const createOrUpdateFooter = {
     footer: embed.footer?.text
       ? {
-        upsert: {
-          where: {
-            embedId: embed.id,
+          upsert: {
+            where: {
+              embedId: embed.id,
+            },
+            update: {
+              text: embed.footer?.text,
+              iconUrl: embed.footer?.iconUrl,
+            },
+            create: {
+              id: embed.id,
+              text: embed.footer?.text,
+              iconUrl: embed.footer?.iconUrl,
+            },
           },
-          update: {
-            text: embed.footer?.text,
-            iconUrl: embed.footer?.iconUrl,
-          },
-          create: {
-            id: embed.id,
-            text: embed.footer?.text,
-            iconUrl: embed.footer?.iconUrl,
-          },
-        },
-      }
+        }
       : undefined,
   };
 
@@ -333,23 +331,23 @@ export async function createOrUpdateEmbed(
   const createAuthor = {
     author: embed.author?.name
       ? {
-        create: {
-          name: embed.author?.name,
-          iconUrl: embed.author?.iconUrl,
-          url: embed.author?.url,
-        },
-      }
+          create: {
+            name: embed.author?.name,
+            iconUrl: embed.author?.iconUrl,
+            url: embed.author?.url,
+          },
+        }
       : undefined,
   };
 
   const createFooter = {
     footer: embed.footer?.text
       ? {
-        create: {
-          text: embed.footer?.text,
-          iconUrl: embed.footer?.iconUrl,
-        },
-      }
+          create: {
+            text: embed.footer?.text,
+            iconUrl: embed.footer?.iconUrl,
+          },
+        }
       : undefined,
   };
 
@@ -373,21 +371,18 @@ export async function createOrUpdateEmbed(
         ...createOrUpdateAuthor,
         ...createOrUpdateFooter,
         ...createOrUpdateFields,
-      },
-      );
+      });
     } else {
-      embedDb = await createEmbed(
-        {
-          [`${moduleType}Id`]: moduleId,
-          title: embed.title,
-          description: embed.description,
-          color: embed.color,
-          timestamp: embed.timestamp,
-          ...createAuthor,
-          ...createFooter,
-          ...createFields,
-        },
-      )
+      embedDb = await createEmbed({
+        [`${moduleType}Id`]: moduleId,
+        title: embed.title,
+        description: embed.description,
+        color: embed.color,
+        timestamp: embed.timestamp,
+        ...createAuthor,
+        ...createFooter,
+        ...createFields,
+      });
     }
     return embedDb as CompleteEmbed;
   } catch (error) {
@@ -400,7 +395,7 @@ export async function removeModule(
   guildId: string,
   moduleName: ModuleName
 ): Promise<boolean> {
-  if (!await getUserGuild(guildId)) {
+  if (!(await getUserGuild(guildId))) {
     throw new Error("You do not have permission to manage this guild");
   }
   try {
@@ -514,7 +509,7 @@ export async function updateCards(
           activeCardToEmbed: {
             disconnect: true,
           },
-        })
+        });
       } else if (moduleName === "leaver") {
         await updateLeaver(guildId, {
           activeCard: {
@@ -523,7 +518,7 @@ export async function updateCards(
           activeCardToEmbed: {
             disconnect: true,
           },
-        })
+        });
       }
     }
   }
@@ -561,65 +556,65 @@ export async function createOrUpdateCard(
   let cardDb;
   const connectOrCreateMainText = card.mainText
     ? {
-      mainText: {
-        connectOrCreate: {
-          where: {
-            id: card.mainText?.id ?? -1,
-          },
-          create: {
-            content: card.mainText.content,
-            color: card.mainText?.color,
-            font: card.mainText?.font,
+        mainText: {
+          connectOrCreate: {
+            where: {
+              id: card.mainText?.id ?? -1,
+            },
+            create: {
+              content: card.mainText.content,
+              color: card.mainText?.color,
+              font: card.mainText?.font,
+            },
           },
         },
-      },
-    }
+      }
     : {};
 
   const connectOrCreateSecondText = card.secondText
     ? {
-      secondText: {
-        connectOrCreate: {
-          where: {
-            id: card.secondText?.id ?? -1,
-          },
-          create: {
-            content: card.secondText!.content,
-            color: card.secondText?.color,
-            font: card.secondText?.font,
+        secondText: {
+          connectOrCreate: {
+            where: {
+              id: card.secondText?.id ?? -1,
+            },
+            create: {
+              content: card.secondText!.content,
+              color: card.secondText?.color,
+              font: card.secondText?.font,
+            },
           },
         },
-      },
-    }
+      }
     : {};
 
   const connectOrCreateNicknameText = card.nicknameText
     ? {
-      nicknameText: {
-        connectOrCreate: {
-          where: {
-            id: card.nicknameText?.id ?? -1,
-          },
-          create: {
-            content: card.nicknameText!.content,
-            color: card.nicknameText?.color,
-            font: card.nicknameText?.font,
+        nicknameText: {
+          connectOrCreate: {
+            where: {
+              id: card.nicknameText?.id ?? -1,
+            },
+            create: {
+              content: card.nicknameText!.content,
+              color: card.nicknameText?.color,
+              font: card.nicknameText?.font,
+            },
           },
         },
-      },
-    }
+      }
     : {};
 
   if (card.mainText?.id) {
-    await updateImageCardText(card.mainText.id, card.mainText)
+    await updateImageCardText(card.mainText.id, card.mainText);
   }
 
   if (card.secondText?.id) {
-    await updateImageCardText(card.secondText.id, card.secondText)
+    await updateImageCardText(card.secondText.id, card.secondText);
   }
 
   if (card.nicknameText?.id) {
-    await updateImageCardText(card.nicknameText.id, card.nicknameText)
+    await updateImageCardText(card.nicknameText.id, card.nicknameText);
   }
 
   // try {
@@ -641,23 +636,22 @@ export async function createOrUpdateCard(
       ...connectOrCreateNicknameText,
     });
   } else {
-    cardDb = await createImageCard(
-      {
-        [moduleName]: {
-          connect: {
-            guildId: moduleId,
-          },
+    cardDb = await createImageCard({
+      [moduleName]: {
+        connect: {
+          guildId: moduleId,
         },
-        backgroundImgURL: card.backgroundImgURL,
-        backgroundColor:
-          typeof card.backgroundColor === "string"
-            ? card.backgroundColor
-            : undefined,
-        avatarBorderColor: card.avatarBorderColor,
-        ...connectOrCreateMainText,
-        ...connectOrCreateSecondText,
-        ...connectOrCreateNicknameText,
-      });
+      },
+      backgroundImgURL: card.backgroundImgURL,
+      backgroundColor:
+        typeof card.backgroundColor === "string"
+          ? card.backgroundColor
+          : undefined,
+      avatarBorderColor: card.avatarBorderColor,
+      ...connectOrCreateMainText,
+      ...connectOrCreateSecondText,
+      ...connectOrCreateNicknameText,
+    });
   }
   return {
     ...(cardDb as BaseCardParams),

@@ -2,11 +2,14 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 import { Sidebar } from "@/components/dashboard/guild/sideBar";
-import { fetchUserFromSession, getGuild, getGuilds, getUserGuild } from "@/lib/dal";
+import {
+  fetchUserFromSession,
+  getGuild,
+  getGuilds,
+  getUserGuild,
+} from "@/lib/dal";
 
-
-
-type Params = Promise<{ guildId: string, module: string }>;
+type Params = Promise<{ guildId: string; module: string }>;
 
 export default async function Layout({
   children,
@@ -23,7 +26,7 @@ export default async function Layout({
   if (user.id == "479216487173980160") {
     userGuild = await getGuild(guildId);
   }
-    
+
   if (!userGuild) redirect("/dashboard");
 
   const guild = await getGuild(guildId);
