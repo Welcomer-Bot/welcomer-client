@@ -60,7 +60,7 @@ export function Sidebar({
             </div>
             <Button
               isIconOnly
-              className="p-1.5 rounded-lg hidden sm:block"
+              className="p-1.5 rounded-lg hidden sm:grid"
               onPress={() => setIsOpen(!isOpen)}
             >
               <svg

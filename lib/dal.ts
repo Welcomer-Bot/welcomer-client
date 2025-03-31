@@ -534,9 +534,12 @@ export async function getAllGuildStatsSinceTime(
 export async function getSessionData() {
   const session = await verifySession();
   if (!session) return null;
-  return await prisma.session.findUnique({
+  return await prisma.session.findFirst({
     where: {
       id: session.id,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 }
@@ -558,15 +561,34 @@ export async function getSessionDataById(id: string) {
     where: {
       userId: id,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 }
 
-export async function getUserData(id: string) {
+export async function getUserDataById(id: string) {
   const data = await getSessionDataById(id);
   if (!data) return null;
   const user = await getUserByAccessToken(data.accessToken);
   if (!user) return null;
   return user.toObject();
+}
+
+export async function getUserData() {
+  const data = await getSessionData();
+  if (!data) return null;
+  const user = await getUserByAccessToken(data.accessToken);
+  if (!user) return null;
+  return user.toObject();
+}
+
+export async function getGuildData(guildId: string) {
+  const data = await getGuild(guildId);
+  if (!data) return null;
+  const guild = await getGuild(data.id);
+  if (!guild) return null;
+  return guild.toObject();
 }
 
 export async function getGuildsByUserId(userId: string) {

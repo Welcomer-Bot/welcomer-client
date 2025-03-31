@@ -1,6 +1,6 @@
 "use client";
 
-import { getUserData, getGuildsByUserId } from "@/lib/dal";
+import { getGuildsByUserId, getUserDataById } from "@/lib/dal";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
@@ -18,7 +18,7 @@ export default function UserSearch({ users }: { users: User[] }) {
         setUser(null);
         return;
       }
-      const updatedUser = await getUserData(value as string);
+      const updatedUser = await getUserDataById(value as string);
       const guilds = await getGuildsByUserId(value as string);
       setGuilds(guilds);
       setUser(updatedUser);

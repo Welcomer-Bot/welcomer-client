@@ -23,7 +23,7 @@ export default function EditorMessagePreview() {
   return (
     <div className="overflow-x-scroll">
       <Suspense fallback={<div>Loading...</div>}>
-        <LazyMessagePreview msg={msg} />
+        <LazyMessagePreview msg={msg.toObject()} />
       </Suspense>
     </div>
   );
