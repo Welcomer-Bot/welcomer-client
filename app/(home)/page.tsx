@@ -75,7 +75,7 @@ export default function WelcomerBetaLanding() {
         </h2>
         <ol className="mt-6 space-y-4">
           <li>
-            ✅ Ensure your server meets the requirements (200+ members, active,
+            ✅ Ensure your server meets the requirements (50+ members, active,
             no NSFW content).
           </li>
           <li>✅ Join the support server and open a ticket</li>
