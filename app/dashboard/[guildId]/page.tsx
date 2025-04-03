@@ -26,8 +26,12 @@ export default async function Page({
     : null;
 
   return (
-    <div className="w-full h-full no-scrollbar">
-      <Card className="sm:mx-5 sm:my-3">
+    <div className="w-full h-full no-scrollbar sm:px-4 sm:py-3">
+      <Card
+        classNames={{
+          base: "w-full h-full ",
+        }}
+      >
         <CardHeader>
           <GuildCard guild={guild} />
         </CardHeader>
