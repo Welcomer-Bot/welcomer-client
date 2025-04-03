@@ -27,7 +27,12 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Image src="/logo.svg" alt={"Welcomer logo"} width={40} height={40} />
+            <Image
+              src="/logo.svg"
+              alt={"Welcomer logo"}
+              width={40}
+              height={40}
+            />
             <p className="font-bold text-inherit">Welcomer</p>
           </NextLink>
         </NavbarBrand>
@@ -78,24 +83,15 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
+        <div className="mx-4 mt-2 flex flex-col gap-2 h-full mb-5">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href={item.href}
-                size="lg"
-              >
+              <Link color="foreground" href={item.href} size="lg">
                 {item.label}
               </Link>
             </NavbarMenuItem>
           ))}
+            <NavbarUser />
         </div>
       </NavbarMenu>
     </NextUINavbar>
