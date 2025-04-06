@@ -166,6 +166,7 @@ export async function updateModule(
       }
     }
 
+    console.log("store.activeCardToEmbedId", store.activeCardToEmbedId);
     if (store.activeCard && store.activeCardToEmbedId !== null) {
       if (store.activeCardToEmbedId === -2) {
         if (moduleName === "welcomer") {
@@ -182,67 +183,70 @@ export async function updateModule(
             }
           );
         }
-      } else if (moduleName === "leaver") {
-        await updateLeaver(
-          guildId,
+        else if (moduleName === "leaver") {
+          await updateLeaver(
+            guildId,
 
-          {
-            activeCard: {
-              disconnect: true,
-            },
+            {
+              activeCard: {
+                disconnect: true,
+              },
+              activeCardToEmbed: {
+                disconnect: true,
+              },
+            }
+          );
+        }
+      } else if (store.activeCardToEmbedId === -1) {
+        if (moduleName === "welcomer") {
+          await updateWelcomer(guildId, {
             activeCardToEmbed: {
               disconnect: true,
+              // set to -1 to show on the bottom
             },
-          }
-        );
-      }
-    } else if (store.activeCardToEmbedId === -1) {
-      if (moduleName === "welcomer") {
-        await updateWelcomer(guildId, {
-          activeCardToEmbed: {
-            disconnect: true,
-            // set to -1 to show on the bottom
-          },
-        });
-      }
-    } else if (moduleName === "leaver") {
-      await updateLeaver(
-        guildId,
-
-        {
-          activeCardToEmbed: {
-            disconnect: true,
-          },
+          });
         }
-      );
-    } else {
-      const embedId =
-        store.activeCardToEmbedId &&
-        store.embeds[store.activeCardToEmbedId]?.id;
-      if (!embedId)
-        return {
-          error: "You need to select an embed to be the active one",
-        };
-      if (moduleName === "welcomer") {
-        await updateWelcomer(guildId, {
-          activeCardToEmbed: {
-            connect: {
-              id: embedId,
-            },
-          },
-        });
-      } else if (moduleName === "leaver") {
-        await updateLeaver(
-          guildId,
+        else if (moduleName === "leaver") {
+          await updateLeaver(
+            guildId,
 
-          {
+            {
+              activeCardToEmbed: {
+                disconnect: true,
+              },
+            }
+          );
+        }
+      } else {
+        const embedId =
+          store.activeCardToEmbedId !== undefined && store.activeCardToEmbedId !== null &&
+          store.embeds[store.activeCardToEmbedId]?.id;
+        console.log("embedId", embedId);
+        if (!embedId)
+          return {
+            error: "You need to select an embed to be the active one",
+          };
+        if (moduleName === "welcomer") {
+          await updateWelcomer(guildId, {
             activeCardToEmbed: {
               connect: {
                 id: embedId,
               },
             },
-          }
-        );
+          });
+        } else if (moduleName === "leaver") {
+          await updateLeaver(
+            guildId,
+
+            {
+              activeCardToEmbed: {
+                connect: {
+                  id: embedId,
+                },
+              },
+            }
+          );
+        }
       }
     }
     revalidatePath(`/app/dashboard/${guildId}/welcome`);

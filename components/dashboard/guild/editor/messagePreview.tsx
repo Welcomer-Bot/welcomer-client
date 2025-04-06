@@ -114,7 +114,6 @@ export default function MessagePreview({
   }, [msg.activeCard, msg.guildId, msg]);
 
   useEffect(() => {
-    console.log("msg", msg);
     if (!user || !guild) return;
     setText((prevText) => ({
       ...prevText,
