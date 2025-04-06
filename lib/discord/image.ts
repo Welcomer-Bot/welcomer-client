@@ -26,7 +26,10 @@ export const generateImage = cache(async (msg: BaseCardParams, guildId: string) 
       );
     }
   }
-  const card = new DefaultCard(msg);
+  const card = new DefaultCard({
+    ...msg,
+    // avatarImgURL: user?.avatarUrl,
+  });
   const res = await card.build();
   return res.toDataURL();
 });

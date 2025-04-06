@@ -1,3 +1,4 @@
+
 type shardStatus = {
   shardId: number;
   guilds: number;
@@ -101,7 +102,15 @@ class StatusManager {
   public getStatus() {
     console.log("Getting status");
     console.log(this.currentStatus);
-    return this.currentStatus
+
+  return this.currentStatus.map((cluster) => {
+    const clusterUptime = (Date.now() - cluster.uptime) / 1000 /60;
+    return {
+      ...cluster,
+      uptime: clusterUptime,
+    };
+  });
+
   }
 
   public stop() {
@@ -109,18 +118,6 @@ class StatusManager {
   }
 }
 
-const statusManagerSingleton = () => {
-  return new StatusManager(0, 0);
-};
-
-declare const globalThis: {
-  statusManagerGlobal: ReturnType<typeof statusManagerSingleton>;
-} & typeof global;
-
-const statusManager =
-  globalThis.statusManagerGlobal ?? statusManagerSingleton();
-
-export default statusManager;
-
-if (process.env.NODE_ENV !== "production")
-  globalThis.statusManagerGlobal = statusManager;
+const globalThis = global as unknown as { statusManagerGlobal: StatusManager };
+export const statusManager = globalThis.statusManagerGlobal || new StatusManager(0, 0);
+globalThis.statusManagerGlobal = statusManager;

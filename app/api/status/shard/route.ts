@@ -1,4 +1,4 @@
-import statusManager from "@/lib/discord/status";
+import {statusManager} from "@/lib/discord/status";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {

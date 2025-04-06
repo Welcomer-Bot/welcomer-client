@@ -1,6 +1,6 @@
 "use server";
 
-import statusManager from "./status";
+import {statusManager} from "./status";
 
 export async function fetchGuildShardId(guildId: string) {
     return fetch(process.env.INTERNAL_API_BASE_URL + "/status/" + guildId, {

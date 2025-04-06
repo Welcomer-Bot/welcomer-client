@@ -8,7 +8,7 @@ export function getGuildIcon(guild: Guild) {
 }
 export function getUserAvatar(user: User) {
   return user.avatar
-    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith("a_") ? "gif" : "webp"}`
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith("a_") ? "gif" : "png"}`
     : `https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 5}.png`;
 }
 
