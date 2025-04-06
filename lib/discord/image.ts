@@ -28,7 +28,7 @@ export const generateImage = cache(async (msg: BaseCardParams, guildId: string) 
   }
   const card = new DefaultCard({
     ...msg,
-    // avatarImgURL: user?.avatarUrl,
+    avatarImgURL: user?.avatarUrl,
   });
   const res = await card.build();
   return res.toDataURL();
