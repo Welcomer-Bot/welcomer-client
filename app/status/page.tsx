@@ -4,27 +4,36 @@ import { GuildInput } from "@/components/status/GuildInput";
 import { fetchClustersShardsSatus } from "@/lib/discord/shard";
 import { type clusterStatus } from "@/lib/discord/status";
 import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/react";
 import { Tooltip } from "@heroui/tooltip";
 import { useEffect, useState } from "react";
 
 export default function Page() {
   const [status, setStatus] = useState<clusterStatus[]>([]);
-  const [selectedShard, setSelectedShard] = useState<number | null>(null); 
+  const [selectedShard, setSelectedShard] = useState<number | null>(null);
+  const [updateTime, setUpdateTime] = useState<number>(0);
   useEffect(() => {
     async function updateStatus() {
       const statusUpdate = await fetchClustersShardsSatus();
-      console.log(statusUpdate);
       setStatus(statusUpdate); // Update state after mount
     }
     updateStatus(); // Initial fetch of status
     const interval = setInterval(() => {
       updateStatus(); // Fetch status every 10 seconds
-    }, 10000); // Update every 10 seconds to match `checkForStaleData`
+    }, 20000); // Update every 10 seconds to match `checkForStaleData`
 
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
+
+  useEffect(() => {
+    setUpdateTime(20)
+    const interval = setInterval(() => {
+      setUpdateTime((prev) => prev - 1);
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [status]);
 
   const allGood = status.every((cluster) =>
     cluster.perShardCluster.every((shard) => shard.status === 0)
@@ -62,12 +71,12 @@ export default function Page() {
                         <p>Total Users: {cluster.totalUsers}</p>
                         <p>Ping: {cluster.ping}ms</p>
                         <p>
-                          Uptime:
+                          Uptime:{" "}
                           {cluster.uptime > 60
-                            ? `${Math.floor(cluster.uptime / 60)}h ${
+                            ? `${Math.floor(cluster.uptime / 60)}h ${Math.floor(
                                 cluster.uptime % 60
-                              }m`
-                            : `${cluster.uptime}m`}
+                              )}m`
+                            : `${Math.floor(cluster.uptime)}m`}
                         </p>
                         <p>Memory Usage: {cluster.memoryUsage}MB</p>
                         <Divider className="my-2" />
@@ -117,7 +126,9 @@ export default function Page() {
                         <Button
                           color={shard.status === 0 ? "success" : "danger"}
                           isIconOnly
-                          variant={selectedShard === shard.shardId ? "shadow" : "ghost"}
+                          variant={
+                            selectedShard === shard.shardId ? "shadow" : "ghost"
+                          }
                           className={"text-center w-10 h-10"}
                         >
                           <CardBody className="text-center p-0">
@@ -132,6 +143,12 @@ export default function Page() {
             ))}
           </div>
         </CardBody>
+        <CardFooter>
+          <p className="text-sm text-gray-400">
+          Updating in {updateTime} seconds
+
+          </p>
+        </CardFooter>
       </Card>
     </>
   );

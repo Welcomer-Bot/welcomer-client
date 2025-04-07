@@ -118,6 +118,16 @@ class StatusManager {
   }
 }
 
-const globalThis = global as unknown as { statusManagerGlobal: StatusManager };
-export const statusManager = globalThis.statusManagerGlobal || new StatusManager(0, 0);
-globalThis.statusManagerGlobal = statusManager;
+type GlobalThisType = typeof globalThis;
+
+interface GlobalWithStatusManager extends GlobalThisType {
+  statusManagerGlobal?: StatusManager;
+}
+
+const globalForStatus = global as GlobalWithStatusManager;
+
+if (!globalForStatus.statusManagerGlobal) {
+  globalForStatus.statusManagerGlobal = new StatusManager(0, 0);
+}
+
+export const statusManager = globalForStatus.statusManagerGlobal;
