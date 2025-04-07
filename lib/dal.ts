@@ -592,7 +592,6 @@ export async function getGuildData(guildId: string) {
 }
 
 export async function getGuildsByUserId(userId: string) {
-  console.log(userId);
   try {
     const data = await getSessionDataById(userId);
     if (!data) return null;

@@ -79,19 +79,19 @@ class StatusManager {
       this.clusterCount++;
       this.shardCount += status.shardIds.length;
     }
-    console.log("Updated status for cluster", this.currentStatus);
+    // console.log("Updated status for cluster", this.currentStatus);
   }
 
   private checkForStaleData() {
-    console.log("Checking for stale shards");
+    // console.log("Checking for stale shards");
     const now = Date.now();
 
     this.currentStatus.forEach((cluster) => {
       cluster.perShardCluster = cluster.perShardCluster.map((shard) => {
         if (now - shard.lastUpdated >= 30000) {
-          console.log(
-            `Shard ${shard.shardId} in cluster ${cluster.clusterId} is stale`
-          );
+          // console.log(
+          //   `Shard ${shard.shardId} in cluster ${cluster.clusterId} is stale`
+          // );
           return { ...shard, status: 5 };
         }
         return shard;
@@ -100,8 +100,8 @@ class StatusManager {
   }
 
   public getStatus() {
-    console.log("Getting status");
-    console.log(this.currentStatus);
+    // console.log("Getting status");
+    // console.log(this.currentStatus);
 
   return this.currentStatus.map((cluster) => {
     const clusterUptime = (Date.now() - cluster.uptime) / 1000 /60;

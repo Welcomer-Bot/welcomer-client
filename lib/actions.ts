@@ -221,7 +221,7 @@ export async function updateModule(
         const embedId =
           store.activeCardToEmbedId !== undefined && store.activeCardToEmbedId !== null &&
           store.embeds[store.activeCardToEmbedId]?.id;
-        console.log("embedId", embedId);
+        // console.log("embedId", embedId);
         if (!embedId)
           return {
             error: "You need to select an embed to be the active one",

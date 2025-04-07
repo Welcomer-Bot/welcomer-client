@@ -15,7 +15,6 @@ export const GuildInput = ({
     const fetchGuildShard = async (guildId: string) => {
       const shard = await fetchGuildShardId(guildId);
       if (shard && shard.id !== undefined) {
-        console.log(shard);
         setSelectedShard(shard.id);
         setShardId(shard.id);
       } else {
