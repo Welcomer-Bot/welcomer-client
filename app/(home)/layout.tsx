@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />
-      <main className="flex-grow">
+      <main>
         {children}
       </main>
       <footer className="w-full flex items-center justify-center py-3">

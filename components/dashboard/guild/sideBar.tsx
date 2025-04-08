@@ -34,7 +34,7 @@ export function Sidebar({
   return (
     <>
       <aside
-        className={`sm:h-full h-fit z-30 sm:sticky sm:w-auto w-full bottom-0`}
+        className={`sm:h-screen h-fit z-30 sm:sticky sm:w-auto w-full bottom-0`}
       >
         <nav className="sm:h-full flex flex-row sm:flex-col bg-slate-800 border-r border-slate-700 shadow-sm sm:py-0 py-2 rounded-t-md sm:rounded-t-none">
           <div className="p-4 pb-2 justify-between items-center align-center sm:flex hidden">

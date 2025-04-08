@@ -29,7 +29,7 @@ export default async function Page({
     <div className="w-full h-full no-scrollbar sm:px-4 sm:py-3">
       <Card
         classNames={{
-          base: "w-full h-full ",
+          base: "w-full",
         }}
       >
         <CardHeader>
