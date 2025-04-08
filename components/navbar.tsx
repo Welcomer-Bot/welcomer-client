@@ -19,16 +19,13 @@ import NavbarUser from "./navbarUser";
 import { DiscordIcon, GithubIcon } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
-import Image from "next/image";
+import { Logo } from "./Logo";
 
 export const Navbar = () => {
   return (
-    <NextUINavbar maxWidth="lg" className="absolute" isBlurred>
+    <NextUINavbar maxWidth="lg" className="fixed" isBlurred>
       <NavbarBrand as="li">
-        <NextLink className="flex justify-start items-center" href="/">
-          <Image src="/logo.svg" alt={"Welcomer logo"} width={40} height={40} />
-          <p className="font-bold text-inherit">Welcomer</p>
-        </NextLink>
+        <Logo />
       </NavbarBrand>
       <NavbarContent justify="center" className="hidden sm:flex">
         {siteConfig.navItems.map((item) => (
