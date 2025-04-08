@@ -41,7 +41,7 @@ export default function Page() {
 
   return (
     <>
-      <Card className="m-10">
+      <Card className="m-10 max-w-7xl mx-auto w-full">
         <CardHeader className="flex justify-between items-center">
           <div className="flex flex-col">
             <h1 className="text-2xl w-full">Welcomer Status</h1>

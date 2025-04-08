@@ -22,7 +22,7 @@ export default async function Page() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center content-center h-full justify-center">
+      <div className="flex flex-wrap items-center content-center py-20 h-full justify-center">
         {guilds?.map((guild) => (
           <Card
             key={guild.id}

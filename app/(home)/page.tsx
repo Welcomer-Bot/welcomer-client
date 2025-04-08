@@ -13,7 +13,7 @@ import {
 
 export default function WelcomerBetaLanding() {
   return (
-    <div className="h-full pt-16 w-full px-0 bg-gray-900 text-white">
+    <div className="h-full pt-32 w-full px-0 bg-gray-900 text-white">
       {/* Hero Section */}
       <section className="py-20 text-center align-middle justify-center px-6">
         <h1 className="text-4xl font-bold">

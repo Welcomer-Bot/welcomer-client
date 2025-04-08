@@ -6,7 +6,6 @@ import { Providers } from "./providers";
 
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
-import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://beta.welcomer.app"),
@@ -40,7 +39,7 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
+          "bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
@@ -48,7 +47,6 @@ export default function RootLayout({
           {children}
           <ToastContainer />
         </Providers>
-      <Footer />
       </body>
     </html>
   );
