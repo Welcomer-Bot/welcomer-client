@@ -1,15 +1,23 @@
 import SendMenu from "@/components/dashboard/guild/editor/sendMenu";
 import Guild from "@/lib/discord/guild";
 import User from "@/lib/discord/user";
+import { ModuleName } from "@/types";
 import { Divider } from "@heroui/divider";
 import { CardPositionEditor } from "./card/editor";
 import ContentEditor from "./contentEditor";
 import EditorMessagePreview from "./editorMessagePreview";
 import { EmbedEditor } from "./embed/embedEditor";
 import SaveButton from "./saveButton";
-import { ModuleName } from "@/types";
 
-export async function Editor({ module, guild, user }: { module: ModuleName, guild: Guild; user: User }) {
+export async function Editor({
+  module,
+  guild,
+  user,
+}: {
+  module: ModuleName;
+  guild: Guild;
+  user: User;
+}) {
   await guild.getChannels();
   return (
     <div className="flex h-full w-full">
@@ -30,7 +38,7 @@ export async function Editor({ module, guild, user }: { module: ModuleName, guil
             <Divider className="my-4" />
             <h2 className="text-white text-lg font-semibold">Preview</h2>
           </div>
-          <EditorMessagePreview module={module} guild={guild} user={user} />
+          <EditorMessagePreview module={module} guild={guild.toObject()} user={user.toObject()} />
         </div>
       </div>
     </div>

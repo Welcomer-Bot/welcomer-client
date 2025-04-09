@@ -44,7 +44,9 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          {children}
+          <main className="min-h-screen w-full grid content-center">
+            {children}
+          </main>
           <ToastContainer />
         </Providers>
       </body>
