@@ -3,8 +3,9 @@ import { CardEditor } from "./cardEditor";
 import { CardLib } from "./cardLib";
 import { EditorImagePreview } from "./editorImagePreview";
 import SaveButton from "./saveButton";
+import { ModuleName } from "@/types";
 
-export function Editor() {
+export function Editor({module}: { module: ModuleName }) {
   return (
     <div className="flex h-full w-full">
       <div className="flex flex-col lg:flex-row h-full flex-auto w-full overflow-y-auto">
@@ -12,10 +13,10 @@ export function Editor() {
           <form className="px-5 pt-5 lg:pb-20 space-y-5 w-full relative">
             <CardLib />
             <Divider className="my-3" />
-            <CardEditor />
+            <CardEditor module={module} />
           </form>
         </div>
-        <SaveButton />
+        <SaveButton module={module} />
         <div className="block pb-24 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
           <EditorImagePreview />
         </div>

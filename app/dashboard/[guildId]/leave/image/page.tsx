@@ -7,7 +7,7 @@ export default function Page() {
       radius="none"
       className=" lg:overflow-y-clip overflow-y-scroll h-full"
     >
-      <Editor />
+      <Editor module="leaver" />
     </Card>
   );
 }

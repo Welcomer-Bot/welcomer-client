@@ -27,7 +27,7 @@ export function Sidebar({
   const pathname = usePathname();
   const [active, setActive] = useState("dashboard");
   useEffect(() => {
-    const active = pathname.split("/")[3] ?? "dashboard";
+    const active = pathname ? pathname.split("/")[3] ?? "dashboard" : "dashboard";
     setActive(active);
   }, [pathname]);
   const { isOpen, setIsOpen } = useContext(SidebarContext);
