@@ -64,13 +64,13 @@ export default function EmbedsViewer({ module }: { module: ModuleName }) {
               variant="bordered"
             >
               <AccordionItem key={1} aria-label="Author" title="Author">
-                <EmbedAuthorFields embedIndex={index} />
+                <EmbedAuthorFields embedIndex={index} module={module} />
               </AccordionItem>
               <AccordionItem key={2} aria-label="Body" title="Body">
-                <EmbedBodyFields embedIndex={index} />
+                <EmbedBodyFields embedIndex={index} module={module} />
               </AccordionItem>
               <AccordionItem key={3} aria-label="Footer" title="Footer">
-                <EmbedFooterFields embedIndex={index} />
+                <EmbedFooterFields embedIndex={index} module={module} />
               </AccordionItem>
               <AccordionItem key={4} aria-label="Images" title="Images">
                 Images
@@ -80,7 +80,7 @@ export default function EmbedsViewer({ module }: { module: ModuleName }) {
                 aria-label="Fields"
                 title={`Fields (${embed.fields.length}/25)`}
               >
-                <EmbedFieldsFields embedIndex={index} />
+                <EmbedFieldsFields embedIndex={index} module={module} />
               </AccordionItem>
             </Accordion>
           </AccordionItem>
