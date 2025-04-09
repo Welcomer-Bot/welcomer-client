@@ -38,7 +38,7 @@ export default async function Page({
       moduleName={"leaver"}
       guildId={guildId}
     >
-      <Card radius="none" className="w-full h-full">
+      <Card radius="none" className="w-full min-h-full">
         <LeaverCardHeader />
         {leaverParams ? (
           <>

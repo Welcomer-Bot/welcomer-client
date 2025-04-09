@@ -37,7 +37,7 @@ export default async function Page({
       moduleName="welcomer"
       guildId={guildId}
     >
-      <Card radius="none" className="w-full h-full">
+      <Card radius="none" className="w-full min-h-full">
         <WelcomeCardHeader />
         {welcomerParams ? (
           <>

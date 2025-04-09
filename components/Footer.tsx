@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
-import { Divider } from "@heroui/react";
+import { Divider } from "@heroui/divider";
 
 export default function Footer() {
   return (

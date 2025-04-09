@@ -24,12 +24,14 @@ export default function WelcomerBetaLanding() {
           <strong>Welcomer Premium for life</strong>!
         </p>
         <Button
-          className="mt-6 px-6 py-3 text-lg bg-blue-600 hover:bg-blue-700"
+          className="mt-6 px-10 py-8 text-lg bg-blue-600 hover:bg-blue-700"
           onPress={() => {
             redirect("/support");
           }}
         >
+          <h1 className="text-2xl font-bold">
           Join the Beta
+          </h1>
         </Button>
       </section>
 
