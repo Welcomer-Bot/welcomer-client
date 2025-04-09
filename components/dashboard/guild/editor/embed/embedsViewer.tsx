@@ -1,8 +1,8 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Button } from "@heroui/button";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
@@ -11,11 +11,10 @@ import { EmbedBodyFields } from "./body/EmbedBodyFields";
 import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
 import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
-export default function EmbedsViewer() {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+export default function EmbedsViewer({ module }: { module: ModuleName }) {
   const welcomerStore = useWelcomerStore();
   const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const store = module === "welcomer" ? welcomerStore : leaverStore;
   const embeds = store.embeds;
   const removeEmbed = store.removeEmbed;
   const setToPrevious = store.setToPreviousEmbed;

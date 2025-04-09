@@ -1,7 +1,7 @@
 "server-only";
 
 import { APIChannel, APIGuild, RESTAPIPartialCurrentUserGuild } from "discord-api-types/v10";
-import { addGuildToBeta, getChannels, getGuildBeta, leaveGuild, removeGuildToBeta } from "../dal";
+import { addGuildToBeta, getChannels, getGuildBeta, isPremiumGuild, leaveGuild, removeGuildToBeta } from "../dal";
 import { getGuildBanner, getGuildIcon } from "../utils";
 import { fetchWidget } from "./widget";
 
@@ -18,6 +18,7 @@ export type GuildObject = {
   owner?: boolean;
   channels: APIChannel[];
   beta?: boolean;
+  premium?: boolean
 };
 
 export default class Guild implements GuildObject {
@@ -33,6 +34,7 @@ export default class Guild implements GuildObject {
     this.owner = data.owner || false;
     this.channels = [];
     this.mutual = false;
+    isPremiumGuild(this.id).then((premium) => (this.premium = premium));
     getGuildBeta(this.id).then((beta) => (this.beta = !!beta));
   }
 
@@ -48,6 +50,7 @@ export default class Guild implements GuildObject {
   public owner?: boolean;
   public channels: APIChannel[];
   public beta?: boolean | undefined;
+  public premium?: boolean;
 
   fetchWidget() {
     return fetchWidget(this.id);
@@ -71,6 +74,7 @@ export default class Guild implements GuildObject {
       owner: this.owner,
       channels: this.channels,
       beta: this.beta,
+      premium: this.premium,
     };
   }
 

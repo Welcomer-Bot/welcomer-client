@@ -1,18 +1,19 @@
 "use client";
 
+import { GuildObject } from "@/lib/discord/guild";
+import { UserObject } from "@/lib/discord/user";
 import { LeaverStore, useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore, WelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import debounce from "debounce";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 const LazyMessagePreview = lazy(() => import("./messagePreview"));
 
-export default function EditorMessagePreview() {
+export default function EditorMessagePreview({module, guild, user}: {module: ModuleName, guild: GuildObject, user: UserObject}) {
   const [msg, setMsg] = useState<WelcomerStore | LeaverStore>();
   const debouncedSetMessage = debounce(setMsg, 250);
-  const moduleName = useModuleNameStore((state) => state.moduleName);
-  const store = moduleName === "welcomer" ? useWelcomerStore : useLeaverStore;
+  const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
 
   const state = store();
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function EditorMessagePreview() {
   return (
     <div className="overflow-x-scroll">
       <Suspense fallback={<div>Loading...</div>}>
-        <LazyMessagePreview msg={msg.toObject()} />
+        <LazyMessagePreview msg={msg.toObject()} guild={guild} user={user} />
       </Suspense>
     </div>
   );

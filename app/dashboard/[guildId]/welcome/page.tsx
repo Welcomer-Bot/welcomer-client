@@ -6,7 +6,7 @@ import RemoveModuleButton from "@/components/dashboard/guild/RemoveModuleButton"
 import AppInitializer from "@/components/dashboard/guild/editor/appInitialiser";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enableModuleButton";
-import { getGuild, getWelcomer } from "@/lib/dal";
+import { getGuild, getUser, getWelcomer } from "@/lib/dal";
 import { CompleteWelcomer } from "@/prisma/schema";
 
 export default async function Page({
@@ -17,8 +17,9 @@ export default async function Page({
   const { guildId } = await params;
   const welcomerParams = await getWelcomer(guildId);
   const guild = await getGuild(guildId);
+  const user = await getUser()
 
-  if (!guild) redirect("/dashboard");
+  if (!guild || !user) redirect("/dashboard");
 
   const WelcomeCardHeader = () => (
     <CardHeader className="flex justify-between">
@@ -43,7 +44,7 @@ export default async function Page({
           <>
             <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll overflow-x-hidden w-full ">
               <Divider className="mb-2" />
-              <Editor guild={guild} />
+              <Editor module="welcomer" guild={guild} user={user} />
             </div>
           </>
         ) : null}

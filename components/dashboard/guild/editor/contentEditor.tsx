@@ -1,13 +1,12 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Textarea } from "@heroui/input";
 
-export default function ContentEditor() {
-  const moduleName = useModuleNameStore((state) => state.moduleName);
-  const store = moduleName === "welcomer" ? useWelcomerStore : useLeaverStore;
+export default function ContentEditor({ module }: { module: ModuleName }) {
+  const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
   const state = store();
   const value = state.content;
   const setValue = state.setContent;

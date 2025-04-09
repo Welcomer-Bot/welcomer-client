@@ -1,21 +1,20 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Checkbox } from "@heroui/checkbox";
 
 export function EmbedFieldInlineInput({
   embedIndex,
   fieldIndex,
+  module,
 }: {
   embedIndex: number;
   fieldIndex: number;
+  module: ModuleName;
 }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
 
   const fieldInline = store.embeds[embedIndex].fields[fieldIndex].inline;
 

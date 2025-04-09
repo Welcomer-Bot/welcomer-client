@@ -1,19 +1,18 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Button } from "@heroui/button";
 
 export default function AddEmbedFieldsButton({
   embedIndex,
+  module,
 }: {
   embedIndex: number;
+  module: ModuleName;
 }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
 
   const addField = store.addField;
   const fieldsLength = store.embeds[embedIndex].fields.length;

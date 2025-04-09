@@ -1,17 +1,17 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Button } from "@heroui/button";
 
-export default function CreateEmbedButton() {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+export default function CreateEmbedButton({ module }: { module: ModuleName }) {
   const welcomerStore = useWelcomerStore();
   const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const store = module === "welcomer" ? welcomerStore : leaverStore;
   const addDefaultEmbed = store.addDefaultEmbed;
   const embedsLength = store.embeds.length;
+
   return (
     <Button
       className="sm:mr-4 sm:mb-0 mb-2"

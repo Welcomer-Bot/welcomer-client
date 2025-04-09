@@ -25,6 +25,7 @@ model GuildStats {
   membersEvent      Int      @default(0)
   guildId           String?
   createdAt         DateTime @default(now())
+  Guild             Guild?   @relation(fields: [guildId], references: [id])
 
   @@id([id, period, module, createdAt])
 }
@@ -43,6 +44,8 @@ model Welcomer {
   images              ImageCard[] @relation("WelcomerCard")
   activeCard          ImageCard?  @relation("WelcomerActiveCard", fields: [activeCardId], references: [id], onDelete: Cascade)
   activeCardToEmbed   Embed?      @relation("WelcomerActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id], onDelete: Cascade)
+
+  Guild Guild[]
 }
 
 model Leaver {
@@ -58,11 +61,13 @@ model Leaver {
   images              ImageCard[]
   activeCard          ImageCard?  @relation("LeaverActiveCard", fields: [activeCardId], references: [id], onDelete: Cascade)
   activeCardToEmbed   Embed?      @relation("LeaverActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id], onDelete: Cascade)
+
+  Guild Guild[]
 }
 
 model DM {
   /// @zod.optional()
-  id  String       @id
+  id        String    @id
   message   String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -83,7 +88,7 @@ model Embed {
   updated                 DateTime?    @default(now())
   welcomerId              String?
   leaverId                String?
-  DMId                    String?         @unique
+  DMId                    String?      @unique
   color                   String?
   DM                      DM?          @relation(fields: [DMId], references: [id], onDelete: Cascade)
   leaver                  Leaver?      @relation(fields: [leaverId], references: [guildId], onDelete: Cascade)
@@ -202,8 +207,29 @@ model User {
 
 model betaGuild {
   id        String    @id
+  guild     Guild     @relation(fields: [id], references: [id])
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model premiumGuild {
+  id        String    @id
+  guild     Guild     @relation(fields: [id], references: [id])
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Guild {
+  id              String       @id
+  createdAt       DateTime?    @default(now())
+  updatedAt       DateTime?    @updatedAt
+  welcomer        Welcomer?    @relation(fields: [welcomerguildId], references: [guildId])
+  welcomerguildId String?
+  leaver          Leaver?      @relation(fields: [leaverguildId], references: [guildId])
+  leaverguildId   String?
+  guildStats      GuildStats[]
+  betaGuild       betaGuild?
+  premiumGuild    premiumGuild?
 }
 
 enum Period {

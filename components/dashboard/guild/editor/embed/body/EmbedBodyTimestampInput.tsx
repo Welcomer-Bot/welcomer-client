@@ -1,8 +1,8 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { DatePicker } from "@heroui/date-picker";
 import { Divider } from "@heroui/divider";
 import { Switch } from "@heroui/switch";
@@ -11,19 +11,16 @@ import { useState } from "react";
 
 export function EmbedBodyTimestampInput({
   embedIndex,
+  module,
 }: {
   embedIndex: number;
+  module: ModuleName;
 }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
 
   const timestamp = store.embeds[embedIndex].timestamp;
-
   const timestampNow = store.embeds[embedIndex].timestampNow ?? false;
-
-  const setTimestamp = useWelcomerStore((state) => state.setEmbedTimestamp);
+  const setTimestamp = store.setEmbedTimestamp;
   const setTimestampNow = store.setEmbedTimestampNow;
 
   const [timestampEnabled, setTimestampEnabled] = useState(false);

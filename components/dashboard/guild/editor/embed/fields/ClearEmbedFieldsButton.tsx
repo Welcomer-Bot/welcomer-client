@@ -3,18 +3,19 @@
 import { Button } from "@heroui/button";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 
 export default function ClearEmbedFieldsButton({
+  module,
   embedIndex,
 }: {
+  module: ModuleName  
   embedIndex: number;
 }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
   const welcomerStore = useWelcomerStore();
   const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const store = module === "welcomer" ? welcomerStore : leaverStore;
 
   const clearFields = store.clearFields;
   const fieldsLength = store.embeds[embedIndex].fields.length;

@@ -1,7 +1,7 @@
 import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Button } from "@heroui/button";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import AddEmbedFieldsButton from "./AddEmbedFieldsButton";
@@ -10,11 +10,14 @@ import { EmbedFieldInlineInput } from "./EmbedFieldInlineInput";
 import { EmbedFieldNameInput } from "./EmbedFieldNameInput";
 import { EmbedFieldValueInput } from "./EmbedFieldValueInput";
 
-export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+export function EmbedFieldsFields({
+  embedIndex,
+  module,
+}: {
+  embedIndex: number;
+  module: ModuleName;
+}) {
+  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
 
   const fields = store.embeds[embedIndex].fields;
   const removeField = store.removeField;
@@ -56,21 +59,27 @@ export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
               </Button>
             </div>
             <div className="space-y-2">
-              <EmbedFieldNameInput embedIndex={embedIndex} fieldIndex={index} />
+              <EmbedFieldNameInput
+                embedIndex={embedIndex}
+                fieldIndex={index}
+                module={module}
+              />
               <EmbedFieldValueInput
                 embedIndex={embedIndex}
                 fieldIndex={index}
+                module={module}
               />
               <EmbedFieldInlineInput
                 embedIndex={embedIndex}
                 fieldIndex={index}
+                module={module}
               />
             </div>
           </EmbedsFieldsAccordionWrapper>
         </div>
       ))}
       <div className="sm:flex-row flex-col flex my-5">
-        <AddEmbedFieldsButton embedIndex={embedIndex} />
+        <AddEmbedFieldsButton embedIndex={embedIndex} module={module} />
         <ClearEmbedFieldsButton embedIndex={embedIndex} />
       </div>
     </div>

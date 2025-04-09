@@ -733,3 +733,11 @@ export const getUserGuildsByAccessToken = cache(async (accessToken: string) => {
   });
   return guilds.map((guild) => new Guild(guild));
 });
+
+export const isPremiumGuild = cache(async (guildId: string) => {
+  return !!await prisma.premiumGuild.findUnique({
+    where: {
+      id: guildId,
+    },
+  });
+});

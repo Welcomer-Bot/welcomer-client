@@ -1,15 +1,19 @@
 "use client";
+
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { APIChannel } from "discord.js";
 
-export default function SendMenu({ channels }: { channels: APIChannel[] }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-
-  const store =
-    currentModuleName === "welcomer" ? useWelcomerStore : useLeaverStore;
+export default function SendMenu({
+  channels,
+  module,
+}: {
+  channels: APIChannel[];
+  module: ModuleName;
+}) {
+  const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
   const updateChannel = store().setChannelId;
   const currentChannel = store().channelId;
 

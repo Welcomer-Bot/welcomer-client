@@ -1,4 +1,3 @@
-import { getGuildData, getUserData } from "@/lib/dal";
 import { GuildObject } from "@/lib/discord/guild";
 import { generateImage } from "@/lib/discord/image";
 import { parseMessageText, parseText } from "@/lib/discord/text";
@@ -24,6 +23,8 @@ import { ReactNode, useEffect, useState } from "react";
 
 export default function MessagePreview({
   msg,
+  guild,
+  user,
 }: {
   msg:
     | CompleteWelcomer
@@ -31,10 +32,10 @@ export default function MessagePreview({
         deletedEmbeds: CompleteEmbed[];
         deletedFields: CompleteEmbedField[];
       });
+  guild: GuildObject;
+  user: UserObject;
 }) {
   const [image, setImage] = useState<string | undefined>(undefined);
-  const [user, setUser] = useState<UserObject | null>(null);
-  const [guild, setGuild] = useState<GuildObject | null>(null);
   const [text, setText] = useState<{
     content?: string | ReactNode[] | null;
     embeds?: {
@@ -103,14 +104,6 @@ export default function MessagePreview({
       };
       loadImage();
     }
-    const loadUserAndGuild = async () => {
-      if (!msg.guildId) return;
-      const userData = await getUserData();
-      setUser(userData);
-      const guildData = await getGuildData(msg.guildId);
-      setGuild(guildData);
-    };
-    loadUserAndGuild();
   }, [msg.activeCard, msg.guildId, msg]);
 
   useEffect(() => {

@@ -1,15 +1,20 @@
 "use client";
 
 import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
 import { useWelcomerStore } from "@/state/welcomer";
+import { ModuleName } from "@/types";
 import { Input } from "@heroui/input";
 
-export function EmbedAuthorIconInput({ embedIndex }: { embedIndex: number }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
+export function EmbedAuthorIconInput({
+  embedIndex,
+  module,
+}: {
+  embedIndex: number;
+  module: ModuleName;
+}) {
   const welcomerStore = useWelcomerStore();
   const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
+  const store = module === "welcomer" ? welcomerStore : leaverStore;
   const icon = store.embeds[embedIndex].author?.iconUrl;
   const setIcon = store.setEmbedAuthorIcon;
 
