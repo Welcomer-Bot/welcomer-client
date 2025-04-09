@@ -207,7 +207,12 @@ export async function createGuildStats(
   if (!latestStats) {
     return await prisma.guildStats.create({
       data: {
-        guildId,
+        Guild: {
+          connectOrCreate: {
+            where: { id: guildId },
+            create: { id: guildId },
+          },
+        },
         period,
         module,
         createdAt: new Date(),
@@ -241,7 +246,12 @@ const defaultLeaverMessage = {
 export async function createWelcomer(guildId: string) {
   const welcomer = await prisma.welcomer.create({
     data: {
-      guildId,
+      Guild: {
+        connectOrCreate: {
+          where: { id: guildId },
+          create: { id: guildId },
+        },
+      },
       content: defaultWelcomerMessage.content,
 
       embeds: {
@@ -269,7 +279,12 @@ export async function createWelcomer(guildId: string) {
 export async function createLeaver(guildId: string) {
   const leaver = await prisma.leaver.create({
     data: {
-      guildId,
+      Guild: {
+        connectOrCreate: {
+          where: { id: guildId },
+          create: { id: guildId },
+        },
+      },
       content: defaultLeaverMessage.content,
 
       embeds: {
@@ -492,7 +507,12 @@ export async function addGuildToBeta(guildId: string) {
   try {
     return await prisma.betaGuild.create({
       data: {
-        id: guildId,
+        guild: {
+          connectOrCreate: {
+            where: { id: guildId },
+            create: { id: guildId },
+          },
+        },
       },
     });
   } catch (err) {
@@ -741,3 +761,16 @@ export const isPremiumGuild = cache(async (guildId: string) => {
     },
   });
 });
+
+export const setPremiumGuild = cache(async (guildId: string) => {
+  return await prisma.premiumGuild.create({
+    data: {
+      guild: {
+        connectOrCreate: {
+          where: { id: guildId },
+          create: { id: guildId },
+        },
+      },
+    },
+  });
+})

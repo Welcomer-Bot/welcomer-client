@@ -16,7 +16,7 @@ datasource db {
 }
 
 model GuildStats {
-  id                Int      @default(autoincrement())
+  id                Int    @default(autoincrement())  
   period            Period
   module            Module
   generatedImages   Int      @default(0)
