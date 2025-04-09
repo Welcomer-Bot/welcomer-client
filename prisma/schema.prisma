@@ -44,8 +44,8 @@ model Welcomer {
   images              ImageCard[] @relation("WelcomerCard")
   activeCard          ImageCard?  @relation("WelcomerActiveCard", fields: [activeCardId], references: [id], onDelete: Cascade)
   activeCardToEmbed   Embed?      @relation("WelcomerActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id], onDelete: Cascade)
-
-  Guild Guild[]
+  /// @zod.nullable()
+  Guild Guild?   @relation(fields: [guildId], references: [id]) /// @zod.optional()
 }
 
 model Leaver {
@@ -61,8 +61,8 @@ model Leaver {
   images              ImageCard[]
   activeCard          ImageCard?  @relation("LeaverActiveCard", fields: [activeCardId], references: [id], onDelete: Cascade)
   activeCardToEmbed   Embed?      @relation("LeaverActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id], onDelete: Cascade)
-
-  Guild Guild[]
+  /// @zod.nullable()
+  Guild Guild?   @relation(fields: [guildId], references: [id]) /// @zod.optional()
 }
 
 model DM {
@@ -223,10 +223,8 @@ model Guild {
   id              String       @id
   createdAt       DateTime?    @default(now())
   updatedAt       DateTime?    @updatedAt
-  welcomer        Welcomer?    @relation(fields: [welcomerguildId], references: [guildId])
-  welcomerguildId String?
-  leaver          Leaver?      @relation(fields: [leaverguildId], references: [guildId])
-  leaverguildId   String?
+  welcomer        Welcomer?
+  leaver          Leaver?
   guildStats      GuildStats[]
   betaGuild       betaGuild?
   premiumGuild    premiumGuild?
