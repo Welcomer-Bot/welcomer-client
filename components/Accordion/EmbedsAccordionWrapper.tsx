@@ -8,14 +8,15 @@ import React from "react";
 
 export default function EmbedsAccordionWrapper({
   children,
-  module
+  module,
 }: {
-    children: React.ReactNode;
-  module: ModuleName
+  children: React.ReactNode;
+  module: ModuleName;
 }) {
   const welcomerStore = useWelcomerStore();
   const leaverStore = useLeaverStore();
   const store = module === "welcomer" ? welcomerStore : leaverStore;
+
   const embedsLength = store.embeds.length;
 
   return (

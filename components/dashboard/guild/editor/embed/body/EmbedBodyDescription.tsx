@@ -12,7 +12,9 @@ export function EmbedBodyDescriptionInput({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = module === "welcomer" ? welcomerStore : leaverStore;
   const description = store.embeds[embedIndex].description;
   const setDescription = store.setEmbedDescription;
 

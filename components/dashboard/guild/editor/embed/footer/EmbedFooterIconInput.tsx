@@ -12,8 +12,10 @@ export function EmbedFooterIconInput({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
-  const icon = store.embeds[embedIndex].footer?.iconUrl;
+    const welcomerStore = useWelcomerStore();
+    const leaverStore = useLeaverStore();
+    const store = module === "welcomer" ? welcomerStore : leaverStore;
+const icon = store.embeds[embedIndex].footer?.iconUrl;
 
   const setIcon = store.setEmbedFooterIcon;
 

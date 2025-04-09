@@ -12,7 +12,9 @@ export function EmbedFooterNameInput({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+   const welcomerStore = useWelcomerStore();
+   const leaverStore = useLeaverStore();
+   const store = module === "welcomer" ? welcomerStore : leaverStore;
   const footer = store.embeds[embedIndex].footer?.text;
   const setFooter = store.setEmbedFooterText;
 

@@ -12,8 +12,10 @@ export function EmbedBodyColorInput({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
-  const embedColor = store.embeds[embedIndex].color;
+    const welcomerStore = useWelcomerStore();
+    const leaverStore = useLeaverStore();
+    const store = module === "welcomer" ? welcomerStore : leaverStore;
+ const embedColor = store.embeds[embedIndex].color;
   const setEmbedColor = store.setEmbedColor;
 
   return (

@@ -16,8 +16,10 @@ export function EmbedBodyTimestampInput({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
-
+   const welcomerStore = useWelcomerStore();
+   const leaverStore = useLeaverStore();
+   const store = module === "welcomer" ? welcomerStore : leaverStore;
+ 
   const timestamp = store.embeds[embedIndex].timestamp;
   const timestampNow = store.embeds[embedIndex].timestampNow ?? false;
   const setTimestamp = store.setEmbedTimestamp;

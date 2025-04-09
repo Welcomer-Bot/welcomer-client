@@ -9,6 +9,7 @@ export default function RemoveEmbedsButton({ module }: { module: ModuleName }) {
   const welcomerStore = useWelcomerStore();
   const leaverStore = useLeaverStore();
   const store = module === "welcomer" ? welcomerStore : leaverStore;
+
   const clearEmbeds = store.clearEmbeds;
   const embedsLength = store.embeds.length;
 

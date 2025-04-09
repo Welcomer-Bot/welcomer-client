@@ -14,7 +14,9 @@ export function EmbedFieldInlineInput({
   fieldIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = module === "welcomer" ? welcomerStore : leaverStore;
 
   const fieldInline = store.embeds[embedIndex].fields[fieldIndex].inline;
 

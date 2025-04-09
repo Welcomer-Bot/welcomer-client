@@ -12,7 +12,9 @@ export function EmbedAuthorNameInput({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+   const welcomerStore = useWelcomerStore();
+   const leaverStore = useLeaverStore();
+   const store = module === "welcomer" ? welcomerStore : leaverStore;
   const author = store.embeds[embedIndex].author?.name;
   const setAuthor = store.setEmbedAuthorName;
 

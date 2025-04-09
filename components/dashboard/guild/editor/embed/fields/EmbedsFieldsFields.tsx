@@ -17,7 +17,9 @@ export function EmbedFieldsFields({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
+  const welcomerStore = useWelcomerStore();
+  const leaverStore = useLeaverStore();
+  const store = module === "welcomer" ? welcomerStore : leaverStore;
 
   const fields = store.embeds[embedIndex].fields;
   const removeField = store.removeField;
@@ -80,7 +82,7 @@ export function EmbedFieldsFields({
       ))}
       <div className="sm:flex-row flex-col flex my-5">
         <AddEmbedFieldsButton embedIndex={embedIndex} module={module} />
-        <ClearEmbedFieldsButton embedIndex={embedIndex} />
+        <ClearEmbedFieldsButton module={module} embedIndex={embedIndex} />
       </div>
     </div>
   );

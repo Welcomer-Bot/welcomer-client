@@ -12,8 +12,10 @@ export function EmbedBodyTitleInput({
   embedIndex: number;
   module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore() : useLeaverStore();
-  const embedTitle = store.embeds[embedIndex].title ?? "";
+   const welcomerStore = useWelcomerStore();
+   const leaverStore = useLeaverStore();
+   const store = module === "welcomer" ? welcomerStore : leaverStore;
+ const embedTitle = store.embeds[embedIndex].title ?? "";
   const setEmbedTitle = store.setEmbedTitle;
 
   return (
