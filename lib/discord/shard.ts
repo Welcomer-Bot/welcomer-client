@@ -1,5 +1,6 @@
 "use server";
 
+import { unstable_cache } from "next/cache";
 import {statusManager} from "./status";
 
 export async function fetchGuildShardId(guildId: string) {
@@ -15,6 +16,14 @@ export async function fetchGuildShardId(guildId: string) {
       });
 }
 
-export async function fetchClustersShardsSatus() {
-  return statusManager.getStatus();
-}
+
+export const fetchClustersShardsSatus = unstable_cache(
+  async () => {
+    return statusManager.getStatus();
+  },
+  ["status"],
+  {
+    revalidate: 60,
+    tags: ["status"],
+  }
+);

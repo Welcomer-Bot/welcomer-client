@@ -12,9 +12,27 @@ export default async function Page() {
   const guilds = await getGuilds();
   if (!guilds || guilds?.length === 0) {
     return (
-      <div className="flex flex-col items-center flex-wrap h-full justify-center gap-4 py-8 md:py-10">
-        <div className="inline-block justify-center text-wrap">
+      <div className="flex flex-col items-center flex-wrap h-full justify-center gap-4 py-8 md:py-10 ">
+        <div className="flex flex-col justify-center text-center text-wrap max-w-lg gap-3">
+          <div className="gap-2">
+
           No guilds found
+          <p className="text-sm text-gray-400">
+            Please invite the bot to your server and verfiy you have at minimum
+            &quot;Manage Server&quot; permissions to start using it.
+          </p>
+          </div>
+          <Link
+            href={`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot`}
+          >
+            <Button
+              className="right ml-2 font-bold"
+              color="default"
+              type="submit"
+            >
+              Invite Bot
+            </Button>
+          </Link>
         </div>
       </div>
     );
@@ -22,7 +40,7 @@ export default async function Page() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center content-center py-20 h-full justify-center">
+      <div className="flex flex-wrap items-center content-center h-full justify-center">
         {guilds?.map((guild) => (
           <Card
             key={guild.id}

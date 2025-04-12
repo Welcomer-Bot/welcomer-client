@@ -16,14 +16,14 @@ export default function Page() {
   useEffect(() => {
     async function updateStatus() {
       const statusUpdate = await fetchClustersShardsSatus();
-      setStatus(statusUpdate); // Update state after mount
+      setStatus(statusUpdate);
     }
-    updateStatus(); // Initial fetch of status
+    updateStatus();
     const interval = setInterval(() => {
-      updateStatus(); // Fetch status every 10 seconds
-    }, 20000); // Update every 10 seconds to match `checkForStaleData`
+      updateStatus(); 
+    }, 20000);
 
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function Page() {
       setUpdateTime((prev) => prev - 1);
     }, 1000); // Update every second
 
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, [status]);
 
   const allGood = status.every((cluster) =>
@@ -40,8 +40,8 @@ export default function Page() {
   );
 
   return (
-    <>
-      <Card className="m-10 max-w-7xl mx-auto w-full">
+    <div className="mx-5">
+      <Card className="m-10 max-w-7xl h-fit mx-auto w-full">
         <CardHeader className="flex justify-between items-center">
           <div className="flex flex-col">
             <h1 className="text-2xl w-full">Welcomer Status</h1>
@@ -150,6 +150,6 @@ export default function Page() {
           </p>
         </CardFooter>
       </Card>
-    </>
+    </div>
   );
 }
