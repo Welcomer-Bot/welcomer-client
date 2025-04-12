@@ -42,7 +42,10 @@ export default function Footer() {
               >
                 Vote
               </Link>
-              <Link href="/github" className="text-gray-400 hover:text-white">
+              <Link
+                href="https://github.com/Welcomer-Bot"
+                className="text-gray-400 hover:text-white"
+              >
                 Github
               </Link>
               <Link href="/support" className="text-gray-400 hover:text-white">
