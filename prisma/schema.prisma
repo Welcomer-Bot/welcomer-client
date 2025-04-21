@@ -55,8 +55,8 @@ model Source {
   images              ImageCard[] @relation("SourceCard")
   activeCard          ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id], onDelete: Cascade)
   activeCardToEmbed   Embed?      @relation("SourceActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id], onDelete: Cascade)
-  Guild               Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey")
-  ActiveGuild         Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey")
+  Guild               Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey",  onDelete: Cascade)
+  ActiveGuild         Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey", onDelete: Cascade)
 }
 
 model Embed {
@@ -89,7 +89,7 @@ model EmbedImage {
   heigth    Int?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  embed     Embed?    @relation(fields: [embedId], references: [id])
+  embed     Embed?    @relation(fields: [embedId], references: [id], onDelete: Cascade)
 }
 
 model EmbedAuthor {
@@ -101,7 +101,7 @@ model EmbedAuthor {
   url       String?   @db.VarChar(256)
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  embed     Embed?    @relation(fields: [embedId], references: [id])
+  embed     Embed?    @relation(fields: [embedId], references: [id], onDelete: Cascade)
 }
 
 model EmbedField {
@@ -113,7 +113,7 @@ model EmbedField {
   inline    Boolean?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  embed     Embed?    @relation(fields: [embedId], references: [id])
+  embed     Embed?    @relation(fields: [embedId], references: [id], onDelete: Cascade)
 }
 
 model EmbedFooter {
@@ -124,7 +124,7 @@ model EmbedFooter {
   iconUrl   String?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  embed     Embed?    @relation(fields: [embedId], references: [id])
+  embed     Embed?    @relation(fields: [embedId], references: [id], onDelete: Cascade)
 }
 
 model ImageCard {
@@ -146,7 +146,7 @@ model ImageCard {
   mainTextId        Int?           @unique
   secondTextId      Int?           @unique
   nicknameTextId    Int?           @unique
-  Source            Source         @relation("SourceCard", fields: [sourceId], references: [id])
+  Source            Source         @relation("SourceCard", fields: [sourceId], references: [id],  onDelete: Cascade)
   sourceId          Int
   SourceActive      Source?        @relation("SourceActiveCard")
 }
@@ -170,7 +170,7 @@ model Session {
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
   userId      String
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id],  onDelete: Cascade)
 }
 
 model User {
@@ -183,14 +183,14 @@ model User {
 
 model betaGuild {
   id        String    @id
-  guild     Guild     @relation(fields: [id], references: [id])
+  guild     Guild     @relation(fields: [id], references: [id], onDelete: Cascade)
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }
 
 model premiumGuild {
   id        String    @id
-  guild     Guild     @relation(fields: [id], references: [id])
+  guild     Guild     @relation(fields: [id], references: [id], onDelete: Cascade)
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }

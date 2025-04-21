@@ -1,9 +1,13 @@
 "use client";
 
-import { createContext, useContext, useRef, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
 import { useStore } from "zustand";
 
-import { createImageStore, type ImageStore, type ImageState } from "@/state/image";
+import {
+  createImageStore,
+  type ImageState,
+  type ImageStore,
+} from "@/state/image";
 export type ImageStoreAPI = ReturnType<typeof createImageStore>;
 
 export const ImageStoreContext = createContext<ImageStoreAPI | undefined>(
@@ -24,11 +28,14 @@ export const ImageStoreProvider = ({
   if (storeRef.current === null) {
     storeRef.current = createImageStore(initialState);
   }
-  storeRef.current.setState((state) => ({
-    ...state,
-    ...initialState,
-    edited: false,
-  }));
+  useEffect(() => {
+    if (storeRef.current && initialState) {
+      storeRef.current.setState((prevState) => ({
+        ...prevState,
+        ...initialState,
+      }));
+    }
+  }, [initialState]);
 
   return (
     <ImageStoreContext.Provider value={storeRef.current}>

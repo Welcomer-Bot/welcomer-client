@@ -35,14 +35,11 @@ export default function SaveButton() {
             color="primary"
             onPress={async () => {
               setIsLoading(true);
-              const { done, error, data: res } = await updateCards(data, guildId);
+              const { done, error } = await updateCards(data, guildId);
               if (error) {
                 toast.error(error);
               } else if (done) {
-                store.setState(() => ({
-                  ...res,
-                  edited: false,
-                }));
+               
                 toast.success("Settings updated successfully !");
               }
               setIsLoading(false);

@@ -198,10 +198,10 @@ export async function updateSource(store: SourceState) {
         })),
       },
       activeCard:
-        store.activeCard && store.activeCardToEmbedId !== -2
+        store.activeCardId && store.activeCardToEmbedId !== -2
           ? {
               connect: {
-                id: store.activeCard.id,
+                id: store.activeCardId,
               },
             }
           : {

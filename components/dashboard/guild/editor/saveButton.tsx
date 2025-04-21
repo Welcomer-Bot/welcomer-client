@@ -32,11 +32,6 @@ export default function SaveButton() {
             if (res?.error) {
               toast.error(res.error);
             } else if (res.done) {
-              store.setState(() => ({
-                ...res,
-                edited: false,
-              }));
-
               toast.success("Settings updated successfully !");
             }
             setIsLoading(false);

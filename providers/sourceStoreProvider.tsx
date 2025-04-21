@@ -1,10 +1,16 @@
 "use client";
 
-import { createContext, useContext, useRef, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useStore } from "zustand";
 
-import { createSourceStore, type SourceStore } from "@/state/source";
 import { CompleteSource } from "@/prisma/schema";
+import { createSourceStore, type SourceStore } from "@/state/source";
 export type SourceStoreAPI = ReturnType<typeof createSourceStore>;
 
 export const SourceStoreContext = createContext<SourceStoreAPI | undefined>(
@@ -23,11 +29,15 @@ export const SourceStoreProvider = ({
   if (storeRef.current === null) {
     storeRef.current = createSourceStore(initialState);
   }
-  storeRef.current.setState((state) => ({
-    ...state,
-    ...initialState,
-    edited: false,
-  }));
+
+  useEffect(() => {
+    if (storeRef.current && initialState) {
+      storeRef.current.setState((prevState) => ({
+        ...prevState,
+        ...initialState,
+      }));
+    }
+  }, [initialState]);
 
   return (
     <SourceStoreContext.Provider value={storeRef.current}>
