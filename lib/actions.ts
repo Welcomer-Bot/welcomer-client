@@ -220,8 +220,6 @@ export async function updateSource(store: SourceState) {
     },
   });
 
-  // console.log("res", res);
-console.log(`/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`);
   revalidatePath(
     `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`
   );
