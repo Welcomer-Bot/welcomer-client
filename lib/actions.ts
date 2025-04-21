@@ -35,7 +35,7 @@ export async function createSource(
   if (!guild) {
     throw new Error("You do not have permission to manage this guild");
   }
-  createSourceRequest(guild.id, source);
+  await createSourceRequest(guild.id, source);
   revalidatePath(
     `/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`
   );
@@ -50,7 +50,7 @@ export async function removeSource(
   if (!guild) {
     throw new Error("You do not have permission to manage this guild");
   }
-  deleteSource(guildId, sourceId);
+  await deleteSource(guildId, sourceId);
 
   revalidatePath(
     `/dashboard/${guildId}/${sourceType.toLowerCase().slice(0, -1)}`

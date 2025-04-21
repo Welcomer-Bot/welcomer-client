@@ -2,6 +2,7 @@
 import { createSource } from "@/lib/actions";
 import { Button } from "@heroui/button";
 import { SourceType } from "@prisma/client";
+import { useState } from "react";
 
 export default function EnableModuleButton({
   guildId,
@@ -10,11 +11,14 @@ export default function EnableModuleButton({
   guildId: string;
   sourceType: SourceType;
 }) {
+  const [loading, setLoading] = useState(false);
   return (
     <Button
       color="primary"
-      onPress={() => {
-        createSource(guildId, sourceType);
+      isLoading={loading}
+      onPress={async () => {
+        setLoading(true);
+        await createSource(guildId, sourceType);
       }}
     >
       Enable {sourceType}
