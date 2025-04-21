@@ -5,7 +5,7 @@ import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { extractSourceState } from "@/state/source";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore } from "zustand";
 
@@ -15,7 +15,7 @@ export default function SaveButton() {
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
   const edited = useStore(store, (state) => state.edited);
   const storeState = useStore(store);
-  const data = useMemo(() => extractSourceState(storeState), [storeState]);
+  const data = extractSourceState(storeState);
 
   if (!edited) return null;
   return (
@@ -32,6 +32,11 @@ export default function SaveButton() {
             if (res?.error) {
               toast.error(res.error);
             } else if (res.done) {
+              store.setState(() => ({
+                ...res,
+                edited: false,
+              }));
+
               toast.success("Settings updated successfully !");
             }
             setIsLoading(false);

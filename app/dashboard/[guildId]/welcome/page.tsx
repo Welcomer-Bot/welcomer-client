@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import RemoveModuleButton from "@/components/dashboard/guild/RemoveModuleButton";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enableModuleButton";
-import { getGuild, getSource, getUser } from "@/lib/dal";
+import { getGuild, getSources, getUser } from "@/lib/dal";
 
 export default async function Page({
   params,
@@ -13,7 +13,8 @@ export default async function Page({
   params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
-  const welcomerParams = await getSource(guildId, 1);
+  const source = await getSources(guildId, "Welcomer");
+  const welcomerParams = source?.[0];
   const guild = await getGuild(guildId);
   const user = await getUser();
 

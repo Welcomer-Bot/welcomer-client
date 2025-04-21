@@ -24,6 +24,11 @@ export const ImageStoreProvider = ({
   if (storeRef.current === null) {
     storeRef.current = createImageStore(initialState);
   }
+  storeRef.current.setState((state) => ({
+    ...state,
+    ...initialState,
+    edited: false,
+  }));
 
   return (
     <ImageStoreContext.Provider value={storeRef.current}>

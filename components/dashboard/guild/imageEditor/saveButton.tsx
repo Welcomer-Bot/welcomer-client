@@ -6,7 +6,7 @@ import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { extractImageState } from "@/state/image";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore } from "zustand";
 
@@ -21,8 +21,7 @@ export default function SaveButton() {
   const guildId = useStore(sourceStore, (state) => state.guildId);
   const currentStore = useStore(store, (state) => state);
   const storeState = useStore(store);
-  const data = useMemo(() => extractImageState(storeState), [storeState]);
-  
+  const data = extractImageState(storeState);
 
   if (!currentStore) return null;
   if (currentStore.edited === false) return null;
@@ -36,10 +35,14 @@ export default function SaveButton() {
             color="primary"
             onPress={async () => {
               setIsLoading(true);
-              const { done, error } = await updateCards(data, guildId);
+              const { done, error, data: res } = await updateCards(data, guildId);
               if (error) {
                 toast.error(error);
               } else if (done) {
+                store.setState(() => ({
+                  ...res,
+                  edited: false,
+                }));
                 toast.success("Settings updated successfully !");
               }
               setIsLoading(false);

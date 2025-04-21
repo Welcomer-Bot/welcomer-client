@@ -23,6 +23,11 @@ export const SourceStoreProvider = ({
   if (storeRef.current === null) {
     storeRef.current = createSourceStore(initialState);
   }
+  storeRef.current.setState((state) => ({
+    ...state,
+    ...initialState,
+    edited: false,
+  }));
 
   return (
     <SourceStoreContext.Provider value={storeRef.current}>

@@ -9,7 +9,7 @@ export default function ContentEditor() {
     const store = useContext(SourceStoreContext);
     if (!store) throw new Error("Missing SourceStore.Provider in the tree");
     const value = useStore(store, (state) => state.content);
-    const setValue = useStore(store, (state) => state.setChannelId);
+    const setValue = useStore(store, (state) => state.setContent);
 
   return (
     <Textarea

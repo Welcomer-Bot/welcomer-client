@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import { ImageState } from "@/state/image";
 import { SourceState } from "@/state/source";
-import { SourceType } from "@prisma/client";
+import { Source, SourceType } from "@prisma/client";
 import {
   createSource as createSourceRequest,
   deleteSource,
@@ -36,7 +36,9 @@ export async function createSource(
     throw new Error("You do not have permission to manage this guild");
   }
   createSourceRequest(guild.id, source);
-  revalidatePath(`/dashboard/${guildId}/${source.toLowerCase()}`);
+  revalidatePath(
+    `/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`
+  );
 }
 
 export async function removeSource(
@@ -50,12 +52,15 @@ export async function removeSource(
   }
   deleteSource(guildId, sourceId);
 
-  revalidatePath(`/dashboard/${guildId}/${sourceType.toLowerCase()}`);
+  revalidatePath(
+    `/dashboard/${guildId}/${sourceType.toLowerCase().slice(0, -1)}`
+  );
 }
 
 export async function updateSource(store: SourceState) {
   const guildId = store.guildId;
   const sourceId = store.id;
+  console.log("store", store);
   if (!guildId) {
     return {
       error: "You need to select a guild",
@@ -92,11 +97,11 @@ export async function updateSource(store: SourceState) {
     };
   }
 
-  const embedsToCreate = store.embeds.filter((embed) => embed.id === null);
+  const embedsToCreate = store.embeds.filter((embed) => embed.id == undefined);
   const embedsToDelete = store.deletedEmbeds.filter(
-    (embed) => embed.id !== null
+    (embed) => embed.id != undefined
   );
-  const embedsToUpdate = store.embeds.filter((embed) => embed.id !== null);
+  const embedsToUpdate = store.embeds.filter((embed) => embed.id != undefined);
 
   const res = await prisma.source.update({
     where: {
@@ -128,11 +133,15 @@ export async function updateSource(store: SourceState) {
                 },
               }
             : undefined,
-          fields: embed.fields?.map((field) => ({
-            name: field.name,
-            value: field.value,
-            inline: field.inline,
-          })),
+          fields: embed.fields
+            ? {
+                create: embed.fields.map((field) => ({
+                  name: field.name,
+                  value: field.value,
+                  inline: field.inline,
+                })),
+              }
+            : undefined,
         })),
         deleteMany: embedsToDelete.map((embed) => ({
           id: embed.id,
@@ -188,15 +197,16 @@ export async function updateSource(store: SourceState) {
           },
         })),
       },
-      activeCard: store.activeCard && store.activeCardToEmbedId !== -2
-        ? {
-            connect: {
-              id: store.activeCard.id,
+      activeCard:
+        store.activeCard && store.activeCardToEmbedId !== -2
+          ? {
+              connect: {
+                id: store.activeCard.id,
+              },
+            }
+          : {
+              disconnect: true,
             },
-          }
-        : {
-            disconnect: true,
-          },
       activeCardToEmbed:
         store.activeCardToEmbedId && store.activeCardToEmbedId >= 0
           ? {
@@ -210,10 +220,13 @@ export async function updateSource(store: SourceState) {
     },
   });
 
-  console.log("res", res);
-
-  revalidatePath(`/app/dashboard/${guildId}/${source.type.toLowerCase()}`, "layout");
+  // console.log("res", res);
+console.log(`/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`);
+  revalidatePath(
+    `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`
+  );
   return {
+    data: res,
     done: true,
   };
 }
@@ -222,6 +235,7 @@ export async function updateCards(
   currentStore: ImageState,
   guildId: string
 ): Promise<{
+  data: Source | null;
   done: boolean;
   error: string | null;
 }> {
@@ -264,7 +278,7 @@ export async function updateCards(
     if (cardsLength + cardsToCreate.length > 5)
       throw new Error("You cannot have more than 5 cards");
 
-    await prisma.source.update({
+    const res = await prisma.source.update({
       where: {
         id: sourceId,
       },
@@ -451,10 +465,12 @@ export async function updateCards(
         },
       },
     });
-
-    revalidatePath(`/app/dashboard/${guildId}/${source.type.toLowerCase()}`, "layout");
+    revalidatePath(
+      `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, - 1)}`,
+    );
 
     return {
+      data: res,
       done: true,
       error: null,
     };
@@ -462,12 +478,14 @@ export async function updateCards(
     console.log(error);
     if (error instanceof Error) {
       return {
+        data: null,
         done: false,
         error: error.message,
       };
     }
 
     return {
+      data: null,
       done: false,
       error: "An error occurred while updating the image module",
     };

@@ -53,8 +53,8 @@ model Source {
   activeCardToEmbedId Int?        @unique
   embeds              Embed[]
   images              ImageCard[] @relation("SourceCard")
-  activeCard          ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id])
-  activeCardToEmbed   Embed?      @relation("SourceActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id])
+  activeCard          ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id], onDelete: Cascade)
+  activeCardToEmbed   Embed?      @relation("SourceActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id], onDelete: Cascade)
   Guild               Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey")
   ActiveGuild         Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey")
 }
@@ -62,7 +62,7 @@ model Source {
 model Embed {
   /// @zod.optional()
   id               Int          @id @default(autoincrement())
-  Source           Source?      @relation(fields: [Sourceid], references: [id]) /// zod.optional()
+  Source           Source?      @relation(fields: [Sourceid], references: [id], onDelete: Cascade) /// zod.optional()
   Sourceid         Int /// @zod.optional()
   title            String?      @db.VarChar(256)
   description      String?      @db.VarChar(4096)
