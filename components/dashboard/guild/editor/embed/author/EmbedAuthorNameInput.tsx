@@ -1,22 +1,18 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Input } from "@heroui/input";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
-export function EmbedAuthorNameInput({
-  embedIndex,
-  module,
-}: {
-  embedIndex: number;
-  module: ModuleName;
-}) {
-   const welcomerStore = useWelcomerStore();
-   const leaverStore = useLeaverStore();
-   const store = module === "welcomer" ? welcomerStore : leaverStore;
-  const author = store.embeds[embedIndex].author?.name;
-  const setAuthor = store.setEmbedAuthorName;
+export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const author = useStore(
+    store,
+    (state) => state.embeds[embedIndex].author?.name
+  );
+  const setAuthor = useStore(store, (state) => state.setEmbedAuthorName);
 
   return (
     <Input

@@ -1,24 +1,23 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Button } from "@heroui/button";
+import { useContext } from "react";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
+import { useStore } from "zustand";
 import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
 import { EmbedBodyFields } from "./body/EmbedBodyFields";
 import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
 import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 
-export default function EmbedsViewer({ module }: { module: ModuleName }) {
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = module === "welcomer" ? welcomerStore : leaverStore;
-  const embeds = store.embeds;
-  const removeEmbed = store.removeEmbed;
-  const setToPrevious = store.setToPreviousEmbed;
-  const setToNext = store.setToNextEmbed;
+export default function EmbedsViewer() {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const embeds = useStore(store, (state) => state.embeds);
+  const removeEmbed = useStore(store, (state) => state.removeEmbed);
+  const setToPrevious = useStore(store, (state) => state.setToPreviousEmbed);
+  const setToNext = useStore(store, (state) => state.setToNextEmbed);
 
   return (
     <>
@@ -64,13 +63,13 @@ export default function EmbedsViewer({ module }: { module: ModuleName }) {
               variant="bordered"
             >
               <AccordionItem key={1} aria-label="Author" title="Author">
-                <EmbedAuthorFields embedIndex={index} module={module} />
+                <EmbedAuthorFields embedIndex={index} />
               </AccordionItem>
               <AccordionItem key={2} aria-label="Body" title="Body">
-                <EmbedBodyFields embedIndex={index} module={module} />
+                <EmbedBodyFields embedIndex={index} />
               </AccordionItem>
               <AccordionItem key={3} aria-label="Footer" title="Footer">
-                <EmbedFooterFields embedIndex={index} module={module} />
+                <EmbedFooterFields embedIndex={index} />
               </AccordionItem>
               <AccordionItem key={4} aria-label="Images" title="Images">
                 Images
@@ -80,7 +79,7 @@ export default function EmbedsViewer({ module }: { module: ModuleName }) {
                 aria-label="Fields"
                 title={`Fields (${embed.fields.length}/25)`}
               >
-                <EmbedFieldsFields embedIndex={index} module={module} />
+                <EmbedFieldsFields embedIndex={index} />
               </AccordionItem>
             </Accordion>
           </AccordionItem>

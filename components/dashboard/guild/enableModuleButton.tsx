@@ -1,24 +1,23 @@
 "use client";
+import { createSource } from "@/lib/actions";
 import { Button } from "@heroui/button";
-
-import { createModule } from "@/lib/actions";
-import { ModuleName } from "@/types";
+import { SourceType } from "@prisma/client";
 
 export default function EnableModuleButton({
   guildId,
-  moduleName,
+  sourceType,
 }: {
   guildId: string;
-  moduleName: ModuleName;
+  sourceType: SourceType;
 }) {
   return (
     <Button
       color="primary"
       onPress={() => {
-        createModule(guildId, moduleName);
+        createSource(guildId, sourceType);
       }}
     >
-      Enable {moduleName}
+      Enable {sourceType}
     </Button>
   );
 }

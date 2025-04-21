@@ -1,17 +1,29 @@
 "use client";
 
 import { updateCards } from "@/lib/actions";
-import { ImageStore, useImageStore } from "@/state/image";
-import { ModuleName } from "@/types";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { extractImageState } from "@/state/image";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
-import { useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useStore } from "zustand";
 
-export default function SaveButton({ module }: { module: ModuleName }) {
+export default function SaveButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const reset = useImageStore((state) => state.reset);
-  const currentStore = useImageStore();
+
+  const store = useContext(ImageStoreContext);
+  const sourceStore = useContext(SourceStoreContext);
+  if (!sourceStore) throw new Error("Missing SourceStore.Provider in the tree");
+  if (!store) throw new Error("Missing ImageStore.Provider in the tree");
+
+  const guildId = useStore(sourceStore, (state) => state.guildId);
+  const currentStore = useStore(store, (state) => state);
+  const storeState = useStore(store);
+  const data = useMemo(() => extractImageState(storeState), [storeState]);
+  
+
   if (!currentStore) return null;
   if (currentStore.edited === false) return null;
 
@@ -24,25 +36,11 @@ export default function SaveButton({ module }: { module: ModuleName }) {
             color="primary"
             onPress={async () => {
               setIsLoading(true);
-              const storeWithoutPreview: Partial<ImageStore> = {
-                moduleId: currentStore.moduleId,
-                activeCard: currentStore.activeCard,
-                removedCard: currentStore.removedCard,
-                removedText: currentStore.removedText,
-                imageCards: currentStore.imageCards.map(
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  ({ imagePreview, ...rest }) => rest
-                ),
-              };
-              const { done, error } = await updateCards(
-                storeWithoutPreview,
-                module
-              );
+              const { done, error } = await updateCards(data, guildId);
               if (error) {
                 toast.error(error);
               } else if (done) {
                 toast.success("Settings updated successfully !");
-                reset();
               }
               setIsLoading(false);
             }}

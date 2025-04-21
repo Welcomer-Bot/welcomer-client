@@ -1,23 +1,25 @@
 "use client";
+import { removeSource } from "@/lib/actions";
 import { Button } from "@heroui/button";
+import { SourceType } from "@prisma/client";
 
-import { removeModule } from "@/lib/actions";
-import { ModuleName } from "@/types";
 
 export default function RemoveModuleButton({
   guildId,
-  moduleName,
+  sourceId,
+  sourceType,
 }: {
-  guildId: string;
-  moduleName: ModuleName;
+    guildId: string;
+    sourceId: number;
+    sourceType: SourceType;
 }) {
   return (
     <Button
       color="danger"
       variant="ghost"
-      onPress={() => removeModule(guildId, moduleName)}
+      onPress={() => removeSource(guildId, sourceId, sourceType)}
     >
-      Disable {moduleName}
+      Disable {sourceType}
     </Button>
   );
 }

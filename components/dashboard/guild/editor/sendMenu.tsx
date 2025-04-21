@@ -1,21 +1,20 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { APIChannel } from "discord.js";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export default function SendMenu({
   channels,
-  module,
 }: {
   channels: APIChannel[];
-  module: ModuleName;
 }) {
-  const store = module === "welcomer" ? useWelcomerStore : useLeaverStore;
-  const updateChannel = store().setChannelId;
-  const currentChannel = store().channelId;
+  const store = useContext(SourceStoreContext);
+   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const currentChannel = useStore(store, (state) => state.channelId);
+  const updateChannel = useStore(store, (state) => state.setChannelId);
 
   return (
     <Select

@@ -1,30 +1,22 @@
 import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/button";
+import { useContext } from "react";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
+import { useStore } from "zustand";
 import AddEmbedFieldsButton from "./AddEmbedFieldsButton";
 import ClearEmbedFieldsButton from "./ClearEmbedFieldsButton";
 import { EmbedFieldInlineInput } from "./EmbedFieldInlineInput";
 import { EmbedFieldNameInput } from "./EmbedFieldNameInput";
 import { EmbedFieldValueInput } from "./EmbedFieldValueInput";
 
-export function EmbedFieldsFields({
-  embedIndex,
-  module,
-}: {
-  embedIndex: number;
-  module: ModuleName;
-}) {
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = module === "welcomer" ? welcomerStore : leaverStore;
-
-  const fields = store.embeds[embedIndex].fields;
-  const removeField = store.removeField;
-  const setToPrevious = store.setToPreviousField;
-  const setToNext = store.setToNextField;
+export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const fields = useStore(store, (state) => state.embeds[embedIndex].fields);
+  const removeField = useStore(store, (state) => state.removeField);
+  const setToPrevious = useStore(store, (state) => state.setToPreviousField);
+  const setToNext = useStore(store, (state) => state.setToNextField);
 
   return (
     <div className="space-y-2">
@@ -64,25 +56,22 @@ export function EmbedFieldsFields({
               <EmbedFieldNameInput
                 embedIndex={embedIndex}
                 fieldIndex={index}
-                module={module}
               />
               <EmbedFieldValueInput
                 embedIndex={embedIndex}
                 fieldIndex={index}
-                module={module}
               />
               <EmbedFieldInlineInput
                 embedIndex={embedIndex}
                 fieldIndex={index}
-                module={module}
               />
             </div>
           </EmbedsFieldsAccordionWrapper>
         </div>
       ))}
       <div className="sm:flex-row flex-col flex my-5">
-        <AddEmbedFieldsButton embedIndex={embedIndex} module={module} />
-        <ClearEmbedFieldsButton module={module} embedIndex={embedIndex} />
+        <AddEmbedFieldsButton embedIndex={embedIndex} />
+        <ClearEmbedFieldsButton embedIndex={embedIndex} />
       </div>
     </div>
   );

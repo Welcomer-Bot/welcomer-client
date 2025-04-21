@@ -1,5 +1,6 @@
-import ModuleInitialiser from "@/components/dashboard/guild/moduleInitialiser";
-import { getModuleCards, getWelcomer } from "@/lib/dal";
+import { getSourceCards, getSources } from "@/lib/dal";
+import { ImageStoreProvider } from "@/providers/imageStoreProvider";
+import { redirect } from "next/navigation";
 
 export default async function Layout({
   children,
@@ -11,18 +12,28 @@ export default async function Layout({
   }>;
 }) {
   const { guildId } = await params;
-  const welcomer = await getWelcomer(guildId);
-  if (!welcomer) return <div>Module not found, please enable it first</div>;
-  const cards = await getModuleCards(welcomer?.guildId, "welcomer");
+  const sources = await getSources(guildId, "Welcomer");
+  if (!sources || sources.length === 0) {
+    return redirect(`/dashboard/${guildId}/leave`);
+  }
+  const source = sources[0];
+  if (!source) return redirect(`/dashboard/${guildId}/leave`);
+  // console.log("source", source);
+  const cards = await getSourceCards(source.id);
+  // console.log("cards", cards);
 
   return (
-    <ModuleInitialiser
-      moduleName="welcomer"
-      moduleId={welcomer?.guildId}
-      cards={cards}
-      activeCardId={welcomer?.activeCardId}
+    <ImageStoreProvider
+      initialState={{
+        sourceId: source.id,
+        imageCards: cards ?? [],
+        selectedCard:
+          cards?.findIndex((card) => card.id === source.activeCardId) === -1
+            ? null
+            : cards?.findIndex((card) => card.id === source.activeCardId),
+      }}
     >
       {children}
-    </ModuleInitialiser>
+    </ImageStoreProvider>
   );
 }

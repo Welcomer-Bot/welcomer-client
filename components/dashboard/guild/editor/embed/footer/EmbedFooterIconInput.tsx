@@ -1,23 +1,18 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Input } from "@heroui/input";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
-export function EmbedFooterIconInput({
-  embedIndex,
-  module,
-}: {
-  embedIndex: number;
-  module: ModuleName;
-}) {
-    const welcomerStore = useWelcomerStore();
-    const leaverStore = useLeaverStore();
-    const store = module === "welcomer" ? welcomerStore : leaverStore;
-const icon = store.embeds[embedIndex].footer?.iconUrl;
-
-  const setIcon = store.setEmbedFooterIcon;
+export function EmbedFooterIconInput({ embedIndex }: { embedIndex: number }) {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const setIcon = useStore(store, (state) => state.setEmbedFooterIcon);
+  const icon = useStore(
+    store,
+    (state) => state.embeds[embedIndex].footer?.iconUrl
+  );
 
   return (
     <Input

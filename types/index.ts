@@ -10,6 +10,5 @@ export interface SessionPayload extends JWTPayload {
   expiresAt: Date;
 }
 
-export type ModuleName = "welcomer" | "leaver";
 
 export type ImageTextType = "mainText" | "secondText" | "nicknameText";

@@ -1,13 +1,14 @@
 "use client";
 
 import { generateImage } from "@/lib/discord/image";
-import { useImageStore } from "@/state/image";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { Button } from "@heroui/button";
 import { Card, CardFooter } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import { useStore } from "zustand";
 
 export function ImageCard({
   index,
@@ -19,12 +20,16 @@ export function ImageCard({
   active?: boolean;
   guildId: string;
 }) {
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing ImageStore.Provider in the tree");
+
+  const currentCard = useStore(store, (state) => state.imageCards[index]);
+  const setActiveCard = useStore(store, (state) => state.setActiveCard);
+  const setPreviewImage = useStore(store, (state) => state.setPreviewImage);
+  const deleteCard = useStore(store, (state) => state.deleteCard);
+  const activeCard = useStore(store, (state) => state.selectedCard);
   const [image, setImage] = useState<string | null>(null);
-  const currentCard = useImageStore((state) => state.imageCards[index]);
   const previewImage = currentCard?.imagePreview;
-  const setActiveCard = useImageStore((state) => state.setActiveCard);
-  const setPreviewImage = useImageStore((state) => state.setPreviewImage);
-  const deleteCard = useImageStore((state) => state.deleteCard);
   const [debounceImage, setDebounceImage] = useState(currentCard);
 
   useEffect(() => {
@@ -33,7 +38,7 @@ export function ImageCard({
       setDebounceImage(currentCard);
     }, 500);
     return () => clearTimeout(timeout);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCard]);
 
   useEffect(() => {
@@ -42,11 +47,12 @@ export function ImageCard({
     const loadPreview = async () => {
       const previewImage = await generateImage(debounceImage, guildId);
       if (!previewImage) return;
+      // console.log("setting preview image");
       setImage(previewImage);
       setPreviewImage(previewImage);
     };
     loadPreview();
-  }, [debounceImage, guildId, previewImage, setPreviewImage]);
+  }, [debounceImage, guildId, previewImage, setPreviewImage, activeCard]);
   return (
     <div
       onClick={() => {
@@ -61,7 +67,7 @@ export function ImageCard({
         ) : (
           <>
             <Button
-              className="absolute top-2 right-2 hidden"
+              className="absolute top-2 right-2"
               isIconOnly
               color="danger"
               variant="ghost"

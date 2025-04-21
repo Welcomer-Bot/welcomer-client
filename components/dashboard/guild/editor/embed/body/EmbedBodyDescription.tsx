@@ -1,23 +1,22 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Textarea } from "@heroui/input";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export function EmbedBodyDescriptionInput({
   embedIndex,
-  module,
 }: {
   embedIndex: number;
-  module: ModuleName;
 }) {
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = module === "welcomer" ? welcomerStore : leaverStore;
-  const description = store.embeds[embedIndex].description;
-  const setDescription = store.setEmbedDescription;
-
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const description = useStore(
+    store,
+    (state) => state.embeds[embedIndex].description
+  );
+  const setDescription = useStore(store, (state) => state.setEmbedDescription);
   return (
     <Textarea
       label="Description"

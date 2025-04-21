@@ -1,17 +1,15 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/button";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
-export default function RemoveEmbedsButton({ module }: { module: ModuleName }) {
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = module === "welcomer" ? welcomerStore : leaverStore;
-
-  const clearEmbeds = store.clearEmbeds;
-  const embedsLength = store.embeds.length;
+export default function RemoveEmbedsButton() {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const embedsLength = useStore(store, (state) => state.embeds.length);
+  const clearEmbeds = useStore(store, (state) => state.clearEmbeds);
 
   return (
     <Button

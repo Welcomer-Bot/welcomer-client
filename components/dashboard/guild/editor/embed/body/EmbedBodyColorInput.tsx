@@ -1,22 +1,19 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Input } from "@heroui/input";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export function EmbedBodyColorInput({
   embedIndex,
-  module,
 }: {
   embedIndex: number;
-  module: ModuleName;
 }) {
-    const welcomerStore = useWelcomerStore();
-    const leaverStore = useLeaverStore();
-    const store = module === "welcomer" ? welcomerStore : leaverStore;
- const embedColor = store.embeds[embedIndex].color;
-  const setEmbedColor = store.setEmbedColor;
+      const store = useContext(SourceStoreContext);
+       if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+      const embedColor = useStore(store, (state) => state.embeds[embedIndex]?.color);
+      const setEmbedColor = useStore(store, (state) => state.setEmbedColor);
 
   return (
     <Input

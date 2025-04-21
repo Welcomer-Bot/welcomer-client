@@ -1,29 +1,33 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { DatePicker } from "@heroui/date-picker";
 import { Divider } from "@heroui/divider";
 import { Switch } from "@heroui/switch";
 import { parseAbsoluteToLocal, ZonedDateTime } from "@internationalized/date";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useStore } from "zustand";
 
 export function EmbedBodyTimestampInput({
   embedIndex,
-  module,
 }: {
   embedIndex: number;
-  module: ModuleName;
 }) {
-   const welcomerStore = useWelcomerStore();
-   const leaverStore = useLeaverStore();
-   const store = module === "welcomer" ? welcomerStore : leaverStore;
- 
-  const timestamp = store.embeds[embedIndex].timestamp;
-  const timestampNow = store.embeds[embedIndex].timestampNow ?? false;
-  const setTimestamp = store.setEmbedTimestamp;
-  const setTimestampNow = store.setEmbedTimestampNow;
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const timestampNow = useStore(
+    store,
+    (state) => state.embeds[embedIndex].timestampNow
+  );
+  const timestamp = useStore(
+    store,
+    (state) => state.embeds[embedIndex].timestamp
+  );
+  const setTimestampNow = useStore(
+    store,
+    (state) => state.setEmbedTimestampNow
+  );
+  const setTimestamp = useStore(store, (state) => state.setEmbedTimestamp);
 
   const [timestampEnabled, setTimestampEnabled] = useState(false);
   return (
@@ -48,7 +52,7 @@ export function EmbedBodyTimestampInput({
           </Switch>
           {timestampEnabled ? (
             <Switch
-              isSelected={timestampNow}
+              isSelected={timestampNow ?? false}
               onChange={() => {
                 setTimestampNow(embedIndex, !timestampNow);
               }}

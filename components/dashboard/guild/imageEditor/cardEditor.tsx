@@ -1,15 +1,18 @@
 "use client";
 
-import { useImageStore } from "@/state/image";
-import { ModuleName } from "@/types";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { Accordion, AccordionItem } from "@heroui/accordion";
+import { SourceType } from "@prisma/client";
+import { useContext } from "react";
+import { useStore } from "zustand";
 import { ImageBackgroundFields } from "./background/ImageBackgroundFields";
 import { ImageTextFields } from "./text/ImageTextFields";
 
-export function CardEditor({ module }: { module: ModuleName }) {
-  const currentCard = useImageStore((state) => state.getActiveCard());
-
-  if (!currentCard)
+export function CardEditor({ module }: { module: SourceType }) {
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const currentCard = useStore(store, (state) => state.selectedCard);
+  if (currentCard === null)
     return (
       <div className="text-white w-full text-center">No card selected</div>
     );

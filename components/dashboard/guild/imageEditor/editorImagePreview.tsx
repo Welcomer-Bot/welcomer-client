@@ -1,13 +1,18 @@
 "use client";
 
-import { useImageStore } from "@/state/image";
-import { lazy, Suspense } from "react";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
+import { lazy, Suspense, useContext } from "react";
+import { useStore } from "zustand";
 
 const LazyImagePreview = lazy(() => import("./imagePreview"));
 
 export function EditorImagePreview() {
-  const activeCard = useImageStore((state) => state.getActiveCard());
-  const previewImage = activeCard?.imagePreview;
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const previewImage = useStore(
+    store,
+    (state) => state.getActiveCard()?.imagePreview
+  );
 
   if (!previewImage) return <>No image to load</>;
   return (

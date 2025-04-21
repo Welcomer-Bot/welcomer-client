@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import GuildCard from "@/components/dashboard/guild/guildCard";
 import ManageButton from "@/components/dashboard/guild/manageButton";
 import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
-import { getGuild, getLeaver, getWelcomer } from "@/lib/dal";
+import { getGuild, getSources } from "@/lib/dal";
 
 import { DiscordMention } from "@skyra/discord-components-react";
 
@@ -16,14 +16,16 @@ export default async function Page({
   const { guildId } = await params;
   const guild = await getGuild(guildId);
   if (!guild) redirect("/dashboard");
-  const welcomer = await getWelcomer(guildId);
-  const leaver = await getLeaver(guildId);
-  const welcomerChannel = welcomer?.channelId
-    ? await guild.getChannel(welcomer.channelId)
-    : null;
-  const leaverChannel = leaver?.channelId
-    ? await guild.getChannel(leaver.channelId)
-    : null;
+  const welcomer = await getSources(guildId, "Welcomer");
+  const leaver = await getSources(guildId, "Leaver");
+  const welcomerChannel =
+    welcomer && welcomer[0]?.channelId
+      ? await guild.getChannel(welcomer[0].channelId)
+      : null;
+  const leaverChannel =
+    leaver && leaver[0]?.channelId
+      ? await guild.getChannel(leaver[0].channelId)
+      : null;
 
   return (
     <div className="w-full h-full no-scrollbar sm:px-4 sm:py-3">
@@ -55,7 +57,7 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"welcomer"} />
+                  <ManageButton guildId={guild.id} module={"Welcomer"} />
                 </CardBody>
               </Card>
               <Card>
@@ -74,12 +76,12 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"leaver"} />
+                  <ManageButton guildId={guild.id} module={"Leaver"} />
                 </CardBody>
               </Card>
             </div>
-            <StatsViewer guildId={guild.id} module={"welcomer"} />
-            <StatsViewer guildId={guild.id} module={"leaver"} />
+            <StatsViewer guildId={guild.id} module={"Welcomer"} />
+            <StatsViewer guildId={guild.id} module={"Leaver"} />
           </CardBody>
         </>
       </Card>

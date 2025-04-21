@@ -1,15 +1,22 @@
 "use client";
 
 import { fetchFontList } from "@/lib/dto";
-import { useImageStore } from "@/state/image";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { ImageTextType } from "@/types";
 import { Select, SelectItem } from "@heroui/select";
 import { FontList } from "font-list";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useStore } from "zustand";
 
 export function ImageFontInput({ textType }: { textType: ImageTextType }) {
-  const font = useImageStore((state) => state.getActiveCard()![textType]?.font);
-  const setFont = useImageStore((state) => state.setTextFont);
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing ImageStore.Provider in the tree");
+
+  const font = useStore(
+    store,
+    (state) => state.getActiveCard()![textType]?.font
+  );
+  const setFont = useStore(store, (state) => state.setTextFont);
 
   const [fontsList, setFontsList] = useState<FontList | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);

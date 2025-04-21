@@ -1,6 +1,6 @@
 "use server";
-import { ModuleName } from "@/types";
-import { GuildStats, Period } from "@prisma/client";
+
+import { GuildStats, Period, SourceType } from "@prisma/client";
 import { getFonts } from "font-list";
 import { getAllGuildStatsSinceTime, getLatestGuildStats } from "./dal";
 
@@ -10,7 +10,7 @@ type StatsDictionary = {
 
 export async function fetchGuildStats(
   guildId: string,
-  type: ModuleName
+  type: SourceType
 ): Promise<StatsDictionary> {
   const res: StatsDictionary = {} as StatsDictionary;
 
@@ -26,24 +26,23 @@ export async function fetchGuildStats(
 export async function fetchGuildStat(
   guildId: string,
   period: Period,
-  type: ModuleName
+  type: SourceType
 ) {
   return await getLatestGuildStats(guildId, period, type);
-
 }
 
-export async function fetchAllGuildStatsSinceTime(guildId: string,
+export async function fetchAllGuildStatsSinceTime(
+  guildId: string,
   period: Period,
-  type: ModuleName,
+  type: SourceType,
   since: Date
 ) {
   // const guild = await getGuild(guildId)
   // if (!guild?.premium) {
   //   return null;
   // }
-  return await getAllGuildStatsSinceTime(guildId, period, type, since)
+  return await getAllGuildStatsSinceTime(guildId, period, type, since);
 }
-
 
 export async function fetchFontList() {
   return await getFonts({ disableQuoting: true });

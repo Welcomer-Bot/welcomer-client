@@ -1,8 +1,11 @@
 "use client";
 
-import { useImageStore } from "@/state/image";
 import { ImageTextType } from "@/types";
 import { Switch } from "@heroui/switch";
+
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 const textTypesToText = {
   mainText: "Main Text",
@@ -10,26 +13,35 @@ const textTypesToText = {
   nicknameText: "Nickname Text",
 };
 
-export function ImageTextSwitch({ textType, children }: { textType: ImageTextType, children: React.ReactNode }) {
-    const enabled = useImageStore((state) => state.getActiveCard()![textType]);
-    const removeText = useImageStore((state) => state.removeText);
-    const addText = useImageStore((state) => state.addText);
+export function ImageTextSwitch({
+  textType,
+  children,
+}: {
+  textType: ImageTextType;
+  children: React.ReactNode;
+}) {
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing ImageStore.Provider in the tree");
 
-    return (
-        
-        <>
-        <Switch
+  const enabled = useStore(store, (state) => state.getActiveCard()![textType]);
+  const removeText = useStore(store, (state) => state.removeText);
+  const addText = useStore(store, (state) => state.addText);
+
+  return (
+    <>
+      <Switch
         isSelected={!!enabled}
         onChange={() => {
-            if (enabled) {
-                removeText(textType);
-            } else {
-                addText(textType);
-            }
+          if (enabled) {
+            removeText(textType);
+          } else {
+            addText(textType);
+          }
         }}
-        >Enable {textTypesToText[textType]}
-    </Switch>
-    {enabled && children}
+      >
+        Enable {textTypesToText[textType]}
+      </Switch>
+      {enabled && children}
     </>
-    );
-}   
+  );
+}

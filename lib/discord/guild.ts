@@ -4,7 +4,6 @@ import { APIChannel, APIGuild, RESTAPIPartialCurrentUserGuild } from "discord-ap
 import { addGuildToBeta, getChannels, getGuildBeta, isPremiumGuild, leaveGuild, removeGuildToBeta } from "../dal";
 import { getGuildBanner, getGuildIcon } from "../utils";
 import { fetchWidget } from "./widget";
-
 export type GuildObject = {
   id: string;
   name: string;

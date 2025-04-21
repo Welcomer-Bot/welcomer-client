@@ -16,8 +16,16 @@ import { cache } from "react";
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
-import { ModuleName, SessionPayload } from "@/types";
-import { Leaver, Period, Prisma, Welcomer } from "@prisma/client";
+import { SessionPayload } from "@/types";
+import {
+  EmbedField,
+  ImageCard,
+  ImageCardText,
+  Period,
+  Prisma,
+  Source,
+  SourceType,
+} from "@prisma/client";
 import Guild from "./discord/guild";
 import rest from "./discord/rest";
 import User from "./discord/user";
@@ -60,11 +68,25 @@ export const getGuilds = cache(async () => {
   }
 });
 
-export async function getWelcomer(guildId: string) {
+export async function getSources(
+  guildId: string,
+  source: SourceType
+): Promise<Source[] | null> {
   try {
-    const welcomer = await prisma.welcomer.findUnique({
-      where: { guildId: guildId },
+    return await prisma.source.findMany({
+      where: {
+        guildId: guildId,
+        type: source,
+      },
       include: {
+        embeds: {
+          include: {
+            fields: true,
+            author: true,
+            footer: true,
+            image: true,
+          },
+        },
         activeCard: {
           include: {
             mainText: true,
@@ -72,28 +94,33 @@ export async function getWelcomer(guildId: string) {
             nicknameText: true,
           },
         },
-        embeds: {
-          include: {
-            fields: true,
-            author: true,
-            footer: true,
-          },
-        },
-        DM: true,
+        activeCardToEmbed: true,
       },
     });
-
-    return welcomer;
   } catch {
     return null;
   }
 }
 
-export async function getLeaver(guildId: string): Promise<Leaver | null> {
+export async function getSource(
+  guildId: string,
+  sourceId: number
+): Promise<Source | null> {
   try {
-    const leaver = await prisma.leaver.findUnique({
-      where: { guildId },
+    const source = await prisma.source.findFirst({
+      where: {
+        guildId: guildId,
+        id: sourceId,
+      },
       include: {
+        embeds: {
+          include: {
+            fields: true,
+            author: true,
+            footer: true,
+            image: true,
+          },
+        },
         activeCard: {
           include: {
             mainText: true,
@@ -101,30 +128,20 @@ export async function getLeaver(guildId: string): Promise<Leaver | null> {
             nicknameText: true,
           },
         },
-        embeds: {
-          include: {
-            fields: true,
-            author: true,
-            footer: true,
-          },
-        },
+        activeCardToEmbed: true,
       },
     });
-
-    return leaver;
+    return source;
   } catch {
     return null;
   }
 }
 
-export async function getEmbeds(
-  moduleId: string,
-  module: ModuleName
-): Promise<Embed[] | null> {
+export async function getEmbeds(source: Source): Promise<Embed[] | null> {
   try {
     const embeds: Embed[] = await prisma.embed.findMany({
       where: {
-        [`${module}Id`]: moduleId,
+        Source: source,
       },
     });
 
@@ -134,10 +151,10 @@ export async function getEmbeds(
   }
 }
 
-export async function getEmbedAuthor(embedId: number) {
+export async function getEmbedAuthor(embed: Embed) {
   try {
-    const author = await prisma.embedAuthor.findUnique({
-      where: { embedId: embedId },
+    const author = await prisma.embedAuthor.findFirst({
+      where: { embed: embed },
     });
 
     return author;
@@ -146,12 +163,14 @@ export async function getEmbedAuthor(embedId: number) {
   }
 }
 
-export async function createEmbedAuthor(embedId: number, name: string) {
+export async function createEmbedAuthor(embed: Embed, name: string) {
   try {
     const author = await prisma.embedAuthor.create({
       data: {
-        embedId: embedId,
         name: name,
+        embed: {
+          connect: { id: embed.id },
+        },
       },
     });
 
@@ -161,13 +180,14 @@ export async function createEmbedAuthor(embedId: number, name: string) {
   }
 }
 
-export async function getModuleCards(
-  moduleId: string,
-  module: "welcomer" | "leaver"
+export async function getSourceCards(
+  sourceId: number
 ): Promise<BaseCardParams[] | null> {
   try {
     const cards = await prisma.imageCard.findMany({
-      where: { [module + "Id"]: moduleId },
+      where: {
+        sourceId: sourceId,
+      },
       include: {
         mainText: true,
         secondText: true,
@@ -184,13 +204,15 @@ export async function getModuleCards(
 export async function getLatestGuildStats(
   guildId: string,
   period: Period,
-  module: ModuleName
+  source: SourceType
 ) {
   return await prisma.guildStats.findFirst({
     where: {
-      guildId,
+      Guild: {
+        id: guildId,
+      },
       period,
-      module,
+      source,
     },
     orderBy: {
       createdAt: "desc",
@@ -200,9 +222,9 @@ export async function getLatestGuildStats(
 export async function createGuildStats(
   guildId: string,
   period: Period,
-  module: ModuleName
+  source: SourceType
 ) {
-  const latestStats = await getLatestGuildStats(guildId, period, module);
+  const latestStats = await getLatestGuildStats(guildId, period, source);
 
   if (!latestStats) {
     return await prisma.guildStats.create({
@@ -214,16 +236,16 @@ export async function createGuildStats(
           },
         },
         period,
-        module,
+        source,
         createdAt: new Date(),
       },
     });
   }
 }
 
-export async function createModuleStats(guildId: string, module: ModuleName) {
+export async function createModuleStats(guildId: string, source: SourceType) {
   Object.values(Period).forEach(async (period) => {
-    await createGuildStats(guildId, period, module);
+    await createGuildStats(guildId, period, source);
   });
 }
 
@@ -243,8 +265,10 @@ const defaultLeaverMessage = {
   embedFieldValue: "{membercount}",
 };
 
-export async function createWelcomer(guildId: string) {
-  const welcomer = await prisma.welcomer.create({
+export async function createSource(guildId: string, type: SourceType) {
+  const message =
+    type == "Welcomer" ? defaultWelcomerMessage : defaultLeaverMessage;
+  const source = await prisma.source.create({
     data: {
       Guild: {
         connectOrCreate: {
@@ -252,18 +276,19 @@ export async function createWelcomer(guildId: string) {
           create: { id: guildId },
         },
       },
-      content: defaultWelcomerMessage.content,
+      type: type,
+      content: message.content,
 
       embeds: {
         create: [
           {
-            title: defaultWelcomerMessage.embedTitle,
-            description: defaultWelcomerMessage.embedDescription,
+            title: message.embedTitle,
+            description: message.embedDescription,
             fields: {
               create: [
                 {
-                  name: defaultWelcomerMessage.embedFieldName,
-                  value: defaultWelcomerMessage.embedFieldValue,
+                  name: message.embedFieldName,
+                  value: message.embedFieldValue,
                 },
               ],
             },
@@ -272,184 +297,111 @@ export async function createWelcomer(guildId: string) {
       },
     },
   });
-  await createModuleStats(guildId, "welcomer");
-  return welcomer;
+
+  await createModuleStats(guildId, type);
+  return source;
 }
 
-export async function createLeaver(guildId: string) {
-  const leaver = await prisma.leaver.create({
-    data: {
-      Guild: {
-        connectOrCreate: {
-          where: { id: guildId },
-          create: { id: guildId },
-        },
-      },
-      content: defaultLeaverMessage.content,
-
-      embeds: {
-        create: [
-          {
-            title: defaultLeaverMessage.embedTitle,
-            description: defaultLeaverMessage.embedDescription,
-            fields: {
-              create: [
-                {
-                  name: defaultLeaverMessage.embedFieldName,
-                  value: defaultLeaverMessage.embedFieldValue,
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  });
-  await createModuleStats(guildId, "leaver");
-  return leaver;
-}
-
-export async function updateWelcomer(
-  guildId: string,
-  data: Prisma.XOR<
-    Prisma.WelcomerUpdateInput,
-    Prisma.WelcomerUncheckedUpdateInput
-  >
-) {
-  return await prisma.welcomer.update({
+export async function deleteSource(guildId: string, sourceId: number) {
+  return await prisma.source.delete({
     where: {
       guildId: guildId,
+      id: sourceId,
+    },
+  });
+}
+
+export async function updateSourceQuery(
+  source: Source,
+  data: Prisma.XOR<Prisma.SourceUpdateInput, Prisma.SourceUncheckedUpdateInput>
+) {
+  return prisma.source.update({
+    where: {
+      id: source.id,
     },
     data,
   });
 }
 
-export async function updateWelcomerChannelAndContent(
-  guildId: string,
+export async function updateSourceChannelAndContent(
+  source: Source,
   channelId: string,
   content: string | null | undefined
 ) {
-  const data: Partial<Welcomer> = {
+  const data: Partial<Source> = {
     channelId,
     content,
   };
-  return updateWelcomer(guildId, data);
+  return updateSourceQuery(source, data);
 }
 
-export async function updateLeaver(
-  guildId: string,
-  data: Prisma.XOR<Prisma.LeaverUpdateInput, Prisma.LeaverUncheckedUpdateInput>
-) {
-  return await prisma.leaver.update({
-    where: {
-      guildId: guildId,
-    },
-    data,
-  });
-}
-export async function updateLeaverChannelAndContent(
-  guildId: string,
-  channelId: string,
-  content: string | null | undefined
-) {
-  const data: Partial<Leaver> = {
-    channelId,
-    content,
-  };
-  return updateLeaver(guildId, data);
-}
-
-const includeAllEmbeds: Prisma.EmbedInclude = {
-  author: true,
-  footer: true,
-  fields: true,
-  image: true,
-  DM: true,
-};
-
-export async function deleteEmbed(
-  embedId: number,
-  moduleName: ModuleName,
-  moduleId: string
-) {
-  return await prisma.embed.delete({
+export async function deleteEmbedQuery(embedId: number) {
+  return prisma.embed.delete({
     where: {
       id: embedId,
-      [`${moduleName}Id`]: moduleId,
     },
-    include: includeAllEmbeds,
   });
 }
 
-export async function updateEmbed(
-  embedId: number,
-  moduleName: ModuleName,
-  moduleId: string,
+export async function updateEmbedQuery(
+  embed: Embed,
   data: Prisma.XOR<Prisma.EmbedUpdateInput, Prisma.EmbedUncheckedUpdateInput>
 ) {
-  return await prisma.embed.update({
+  return prisma.embed.update({
     where: {
-      id: embedId,
-      [`${moduleName}Id`]: moduleId,
+      id: embed.id,
     },
     data,
-    include: includeAllEmbeds,
   });
 }
 
-export async function createEmbed(
+export async function createEmbedQuery(
   data: Prisma.XOR<Prisma.EmbedCreateInput, Prisma.EmbedUncheckedCreateInput>
 ) {
-  return await prisma.embed.create({
+  return prisma.embed.create({
     data,
-    include: includeAllEmbeds,
   });
 }
 
-export async function deleteEmbedField(fieldId: number) {
-  return await prisma.embedField.delete({
+export async function deleteEmbedFieldQuery(field: EmbedField) {
+  return prisma.embedField.delete({
     where: {
-      id: fieldId,
+      id: field.id,
     },
   });
 }
 
-export async function deleteWelcomer(guildId: string) {
-  return await prisma.welcomer.delete({
+export async function deleteSourceQuery(source: Source) {
+  return await prisma.source.delete({
     where: {
-      guildId,
+      id: source.id,
     },
   });
 }
 
-export async function deleteLeaver(guildId: string) {
-  return await prisma.leaver.delete({
+export async function deleteCardQuery(card: ImageCard) {
+  return prisma.imageCard.delete({
     where: {
-      guildId,
+      id: card.id,
     },
   });
 }
 
-export async function deleteCard(cardId: number) {
-  return await prisma.imageCard.delete({
+export async function deleteCardTextQuery(text: ImageCardText) {
+  return prisma.imageCardText.delete({
     where: {
-      id: cardId,
+      id: text.id,
     },
   });
 }
 
-export async function deleteCardText(textId: number) {
-  return await prisma.imageCardText.delete({
+export async function updateImageCardTextQuery(
+  textCard: ImageCardText,
+  text: TextCard
+) {
+  return prisma.imageCardText.update({
     where: {
-      id: textId,
-    },
-  });
-}
-
-export async function updateImageCardText(textId: number, text: TextCard) {
-  return await prisma.imageCardText.update({
-    where: {
-      id: textId,
+      id: textCard.id,
     },
     data: {
       content: text.content,
@@ -459,33 +411,28 @@ export async function updateImageCardText(textId: number, text: TextCard) {
   });
 }
 
-export async function updateImageCard(
-  cardId: number,
+export async function updateImageCardQuery(
+  card: ImageCard,
   data: Prisma.XOR<
     Prisma.ImageCardUpdateInput,
     Prisma.ImageCardUncheckedUpdateInput
   >
 ) {
-  return await prisma.imageCard.update({
+  return prisma.imageCard.update({
     where: {
-      id: cardId,
+      id: card.id,
     },
     data,
-    include: {
-      mainText: true,
-      secondText: true,
-      nicknameText: true,
-    },
   });
 }
 
-export async function createImageCard(
+export async function createImageCardQuery(
   data: Prisma.XOR<
     Prisma.ImageCardCreateInput,
     Prisma.ImageCardUncheckedCreateInput
   >
 ) {
-  return await prisma.imageCard.create({
+  return prisma.imageCard.create({
     data,
     include: {
       mainText: true,
@@ -495,11 +442,15 @@ export async function createImageCard(
   });
 }
 
+export async function executeQueries(
+  queries: Prisma.PrismaPromise<unknown>[]
+): Promise<unknown[]> {
+  return await prisma.$transaction(queries);
+}
+
 export async function getGuildBeta(guildId: string) {
-  return await prisma.betaGuild.findUnique({
-    where: {
-      id: guildId,
-    },
+  return await prisma.betaGuild.findFirst({
+    where: { id: guildId },
   });
 }
 
@@ -536,14 +487,14 @@ export async function removeGuildToBeta(guildId: string) {
 export async function getAllGuildStatsSinceTime(
   guildId: string,
   period: Period,
-  module: ModuleName,
+  source: SourceType,
   since: Date
 ) {
   return await prisma.guildStats.findMany({
     where: {
       guildId,
       period,
-      module,
+      source,
       createdAt: {
         gte: since,
       },
@@ -755,11 +706,11 @@ export const getUserGuildsByAccessToken = cache(async (accessToken: string) => {
 });
 
 export const isPremiumGuild = cache(async (guildId: string) => {
-  return !!await prisma.premiumGuild.findUnique({
+  return !!(await prisma.premiumGuild.findUnique({
     where: {
       id: guildId,
     },
-  });
+  }));
 });
 
 export const setPremiumGuild = cache(async (guildId: string) => {
@@ -773,4 +724,4 @@ export const setPremiumGuild = cache(async (guildId: string) => {
       },
     },
   });
-})
+});

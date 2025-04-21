@@ -7,7 +7,7 @@ export default function Page() {
       radius="none"
       className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll w-full"
     >
-      <Editor module={"welcomer"} />
+      <Editor module={"Welcomer"} />
     </Card>
   );
 }

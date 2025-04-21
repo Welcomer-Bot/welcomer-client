@@ -1,19 +1,18 @@
-import { ModuleName } from "@/types";
 import CreateEmbedButton from "./createEmbedButton";
 import EmbedsViewer from "./embedsViewer";
 import RemoveEmbedsButton from "./removeEmbedsButton";
 
 import EmbedsAccordionWrapper from "@/components/Accordion/EmbedsAccordionWrapper";
 
-export async function EmbedEditor({ module }: { module: ModuleName }) {
+export async function EmbedEditor() {
   return (
-    <EmbedsAccordionWrapper module={module}>
+    <EmbedsAccordionWrapper>
       <div className="space-y-2">
-        <EmbedsViewer module={module} />
+        <EmbedsViewer />
       </div>
       <div className="sm:flex-row flex-col flex my-5">
-        <CreateEmbedButton module={module} />
-        <RemoveEmbedsButton module={module} />
+        <CreateEmbedButton />
+        <RemoveEmbedsButton />
       </div>
     </EmbedsAccordionWrapper>
 

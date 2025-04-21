@@ -1,23 +1,23 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/button";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export default function AddEmbedFieldsButton({
   embedIndex,
-  module,
 }: {
   embedIndex: number;
-  module: ModuleName;
 }) {
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = module === "welcomer" ? welcomerStore : leaverStore;
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const addField = useStore(store, (state) => state.addField);
+  const fieldsLength = useStore(
+    store,
+    (state) => state.embeds[embedIndex].fields.length
+  );
 
-  const addField = store.addField;
-  const fieldsLength = store.embeds[embedIndex].fields.length;
   return (
     <Button
       className="sm:mr-4 sm:mb-0 mb-2"

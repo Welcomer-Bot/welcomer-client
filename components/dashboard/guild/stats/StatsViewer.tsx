@@ -1,10 +1,10 @@
 "use client";
 
 import { fetchGuildStat } from "@/lib/dto";
-import { ModuleName } from "@/types";
+
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
-import { GuildStats, Period } from "@prisma/client";
+import { GuildStats, Period, SourceType } from "@prisma/client";
 import { useEffect, useState } from "react";
 import PeriodSelector from "./PeriodSelector";
 
@@ -13,7 +13,7 @@ export default function StatsViewer({
   module,
 }: {
   guildId: string;
-  module: ModuleName;
+  module: SourceType;
 }) {
   const [period, setPeriod] = useState<Period>(Period.DAILY);
   const [data, setData] = useState<GuildStats | null>(null);

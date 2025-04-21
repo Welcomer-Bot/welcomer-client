@@ -2,12 +2,7 @@ import { GuildObject } from "@/lib/discord/guild";
 import { generateImage } from "@/lib/discord/image";
 import { parseMessageText, parseText } from "@/lib/discord/text";
 import { UserObject } from "@/lib/discord/user";
-import {
-  CompleteEmbed,
-  CompleteEmbedField,
-  CompleteLeaver,
-  CompleteWelcomer,
-} from "@/prisma/schema";
+import { SourceState } from "@/state/source";
 import {
   DiscordEmbed,
   DiscordEmbedDescription,
@@ -26,12 +21,7 @@ export default function MessagePreview({
   guild,
   user,
 }: {
-  msg:
-    | CompleteWelcomer
-    | (CompleteLeaver & {
-        deletedEmbeds: CompleteEmbed[];
-        deletedFields: CompleteEmbedField[];
-      });
+  msg: SourceState;
   guild: GuildObject;
   user: UserObject;
 }) {

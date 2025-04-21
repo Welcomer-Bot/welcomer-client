@@ -1,17 +1,24 @@
 "use client";
 
-import { useImageStore } from "@/state/image";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
+import { CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
+import { useContext } from "react";
+import { useStore } from "zustand";
 import { ClearCardsButton } from "./clearCardsButton";
 import { CreateCardButton } from "./createCardButton";
 import { ImageCard } from "./imageCard";
-import { CardHeader } from "@heroui/card";
-
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 
 export function CardLib() {
-  const cards = useImageStore((state) => state.imageCards);
-  const activeCard = useImageStore((state) => state.activeCard);
-  const moduleId = useImageStore((state) => state.moduleId);
+  const store = useContext(ImageStoreContext);
+  const sourceStore = useContext(SourceStoreContext);
+  if (!sourceStore) throw new Error("Missing SourceStore.Provider in the tree");
+  if (!store) throw new Error("Missing ImageStore.Provider in the tree");
+
+  const guildId = useStore(sourceStore, (state) => state.guildId);
+  const cards = useStore(store, (state) => state.imageCards);
+  const activeCard = useStore(store, (state) => state.selectedCard);
 
   return (
     <>
@@ -26,7 +33,7 @@ export function CardLib() {
               index={index}
               key={index}
               active={activeCard === index}
-              guildId={moduleId || ""}
+              guildId={guildId || ""}
             />
           ))}
         </div>

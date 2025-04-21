@@ -1,30 +1,22 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useWelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Input } from "@heroui/input";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
-export function EmbedBodyTitleInput({
-  embedIndex,
-  module,
-}: {
-  embedIndex: number;
-  module: ModuleName;
-}) {
-   const welcomerStore = useWelcomerStore();
-   const leaverStore = useLeaverStore();
-   const store = module === "welcomer" ? welcomerStore : leaverStore;
- const embedTitle = store.embeds[embedIndex].title ?? "";
-  const setEmbedTitle = store.setEmbedTitle;
-
+export function EmbedBodyTitleInput({ embedIndex }: { embedIndex: number }) {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const embedTitle = useStore(store, (state) => state.embeds[embedIndex].title);
+  const setEmbedTitle = useStore(store, (state) => state.setEmbedTitle);
   return (
     <Input
       label={"Title " + `( ${embedTitle?.length ?? 0}/256 )`}
       validate={(value) => {
         if (value.length > 256) return "Title must not exceed 256 characters!";
       }}
-      value={embedTitle}
+      value={embedTitle ?? ""}
       onValueChange={(value) => setEmbedTitle(embedIndex, value)}
     />
   );
