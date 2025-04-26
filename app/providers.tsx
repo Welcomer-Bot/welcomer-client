@@ -1,5 +1,6 @@
 "use client";
 import { HeroUIProvider } from "@heroui/react";
+import PlausibleProvider from "next-plausible";
 import {
   ThemeProvider as NextThemesProvider,
   ThemeProviderProps,
@@ -25,9 +26,18 @@ export function Providers({
   const [isOpen, setIsOpen] = useState(true);
   return (
     <HeroUIProvider>
-      <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
-        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-      </SidebarContext.Provider>
+      <PlausibleProvider
+        domain="beta.welcomer.app"
+        customDomain="https://plausible.welcomer.app"
+        selfHosted
+        trackOutboundLinks
+        taggedEvents
+        trackLocalhost
+      >
+        <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
+          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+        </SidebarContext.Provider>
+      </PlausibleProvider>
     </HeroUIProvider>
   );
 }

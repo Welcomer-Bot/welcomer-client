@@ -1,12 +1,12 @@
-import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Image as UIImage } from "@heroui/image";
 import NextImage from "next/image";
-import Link from "next/link";
 
+import InviteBotButton from "@/components/dashboard/InviteBotButton";
+import ManageGuildButton from "@/components/dashboard/ManageGuildButton";
+import RequestBetaAccessButton from "@/components/dashboard/RequestBetaAccesButton";
 import { getGuilds } from "@/lib/dal";
 import { getGuildBanner } from "@/lib/utils";
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 
 export default async function Page() {
   const guilds = await getGuilds();
@@ -15,24 +15,13 @@ export default async function Page() {
       <div className="flex flex-col items-center flex-wrap h-full justify-center gap-4 py-8 md:py-10 ">
         <div className="flex flex-col justify-center text-center text-wrap max-w-lg gap-3">
           <div className="gap-2">
-
-          No guilds found
-          <p className="text-sm text-gray-400">
-            Please invite the bot to your server and verfiy you have at minimum
-            &quot;Manage Server&quot; permissions to start using it.
-          </p>
+            No guilds found
+            <p className="text-sm text-gray-400">
+              Please invite the bot to your server and verfiy you have at
+              minimum &quot;Manage Server&quot; permissions to start using it.
+            </p>
           </div>
-          <Link
-            href={`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot`}
-          >
-            <Button
-              className="right ml-2 font-bold"
-              color="default"
-              type="submit"
-            >
-              Invite Bot
-            </Button>
-          </Link>
+          <InviteBotButton />
         </div>
       </div>
     );
@@ -102,33 +91,11 @@ export default async function Page() {
               </div>
               <div>
                 {guild.mutual ? (
-                  <Link href={`/dashboard/${guild.id}`}>
-                    <Button className="right ml-2 font-bold" color="primary">
-                      Manage
-                    </Button>
-                  </Link>
+                  <ManageGuildButton guildId={guild.id} />
                 ) : guild.beta ? (
-                  <Link
-                    href={`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot&guild_id=${guild.id}`}
-                  >
-                    <Button
-                      className="right ml-2 font-bold"
-                      color="default"
-                      type="submit"
-                    >
-                      Invite Bot
-                    </Button>
-                  </Link>
+                  <InviteBotButton guildId={guild.id} />
                 ) : (
-                  <Link href={`/support`}>
-                    <Button
-                      className="right ml-2 font-bold"
-                      color="default"
-                      type="submit"
-                    >
-                      Request Beta Access
-                    </Button>
-                  </Link>
+                  <RequestBetaAccessButton />
                 )}
               </div>
             </CardFooter>

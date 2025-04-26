@@ -10,8 +10,10 @@ import {
   FaShieldAlt,
   FaStar,
 } from "react-icons/fa";
+import { usePlausible } from "next-plausible";
 
 export default function WelcomerBetaLanding() {
+  const plausible = usePlausible();
   return (
     <div className="h-full pt-16 w-full px-0 bg-gray-900 text-white">
       {/* Hero Section */}
@@ -26,6 +28,7 @@ export default function WelcomerBetaLanding() {
         <Button
           className="mt-6 px-10 py-8 text-lg bg-blue-600 hover:bg-blue-700"
           onPress={() => {
+            plausible("click-join-beta");
             redirect("/support");
           }}
         >
