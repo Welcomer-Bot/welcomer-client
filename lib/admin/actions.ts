@@ -1,33 +1,25 @@
-'use server'
+"use server";
 
 import { revalidatePath } from "next/cache";
-import { getUserGuild } from "../dal";
-
-
+import { addGuildToBeta, getGuild, removeGuildToBeta } from "../dal";
 
 export async function removeGuildFromBetaProgram(guildId: string) {
-    const guild = await getUserGuild(guildId);
-    if (!guild) return false
-    const res = await guild.removeFromBetaProgram();
-    if (!res) return false;
-    revalidatePath("/admin");
-    return guild.toObject();
+  const res = await removeGuildToBeta(guildId);
+  revalidatePath("/admin");
+  return res;
 }
 
 export async function enrollGuildToBetaProgram(guildId: string) {
-    const guild = await getUserGuild(guildId);
-    if (!guild) return false
-    const res = await guild.enrollToBetaProgram();
-    revalidatePath("/admin");
-    if (!res) return false;
-    return guild.toObject();
+  const res = await addGuildToBeta(guildId);
+  revalidatePath("/admin");
+  return res
 }
 
 export async function leaveGuild(guildId: string) {
-    const guild = await getUserGuild(guildId);
-    if (!guild) return false
-    const res = await guild.leave();
-    revalidatePath("/admin");
-    if (!res) return false;
-    return guild.toObject();
+  const guild = await getGuild(guildId);
+  if (!guild) return false;
+  const res = await guild.leave();
+  revalidatePath("/admin");
+  if (!res) return false;
+  return guild.toObject();
 }

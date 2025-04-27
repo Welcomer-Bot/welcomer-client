@@ -456,7 +456,7 @@ export async function getGuildBeta(guildId: string) {
 
 export async function addGuildToBeta(guildId: string) {
   try {
-    return await prisma.betaGuild.create({
+    return !!await prisma.betaGuild.create({
       data: {
         guild: {
           connectOrCreate: {
@@ -474,7 +474,7 @@ export async function addGuildToBeta(guildId: string) {
 
 export async function removeGuildToBeta(guildId: string) {
   try {
-    return await prisma.betaGuild.delete({
+    return !!await prisma.betaGuild.delete({
       where: {
         id: guildId,
       },
@@ -638,7 +638,7 @@ export const leaveGuild = cache(async (guildId: string) => {
     const data = (await rest.delete(`${Routes.userGuild(guildId)}`)) as
       | RESTGetAPIGuildResult
       | RESTError;
-    if (!data || "message" in data) return null;
+    if (!data || "message" in data) return false;
 
     return !!data;
   } catch {

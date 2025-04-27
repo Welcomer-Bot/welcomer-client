@@ -92,15 +92,15 @@ export default class Guild implements GuildObject {
 
   public async enrollToBetaProgram() {
     this.beta = true;
-    return !!(await addGuildToBeta(this.id));
+    return await addGuildToBeta(this.id);
   }
 
   public async removeFromBetaProgram() {
     this.beta = false;
-    return !!(await removeGuildToBeta(this.id));
+    return await removeGuildToBeta(this.id);
   }
 
   public async leave() {
-    return !!(await leaveGuild(this.id));
+    return await leaveGuild(this.id);
   }
 }

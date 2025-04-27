@@ -1,8 +1,7 @@
 "use client";
 
-import { getGuildsByUserId, getUserDataById } from "@/lib/dal";
+import { getGuildsByUserId } from "@/lib/dal";
 import { GuildObject } from "@/lib/discord/guild";
-import { UserObject } from "@/lib/discord/user";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Card } from "@heroui/card";
 import { User } from "@prisma/client";
@@ -10,21 +9,24 @@ import { useEffect, useState } from "react";
 import GuildCard from "./GuildCard";
 export default function UserSearch({ users }: { users: User[] }) {
   const [value, setValue] = useState<React.Key | null>(null);
-  const [user, setUser] = useState<UserObject | null>(null);
+  const [user, setUser] = useState<User | null | undefined>(null);
   const [guilds, setGuilds] = useState<GuildObject[] | null>([]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const updateStats = async () => {
       if (!value) {
         setUser(null);
         return;
       }
-      const updatedUser = await getUserDataById(value as string);
+      setLoading(true);
+      const updatedUser = users.find((user) => user.id === value);
       const guilds = await getGuildsByUserId(value as string);
       setGuilds(guilds);
       setUser(updatedUser);
+      setLoading(false);
     };
     updateStats();
-  }, [value]);
+  }, [users, value]);
 
   return (
     <>
@@ -33,6 +35,7 @@ export default function UserSearch({ users }: { users: User[] }) {
         label={"User ID"}
         selectedKey={value?.toString()}
         onSelectionChange={setValue}
+        isLoading={loading}
       >
         {users.map((user) => (
           <AutocompleteItem

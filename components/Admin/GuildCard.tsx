@@ -6,23 +6,21 @@ import {
   removeGuildFromBetaProgram,
 } from "@/lib/admin/actions";
 import { GuildObject } from "@/lib/discord/guild";
-import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import Image from "next/image";
-import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function GuildCard({ guild }: { guild: GuildObject }) {
-  const [currentGuild, setCurrentGuild] = useState<GuildObject>(guild);
   return (
     <Card>
       <CardHeader className="flex flex-row space-x-5">
         <div>
-          {currentGuild.iconUrl ? (
+          {guild.iconUrl ? (
             <Image
               className="rounded-lg"
-              src={currentGuild.iconUrl}
-              alt={`${currentGuild.id} icon`}
+              src={guild.iconUrl}
+              alt={`${guild.id} icon`}
               width={48}
               height={48}
             />
@@ -33,22 +31,21 @@ export default function GuildCard({ guild }: { guild: GuildObject }) {
           )}
         </div>
         <div>
-          <h3>{currentGuild.name}</h3>
-          <p>{currentGuild.id}</p>
+          <h3>{guild.name}</h3>
+          <p>{guild.id}</p>
         </div>
       </CardHeader>
       <CardBody>
-        <p>Member count: {currentGuild.memberCount}</p>
+        <p>Member count: {guild.memberCount}</p>
         <div>
-          {currentGuild.beta ? (
+          {guild.beta ? (
             <Button
               className="max-w-xs"
               color="danger"
               variant="ghost"
               onPress={async () => {
-                const res = await removeGuildFromBetaProgram(currentGuild.id);
+                const res = await removeGuildFromBetaProgram(guild.id);
                 if (res) {
-                  setCurrentGuild(res);
                   toast.success("Left beta program");
                 } else {
                   toast.error("Failed to leave beta program");
@@ -62,29 +59,26 @@ export default function GuildCard({ guild }: { guild: GuildObject }) {
               className="max-w-xs"
               color="primary"
               onPress={async () => {
-                const res = await enrollGuildToBetaProgram(currentGuild.id);
+                const res = await enrollGuildToBetaProgram(guild.id);
                 if (res) {
-                  setCurrentGuild(res);
-
                   toast.success("Enrolled guild to beta program");
                 } else {
-                  toast.error("Failed to enroll currentGuild to beta program");
+                  console.log(res);
+                  toast.error("Failed to enroll guild to beta program");
                 }
               }}
             >
               Integrate guild to beta program
             </Button>
           )}
-          {currentGuild.mutual && (
+          {guild.mutual && (
             <Button
               onPress={async () => {
-                const res = await leaveGuild(currentGuild.id);
+                const res = await leaveGuild(guild.id);
                 if (res) {
-                  setCurrentGuild(res);
-
                   toast.success("Left guild");
                 } else {
-                  toast.error("Failed to leave currentGuild");
+                  toast.error("Failed to leave guild");
                 }
               }}
             >
