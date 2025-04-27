@@ -50,6 +50,7 @@ jobs:
           password: ${{ secrets.PASSWORD }} # Your server's SSH private key
           script: |
             cd /var/www/welcomer-client
+            git pull
             yarn
             yarn prisma generate
             pm2 restart welcomer-client
