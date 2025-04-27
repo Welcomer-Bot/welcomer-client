@@ -31,17 +31,20 @@ export default function StatsViewer({
     updateStats();
   }, [period, guildId, module]);
 
+  const formattedModule = `${module[0].toUpperCase() + module.slice(1)} stats`;
+  const countableModule = module[0].toUpperCase() + module.slice(1, module.length - 1) + 'd';
+  
   return (
     <Card className="grid gap-5 px-5 pb-5">
       <CardHeader className="flex justify-between">
-        <h2>{module[0].toUpperCase() + module.slice(1)} stats</h2>
+        <h2>{formattedModule}</h2>
         <PeriodSelector value={period} setValue={setPeriod} />
       </CardHeader>
       {isLoading ? (
         <div className="grid  md:grid-cols-4 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -49,7 +52,7 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -57,7 +60,7 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -65,7 +68,7 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -76,7 +79,7 @@ export default function StatsViewer({
         <div className="grid  md:grid-cols-4 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              Members welcomed
+              Members {countableModule}
             </CardHeader>
             <CardBody>{data?.membersEvent}</CardBody>
           </Card>
