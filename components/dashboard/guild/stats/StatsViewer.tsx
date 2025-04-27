@@ -32,7 +32,7 @@ export default function StatsViewer({
   }, [period, guildId, module]);
 
   const formattedModule = `${module[0].toUpperCase() + module.slice(1)} stats`;
-  const countableModule = module[0].toUpperCase() + module.slice(1, module.length - 1) + 'd';
+  const countableModule =  module.slice(0, module.length - 1) + 'd';
   
   return (
     <Card className="grid gap-5 px-5 pb-5">
