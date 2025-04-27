@@ -157,18 +157,37 @@ export async function updateSource(store: SourceState) {
             timestamp: embed.timestamp,
             author: embed.author
               ? {
-                  update: {
-                    name: embed.author.name,
-                    iconUrl: embed.author.iconUrl,
-                    url: embed.author.url,
+                  upsert: {
+                    where: {
+                      id: embed.author.id ?? -1,
+                    },
+                    create: {
+                      name: embed.author.name,
+                      iconUrl: embed.author.iconUrl,
+                      url: embed.author.url,
+                    },
+                    update: {
+                      name: embed.author.name,
+                      iconUrl: embed.author.iconUrl,
+                      url: embed.author.url,
+                    },
                   },
                 }
               : undefined,
             footer: embed.footer
               ? {
-                  update: {
-                    text: embed.footer.text,
-                    iconUrl: embed.footer.iconUrl,
+                  upsert: {
+                    where: {
+                      id: embed.footer.id ?? -1,
+                    },
+                    create: {
+                      text: embed.footer.text,
+                      iconUrl: embed.footer.iconUrl,
+                    },
+                    update: {
+                      text: embed.footer.text,
+                      iconUrl: embed.footer.iconUrl,
+                    },
                   },
                 }
               : undefined,
@@ -406,7 +425,10 @@ export async function updateCards(
                 avatarBorderColor: card.avatarBorderColor || null,
                 mainText: card.mainText
                   ? {
-                      upsert: {
+                    upsert: {
+                      where: {
+                        id: card.mainText.id ?? -1,
+                      },
                         create: {
                           content: card.mainText.content,
                           color: card.mainText.color || null,
@@ -424,7 +446,10 @@ export async function updateCards(
                     },
                 secondText: card.secondText
                   ? {
-                      upsert: {
+                    upsert: {
+                      where: {
+                        id: card.secondText.id ?? -1,
+                        },
                         create: {
                           content: card.secondText.content,
                           color: card.secondText.color || null,
@@ -442,7 +467,10 @@ export async function updateCards(
                     },
                 nicknameText: card.nicknameText
                   ? {
-                      upsert: {
+                    upsert: {
+                      where: {
+                        id: card.nicknameText.id ?? -1,
+                        },
                         create: {
                           content: card.nicknameText.content,
                           color: card.nicknameText.color || null,
