@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
+const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!;
 const REDIRECT_URI = process.env.REDIRECT_URI!;
 
 export async function GET() {

@@ -5,7 +5,7 @@ import { createSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
+const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
 const REDIRECT_URI = process.env.REDIRECT_URI!;
 export async function GET(request: NextRequest) {
