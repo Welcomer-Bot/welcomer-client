@@ -103,60 +103,61 @@ export async function updateSource(store: SourceState) {
   );
   const embedsToUpdate = store.embeds.filter((embed) => embed.id != undefined);
 
-  const res = await prisma.source.update({
-    where: {
-      id: sourceId,
-    },
-    data: {
-      channelId: store.channelId,
-      content: store.content,
-      embeds: {
-        create: embedsToCreate.map((embed) => ({
-          title: embed.title,
-          description: embed.description,
-          color: embed.color,
-          timestamp: embed.timestamp,
-          author: embed.author
-            ? {
-                create: {
-                  name: embed.author.name,
-                  iconUrl: embed.author.iconUrl,
-                  url: embed.author.url,
-                },
-              }
-            : undefined,
-          footer: embed.footer
-            ? {
-                create: {
-                  text: embed.footer.text,
-                  iconUrl: embed.footer.iconUrl,
-                },
-              }
-            : undefined,
-          fields: embed.fields
-            ? {
-                create: embed.fields.map((field) => ({
-                  name: field.name,
-                  value: field.value,
-                  inline: field.inline,
-                })),
-              }
-            : undefined,
-        })),
-        deleteMany: embedsToDelete.map((embed) => ({
-          id: embed.id,
-        })),
-        update: embedsToUpdate.map((embed) => ({
-          where: {
-            id: embed.id,
-          },
-          data: {
+  try {
+    const res = await prisma.source.update({
+      where: {
+        id: sourceId,
+      },
+      data: {
+        channelId: store.channelId,
+        content: store.content,
+        embeds: {
+          create: embedsToCreate.map((embed) => ({
             title: embed.title,
             description: embed.description,
             color: embed.color,
             timestamp: embed.timestamp,
             author: embed.author
               ? {
+                create: {
+                  name: embed.author.name,
+                  iconUrl: embed.author.iconUrl,
+                  url: embed.author.url,
+                },
+              }
+              : undefined,
+            footer: embed.footer
+              ? {
+                create: {
+                  text: embed.footer.text,
+                  iconUrl: embed.footer.iconUrl,
+                },
+              }
+              : undefined,
+            fields: embed.fields
+              ? {
+                create: embed.fields.map((field) => ({
+                  name: field.name,
+                  value: field.value,
+                  inline: field.inline,
+                })),
+              }
+              : undefined,
+          })),
+          deleteMany: embedsToDelete.map((embed) => ({
+            id: embed.id,
+          })),
+          update: embedsToUpdate.map((embed) => ({
+            where: {
+              id: embed.id,
+            },
+            data: {
+              title: embed.title,
+              description: embed.description,
+              color: embed.color,
+              timestamp: embed.timestamp,
+              author: embed.author
+                ? {
                   upsert: {
                     where: {
                       id: embed.author.id ?? -1,
@@ -173,9 +174,9 @@ export async function updateSource(store: SourceState) {
                     },
                   },
                 }
-              : undefined,
-            footer: embed.footer
-              ? {
+                : undefined,
+              footer: embed.footer
+                ? {
                   upsert: {
                     where: {
                       id: embed.footer.id ?? -1,
@@ -190,62 +191,73 @@ export async function updateSource(store: SourceState) {
                     },
                   },
                 }
-              : undefined,
-            fields: {
-              deleteMany: store.deletedFields
-                .filter((field) => field.embedId === embed.id)
-                .map((field) => ({
-                  id: field.id,
+                : undefined,
+              fields: {
+                deleteMany: store.deletedFields
+                  .filter((field) => field.embedId === embed.id)
+                  .map((field) => ({
+                    id: field.id,
+                  })),
+                upsert: embed.fields?.map((field) => ({
+                  where: {
+                    id: field.id ?? -1,
+                  },
+                  update: {
+                    name: field.name,
+                    value: field.value,
+                    inline: field.inline,
+                  },
+                  create: {
+                    name: field.name,
+                    value: field.value,
+                    inline: field.inline,
+                  },
                 })),
-              upsert: embed.fields?.map((field) => ({
-                where: {
-                  id: field.id ?? -1,
-                },
-                update: {
-                  name: field.name,
-                  value: field.value,
-                  inline: field.inline,
-                },
-                create: {
-                  name: field.name,
-                  value: field.value,
-                  inline: field.inline,
-                },
-              })),
+              },
             },
-          },
-        })),
-      },
-      activeCard:
-        store.activeCardId && store.activeCardToEmbedId !== -2
-          ? {
+          })),
+        },
+        activeCard:
+          store.activeCardId && store.activeCardToEmbedId !== -2
+            ? {
               connect: {
                 id: store.activeCardId,
               },
             }
-          : {
+            : {
               disconnect: true,
             },
-      activeCardToEmbed:
-        store.activeCardToEmbedId && store.activeCardToEmbedId >= 0
-          ? {
+        activeCardToEmbed:
+          store.activeCardToEmbedId && store.activeCardToEmbedId >= 0
+            ? {
               connect: {
                 id: store.activeCardToEmbedId,
               },
             }
-          : {
+            : {
               disconnect: true,
             },
-    },
-  });
+      },
+    });
 
-  revalidatePath(
-    `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`
-  );
-  return {
-    data: res,
-    done: true,
-  };
+    revalidatePath(
+      `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`
+    );
+    return {
+      data: res,
+      done: true,
+    };
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
+      return {
+        error: error.message,
+      };
+    }
+    return {
+      error: "An error occurred while updating the source",
+    };
+  }
 }
 
 export async function updateCards(
