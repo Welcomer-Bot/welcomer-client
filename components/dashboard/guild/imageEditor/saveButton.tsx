@@ -40,12 +40,12 @@ export default function SaveButton() {
                 toast.error(error);
               } else if (done) {
                 toast.success("Settings updated successfully !");
+                store.setState((prevState) => ({
+                  ...prevState,
+                  edited: false,
+                }));
               }
               setIsLoading(false);
-              store.setState((prevState) => ({
-                ...prevState,
-                edited: false,
-              }));
             }}
           >
             Save changes

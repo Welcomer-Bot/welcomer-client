@@ -1,4 +1,4 @@
-const { withSentryConfig } = require("@sentry/nextjs");
+import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -14,7 +14,20 @@ const nextConfig = {
 
 // Injected content via Sentry wizard below
 
-module.exports = withSentryConfig(nextConfig, {
+export default withSentryConfig(nextConfig, {
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Document-Policy",
+            value: "js-profiling",
+          },
+        ],
+      },
+    ];
+  },
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 

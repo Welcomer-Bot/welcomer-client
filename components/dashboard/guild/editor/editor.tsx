@@ -12,7 +12,7 @@ import SaveButton from "./saveButton";
 export async function Editor({ guild, user }: { guild: Guild; user: User }) {
   await guild.getChannels();
   return (
-    <div className="flex h-full w-full">
+    <div className="flex h-full w-full editor">
       <div className="flex flex-col lg:flex-row h-full flex-auto w-full">
         <div className="lg:w-1/2 lg:h-full lg:overflow-y-scroll no-scrollbar lg:pb-24">
           <form className="px-5 pt-5 lg:pb-20 space-y-5 w-full relative">
@@ -23,7 +23,6 @@ export async function Editor({ guild, user }: { guild: Guild; user: User }) {
             <Divider className="my-4" />
             <CardPositionEditor />
           </form>
-          <SaveButton />
           
         </div>
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
@@ -37,6 +36,7 @@ export async function Editor({ guild, user }: { guild: Guild; user: User }) {
           />
         </div>
       </div>
+      <SaveButton />
     </div>
   );
 }
