@@ -20,10 +20,10 @@ export const SourceStoreProvider = ({
   initialState,
 }: SourceStoreProviderProps & { initialState?: CompleteSource }) => {
   const storeRef = useRef<SourceStoreAPI | null>(null);
-  if (storeRef.current === null) {
+  // if (storeRef.current === null) {
     console.log("Initial state", initialState);
     storeRef.current = createSourceStore(initialState);
-  }
+  // }
 
   // useEffect(() => {
   //   if (storeRef.current && initialState) {

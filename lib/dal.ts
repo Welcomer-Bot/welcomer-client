@@ -94,6 +94,7 @@ export async function getSources(
             nicknameText: true,
           },
         },
+        images: true,
         activeCardToEmbed: true,
       },
     });
@@ -255,6 +256,9 @@ const defaultWelcomerMessage = {
   embedDescription: "Welcome {user} to {guild}",
   embedFieldName: "New member count",
   embedFieldValue: "{membercount}",
+  imageMainText: "Welcome {username} to the server!",
+  imageSecondText: "You are the {membercount} member!",
+  imageNicknameText: "{username}",
 };
 
 const defaultLeaverMessage = {
@@ -263,6 +267,9 @@ const defaultLeaverMessage = {
   embedDescription: "Goodbye {user} from {guild}",
   embedFieldName: "Remaining member count",
   embedFieldValue: "{membercount}",
+  imageMainText: "Goodbye {username} from the server",
+  imageSecondText: "You left {membercount} member behind",
+  imageNicknameText: "{username}",
 };
 
 export async function createSource(guildId: string, type: SourceType) {
@@ -298,8 +305,43 @@ export async function createSource(guildId: string, type: SourceType) {
     },
   });
 
+  const updatedSource = await prisma.source.update({
+    where: { id: source.id },
+    data: {
+      activeCard: {
+        create: {
+          mainText: {
+            create: {
+              content: message.imageMainText,
+              color: "#ffffff",
+              font: "Arial",
+            },
+          },
+          secondText: {
+            create: {
+              content: message.imageSecondText,
+              color: "#ffffff",
+              font: "Arial",
+            },
+          },
+          nicknameText: {
+            create: {
+              content: message.imageNicknameText,
+              color: "#ffffff",
+              font: "Arial",
+            },
+          },
+          backgroundImgURL: "",
+          Source: {
+            connect: { id: source.id },
+          },
+        },
+      },
+    },
+  });
+
   await createModuleStats(guildId, type);
-  return source;
+  return updatedSource;
 }
 
 export async function deleteSource(guildId: string, sourceId: number) {
@@ -456,7 +498,7 @@ export async function getGuildBeta(guildId: string) {
 
 export async function addGuildToBeta(guildId: string) {
   try {
-    return !!await prisma.betaGuild.create({
+    return !!(await prisma.betaGuild.create({
       data: {
         guild: {
           connectOrCreate: {
@@ -465,7 +507,7 @@ export async function addGuildToBeta(guildId: string) {
           },
         },
       },
-    });
+    }));
   } catch (err) {
     console.error(err);
     return false;
@@ -474,11 +516,11 @@ export async function addGuildToBeta(guildId: string) {
 
 export async function removeGuildToBeta(guildId: string) {
   try {
-    return !!await prisma.betaGuild.delete({
+    return !!(await prisma.betaGuild.delete({
       where: {
         id: guildId,
       },
-    });
+    }));
   } catch {
     return false;
   }

@@ -25,9 +25,9 @@ export const ImageStoreProvider = ({
   initialState?: Partial<ImageState>;
 }) => {
   const storeRef = useRef<ImageStoreAPI | null>(null);
-  if (storeRef.current === null) {
+  // if (storeRef.current === null) {
     storeRef.current = createImageStore(initialState);
-  }
+  // }
   // useEffect(() => {
   //   if (storeRef.current && initialState) {
   //     storeRef.current.setState((prevState) => ({

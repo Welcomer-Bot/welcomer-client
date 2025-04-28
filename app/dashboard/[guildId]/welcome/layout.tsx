@@ -11,6 +11,7 @@ export default async function Layout({
 }) {
   const { guildId } = await params;
   const sources = await getSources(guildId, "Welcomer");
+  console.log("sources", sources);
   //TODO: handle multiple sources and sources selection
   return (
     <SourceStoreProvider initialState={sources && sources[0] ? sources[0] as CompleteSource : undefined}>

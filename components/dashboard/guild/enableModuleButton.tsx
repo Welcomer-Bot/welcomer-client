@@ -5,6 +5,7 @@ import { Button } from "@heroui/button";
 import { SourceType } from "@prisma/client";
 import { usePlausible } from "next-plausible";
 import { useContext, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function EnableModuleButton({
   guildId,
@@ -12,7 +13,7 @@ export default function EnableModuleButton({
 }: {
   guildId: string;
   sourceType: SourceType;
-  }) {
+}) {
   const store = useContext(SourceStoreContext);
 
   const [loading, setLoading] = useState(false);
@@ -28,11 +29,15 @@ export default function EnableModuleButton({
             sourceType,
           },
         });
-        await createSource(guildId, sourceType);
-        store?.setState((prev) => ({  
-          ...prev,
-          edited: true,
-        }));
+        try {
+          await createSource(guildId, sourceType);
+          store?.setState((prev) => ({
+            ...prev,
+            edited: true,
+          }));
+        } catch (e) {
+          toast.error(e as string);
+        }
       }}
     >
       Enable {sourceType}

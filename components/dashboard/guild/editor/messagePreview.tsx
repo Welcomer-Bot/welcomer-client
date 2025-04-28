@@ -15,7 +15,6 @@ import {
 } from "@skyra/discord-components-react";
 import { BaseCardParams } from "@welcomer-bot/card-canvas";
 import { ReactNode, useEffect, useState } from "react";
-
 export default function MessagePreview({
   msg,
   guild,
@@ -24,7 +23,7 @@ export default function MessagePreview({
   msg: SourceState;
   guild: GuildObject;
   user: UserObject;
-}) {
+  }) {
   const [image, setImage] = useState<string | undefined>(undefined);
   const [text, setText] = useState<{
     content?: string | ReactNode[] | null;
@@ -82,7 +81,6 @@ export default function MessagePreview({
     })),
   });
   useEffect(() => {
-    console.log("msg", msg)
     if (msg.activeCard) {
       const loadImage = async () => {
         if (!msg.activeCard) return;
