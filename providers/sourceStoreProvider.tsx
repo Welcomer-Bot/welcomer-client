@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useRef, type ReactNode } from "react";
 import { useStore } from "zustand";
 
 import { CompleteSource } from "@/prisma/schema";
@@ -27,17 +21,17 @@ export const SourceStoreProvider = ({
 }: SourceStoreProviderProps & { initialState?: CompleteSource }) => {
   const storeRef = useRef<SourceStoreAPI | null>(null);
   if (storeRef.current === null) {
+    console.log("Initial state", initialState);
     storeRef.current = createSourceStore(initialState);
   }
 
-  useEffect(() => {
-    if (storeRef.current && initialState) {
-      storeRef.current.setState((prevState) => ({
-        ...prevState,
-        ...initialState,
-      }));
-    }
-  }, [initialState]);
+  // useEffect(() => {
+  //   if (storeRef.current && initialState) {
+  //     storeRef.current.setState((prevState) => ({
+  //       ...prevState,
+  //     }));
+  //   }
+  // }, [initialState]);
 
   return (
     <SourceStoreContext.Provider value={storeRef.current}>

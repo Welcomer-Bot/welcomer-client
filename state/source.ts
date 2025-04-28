@@ -109,7 +109,7 @@ export const createSourceStore = (initState: CompleteSource = defaultState) => {
         deletedEmbeds: [],
         deletedFields: [],
         edited: false,
-        activeCardToEmbedId: null,
+        activeCardToEmbedId: initState.activeCardToEmbedId != undefined ? initState.embeds.findIndex((embed) => embed.id === initState.activeCardToEmbedId) : undefined,
         setChannelId: (channelId) =>
           customSet((state) => {
             state.channelId = channelId;

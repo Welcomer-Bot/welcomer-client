@@ -234,8 +234,7 @@ export const MessageSchema = z
     images: z
       .array(
         z.object({
-          attachment: z.string(),
-          name: z.string(),
+          id: z.number(),
         })
       )
       .optional()
@@ -243,20 +242,25 @@ export const MessageSchema = z
       .refine((value) => !value || value.length <= 10, {
         message: "Message files must be less than 10.",
       }),
-    activeCard: z
-      .object({
-        id: z.number(),
-        welcomerId: z.string().optional().nullable(),
-        leaverId: z.string().optional().nullable(), 
-
-      }).optional().nullable(),
+    activeCardId: z
+      .number()
+      .optional()
+      .nullable(),
+    activeCardToEmbedId: z
+      .number()
+      .optional()
+      .nullable()
   })
   .refine(
     (value) => {
       // Check if at least one of content, embeds, or files is present and not empty
       const hasContent = value.content && value.content.trim().length > 0;
       const hasEmbeds = value.embeds && value.embeds.length > 0;
-      const hasFiles = (value.images && value.images.length > 0) || value.activeCard?.welcomerId || value.activeCard?.leaverId;
+      const hasFiles =
+        value.activeCardId &&
+        value.activeCardId >= 0 &&
+        value.activeCardToEmbedId &&
+        value.activeCardToEmbedId >= 0;
       return hasContent || hasEmbeds || hasFiles;
     },
     {

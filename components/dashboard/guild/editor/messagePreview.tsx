@@ -82,6 +82,7 @@ export default function MessagePreview({
     })),
   });
   useEffect(() => {
+    console.log("msg", msg)
     if (msg.activeCard) {
       const loadImage = async () => {
         if (!msg.activeCard) return;

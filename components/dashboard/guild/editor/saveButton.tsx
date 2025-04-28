@@ -28,14 +28,24 @@ export default function SaveButton() {
           isLoading={isLoading}
           onPress={async () => {
             setIsLoading(true);
-            const res = await updateSource(data);
-            if (res?.error) {
-              toast.error(res.error);
-            } else if (res.done) {
+            const {data: updatedData , done, error} = await updateSource(data);
+            if (error) {
+              console.error(error);
+              toast.error(error);
+            } else if (done) {
               toast.success("Settings updated successfully !");
               store.setState((prevState) => ({
                 ...prevState,
+                ...updatedData,
+                activeCardToEmbedId:
+                  updatedData.activeCardToEmbedId !== undefined
+                    ? updatedData.embeds.findIndex(
+                        (embed) => embed.id === updatedData.activeCardToEmbedId
+                      )
+                    : undefined,
                 edited: false,
+                deletedEmbeds: [],
+                deletedFields: [],
               }));
             }
             setIsLoading(false);

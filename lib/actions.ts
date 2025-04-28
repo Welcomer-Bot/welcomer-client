@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import { ImageState } from "@/state/image";
 import { SourceState } from "@/state/source";
-import { Source, SourceType } from "@prisma/client";
+import { ImageCard, Source, SourceType } from "@prisma/client";
 import {
   createSource as createSourceRequest,
   deleteSource,
@@ -36,9 +36,7 @@ export async function createSource(
     throw new Error("You do not have permission to manage this guild");
   }
   await createSourceRequest(guild.id, source);
-  revalidatePath(
-    `/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`
-  );
+  revalidatePath(`/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`);
 }
 
 export async function removeSource(
@@ -84,6 +82,7 @@ export async function updateSource(store: SourceState) {
   }
   const messageValidated = MessageSchema.safeParse(store);
   if (!messageValidated.success) {
+    console.log("messageValidated.error", messageValidated.error);
     return {
       error: messageValidated.error.errors[0].path[-1]
         ? messageValidated.error.errors[0].path[-1] + ": "
@@ -102,7 +101,16 @@ export async function updateSource(store: SourceState) {
     (embed) => embed.id != undefined
   );
   const embedsToUpdate = store.embeds.filter((embed) => embed.id != undefined);
-
+  console.log(
+    "store.activeCardToEmbedId != undefined  && store.activeCardToEmbedId >= 0 && store.embeds[store.activeCardToEmbedId] !== undefined",
+    store.activeCardToEmbedId != undefined &&
+      store.activeCardToEmbedId >= 0 &&
+      store.embeds[store.activeCardToEmbedId] !== undefined
+  );
+  console.log(
+    "cardWithEmbedToConnect",
+    store.embeds[store.activeCardToEmbedId!]
+  );
   try {
     const res = await prisma.source.update({
       where: {
@@ -119,29 +127,29 @@ export async function updateSource(store: SourceState) {
             timestamp: embed.timestamp,
             author: embed.author
               ? {
-                create: {
-                  name: embed.author.name,
-                  iconUrl: embed.author.iconUrl,
-                  url: embed.author.url,
-                },
-              }
+                  create: {
+                    name: embed.author.name,
+                    iconUrl: embed.author.iconUrl,
+                    url: embed.author.url,
+                  },
+                }
               : undefined,
             footer: embed.footer
               ? {
-                create: {
-                  text: embed.footer.text,
-                  iconUrl: embed.footer.iconUrl,
-                },
-              }
+                  create: {
+                    text: embed.footer.text,
+                    iconUrl: embed.footer.iconUrl,
+                  },
+                }
               : undefined,
             fields: embed.fields
               ? {
-                create: embed.fields.map((field) => ({
-                  name: field.name,
-                  value: field.value,
-                  inline: field.inline,
-                })),
-              }
+                  create: embed.fields.map((field) => ({
+                    name: field.name,
+                    value: field.value,
+                    inline: field.inline,
+                  })),
+                }
               : undefined,
           })),
           deleteMany: embedsToDelete.map((embed) => ({
@@ -158,39 +166,39 @@ export async function updateSource(store: SourceState) {
               timestamp: embed.timestamp,
               author: embed.author
                 ? {
-                  upsert: {
-                    where: {
-                      id: embed.author.id ?? -1,
+                    upsert: {
+                      where: {
+                        id: embed.author.id ?? -1,
+                      },
+                      create: {
+                        name: embed.author.name,
+                        iconUrl: embed.author.iconUrl,
+                        url: embed.author.url,
+                      },
+                      update: {
+                        name: embed.author.name,
+                        iconUrl: embed.author.iconUrl,
+                        url: embed.author.url,
+                      },
                     },
-                    create: {
-                      name: embed.author.name,
-                      iconUrl: embed.author.iconUrl,
-                      url: embed.author.url,
-                    },
-                    update: {
-                      name: embed.author.name,
-                      iconUrl: embed.author.iconUrl,
-                      url: embed.author.url,
-                    },
-                  },
-                }
+                  }
                 : undefined,
               footer: embed.footer
                 ? {
-                  upsert: {
-                    where: {
-                      id: embed.footer.id ?? -1,
+                    upsert: {
+                      where: {
+                        id: embed.footer.id ?? -1,
+                      },
+                      create: {
+                        text: embed.footer.text,
+                        iconUrl: embed.footer.iconUrl,
+                      },
+                      update: {
+                        text: embed.footer.text,
+                        iconUrl: embed.footer.iconUrl,
+                      },
                     },
-                    create: {
-                      text: embed.footer.text,
-                      iconUrl: embed.footer.iconUrl,
-                    },
-                    update: {
-                      text: embed.footer.text,
-                      iconUrl: embed.footer.iconUrl,
-                    },
-                  },
-                }
+                  }
                 : undefined,
               fields: {
                 deleteMany: store.deletedFields
@@ -218,25 +226,51 @@ export async function updateSource(store: SourceState) {
           })),
         },
         activeCard:
-          store.activeCardId && store.activeCardToEmbedId !== -2
+          store.activeCardId != undefined && store.activeCardToEmbedId !== -2
             ? {
-              connect: {
-                id: store.activeCardId,
-              },
-            }
+                connect: {
+                  id: store.activeCardId,
+                },
+              }
             : {
-              disconnect: true,
-            },
+                disconnect: true,
+              },
         activeCardToEmbed:
-          store.activeCardToEmbedId && store.activeCardToEmbedId >= 0
+          store.activeCardToEmbedId != undefined &&
+          store.activeCardToEmbedId >= 0 &&
+          store.embeds[store.activeCardToEmbedId] !== undefined
             ? {
-              connect: {
-                id: store.activeCardToEmbedId,
-              },
-            }
+                connect: {
+                  id: store.embeds[store.activeCardToEmbedId].id,
+                },
+              }
             : {
-              disconnect: true,
-            },
+                disconnect: true,
+              },
+      },
+      include: {
+        embeds: {
+          include: {
+            author: true,
+            footer: true,
+            fields: true,
+          },
+        },
+        images: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
+        activeCard: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
+        activeCardToEmbed: true,
       },
     });
 
@@ -264,7 +298,11 @@ export async function updateCards(
   currentStore: ImageState,
   guildId: string
 ): Promise<{
-  data: Source | null;
+  data:
+    | (Source & {
+        images: ImageCard[];
+      })
+    | null;
   done: boolean;
   error: string | null;
 }> {
@@ -437,10 +475,10 @@ export async function updateCards(
                 avatarBorderColor: card.avatarBorderColor || null,
                 mainText: card.mainText
                   ? {
-                    upsert: {
-                      where: {
-                        id: card.mainText.id ?? -1,
-                      },
+                      upsert: {
+                        where: {
+                          id: card.mainText.id ?? -1,
+                        },
                         create: {
                           content: card.mainText.content,
                           color: card.mainText.color || null,
@@ -458,9 +496,9 @@ export async function updateCards(
                     },
                 secondText: card.secondText
                   ? {
-                    upsert: {
-                      where: {
-                        id: card.secondText.id ?? -1,
+                      upsert: {
+                        where: {
+                          id: card.secondText.id ?? -1,
                         },
                         create: {
                           content: card.secondText.content,
@@ -479,9 +517,9 @@ export async function updateCards(
                     },
                 nicknameText: card.nicknameText
                   ? {
-                    upsert: {
-                      where: {
-                        id: card.nicknameText.id ?? -1,
+                      upsert: {
+                        where: {
+                          id: card.nicknameText.id ?? -1,
                         },
                         create: {
                           content: card.nicknameText.content,
@@ -502,9 +540,25 @@ export async function updateCards(
             })),
         },
       },
+      include: {
+        images: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
+        activeCard: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
+      },
     });
     revalidatePath(
-      `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, - 1)}`,
+      `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`
     );
 
     return {
