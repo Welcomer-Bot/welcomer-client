@@ -260,7 +260,7 @@ export const MessageSchema = z
         value.activeCardId &&
         value.activeCardId >= 0 &&
         value.activeCardToEmbedId &&
-        value.activeCardToEmbedId >= 0;
+        value.activeCardToEmbedId >= -1;
       return hasContent || hasEmbeds || hasFiles;
     },
     {

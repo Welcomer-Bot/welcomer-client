@@ -1,9 +1,10 @@
 "use client";
 import { createSource } from "@/lib/actions";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/button";
 import { SourceType } from "@prisma/client";
 import { usePlausible } from "next-plausible";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 export default function EnableModuleButton({
   guildId,
@@ -11,7 +12,9 @@ export default function EnableModuleButton({
 }: {
   guildId: string;
   sourceType: SourceType;
-}) {
+  }) {
+  const store = useContext(SourceStoreContext);
+
   const [loading, setLoading] = useState(false);
   const plausible = usePlausible();
   return (
@@ -26,6 +29,10 @@ export default function EnableModuleButton({
           },
         });
         await createSource(guildId, sourceType);
+        store?.setState((prev) => ({  
+          ...prev,
+          edited: true,
+        }));
       }}
     >
       Enable {sourceType}
