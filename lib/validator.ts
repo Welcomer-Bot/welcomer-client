@@ -256,11 +256,11 @@ export const MessageSchema = z
       // Check if at least one of content, embeds, or files is present and not empty
       const hasContent = value.content && value.content.trim().length > 0;
       const hasEmbeds = value.embeds && value.embeds.length > 0;
-      const hasFiles =
+      const hasFiles =(
         value.activeCardId &&
-        value.activeCardId >= 0 &&
+        value.activeCardId >= 0) || (
         value.activeCardToEmbedId &&
-        value.activeCardToEmbedId >= -1;
+        value.activeCardToEmbedId >= -1);
       return hasContent || hasEmbeds || hasFiles;
     },
     {
