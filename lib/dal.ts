@@ -7,7 +7,9 @@ import {
   type RESTError,
   RESTGetAPICurrentUserGuildsResult,
   RESTGetAPIGuildChannelsResult,
+  RESTGetAPIGuildMemberResult,
   type RESTGetAPIGuildResult,
+  RESTGetAPIGuildRolesResult,
   RESTGetAPIUserResult,
   Routes,
 } from "discord-api-types/v10";
@@ -701,6 +703,44 @@ export const getChannels = cache(async (guildId: string) => {
   }
 });
 
+export const getMemberPermissions = cache(async (guildId: string) => {
+  try {
+    const data = (await rest.get(
+      Routes.guildMember(guildId, process.env.BOT_ID)
+    )) as RESTGetAPIGuildResult | RESTError;
+    if (!data || "message" in data) return null;
+    console.log("member", data);
+    return data;
+  } catch (e) {
+    console.error("Error fetching member permissions", e);
+    return null;
+  }
+});
+
+export const getRolesPermissions = cache(async (guildId: string) => {
+  try {
+    const data = (await rest.get(Routes.guildRoles(guildId))) as
+      | RESTGetAPIGuildRolesResult
+      | RESTError;
+    if (!data || "message" in data) return null;
+    return data;
+  } catch {
+    return null;
+  }
+});
+
+export const getChannelData = cache(async (channelId: string) => {
+  try {
+    const data = (await rest.get(Routes.channel(channelId))) as
+      | RESTGetAPIGuildChannelsResult
+      | RESTError;
+    if (!data || "message" in data) return null;
+    return data;
+  } catch {
+    return null;
+  }
+});
+
 export const getUser = cache(async () => {
   const sessionData = await getSessionData();
   if (!sessionData || !sessionData.accessToken) return null;
@@ -770,4 +810,12 @@ export const setPremiumGuild = cache(async (guildId: string) => {
       },
     },
   });
+});
+
+export const getBot = cache(async (guildId: string) => {
+  const data = (await rest.get(
+    Routes.guildMember(guildId, process.env.BOT_ID)
+  )) as RESTGetAPIGuildMemberResult | RESTError;
+  if (!data || "message" in data) return null;
+  return data;
 });

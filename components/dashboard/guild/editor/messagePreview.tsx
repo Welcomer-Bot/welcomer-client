@@ -23,7 +23,7 @@ export default function MessagePreview({
   msg: SourceState;
   guild: GuildObject;
   user: UserObject;
-  }) {
+}) {
   const [image, setImage] = useState<string | undefined>(undefined);
   const [text, setText] = useState<{
     content?: string | ReactNode[] | null;
@@ -128,7 +128,13 @@ export default function MessagePreview({
   return (
     <>
       <DiscordMessages className="rounded-lg min-h-full w-full min-w-fit">
-        <DiscordMessage author="Welcomer" avatar="/logo.svg" bot verified>
+        <DiscordMessage
+          author="Welcomer"
+          avatar="/logo.svg"
+          bot
+          verified
+          highlight={msg.content?.includes("{user}")}
+        >
           {text.content}
           {((msg.activeCardToEmbedId === -1 && msg.activeCard) ||
             (msg.activeCardToEmbedId == null &&

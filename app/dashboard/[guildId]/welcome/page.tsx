@@ -16,6 +16,7 @@ export default async function Page({
   const source = await getSources(guildId, "Welcomer");
   const welcomerParams = source?.[0];
   const guild = await getGuild(guildId);
+  // guild?.getPermissions();
   const user = await getUser();
 
   if (!guild || !user) redirect("/dashboard");
