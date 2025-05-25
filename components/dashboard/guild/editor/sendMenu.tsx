@@ -84,7 +84,7 @@ export default function SendMenu({
                                     </DiscordMention>
                                   </h3>
                                   <p>
-                                    You need to have the following permissions:
+                                    You need to grant Welcomer Beta the following permissions for this channel:
                                     <ul className="list-disc pl-5">
                                       {!hasPermission(
                                         c.permissions,
@@ -159,7 +159,7 @@ export default function SendMenu({
                                 </DiscordMention>
                               </h3>
                               <p>
-                                You need to have the following permissions:
+                                You need to grant Welcomer Beta the following permissions for this channel:
                                 <ul className="list-disc pl-5">
                                   {!hasPermission(
                                     c.permissions,
