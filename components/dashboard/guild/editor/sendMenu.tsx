@@ -1,15 +1,19 @@
 "use client";
 
+import { hasPermission, RequiredPermissions } from "@/lib/discord/guild";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { Tooltip } from "@heroui/react";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
-import { RESTGetAPIGuildChannelsResult } from "discord.js";
+import { APIChannel } from "discord.js";
 import { useContext } from "react";
 import { useStore } from "zustand";
 
 export default function SendMenu({
   channels,
 }: {
-  channels: RESTGetAPIGuildChannelsResult;
+  channels: (APIChannel & {
+    permissions: bigint;
+  })[];
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
@@ -30,6 +34,15 @@ export default function SendMenu({
           ? currentChannel
           : "",
       ]}
+      renderValue={(items) => {
+        return items.map((item) => (
+          <Tooltip content="Missing permissions" key={item.key}>
+            <span>
+              {item.textValue}
+            </span>
+          </Tooltip>
+        ));
+      }}
     >
       {channels ? (
         <>
@@ -42,17 +55,31 @@ export default function SendMenu({
               );
               if (children.length === 0) return null;
               return (
-                <SelectSection
-                  key={channel.id}
-                  showDivider
-                  title={channel.name}
-                >
-                  {children.map((c) => (
-                    <SelectItem key={c.id} textValue={c.name ?? c.id}>
-                      {c.name} ({c.id})
-                    </SelectItem>
-                  ))}
-                </SelectSection>
+                <>
+                  <Tooltip content="Missing permissions">
+                    <SelectSection
+                      key={channel.id}
+                      showDivider
+                      title={channel.name}
+                    >
+                      {children.map((c) => (
+                        <SelectItem
+                          key={c.id}
+                          textValue={c.name ?? c.id}
+                          className={
+                            hasPermission(c.permissions, RequiredPermissions)
+                              ? ""
+                              : "bg-warning-100"
+                          }
+                        >
+                          <>
+                            {c.name} ({c.id})
+                          </>
+                        </SelectItem>
+                      ))}
+                    </SelectSection>
+                  </Tooltip>
+                </>
               );
             })}
           {/* Uncategorised channels */}
@@ -71,7 +98,9 @@ export default function SendMenu({
               >
                 {uncategorized.map((c) => (
                   <SelectItem key={c.id} textValue={c.name ?? c.id}>
-                    {c.name} ({c.id})
+                    <Tooltip content={c.name}>
+                      {c.name} ({c.id})
+                    </Tooltip>
                   </SelectItem>
                 ))}
               </SelectSection>
