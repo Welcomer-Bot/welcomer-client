@@ -1,6 +1,6 @@
 "use client";
-import {Card, CardBody } from "@heroui/card";
-import { Button } from "@heroui/button";
+import { Button, Card, CardBody } from "@heroui/react";
+import { usePlausible } from "next-plausible";
 import { redirect } from "next/navigation";
 import {
   FaCheckCircle,
@@ -10,7 +10,6 @@ import {
   FaShieldAlt,
   FaStar,
 } from "react-icons/fa";
-import { usePlausible } from "next-plausible";
 
 export default function WelcomerBetaLanding() {
   const plausible = usePlausible();
@@ -32,9 +31,7 @@ export default function WelcomerBetaLanding() {
             redirect("/support");
           }}
         >
-          <h1 className="text-2xl font-bold">
-          Join the Beta
-          </h1>
+          <h1 className="text-2xl font-bold">Join the Beta</h1>
         </Button>
       </section>
 

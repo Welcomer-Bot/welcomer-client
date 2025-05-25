@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { usePlausible } from "next-plausible";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

@@ -3,10 +3,8 @@
 import { GuildInput } from "@/components/status/GuildInput";
 import { fetchClustersShardsSatus } from "@/lib/discord/shard";
 import { type clusterStatus } from "@/lib/discord/status";
-import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Divider } from "@heroui/react";
-import { Tooltip } from "@heroui/tooltip";
+import { Button, Divider, Tooltip } from "@heroui/react";
 import { useEffect, useState } from "react";
 
 export default function Page() {
@@ -20,14 +18,14 @@ export default function Page() {
     }
     updateStatus();
     const interval = setInterval(() => {
-      updateStatus(); 
+      updateStatus();
     }, 20000);
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    setUpdateTime(20)
+    setUpdateTime(20);
     const interval = setInterval(() => {
       setUpdateTime((prev) => prev - 1);
     }, 1000); // Update every second
@@ -145,8 +143,7 @@ export default function Page() {
         </CardBody>
         <CardFooter>
           <p className="text-sm text-gray-400">
-          Updating in {updateTime} seconds
-
+            Updating in {updateTime} seconds
           </p>
         </CardFooter>
       </Card>

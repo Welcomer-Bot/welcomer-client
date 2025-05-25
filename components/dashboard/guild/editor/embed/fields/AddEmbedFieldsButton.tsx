@@ -1,7 +1,7 @@
 "use client";
 
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { useContext } from "react";
 import { useStore } from "zustand";
 

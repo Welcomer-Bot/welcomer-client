@@ -1,5 +1,5 @@
 import { ImageStoreContext } from "@/providers/imageStoreProvider";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { useContext } from "react";
 import { FaTrash } from "react-icons/fa";
 import { useStore } from "zustand";

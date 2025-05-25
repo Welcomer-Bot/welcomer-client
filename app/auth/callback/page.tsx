@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/card";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { use, useEffect } from "react";
 
@@ -11,7 +11,7 @@ export default function Page({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { code, error, error_description } = use(searchParams);
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     if (error) {

@@ -1,6 +1,6 @@
 "use client";
+import { Button } from "@heroui/react";
 import { useEffect } from "react";
-import { Button } from "@heroui/button";
 
 export default function Error({
   error,

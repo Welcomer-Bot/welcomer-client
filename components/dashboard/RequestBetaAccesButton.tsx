@@ -1,6 +1,6 @@
 "use client";
-import { Button } from "@heroui/button";
 import {
+  Button,
   Modal,
   ModalBody,
   ModalContent,
@@ -76,11 +76,14 @@ export default function RequestBetaAccessButton() {
                 <Button color="danger" variant="light" onPress={onClose}>
                   I don&apos;t want these incredible features
                 </Button>
-                <Button color="primary" onPress={() => {
-                  plausible("request-beta-access-join-server");
-                  onClose();
-                  redirect('/support')
-                }}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    plausible("request-beta-access-join-server");
+                    onClose();
+                    redirect("/support");
+                  }}
+                >
                   Join support server and apply !
                 </Button>
               </ModalFooter>

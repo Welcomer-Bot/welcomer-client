@@ -3,14 +3,12 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
 Sentry.init({
   dsn: "https://1e4ac005f063c4e051f529596491a4b8@o4508545743388672.ingest.de.sentry.io/4508875963826256",
   enabled: process.env.NODE_ENV === "production",
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
-  integrations: [nodeProfilingIntegration()],
   // Tracing must be enabled for profiling to work
   // Set sampling rate for profiling - this is evaluated only once per SDK.init call
   profileSessionSampleRate: 1.0,

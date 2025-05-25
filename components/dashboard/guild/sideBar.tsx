@@ -1,7 +1,6 @@
 "use client";
-import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
-import { User as UIUser } from "@heroui/user";
+import { Button, User as UIUser } from "@heroui/react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { FaDoorOpen, FaHome } from "react-icons/fa";
@@ -27,7 +26,9 @@ export function Sidebar({
   const pathname = usePathname();
   const [active, setActive] = useState("dashboard");
   useEffect(() => {
-    const active = pathname ? pathname.split("/")[3] ?? "dashboard" : "dashboard";
+    const active = pathname
+      ? (pathname.split("/")[3] ?? "dashboard")
+      : "dashboard";
     setActive(active);
   }, [pathname]);
   const { isOpen, setIsOpen } = useContext(SidebarContext);
@@ -89,11 +90,11 @@ export function Sidebar({
             </Button>
           </div>
           <Divider className="mb-2 sm:block hidden" />
-            <GuildSelectDropdown
-              currentGuild={currentGuild}
-              guilds={guilds}
-              isOpen={isOpen}
-            />
+          <GuildSelectDropdown
+            currentGuild={currentGuild}
+            guilds={guilds}
+            isOpen={isOpen}
+          />
           <Divider className="mb-2 sm:block hidden" />
 
           <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3">

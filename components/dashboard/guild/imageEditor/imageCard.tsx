@@ -2,8 +2,8 @@
 
 import { generateImage } from "@/lib/discord/image";
 import { ImageStoreContext } from "@/providers/imageStoreProvider";
-import { Button } from "@heroui/button";
 import { Card, CardFooter } from "@heroui/card";
+import { Button } from "@heroui/react";
 import { Skeleton } from "@heroui/skeleton";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";

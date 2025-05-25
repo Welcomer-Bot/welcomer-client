@@ -1,6 +1,6 @@
 "use client";
 import { removeSource } from "@/lib/actions";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { SourceType } from "@prisma/client";
 import { usePlausible } from "next-plausible";
 import { useState } from "react";

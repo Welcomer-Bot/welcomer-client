@@ -4,8 +4,8 @@ import { updateCards } from "@/lib/actions";
 import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { extractImageState } from "@/state/image";
-import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/react";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore } from "zustand";
@@ -35,7 +35,11 @@ export default function SaveButton() {
             color="primary"
             onPress={async () => {
               setIsLoading(true);
-              const {data: updatedData, done, error } = await updateCards(data, guildId);
+              const {
+                data: updatedData,
+                done,
+                error,
+              } = await updateCards(data, guildId);
               if (error) {
                 toast.error(error);
               } else if (done) {

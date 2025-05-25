@@ -1,6 +1,6 @@
 import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { useContext } from "react";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import { useStore } from "zustand";
@@ -53,10 +53,7 @@ export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
               </Button>
             </div>
             <div className="space-y-2">
-              <EmbedFieldNameInput
-                embedIndex={embedIndex}
-                fieldIndex={index}
-              />
+              <EmbedFieldNameInput embedIndex={embedIndex} fieldIndex={index} />
               <EmbedFieldValueInput
                 embedIndex={embedIndex}
                 fieldIndex={index}
