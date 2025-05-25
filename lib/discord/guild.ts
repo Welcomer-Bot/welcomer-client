@@ -31,7 +31,7 @@ export type GuildObject = {
   permissions?: string;
   owner?: boolean;
   channels: (APIChannel & {
-    permissions: number;
+    permissions: bigint;
   })[];
   beta?: boolean;
   premium?: boolean;
@@ -65,7 +65,7 @@ export default class Guild implements GuildObject {
   public permissions?: string;
   public owner?: boolean;
   public channels: (APIChannel & {
-    permissions: number;
+    permissions: bigint;
   })[];
   public beta?: boolean | undefined;
   public premium?: boolean;
@@ -98,21 +98,28 @@ export default class Guild implements GuildObject {
 
   public async getChannels() {
     const channels = (await getChannels(this.id)) as (APIChannel & {
-      permissions: number;
+      permissions: bigint;
     })[];
-    if (channels) {
-      this.channels = channels;
-      for (const channel of channels) {
-        channel.permissions = await this.getChannelsPermissions(channel.id);
-      }
-    }
-    // console.log(
-    //   "requiredPermissions",
-    //   RequiredPermissions,
-    //   "hasPermission",
-    //   hasPermission(Number(this.permissions ?? 0), RequiredPermissions)
-    // );
-
+    if (!channels) return [];
+    this.channels = channels;
+    // Calculer les permissions pour chaque channel de façon asynchrone
+    const channelsWithPermissions = await Promise.all(
+      channels.map(async (channel) => {
+        const perms = await this.getChannelsPermissions(channel.id);
+        console.log(
+          "Permissions for channel",
+          channel.name,
+          "are",
+          perms,
+          "for guild",
+          this.id
+        );
+        return { ...channel, permissions: perms };
+      })
+    );
+    console.log("fin des calculs");
+    this.channels = channelsWithPermissions;
+    // Debug log
     for (const channel of this.channels) {
       console.log(
         channel.name + ": " + channel.permissions,
@@ -121,7 +128,11 @@ export default class Guild implements GuildObject {
         "send messages",
         hasPermission(channel.permissions, Permissions.SEND_MESSAGES),
         "attach files",
-        hasPermission(channel.permissions, Permissions.ATTACH_FILES)
+        hasPermission(channel.permissions, Permissions.ATTACH_FILES),
+        "requiredPermissions",
+        hasRequiredPermissions(channel.permissions),
+        "admin",
+        hasPermission(channel.permissions, Permissions.ADMINISTRATOR)
       );
     }
     return this.channels;
@@ -137,61 +148,57 @@ export default class Guild implements GuildObject {
   }
 
   public async getChannelsPermissions(channelId: string) {
-    let permissions = 0;
+    let permissions = 0n;
     const roles = (await getRolesPermissions(this.id)) ?? [];
     const member = await getBot(this.id);
-    if (!member) return 0;
+    if (!member) return 0n;
     const everyoneRole = roles.find((r) => r.id === this.id); // @everyone
-
-    if (everyoneRole) permissions |= Number(everyoneRole.permissions);
-
+    if (everyoneRole) permissions |= BigInt(everyoneRole.permissions);
     for (const roleId of member?.roles ?? []) {
       const role = roles.find((r) => r.id === roleId);
-      if (role) permissions |= Number(role.permissions);
+      if (role) permissions |= BigInt(role.permissions);
     }
-
     if (hasPermission(permissions, Permissions.ADMINISTRATOR)) {
-      return 0xffffffff; // Toutes les permissions (32 bits)
+      return 0xffffffffffffffffn; // Toutes les permissions (64 bits)
     }
-
-    let allow = 0,
-      deny = 0;
+    // S'assurer que les channels sont chargés
+    if (!this.channels || this.channels.length === 0) {
+      await this.getChannels();
+    }
+    let allow = 0n,
+      deny = 0n;
     // a. Overwrite @everyone
     const channel = this.channels.find(
       (c) => c.id === channelId
     ) as APITextChannel;
-    if (!channel) return 0;
+    if (!channel) return permissions;
     const overwriteEveryone = (channel.permission_overwrites ?? []).find(
       (ow) => ow.id === this.id && ow.type === 0
     );
     if (overwriteEveryone) {
-      deny |= Number(overwriteEveryone.deny);
-      allow |= Number(overwriteEveryone.allow);
+      deny |= BigInt(overwriteEveryone.deny);
+      allow |= BigInt(overwriteEveryone.allow);
     }
-
     // b. Overwrites des rôles (somme tous les allow/deny des rôles du membre)
     for (const roleId of member.roles) {
       const ow = (channel.permission_overwrites ?? []).find(
         (ow) => ow.id === roleId && ow.type === 0
       );
       if (ow) {
-        deny |= Number(ow.deny);
-        allow |= Number(ow.allow);
+        deny |= BigInt(ow.deny);
+        allow |= BigInt(ow.allow);
       }
     }
-
     // c. Overwrite utilisateur
     const overwriteUser = (channel.permission_overwrites ?? []).find(
       (ow) => ow.id === member.user.id && ow.type === 1
     );
     if (overwriteUser) {
-      deny |= Number(overwriteUser.deny);
-      allow |= Number(overwriteUser.allow);
+      deny |= BigInt(overwriteUser.deny);
+      allow |= BigInt(overwriteUser.allow);
     }
-
     // Appliquer deny puis allow
     permissions = (permissions & ~deny) | allow;
-
     return permissions;
   }
 
@@ -210,31 +217,39 @@ export default class Guild implements GuildObject {
   }
 }
 
-const Permissions = {
-  ADMINISTRATOR: 1 << 3,
-  SEND_MESSAGES: 1 << 11,
-  VIEW_CHANNEL: 1 << 10,
-  ATTACH_FILES: 1 << 15,
+export const Permissions = {
+  ADMINISTRATOR: 1n << 3n,
+  SEND_MESSAGES: 1n << 11n,
+  VIEW_CHANNEL: 1n << 10n,
+  ATTACH_FILES: 1n << 15n,
 };
 
 export const RequiredPermissions = [
   Permissions.SEND_MESSAGES,
   Permissions.VIEW_CHANNEL,
   Permissions.ATTACH_FILES,
-].reduce((acc, perm) => acc | perm, 0);
+].reduce((acc, perm) => acc | perm, 0n);
 
-export function hasRequiredPermissions(permissions: number) {
-  return (
-    hasPermission(permissions, Permissions.ADMINISTRATOR) ||
-    hasPermission(permissions, RequiredPermissions)
-  );
+export function hasRequiredPermissions(
+  permissions: bigint | number | undefined | null
+) {
+  if (permissions === undefined || permissions === null) permissions = 0n;
+  permissions =
+    typeof permissions === "bigint" ? permissions : BigInt(permissions);
+  // ADMINISTRATOR bypasses all permission checks
+  if (hasPermission(permissions, Permissions.ADMINISTRATOR)) return true;
+  // Check if all required permissions are present
+  return (permissions & RequiredPermissions) === RequiredPermissions;
 }
 
 export function hasPermission(
-  permissions: number | undefined | null,
-  flag: number | undefined | null
+  permissions: bigint | number | undefined | null,
+  flag: bigint | number | undefined | null
 ) {
-  if (permissions === undefined || permissions === null) permissions = 0;
-  if (flag === undefined || flag === null) flag = 0;
+  if (permissions === undefined || permissions === null) permissions = 0n;
+  if (flag === undefined || flag === null) flag = 0n;
+  permissions =
+    typeof permissions === "bigint" ? permissions : BigInt(permissions);
+  flag = typeof flag === "bigint" ? flag : BigInt(flag);
   return (permissions & flag) === flag;
 }

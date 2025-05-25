@@ -1,9 +1,14 @@
 "use client";
 
-import { hasPermission, RequiredPermissions } from "@/lib/discord/guild";
+import {
+  hasPermission,
+  hasRequiredPermissions,
+  Permissions,
+} from "@/lib/discord/guild";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Tooltip } from "@heroui/react";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
+import { DiscordMention } from "@skyra/discord-components-react";
 import { APIChannel } from "discord.js";
 import { useContext } from "react";
 import { useStore } from "zustand";
@@ -34,15 +39,11 @@ export default function SendMenu({
           ? currentChannel
           : "",
       ]}
-      renderValue={(items) => {
-        return items.map((item) => (
-          <Tooltip content="Missing permissions" key={item.key}>
-            <span>
-              {item.textValue}
-            </span>
-          </Tooltip>
-        ));
-      }}
+      color={
+        hasRequiredPermissions(
+          channels?.find(({ id }) => currentChannel == id)?.permissions
+        ) ? "default" : "warning"
+      }
     >
       {channels ? (
         <>
@@ -56,29 +57,69 @@ export default function SendMenu({
               if (children.length === 0) return null;
               return (
                 <>
-                  <Tooltip content="Missing permissions">
-                    <SelectSection
-                      key={channel.id}
-                      showDivider
-                      title={channel.name}
-                    >
-                      {children.map((c) => (
-                        <SelectItem
-                          key={c.id}
-                          textValue={c.name ?? c.id}
-                          className={
-                            hasPermission(c.permissions, RequiredPermissions)
-                              ? ""
-                              : "bg-warning-100"
-                          }
-                        >
-                          <>
-                            {c.name} ({c.id})
-                          </>
-                        </SelectItem>
-                      ))}
-                    </SelectSection>
-                  </Tooltip>
+                  <SelectSection
+                    key={channel.id}
+                    showDivider
+                    title={channel.name}
+                  >
+                    {children.map((c) => (
+                      <SelectItem
+                        key={c.id}
+                        variant="flat"
+                        textValue={c.name ?? c.id}
+                        color={
+                          hasRequiredPermissions(c.permissions)
+                            ? "default"
+                            : "warning"
+                        }
+                        endContent={
+                          !hasRequiredPermissions(c.permissions) ? (
+                            <Tooltip
+                              content={
+                                <div className="flex flex-col">
+                                  <h3>
+                                    Missing permissions for{" "}
+                                    <DiscordMention type="channel">
+                                      {c.name}
+                                    </DiscordMention>
+                                  </h3>
+                                  <p>
+                                    You need to have the following permissions:
+                                    <ul className="list-disc pl-5">
+                                      {!hasPermission(
+                                        c.permissions,
+                                        Permissions.VIEW_CHANNEL
+                                      ) && <li>View Channel</li>}
+                                      {!hasPermission(
+                                        c.permissions,
+                                        Permissions.SEND_MESSAGES
+                                      ) && <li>Send Messages</li>}
+                                      {!hasPermission(
+                                        c.permissions,
+                                        Permissions.ATTACH_FILES
+                                      ) && <li>Attach Files</li>}
+                                    </ul>
+                                  </p>
+                                </div>
+                              }
+                              placement="right"
+                              color="warning"
+                            >
+                              <span className="text-xs text-warning-600 cursor-help">
+                                ⚠ Missing permissions
+                              </span>
+                            </Tooltip>
+                          ) : (
+                            <span className="text-xs text-gray-500">
+                              {c.type === 5 ? "Thread" : "Channel"}
+                            </span>
+                          )
+                        }
+                      >
+                        {c.name} ({c.id})
+                      </SelectItem>
+                    ))}
+                  </SelectSection>
                 </>
               );
             })}
@@ -97,10 +138,60 @@ export default function SendMenu({
                 title="Uncategorised"
               >
                 {uncategorized.map((c) => (
-                  <SelectItem key={c.id} textValue={c.name ?? c.id}>
-                    <Tooltip content={c.name}>
-                      {c.name} ({c.id})
-                    </Tooltip>
+                  <SelectItem
+                    key={c.id}
+                    variant="flat"
+                    textValue={c.name ?? c.id}
+                    color={
+                      hasRequiredPermissions(c.permissions)
+                        ? "default"
+                        : "warning"
+                    }
+                    endContent={
+                      !hasRequiredPermissions(c.permissions) ? (
+                        <Tooltip
+                          content={
+                            <div className="flex flex-col">
+                              <h3>
+                                Missing permissions for{" "}
+                                <DiscordMention type="channel">
+                                  {c.name}
+                                </DiscordMention>
+                              </h3>
+                              <p>
+                                You need to have the following permissions:
+                                <ul className="list-disc pl-5">
+                                  {!hasPermission(
+                                    c.permissions,
+                                    Permissions.VIEW_CHANNEL
+                                  ) && <li>View Channel</li>}
+                                  {!hasPermission(
+                                    c.permissions,
+                                    Permissions.SEND_MESSAGES
+                                  ) && <li>Send Messages</li>}
+                                  {!hasPermission(
+                                    c.permissions,
+                                    Permissions.ATTACH_FILES
+                                  ) && <li>Attach Files</li>}
+                                </ul>
+                              </p>
+                            </div>
+                          }
+                          placement="right"
+                          color="warning"
+                        >
+                          <span className="text-xs text-warning-600 cursor-help">
+                            ⚠ Missing permissions
+                          </span>
+                        </Tooltip>
+                      ) : (
+                        <span className="text-xs text-gray-500">
+                          {c.type === 5 ? "Thread" : "Channel"}
+                        </span>
+                      )
+                    }
+                  >
+                    {c.name} ({c.id})
                   </SelectItem>
                 ))}
               </SelectSection>
