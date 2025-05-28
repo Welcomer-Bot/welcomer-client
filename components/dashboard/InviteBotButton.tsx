@@ -3,7 +3,7 @@ import { Button } from "@heroui/react";
 import { usePlausible } from "next-plausible";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-// const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
+const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!;
 
 export default function InviteBotButton({ guildId }: { guildId?: string }) {
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ export default function InviteBotButton({ guildId }: { guildId?: string }) {
         setLoading(true);
         plausible("dashboard-invite-bot");
         redirect(
-          `https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&permissions=8&scope=bot&guild_id=${guildId}`
+          `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=8&scope=bot&guild_id=${guildId}`
         );
       }}
     >
