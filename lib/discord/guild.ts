@@ -106,35 +106,10 @@ export default class Guild implements GuildObject {
     const channelsWithPermissions = await Promise.all(
       channels.map(async (channel) => {
         const perms = await this.getChannelsPermissions(channel.id);
-        console.log(
-          "Permissions for channel",
-          channel.name,
-          "are",
-          perms,
-          "for guild",
-          this.id
-        );
         return { ...channel, permissions: perms };
       })
     );
-    console.log("fin des calculs");
     this.channels = channelsWithPermissions;
-    // Debug log
-    for (const channel of this.channels) {
-      console.log(
-        channel.name + ": " + channel.permissions,
-        "read messages",
-        hasPermission(channel.permissions, Permissions.VIEW_CHANNEL),
-        "send messages",
-        hasPermission(channel.permissions, Permissions.SEND_MESSAGES),
-        "attach files",
-        hasPermission(channel.permissions, Permissions.ATTACH_FILES),
-        "requiredPermissions",
-        hasRequiredPermissions(channel.permissions),
-        "admin",
-        hasPermission(channel.permissions, Permissions.ADMINISTRATOR)
-      );
-    }
     return this.channels;
   }
 
