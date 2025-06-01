@@ -21,7 +21,7 @@ export default function EditorMessagePreview({
 
   if (!msg) return null;
   return (
-    <div className="overflow-x-scroll">
+    <div className="overflow-x-scroll h-full">
       <Suspense fallback={<div>Loading...</div>}>
         <LazyMessagePreview msg={msg} guild={guild} user={user} />
       </Suspense>

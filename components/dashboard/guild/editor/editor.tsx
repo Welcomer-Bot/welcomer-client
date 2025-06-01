@@ -13,7 +13,7 @@ export async function Editor({ guild, user }: { guild: Guild; user: User }) {
   const channels = await guild.getChannels();
   return (
     <div className="flex h-full w-full editor relative">
-      <div className="flex flex-col lg:flex-row h-full flex-auto w-full">
+      <div className="flex flex-col lg:flex-row lg:h-screen h-full flex-auto w-full">
         <div className="lg:w-1/2 lg:h-full lg:overflow-y-scroll no-scrollbar lg:pb-24 justify-center align-middle">
           <form className="px-5 pt-5 lg:pb-20 space-y-5 w-full relative">
             <SendMenu channels={channels} />

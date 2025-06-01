@@ -24,9 +24,9 @@ export default function SaveButton() {
       className={`fixed sm:w-3/5 w-4/5 flex justify-between bottom-5 z-50 left-0 right-0 mx-auto`}
     >
       <Card className="w-full">
-        <CardBody className="flex w-full sm:flex-row items-center justify-between p-5 text-sm space-x-2">
+        <CardBody className="flex w-full sm:flex-row items-center justify-between p-5 text-sm space-x-4">
           <p className="text-center">Careful, you have unsaved changes!</p>
-          <div className="sm:mt-0 mt-2 flex items-center justify-center space-x-2">
+          <div className="sm:mt-0 mt-2 flex items-center justify-center space-x-4">
             <button
               onClick={() => {
                 reset();
