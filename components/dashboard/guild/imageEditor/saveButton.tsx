@@ -22,15 +22,28 @@ export default function SaveButton() {
   const currentStore = useStore(store, (state) => state);
   const storeState = useStore(store);
   const data = extractImageState(storeState);
+  const reset = useStore(store, (state) => state.reset);
 
   if (!currentStore) return null;
   if (currentStore.edited === false) return null;
 
   return (
-    <div className="absolute lg:w-1/2 w-3/4 lg:right-0 bottom-5 z-50 left-1/2 transform -translate-x-1/2 lg:translate-x-0">
-      <Card>
-        <CardBody>
-          <Button
+    <div
+      className={`fixed sm:w-3/5 w-4/5 flex justify-between bottom-5 z-50 left-0 right-0 mx-auto`}
+    >
+      <Card className="w-full">
+        <CardBody className="flex w-full sm:flex-row items-center justify-between p-5 text-sm space-x-2">
+          <p className="text-center">Careful, you have unsaved changes!</p>
+          <div className="sm:mt-0 mt-2 flex items-center justify-center space-x-2">
+            <button
+              onClick={() => {
+                reset();
+              }}
+              className="hover:decoration-white hover:underline"
+            >
+              Reset
+            </button>
+            <Button
             isLoading={isLoading}
             color="primary"
             onPress={async () => {
@@ -62,7 +75,8 @@ export default function SaveButton() {
             }}
           >
             Save changes
-          </Button>
+            </Button>
+          </div>
         </CardBody>
       </Card>
     </div>

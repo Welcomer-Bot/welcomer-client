@@ -8,6 +8,7 @@ import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 export type SourceState = CompleteSource & {
+  initialState: CompleteSource;
   deletedEmbeds: CompleteEmbed[];
   deletedFields: CompleteEmbedField[];
   edited: boolean;
@@ -66,7 +67,7 @@ export type SourceActions = {
   //   deletedEmbeds: CompleteEmbed[];
   //   deletedFields: CompleteEmbedField[];
   // };
-  // reset(): void;
+  reset(): void;
 };
 
 export type SourceStore = SourceState & SourceActions;
@@ -106,6 +107,7 @@ export const createSourceStore = (initState: CompleteSource = defaultState) => {
 
       return {
         ...initState,
+        initialState: initState,
         deletedEmbeds: [],
         deletedFields: [],
         edited: false,
@@ -307,6 +309,19 @@ export const createSourceStore = (initState: CompleteSource = defaultState) => {
           customSet((state) => {
             state.activeCardToEmbedId = position;
           }),
+        reset: () =>
+          set((state) => ({
+            ...state.initialState,
+            deletedEmbeds: [],
+            deletedFields: [],
+            edited: false,
+            activeCardToEmbedId:
+              state.initialState.activeCardToEmbedId != undefined
+                ? state.initialState.embeds.findIndex(
+                    (embed) => embed.id === state.initialState.activeCardToEmbedId
+                  )
+                : undefined,
+          })),
       };
     })
   );
@@ -326,6 +341,7 @@ export const extractSourceState = (data: SourceStore): SourceState => {
     deletedEmbeds,
     deletedFields,
     edited,
+    initialState,
   } = data;
 
   return {
@@ -341,5 +357,6 @@ export const extractSourceState = (data: SourceStore): SourceState => {
     deletedEmbeds,
     deletedFields,
     edited,
+    initialState,
   };
 };

@@ -11,6 +11,7 @@ export type ImageState = {
   edited: boolean;
   sourceId: number | null;
   selectedCard: number | null;
+  initialState?: Partial<ImageState>;
 };
 
 export type ImageActions = {
@@ -31,6 +32,7 @@ export type ImageActions = {
   setTextFont: (textType: ImageTextType, font: string) => void;
   removeText: (textType: ImageTextType) => void;
   addText: (textType: ImageTextType) => void;
+  reset: () => void;
 };
 export type ImageStore = ImageState & ImageActions;
 
@@ -93,6 +95,7 @@ export const createImageStore = (
       };
 
       return {
+        initialState: initState,
         removedCard: [],
         removedText: [],
         edited: false,
@@ -251,6 +254,17 @@ export const createImageStore = (
                   ? defaultSecondText
                   : defaultNicknameText;
           }),
+        reset: () =>
+          set((state) => ({ 
+            removedCard: [],
+            removedText: [],
+            edited: false,
+            sourceId: null,
+            selectedCard: null,
+            imageCards: [],
+            ...state.initialState,
+          }))
+
       };
     })
   );
