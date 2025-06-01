@@ -57,7 +57,7 @@ export default function RequestBetaAccessButton() {
                     <DiscordMention type="channel">support</DiscordMention>.
                   </li>
                   <li>
-                    <p className="flex items-center">
+                    <p className="text-wrap sm:flex items-center block">
                       Click on{" "}
                       <Image
                         src="/beta_support_button.png"
@@ -74,7 +74,7 @@ export default function RequestBetaAccessButton() {
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
-                  I don&apos;t want these incredible features
+                  Close
                 </Button>
                 <Button
                   color="primary"
