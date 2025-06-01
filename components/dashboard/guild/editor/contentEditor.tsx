@@ -10,7 +10,6 @@ export default function ContentEditor() {
     if (!store) throw new Error("Missing SourceStore.Provider in the tree");
     const value = useStore(store, (state) => state.content);
     const setValue = useStore(store, (state) => state.setContent);
-
   return (
     <Textarea
       label={"Content " + `( ${value?.length ?? 0}/2000 )`}

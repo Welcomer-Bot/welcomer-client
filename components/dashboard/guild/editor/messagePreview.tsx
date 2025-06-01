@@ -135,7 +135,10 @@ export default function MessagePreview({
           verified
           highlight={msg.content?.includes("{user}")}
         >
+          <span className="whitespace-pre-line">
+
           {text.content}
+          </span>
           {((msg.activeCardToEmbedId === -1 && msg.activeCard) ||
             (msg.activeCardToEmbedId == null &&
               msg.activeCard &&
