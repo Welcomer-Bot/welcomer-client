@@ -127,7 +127,14 @@ export default function MessagePreview({
 
   return (
     <>
-      <DiscordMessages className="rounded-lg min-h-full w-full min-w-fit">
+      <DiscordMessages
+        className="rounded-lg min-h-full w-full min-w-fit"
+        channelType={"text"
+        }
+        channelName={
+          guild.channels.find((c) => c.id === msg.channelId)?.name ?? "Select a channel"
+        }
+      >
         <DiscordMessage
           author="Welcomer"
           avatar="/logo.svg"
@@ -135,10 +142,7 @@ export default function MessagePreview({
           verified
           highlight={msg.content?.includes("{user}")}
         >
-          <span className="whitespace-pre-line">
-
-          {text.content}
-          </span>
+          <span className="whitespace-pre-line">{text.content}</span>
           {((msg.activeCardToEmbedId === -1 && msg.activeCard) ||
             (msg.activeCardToEmbedId == null &&
               msg.activeCard &&
