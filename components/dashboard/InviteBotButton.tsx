@@ -18,7 +18,7 @@ export default function InviteBotButton({ guildId }: { guildId?: string }) {
 
   return (
     <a
-      href={`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}
+      href={`https://discord.com/api/oauth2/authorize?client_id=${clientId}
     &permissions=8&scope=bot&guild_id=${guildId}`}
     >
       <Button
