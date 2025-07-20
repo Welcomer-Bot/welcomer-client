@@ -100,49 +100,38 @@ export default function CompleteGuildCard({
           )}
         </div>
         <div className="flex flex-col space-y-2">
-          <div>
-            Welcomer:
-            <ul className="list-disc pl-5">
-              <li>
-                Enabled:{" "}
-                {welcomer ? (
-                  <span className="text-green-500">Yes</span>
-                ) : (
-                  <span className="text-red-500">No</span>
-                )}
-              </li>
-              <li>
-                Channel:{" "}
-                {welcomer && welcomer.channelId ? (
-                  <span className="text-blue-500">{welcomer.channelId}</span>
-                ) : (
-                  "Not set"
-                )}
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            Leaver:
-            <ul className="list-disc pl-5">
-              <li>
-                Enabled:{" "}
-                {leaver ? (
-                  <span className="text-green-500">Yes</span>
-                ) : (
-                  <span className="text-red-500">No</span>
-                )}
-              </li>
-              <li>
-                Channel:{" "}
-                {leaver && leaver.channelId ? (
-                  <span className="text-blue-500">{leaver.channelId}</span>
-                ) : (
-                  "Not set"
-                )}
-              </li>
-            </ul>
-          </div>
+          {[
+            { label: "Welcomer", source: welcomer },
+            { label: "Leaver", source: leaver },
+          ].map(({ label, source }) => (
+            <div key={label}>
+              {label}:
+              <ul className="list-disc pl-5">
+                <li>
+                  Enabled:{" "}
+                  {source ? (
+                    <span className="text-green-500">Yes</span>
+                  ) : (
+                    <span className="text-red-500">No</span>
+                  )}
+                </li>
+                <li>
+                  Channel:{" "}
+                  {source?.channelId ? (
+                    <span className="text-blue-500">{source.channelId}</span>
+                  ) : (
+                    "Not set"
+                  )}
+                </li>
+                <li>
+                  Last updated:{" "}
+                  {source?.updatedAt
+                    ? new Date(source.updatedAt).toLocaleString()
+                    : "Never"}
+                </li>
+              </ul>
+            </div>
+          ))}
         </div>
       </CardBody>
     </Card>
