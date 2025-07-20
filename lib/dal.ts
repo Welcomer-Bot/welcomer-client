@@ -843,5 +843,8 @@ export const getBetaTester = cache(async (guildId: string) => {
       },
     },
   });
-  return getUserDataById(user?.id || "");
+  if (!user?.id) {
+    return null;
+  }
+  return getUserDataById(user.id);
 });
