@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/client"
 }
 
 generator zod {
@@ -179,11 +180,14 @@ model User {
   updatedAt DateTime? @updatedAt
   sessions  Session[]
   username  String?
+  betaGuilds betaGuild[] 
 }
 
 model betaGuild {
   id        String    @id
   guild     Guild     @relation(fields: [id], references: [id], onDelete: Cascade)
+  user    User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }
