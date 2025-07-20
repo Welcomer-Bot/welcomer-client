@@ -12,15 +12,19 @@ import { Source } from "@prisma/client";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import ManageGuildButton from "../dashboard/ManageGuildButton";
+import { UserObject } from "@/lib/discord/user";
+import { User } from "@heroui/react";
 
 export default function CompleteGuildCard({
   guild,
   welcomer,
-  leaver,
+    leaver,
+  betaTester,
 }: {
   guild: GuildObject;
   welcomer?: Source;
-  leaver?: Source;
+        leaver?: Source;
+    betaTester?: UserObject | null;
 }) {
   return (
     <Card>
@@ -46,7 +50,21 @@ export default function CompleteGuildCard({
         </div>
       </CardHeader>
       <CardBody className="space-y-4">
-        <p>Member count: {guild.memberCount}</p>
+              <p>Member count: {guild.memberCount}</p>
+              <div className="flex items-center">
+                  <p className="mr-2">
+                  Testing by:{" "}
+                  </p>
+                  <User
+                      avatarProps={{
+                        src: betaTester?.avatarUrl || "",
+                        alt: betaTester?.username || "Beta Tester",
+                      }}
+                      name={betaTester?.username || "Beta Tester"}
+                      description={betaTester?.id}
+                    className="text-blue-500"
+                  />
+        </div>
         <div className="flex flex-wrap justify-start align-baseline gap-2">
           {guild.beta ? (
             <Button

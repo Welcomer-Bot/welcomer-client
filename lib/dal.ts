@@ -832,3 +832,16 @@ export const getBotGuilds = cache(async () => {
   });
 }
 );
+
+export const getBetaTester = cache(async (guildId: string) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      betaGuilds: {
+        some: {
+          id: guildId,
+        },
+      },
+    },
+  });
+  return getUserDataById(user?.id || "");
+})

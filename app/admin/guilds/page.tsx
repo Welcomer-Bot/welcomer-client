@@ -1,5 +1,5 @@
 import CompleteGuildCard from "@/components/Admin/CompleteGuildCard";
-import { getBotGuilds, getSources } from "@/lib/dal";
+import { getBetaTester, getBotGuilds, getSources } from "@/lib/dal";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 
 export default async function Page() {
@@ -19,9 +19,9 @@ export default async function Page() {
                       {guilds.map(async(guild) => {
                           const welcomer = (await getSources(guild.id, "Welcomer"))?.[0];
                           const leaver = (await getSources(guild.id, "Leaver"))?.[0];
-                          
+                          const betaTester = await getBetaTester(guild.id);
                           return (
-                              <CompleteGuildCard key={guild.id} guild={guild.toObject()} welcomer={welcomer} leaver={leaver} />
+                              <CompleteGuildCard key={guild.id} guild={guild.toObject()} welcomer={welcomer} leaver={leaver} betaTester={betaTester} />
             )    
             }
             )}
