@@ -31,6 +31,7 @@ import {
 import Guild from "./discord/guild";
 import rest from "./discord/rest";
 import User from "./discord/user";
+import { PermissionsBitField } from "discord.js";
 
 export const verifySession = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession();
@@ -818,4 +819,24 @@ export const getBot = cache(async (guildId: string) => {
   )) as RESTGetAPIGuildMemberResult | RESTError;
   if (!data || "message" in data) return null;
   return data;
+});
+
+export const getBotGuildPermissions = cache(async (guildId: string) => {
+  const data = await fetch(
+    `https://internal.welcomer.app/guild/${guildId}/permissions`,
+    {
+      headers: {
+        Authorization: `${process.env.SERVER_TOKEN}`,
+      },
+    }
+  );
+  if (!data.ok) {
+    console.error("Failed to fetch guild permissions", data.statusText);
+    return null;
+  }
+  const json = await data.json();
+  const permissions = json.permissions as PermissionsBitField;
+  console.log("Bot permissions in guild", guildId, permissions);
+
+  return PermissionsBitField.resolve(permissions || 0n);
 });

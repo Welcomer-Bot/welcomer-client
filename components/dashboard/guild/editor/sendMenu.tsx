@@ -3,22 +3,27 @@
 import {
   hasPermission,
   hasRequiredPermissions,
+
+  hasPermissionsV2,
   Permissions,
 } from "@/lib/discord/guild";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Tooltip } from "@heroui/react";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { DiscordMention } from "@skyra/discord-components-react";
-import { APIChannel } from "discord.js";
+import { PermissionFlagsBits } from "discord-api-types/v10";
+import { APIChannel, PermissionsBitField } from "discord.js";
 import { useContext } from "react";
 import { useStore } from "zustand";
 
 export default function SendMenu({
   channels,
+  permissions,
 }: {
   channels: (APIChannel & {
     permissions: bigint;
   })[];
+  permissions?: PermissionsBitField;
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
@@ -199,7 +204,20 @@ export default function SendMenu({
               </SelectSection>
             );
           })()}
+          <SelectSection showDivider title="Other">
+            <SelectItem
+              endContent={
+                !hasPermissionsV2(permissions, PermissionFlagsBits.ManageChannels) ?
+                  (<div>
+                    Error
+                  </div>): undefined
+              }
+            >
+              Create a new channel
+            </SelectItem>
+        </SelectSection>
         </>
+            
       ) : (
         <SelectItem key={0} textValue="No channels found">
           No channels found

@@ -6,9 +6,11 @@ import {
   APITextChannel,
   RESTAPIPartialCurrentUserGuild,
 } from "discord-api-types/v10";
+import { PermissionsBitField } from "discord.js";
 import {
   addGuildToBeta,
   getBot,
+  getBotGuildPermissions,
   getChannels,
   getGuildBeta,
   getMemberPermissions,
@@ -28,7 +30,7 @@ export type GuildObject = {
   banner: string | null;
   bannerUrl: string;
   mutual: boolean;
-  permissions?: string;
+  permissions?: PermissionsBitField;
   owner?: boolean;
   channels: (APIChannel & {
     permissions: bigint;
@@ -46,12 +48,18 @@ export default class Guild implements GuildObject {
     this.memberCount = data.approximate_member_count || 0;
     this.banner = data.banner;
     this.bannerUrl = getGuildBanner(this);
-    this.permissions = data.permissions;
     this.owner = data.owner || false;
     this.channels = [];
     this.mutual = false;
     isPremiumGuild(this.id).then((premium) => (this.premium = premium));
     getGuildBeta(this.id).then((beta) => (this.beta = !!beta));
+    this.init();
+  }
+
+  public async init() {
+    console.log("Initializing guild with ID:", this.id);
+    await this.getGuildPermissions();
+    return this;
   }
 
   public id: string;
@@ -62,7 +70,7 @@ export default class Guild implements GuildObject {
   public banner: string | null;
   public bannerUrl: string;
   public mutual: boolean;
-  public permissions?: string;
+  public permissions?: PermissionsBitField;
   public owner?: boolean;
   public channels: (APIChannel & {
     permissions: bigint;
@@ -190,6 +198,13 @@ export default class Guild implements GuildObject {
   public async leave() {
     return await leaveGuild(this.id);
   }
+
+  public async getGuildPermissions() {
+    const permission = await getBotGuildPermissions(this.id);
+    if (permission) {
+      this.permissions = new PermissionsBitField(permission);
+    }
+  }
 }
 
 export const Permissions = {
@@ -197,6 +212,7 @@ export const Permissions = {
   SEND_MESSAGES: 1n << 11n,
   VIEW_CHANNEL: 1n << 10n,
   ATTACH_FILES: 1n << 15n,
+  MANAGE_CHANNELS: 1n << 16n,
 };
 
 export const RequiredPermissions = [
@@ -227,4 +243,11 @@ export function hasPermission(
     typeof permissions === "bigint" ? permissions : BigInt(permissions);
   flag = typeof flag === "bigint" ? flag : BigInt(flag);
   return (permissions & flag) === flag;
+}
+
+
+export function hasPermissionsV2(permissions: PermissionsBitField | undefined, flag: bigint) {
+  if (!permissions) return false;
+  return permissions.has(flag);
+  
 }
