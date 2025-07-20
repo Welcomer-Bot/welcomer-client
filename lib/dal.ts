@@ -819,3 +819,16 @@ export const getBot = cache(async (guildId: string) => {
   if (!data || "message" in data) return null;
   return data;
 });
+
+export const getBotGuilds = cache(async () => {
+  const data = (await rest.get(`${Routes.userGuilds()}?with_counts=true`)) as
+    | RESTGetAPICurrentUserGuildsResult
+    | RESTError;
+  if (!data || "message" in data) return null;
+  return data.map((guild) => {
+    const guildObj = new Guild(guild);
+    guildObj.setMutual(true);
+    return guildObj;
+  });
+}
+);

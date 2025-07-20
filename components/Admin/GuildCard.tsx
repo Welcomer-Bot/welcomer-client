@@ -37,7 +37,7 @@ export default function GuildCard({ guild }: { guild: GuildObject }) {
       </CardHeader>
       <CardBody>
         <p>Member count: {guild.memberCount}</p>
-        <div>
+        <div className="flex space-x-2">
           {guild.beta ? (
             <Button
               className="max-w-xs"
