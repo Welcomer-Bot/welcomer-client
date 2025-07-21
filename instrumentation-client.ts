@@ -24,7 +24,7 @@ Sentry.init({
   // results in 25% of transactions being profiled (0.5*0.5=0.25)
   profilesSampleRate: 1.0,
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: true,
+  debug: process.env.NODE_ENV !== "production",
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
