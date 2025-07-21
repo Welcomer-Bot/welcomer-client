@@ -509,7 +509,7 @@ export async function addGuildToBeta(guildId: string, userId?: string) {
           },
         },
         user: {
-          connect : { id: userId || "" },
+          connect: { id: userId || "" },
         }
       },
     }));
