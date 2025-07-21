@@ -47,8 +47,8 @@ export default function UserSearch({ users }: { users: User[] }) {
         ))}
       </Autocomplete>
       <Card>
-        {guilds ? (
-          guilds.map((guild) => <GuildCard key={guild.id} guild={guild} />)
+        {guilds && user ? (
+          guilds.map((guild) => <GuildCard key={guild.id} guild={guild} userId={user.id} />)
         ) : user ? (
           <p>No guilds found for this user</p>
         ) : (

@@ -42,6 +42,7 @@ next-env.d.ts
 .vscode
 
 /prisma/schema/*
+/generated
 /prisma/ERD.md
 # Sentry Config File
 .env.sentry-build-plugin

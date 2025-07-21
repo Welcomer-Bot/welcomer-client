@@ -498,7 +498,7 @@ export async function getGuildBeta(guildId: string) {
   });
 }
 
-export async function addGuildToBeta(guildId: string) {
+export async function addGuildToBeta(guildId: string, userId?: string) {
   try {
     return !!(await prisma.betaGuild.create({
       data: {
@@ -508,6 +508,9 @@ export async function addGuildToBeta(guildId: string) {
             create: { id: guildId },
           },
         },
+        user: {
+          connect: { id: userId || "" },
+        }
       },
     }));
   } catch (err) {
