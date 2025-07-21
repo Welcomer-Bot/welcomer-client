@@ -9,8 +9,8 @@ export async function removeGuildFromBetaProgram(guildId: string) {
   return res;
 }
 
-export async function enrollGuildToBetaProgram(guildId: string) {
-  const res = await addGuildToBeta(guildId);
+export async function enrollGuildToBetaProgram(guildId: string, userId?: string) {
+  const res = await addGuildToBeta(guildId, userId);
   revalidatePath("/admin");
   return res
 }

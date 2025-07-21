@@ -87,7 +87,7 @@ export default function CompleteGuildCard({
               className="max-w-xs"
               color="primary"
               onPress={async () => {
-                const res = await enrollGuildToBetaProgram(guild.id);
+                const res = await enrollGuildToBetaProgram(guild.id, betaTester?.id);
                 if (res) {
                   toast.success("Enrolled guild to beta program");
                 } else {

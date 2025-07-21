@@ -11,7 +11,13 @@ import { Button } from "@heroui/react";
 import Image from "next/image";
 import { toast } from "react-toastify";
 
-export default function GuildCard({ guild }: { guild: GuildObject }) {
+export default function GuildCard({
+  guild,
+  userId,
+}: {
+  guild: GuildObject;
+  userId?: string;
+}) {
   return (
     <Card>
       <CardHeader className="flex flex-row space-x-5">
@@ -59,7 +65,7 @@ export default function GuildCard({ guild }: { guild: GuildObject }) {
               className="max-w-xs"
               color="primary"
               onPress={async () => {
-                const res = await enrollGuildToBetaProgram(guild.id);
+                const res = await enrollGuildToBetaProgram(guild.id, userId);
                 if (res) {
                   toast.success("Enrolled guild to beta program");
                 } else {
