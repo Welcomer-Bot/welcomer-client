@@ -2,9 +2,9 @@
 
 import { getGuildsByUserId } from "@/lib/dal";
 import { GuildObject } from "@/lib/discord/guild";
+import { User } from "@/prisma/generated/client";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Card } from "@heroui/card";
-import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import GuildCard from "./GuildCard";
 export default function UserSearch({ users }: { users: User[] }) {
@@ -48,7 +48,9 @@ export default function UserSearch({ users }: { users: User[] }) {
       </Autocomplete>
       <Card>
         {guilds && user ? (
-          guilds.map((guild) => <GuildCard key={guild.id} guild={guild} userId={user.id} />)
+          guilds.map((guild) => (
+            <GuildCard key={guild.id} guild={guild} userId={user.id} />
+          ))
         ) : user ? (
           <p>No guilds found for this user</p>
         ) : (

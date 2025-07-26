@@ -27,7 +27,7 @@ import {
   Prisma,
   Source,
   SourceType,
-} from "@prisma/client";
+} from "../@/prisma/generated/client";
 import Guild from "./discord/guild";
 import rest from "./discord/rest";
 import User from "./discord/user";
@@ -510,7 +510,7 @@ export async function addGuildToBeta(guildId: string, userId?: string) {
         },
         user: {
           connect: { id: userId || "" },
-        }
+        },
       },
     }));
   } catch (err) {
@@ -833,8 +833,7 @@ export const getBotGuilds = cache(async () => {
     guildObj.setMutual(true);
     return guildObj;
   });
-}
-);
+});
 
 export const getBetaTester = cache(async (guildId: string) => {
   const user = await prisma.user.findFirst({

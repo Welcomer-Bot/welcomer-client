@@ -1,9 +1,9 @@
+import { SourceType } from "@/prisma/generated/client";
 import { Divider } from "@heroui/divider";
 import { CardEditor } from "./cardEditor";
 import { CardLib } from "./cardLib";
 import { EditorImagePreview } from "./editorImagePreview";
 import SaveButton from "./saveButton";
-import { SourceType } from "@prisma/client";
 
 export function Editor({ module }: { module: SourceType }) {
   return (

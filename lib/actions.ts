@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 
 import { revalidatePath } from "next/cache";
 
+import { ImageCard, Source, SourceType } from "@/prisma/generated/client";
 import { ImageState } from "@/state/image";
 import { SourceState } from "@/state/source";
-import { ImageCard, Source, SourceType } from "@prisma/client";
 import {
   createSource as createSourceRequest,
   deleteSource,

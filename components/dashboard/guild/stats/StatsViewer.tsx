@@ -2,9 +2,9 @@
 
 import { fetchGuildStat } from "@/lib/dto";
 
+import { GuildStats, Period, SourceType } from "@/prisma/generated/client";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
-import { GuildStats, Period, SourceType } from "@prisma/client";
 import { useEffect, useState } from "react";
 import PeriodSelector from "./PeriodSelector";
 
@@ -32,8 +32,8 @@ export default function StatsViewer({
   }, [period, guildId, module]);
 
   const formattedModule = `${module[0].toUpperCase() + module.slice(1)} stats`;
-  const countableModule =  module.slice(0, module.length - 1) + 'd';
-  
+  const countableModule = module.slice(0, module.length - 1) + "d";
+
   return (
     <Card className="grid gap-5 px-5 pb-5">
       <CardHeader className="flex justify-between">
@@ -44,7 +44,9 @@ export default function StatsViewer({
         <div className="grid  md:grid-cols-4 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -52,7 +54,9 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -60,7 +64,9 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -68,7 +74,9 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members {countableModule}</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>

@@ -2,8 +2,8 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import "server-only";
 
+import { Session } from "@/prisma/generated/client";
 import { SessionPayload } from "@/types";
-import { Session } from "@prisma/client";
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
@@ -15,11 +15,13 @@ export async function encrypt(payload: SessionPayload) {
     .sign(encodedKey);
 }
 
-export async function decrypt(session: string | undefined = ""): Promise<SessionPayload | null> {
+export async function decrypt(
+  session: string | undefined = ""
+): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(session, encodedKey, {
+    const { payload } = (await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
-    }) as unknown as { payload: SessionPayload };
+    })) as unknown as { payload: SessionPayload };
 
     return payload;
   } catch {
@@ -28,16 +30,18 @@ export async function decrypt(session: string | undefined = ""): Promise<Session
 }
 
 export async function createSession(dbSession: Session) {
-  const session = await encrypt({ id: dbSession.id, expiresAt: dbSession.expiresAt });
-  ((await cookies()).set("session", session, {
+  const session = await encrypt({
+    id: dbSession.id,
+    expiresAt: dbSession.expiresAt,
+  });
+  (await cookies()).set("session", session, {
     httpOnly: true,
     secure: true,
     expires: dbSession.expiresAt,
     sameSite: "lax",
     path: "/",
-  }));
+  });
   return session;
-
 }
 
 export async function updateSession() {

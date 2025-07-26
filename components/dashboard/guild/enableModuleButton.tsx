@@ -1,8 +1,8 @@
 "use client";
 import { createSource } from "@/lib/actions";
+import { SourceType } from "@/prisma/generated/client";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/react";
-import { SourceType } from "@prisma/client";
 import { usePlausible } from "next-plausible";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";

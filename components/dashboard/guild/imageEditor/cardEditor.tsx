@@ -1,8 +1,8 @@
 "use client";
 
+import { SourceType } from "@/prisma/generated/client";
 import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { Accordion, AccordionItem } from "@heroui/accordion";
-import { SourceType } from "@prisma/client";
 import { useContext } from "react";
 import { useStore } from "zustand";
 import { ImageBackgroundFields } from "./background/ImageBackgroundFields";
