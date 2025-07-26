@@ -18,7 +18,6 @@ import { cache } from "react";
 import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
-import { SessionPayload } from "@/types";
 import {
   EmbedField,
   ImageCard,
@@ -27,7 +26,8 @@ import {
   Prisma,
   Source,
   SourceType,
-} from "../@/prisma/generated/client";
+} from "@/prisma/generated/client";
+import { SessionPayload } from "@/types";
 import Guild from "./discord/guild";
 import rest from "./discord/rest";
 import User from "./discord/user";

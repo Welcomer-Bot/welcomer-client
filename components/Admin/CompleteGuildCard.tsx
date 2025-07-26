@@ -1,6 +1,5 @@
 "use client";
 
-import { Source } from "@/@/prisma/generated/client";
 import {
   enrollGuildToBetaProgram,
   leaveGuild,
@@ -8,6 +7,7 @@ import {
 } from "@/lib/admin/actions";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
+import { Source } from "@/prisma/generated/client";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { User } from "@heroui/react";
