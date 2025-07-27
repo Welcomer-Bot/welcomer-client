@@ -84,9 +84,9 @@ export async function updateSource(store: SourceState) {
   if (!messageValidated.success) {
     console.log("messageValidated.error", messageValidated.error);
     return {
-      error: messageValidated.error.errors[0].path[-1]
-        ? messageValidated.error.errors[0].path[-1] + ": "
-        : "" + messageValidated.error.errors[0].message,
+      error: messageValidated.error.issues[0].path.length > 0
+        ? messageValidated.error.issues[0].path.join(".") + ": " + messageValidated.error.issues[0].message
+        : messageValidated.error.issues[0].message,
     };
   }
   const source = await getSource(guildId, sourceId);
