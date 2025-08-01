@@ -1095,7 +1095,7 @@
     "@react-types/shared" "3.30.0"
     scroll-into-view-if-needed "3.0.10"
 
-"@heroui/theme@2.4.19", "@heroui/theme@^2.4.19":
+"@heroui/theme@2.4.19":
   version "2.4.19"
   resolved "https://registry.yarnpkg.com/@heroui/theme/-/theme-2.4.19.tgz#4ca077f24e605dc878290091fe9991afd8a60d0f"
   integrity sha512-MksRtU/ux5d9Ogv8duIkBcddrY1W6YuhP9fgaucsvgEDKE9JiSLsb4owI63x1uC0GYQ0+4DIH164E2Lm6KOejQ==
@@ -1108,6 +1108,20 @@
     flat "^5.0.2"
     tailwind-merge "3.0.2"
     tailwind-variants "1.0.0"
+
+"@heroui/theme@^2.4.20":
+  version "2.4.20"
+  resolved "https://registry.yarnpkg.com/@heroui/theme/-/theme-2.4.20.tgz#bb3bba0fd308be70c98942d730df871cd5b2d33d"
+  integrity sha512-wJdsz7XS9M7xbNd0d1EaaK5dCZIEOSI7eCr5A6f5aM48mtqLaXfsj3gYsfCy7GkQAvtKWuicwKe5D94Xoma6GA==
+  dependencies:
+    "@heroui/shared-utils" "2.1.10"
+    clsx "^1.2.1"
+    color "^4.2.3"
+    color2k "^2.0.3"
+    deepmerge "4.3.1"
+    flat "^5.0.2"
+    tailwind-merge "3.3.1"
+    tailwind-variants "2.0.1"
 
 "@heroui/toast@2.0.13":
   version "2.0.13"
@@ -7299,12 +7313,22 @@ tailwind-merge@3.0.2:
   resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-3.0.2.tgz#567eff76de12211e24dd909da0f5ed6f4f422b0c"
   integrity sha512-l7z+OYZ7mu3DTqrL88RiKrKIqO3NcpEO8V/Od04bNpvk0kiIFndGEoqfuzvj4yuhRkHKjRkII2z+KS2HfPcSxw==
 
+tailwind-merge@3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-3.3.1.tgz#a7e7db7c714f6020319e626ecfb7e7dac8393a4b"
+  integrity sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==
+
 tailwind-variants@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/tailwind-variants/-/tailwind-variants-1.0.0.tgz#dde2cc2a8689910ca1cdc95ba82c63cf9094bd51"
   integrity sha512-2WSbv4ulEEyuBKomOunut65D8UZwxrHoRfYnxGcQNnHqlSCp2+B7Yz2W+yrNDrxRodOXtGD/1oCcKGNBnUqMqA==
   dependencies:
     tailwind-merge "3.0.2"
+
+tailwind-variants@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/tailwind-variants/-/tailwind-variants-2.0.1.tgz#4b688938491c8df018a36eba7066903075250dfd"
+  integrity sha512-1wt8c4PWO3jbZcKGBrjIV8cehWarREw1C2os0k8Mcq0nof/CbafNhUUjb0LRWiiRfAvDK6v1deswtHLsygKglw==
 
 tailwindcss@4.1.11:
   version "4.1.11"
