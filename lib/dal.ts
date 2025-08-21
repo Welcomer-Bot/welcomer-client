@@ -752,13 +752,19 @@ export const getUser = cache(async () => {
 
 export const getUserByAccessToken = cache(async (accessToken: string) => {
   const rest = new REST({ version: "10" }).setToken(accessToken);
-  const data = (await rest.get(Routes.user(), {
-    auth: true,
-    authPrefix: "Bearer",
-  })) as RESTGetAPIUserResult | RESTError;
-  if (!data || "message" in data) return null;
-
-  return new User(data);
+  try {
+    
+    const data = (await rest.get(Routes.user(), {
+      auth: true,
+      authPrefix: "Bearer",
+    })) as RESTGetAPIUserResult | RESTError;
+    if (!data || "message" in data) return null;
+    
+    return new User(data);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
+  }
 });
 
 export const getUserGuild = cache(async (guildId: string) => {
