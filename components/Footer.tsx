@@ -48,7 +48,7 @@ export default function Footer() {
               >
                 Github
               </Link>
-              <Link href="/support" className="text-gray-400 hover:text-white">
+              <Link href="/support" prefetch={false} className="text-gray-400 hover:text-white">
                 Support Server
               </Link>
             </div>

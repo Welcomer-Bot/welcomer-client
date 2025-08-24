@@ -58,6 +58,7 @@ model Source {
   activeCardToEmbed   Embed?      @relation("SourceActiveCardToEmbed", fields: [activeCardToEmbedId], references: [id], onDelete: Cascade)
   Guild               Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey", onDelete: Cascade)
   ActiveGuild         Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey", onDelete: Cascade)
+  deleteAfter         Int?        @default(0)
 }
 
 model Embed {

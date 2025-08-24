@@ -22,12 +22,7 @@ export default async function Layout({
   const user = await fetchUserFromSession();
   if (!user) redirect("/dashboard");
   const { guildId } = await params;
-  let userGuild = await getUserGuild(guildId);
-  //TODO: add user admin schema
-  if (user.id == "479216487173980160") {
-    userGuild = await getGuild(guildId);
-  }
-
+  const userGuild = await getUserGuild(guildId);
   if (!userGuild) redirect("/dashboard");
 
   const guild = await getGuild(guildId);
