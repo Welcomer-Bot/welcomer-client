@@ -3,11 +3,11 @@ import { Button } from "@heroui/react";
 import { usePlausible } from "next-plausible";
 import Link from "next/link";
 import { useState } from "react";
-const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!;
 
 export default function InviteBotButton({ guildId }: { guildId?: string }) {
   const [loading, setLoading] = useState(false);
   const plausible = usePlausible();
+  const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID;
 
   return (
     <Link
