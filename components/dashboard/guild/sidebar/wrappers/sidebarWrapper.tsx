@@ -6,8 +6,8 @@ import {
   getGuilds,
   getUserGuild,
 } from "@/lib/dal";
+import { SidebarSkeleton } from "../skeletons/sidebarSkeleton";
 import { SidebarServer } from "./sidebarServer";
-import { SidebarSkeleton } from "./sidebarSkeleton";
 
 interface SidebarWrapperProps {
   guildId: string;

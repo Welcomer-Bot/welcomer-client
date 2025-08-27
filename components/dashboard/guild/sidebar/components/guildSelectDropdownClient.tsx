@@ -12,7 +12,7 @@ import { useContext } from "react";
 import { SidebarContext } from "@/app/providers";
 import { GuildObject } from "@/lib/discord/guild";
 import { inviteBotToGuild } from "@/lib/discord/invite";
-import GuildCard from "./guildCard";
+import GuildCard from "../../guildCard";
 
 interface GuildSelectDropdownClientProps {
   guilds: GuildObject[];

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { GuildObject } from "@/lib/discord/guild";
-import { GuildCardSkeleton } from "./guildCard";
+import { GuildCardSkeleton } from "../../guildCard";
 import { GuildSelectDropdownClient } from "./guildSelectDropdownClient";
 
 interface GuildSelectDropdownServerProps {
@@ -29,7 +29,7 @@ function GuildDropdownSkeleton() {
   return (
     <>
       <div className="m-2">
-      <GuildCardSkeleton />
+        <GuildCardSkeleton />
       </div>
     </>
   );

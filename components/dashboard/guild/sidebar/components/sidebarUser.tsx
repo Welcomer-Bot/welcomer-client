@@ -5,7 +5,7 @@ import { useContext } from "react";
 
 import { SidebarContext } from "@/app/providers";
 import { UserObject } from "@/lib/discord/user";
-import { LogoutIcon } from "./logoutIcon";
+import { LogoutIcon } from "../../logoutIcon";
 
 interface SidebarUserProps {
   user: UserObject;

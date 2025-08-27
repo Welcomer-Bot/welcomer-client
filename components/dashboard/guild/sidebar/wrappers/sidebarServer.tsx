@@ -3,16 +3,16 @@ import { Suspense } from "react";
 
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
-import { GuildCardSkeleton } from "./guildCard";
-import { GuildSelectDropdownServer } from "./guildSelectDropdownServer";
-import { SidebarHeader } from "./sidebarHeader";
-import { SidebarNavigation } from "./sidebarNavigation";
+import { GuildCardSkeleton } from "../../guildCard";
+import { GuildSelectDropdownServer } from "../components/guildSelectDropdownServer";
+import { SidebarHeader } from "../components/sidebarHeader";
+import { SidebarNavigation } from "../components/sidebarNavigation";
+import { SidebarUser } from "../components/sidebarUser";
 import {
   SidebarNavigationSkeleton,
   SidebarSkeleton,
   SidebarUserSkeleton,
-} from "./sidebarSkeleton";
-import { SidebarUser } from "./sidebarUser";
+} from "../skeletons/sidebarSkeleton";
 
 interface SidebarServerProps {
   currentGuild: GuildObject;

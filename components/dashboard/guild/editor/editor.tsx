@@ -8,8 +8,9 @@ import EditorMessagePreview from "./editorMessagePreview";
 import { EmbedEditor } from "./embed/embedEditor";
 import SaveButton from "./saveButton";
 import { getUser } from "@/lib/dal";
+import { Source } from "@/prisma/generated/client";
 
-export async function Editor({ guild }: { guild: Guild }) {
+export async function Editor({ guild, source }: { guild: Guild, source: Source }) {
   const user = await getUser()
   const channels = await guild.getChannels();
   return (
