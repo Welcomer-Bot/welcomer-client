@@ -1,11 +1,10 @@
 import { Card, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
-import { redirect } from "next/navigation";
 
 import RemoveModuleButton from "@/components/dashboard/guild/RemoveModuleButton";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enableModuleButton";
-import { getGuild, getSources, getUser } from "@/lib/dal";
+import { getSources, getUserGuild } from "@/lib/dal";
 
 export default async function Page({
   params,
@@ -15,23 +14,22 @@ export default async function Page({
   const { guildId } = await params;
   const source = await getSources(guildId, "Welcomer");
   const welcomerParams = source?.[0];
-  const guild = await getGuild(guildId);
-  // guild?.getPermissions();
-  const user = await getUser();
-
-  if (!guild || !user) redirect("/dashboard");
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return <div>Guild not found</div>;
+  }
 
   const WelcomeCardHeader = () => (
     <CardHeader className="flex justify-between">
       <p>Welcome module status</p>
       {welcomerParams ? (
         <RemoveModuleButton
-          guildId={guild.id}
+          guildId={guildId}
           sourceId={welcomerParams.id}
           sourceType="Welcomer"
         />
       ) : (
-        <EnableModuleButton guildId={guild.id} sourceType="Welcomer" />
+        <EnableModuleButton guildId={guildId} sourceType="Welcomer" />
       )}
     </CardHeader>
   );
@@ -43,7 +41,7 @@ export default async function Page({
         <>
           <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll overflow-x-hidden w-full ">
             <Divider className="mb-2" />
-            <Editor guild={guild} user={user} />
+            <Editor guild={guild} />
           </div>
         </>
       ) : null}

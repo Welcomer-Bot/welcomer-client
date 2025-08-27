@@ -3,7 +3,7 @@
 import { createContext, useContext, useRef, type ReactNode } from "react";
 import { useStore } from "zustand";
 
-import { CompleteSource } from "@/prisma/schema";
+import { Source } from "@/prisma/generated/client";
 import { createSourceStore, type SourceStore } from "@/state/source";
 export type SourceStoreAPI = ReturnType<typeof createSourceStore>;
 
@@ -18,11 +18,11 @@ export interface SourceStoreProviderProps {
 export const SourceStoreProvider = ({
   children,
   initialState,
-}: SourceStoreProviderProps & { initialState?: CompleteSource }) => {
+}: SourceStoreProviderProps & { initialState?: Source }) => {
   const storeRef = useRef<SourceStoreAPI | null>(null);
   // if (storeRef.current === null) {
-    // console.log("Initial state", initialState);
-    storeRef.current = createSourceStore(initialState);
+  // console.log("Initial state", initialState);
+  storeRef.current = createSourceStore(initialState);
   // }
 
   // useEffect(() => {

@@ -1,5 +1,5 @@
 import { getSources } from "@/lib/dal";
-import { CompleteSource } from "@/prisma/schema";
+import { Source } from "@/prisma/generated/client";
 import { SourceStoreProvider } from "@/providers/sourceStoreProvider";
 
 export default async function Layout({
@@ -14,7 +14,9 @@ export default async function Layout({
   console.log("sources", sources);
   //TODO: handle multiple sources and sources selection
   return (
-    <SourceStoreProvider initialState={sources && sources[0] ? sources[0] as CompleteSource : undefined}>
+    <SourceStoreProvider
+      initialState={sources && sources[0] ? (sources[0] as Source) : undefined}
+    >
       {children}
     </SourceStoreProvider>
   );

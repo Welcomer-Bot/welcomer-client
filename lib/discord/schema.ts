@@ -1,10 +1,4 @@
 import {
-  EmbedModel,
-  RelatedEmbedModel,
-  RelatedImageCardModel,
-  RelatedImageCardTextModel,
-} from "@/prisma/schema";
-import {
   BaseCardParams as BCP,
   TextCard as TC,
 } from "@welcomer-bot/card-canvas";

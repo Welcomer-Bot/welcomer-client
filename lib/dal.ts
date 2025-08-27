@@ -1,7 +1,8 @@
 "use server";
 import "server-only";
 
-import { BaseCardParams, Embed, TextCard } from "@/lib/discord/schema";
+import { BaseCardParams } from "@/lib/discord/schema";
+
 import { REST } from "@discordjs/rest";
 import {
   type RESTError,
@@ -19,9 +20,7 @@ import prisma from "./prisma";
 
 import { decrypt, getSession } from "@/lib/session";
 import {
-  EmbedField,
   ImageCard,
-  ImageCardText,
   Period,
   Prisma,
   Source,
@@ -31,6 +30,8 @@ import { SessionPayload } from "@/types";
 import Guild from "./discord/guild";
 import rest from "./discord/rest";
 import User from "./discord/user";
+import { BaseMessageOptions, Embed, Message } from "discord.js";
+import { MessageBuilder } from "@discordjs/builders";
 
 export const verifySession = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession();
@@ -81,23 +82,8 @@ export async function getSources(
         type: source,
       },
       include: {
-        embeds: {
-          include: {
-            fields: true,
-            author: true,
-            footer: true,
-            image: true,
-          },
-        },
-        activeCard: {
-          include: {
-            mainText: true,
-            secondText: true,
-            nicknameText: true,
-          },
-        },
+        activeCard: true,
         images: true,
-        activeCardToEmbed: true,
       },
     });
   } catch {
@@ -116,22 +102,8 @@ export async function getSource(
         id: sourceId,
       },
       include: {
-        embeds: {
-          include: {
-            fields: true,
-            author: true,
-            footer: true,
-            image: true,
-          },
-        },
-        activeCard: {
-          include: {
-            mainText: true,
-            secondText: true,
-            nicknameText: true,
-          },
-        },
-        activeCardToEmbed: true,
+        activeCard: true,
+        images: true,
       },
     });
     return source;
@@ -139,50 +111,6 @@ export async function getSource(
     return null;
   }
 }
-
-export async function getEmbeds(source: Source): Promise<Embed[] | null> {
-  try {
-    const embeds: Embed[] = await prisma.embed.findMany({
-      where: {
-        Source: source,
-      },
-    });
-
-    return embeds;
-  } catch {
-    return null;
-  }
-}
-
-export async function getEmbedAuthor(embed: Embed) {
-  try {
-    const author = await prisma.embedAuthor.findFirst({
-      where: { embed: embed },
-    });
-
-    return author;
-  } catch {
-    return null;
-  }
-}
-
-export async function createEmbedAuthor(embed: Embed, name: string) {
-  try {
-    const author = await prisma.embedAuthor.create({
-      data: {
-        name: name,
-        embed: {
-          connect: { id: embed.id },
-        },
-      },
-    });
-
-    return author;
-  } catch {
-    return null;
-  }
-}
-
 export async function getSourceCards(
   sourceId: number
 ): Promise<BaseCardParams[] | null> {
@@ -190,11 +118,6 @@ export async function getSourceCards(
     const cards = await prisma.imageCard.findMany({
       where: {
         sourceId: sourceId,
-      },
-      include: {
-        mainText: true,
-        secondText: true,
-        nicknameText: true,
       },
     });
 
@@ -252,26 +175,32 @@ export async function createModuleStats(guildId: string, source: SourceType) {
   });
 }
 
-const defaultWelcomerMessage = {
+const defaultWelcomerMessage: BaseMessageOptions = {
   content: "Welcome {user} to {guild}",
-  embedTitle: "Welcome to the server!",
-  embedDescription: "Welcome {user} to {guild}",
-  embedFieldName: "New member count",
-  embedFieldValue: "{membercount}",
-  imageMainText: "Welcome {username} to the server!",
-  imageSecondText: "You are the {membercount} member!",
-  imageNicknameText: "{username}",
+  embeds: [{
+    title: "Welcome to the server",
+    description: "Welcome {user} to {guild}",
+    fields: [
+      {
+        name: "Member count",
+        value: "{membercount}",
+      },
+    ],
+  }]
 };
 
 const defaultLeaverMessage = {
   content: "Goodbye {user} from {guild}",
-  embedTitle: "Goodbye from the server",
-  embedDescription: "Goodbye {user} from {guild}",
-  embedFieldName: "Remaining member count",
-  embedFieldValue: "{membercount}",
-  imageMainText: "Goodbye {username} from the server",
-  imageSecondText: "You left {membercount} member behind",
-  imageNicknameText: "{username}",
+  embeds: [{
+    title: "Goodbye from the server",
+    description: "Goodbye {user} from {guild}",
+    fields: [
+      {
+        name: "Member count",
+        value: "{membercount}",
+      },
+    ],
+  }]
 };
 
 export async function createSource(guildId: string, type: SourceType) {
@@ -286,24 +215,7 @@ export async function createSource(guildId: string, type: SourceType) {
         },
       },
       type: type,
-      content: message.content,
-
-      embeds: {
-        create: [
-          {
-            title: message.embedTitle,
-            description: message.embedDescription,
-            fields: {
-              create: [
-                {
-                  name: message.embedFieldName,
-                  value: message.embedFieldValue,
-                },
-              ],
-            },
-          },
-        ],
-      },
+      message
     },
   });
 
@@ -312,28 +224,7 @@ export async function createSource(guildId: string, type: SourceType) {
     data: {
       activeCard: {
         create: {
-          mainText: {
-            create: {
-              content: message.imageMainText,
-              color: "#ffffff",
-              font: "Arial",
-            },
-          },
-          secondText: {
-            create: {
-              content: message.imageSecondText,
-              color: "#ffffff",
-              font: "Arial",
-            },
-          },
-          nicknameText: {
-            create: {
-              content: message.imageNicknameText,
-              color: "#ffffff",
-              font: "Arial",
-            },
-          },
-          backgroundImgURL: "",
+          data: {},
           Source: {
             connect: { id: source.id },
           },
@@ -367,54 +258,6 @@ export async function updateSourceQuery(
   });
 }
 
-export async function updateSourceChannelAndContent(
-  source: Source,
-  channelId: string,
-  content: string | null | undefined
-) {
-  const data: Partial<Source> = {
-    channelId,
-    content,
-  };
-  return updateSourceQuery(source, data);
-}
-
-export async function deleteEmbedQuery(embedId: number) {
-  return prisma.embed.delete({
-    where: {
-      id: embedId,
-    },
-  });
-}
-
-export async function updateEmbedQuery(
-  embed: Embed,
-  data: Prisma.XOR<Prisma.EmbedUpdateInput, Prisma.EmbedUncheckedUpdateInput>
-) {
-  return prisma.embed.update({
-    where: {
-      id: embed.id,
-    },
-    data,
-  });
-}
-
-export async function createEmbedQuery(
-  data: Prisma.XOR<Prisma.EmbedCreateInput, Prisma.EmbedUncheckedCreateInput>
-) {
-  return prisma.embed.create({
-    data,
-  });
-}
-
-export async function deleteEmbedFieldQuery(field: EmbedField) {
-  return prisma.embedField.delete({
-    where: {
-      id: field.id,
-    },
-  });
-}
-
 export async function deleteSourceQuery(source: Source) {
   return await prisma.source.delete({
     where: {
@@ -431,29 +274,6 @@ export async function deleteCardQuery(card: ImageCard) {
   });
 }
 
-export async function deleteCardTextQuery(text: ImageCardText) {
-  return prisma.imageCardText.delete({
-    where: {
-      id: text.id,
-    },
-  });
-}
-
-export async function updateImageCardTextQuery(
-  textCard: ImageCardText,
-  text: TextCard
-) {
-  return prisma.imageCardText.update({
-    where: {
-      id: textCard.id,
-    },
-    data: {
-      content: text.content,
-      color: text.color,
-      font: text.font,
-    },
-  });
-}
 
 export async function updateImageCardQuery(
   card: ImageCard,
@@ -478,11 +298,6 @@ export async function createImageCardQuery(
 ) {
   return prisma.imageCard.create({
     data,
-    include: {
-      mainText: true,
-      secondText: true,
-      nicknameText: true,
-    },
   });
 }
 
