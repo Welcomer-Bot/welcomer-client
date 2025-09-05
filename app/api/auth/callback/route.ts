@@ -3,12 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createDBSession } from "@/lib/dal";
 import { createSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 
 const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
 const REDIRECT_URI = process.env.REDIRECT_URI!;
 export async function GET(request: NextRequest) {
+  const cookieStore = await cookies();
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const error = searchParams.get("error");
@@ -31,6 +33,13 @@ export async function GET(request: NextRequest) {
 
     );
   }
+
+  const redirectUrl = cookieStore.get("redirectAfterLogin")?.value;
+  // check if redirect url is a valid path and not an external url
+  if (redirectUrl && !redirectUrl.startsWith("/")) {
+    return redirect("/auth/error?error=invalidRedirectUrl&error_description=The+redirect+url+is+invalid");
+  }
+  if (redirectUrl)cookieStore.delete("redirectAfterLogin");
 
   try {
     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
@@ -194,6 +203,7 @@ export async function GET(request: NextRequest) {
   return new Response(
     JSON.stringify({
       success: true,
+      redirectUrl: redirectUrl || "/dashboard",
     }),
     {
       status: 200,

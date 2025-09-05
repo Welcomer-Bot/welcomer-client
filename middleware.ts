@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { decrypt, getSession } from "@/lib/session";
+import { cookies } from "next/headers";
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -9,7 +10,8 @@ export default async function middleware(req: NextRequest) {
   const session = await getSession();
   const sessionData = await decrypt(session);
   if (isProtectedRoute && !sessionData?.id) {
-    return NextResponse.redirect(new URL("/api/auth/login", req.nextUrl));
+    (await cookies()).set("redirectAfterLogin", path + req.nextUrl.search);
+    return NextResponse.redirect(new URL(`/api/auth/login`, req.nextUrl));
   }
 
   return NextResponse.next();
