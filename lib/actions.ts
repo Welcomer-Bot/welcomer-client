@@ -84,9 +84,12 @@ export async function updateSource(store: SourceState) {
   if (!messageValidated.success) {
     console.log("messageValidated.error", messageValidated.error);
     return {
-      error: messageValidated.error.issues[0].path.length > 0
-        ? messageValidated.error.issues[0].path.join(".") + ": " + messageValidated.error.issues[0].message
-        : messageValidated.error.issues[0].message,
+      error:
+        messageValidated.error.issues[0].path.length > 0
+          ? messageValidated.error.issues[0].path.join(".") +
+            ": " +
+            messageValidated.error.issues[0].message
+          : messageValidated.error.issues[0].message,
     };
   }
   const source = await getSource(guildId, sourceId);
@@ -329,12 +332,13 @@ export async function updateCards(
     // All cards except the active card, we can get the active card with selectedCard which is the index of the card in store.imageCards
     const nonActiveCard =
       store.selectedCard !== null &&
-      store.imageCards[store.selectedCard] !== undefined &&
-      store.imageCards[store.selectedCard].id !== undefined
+      store.imageCards?.[store.selectedCard] !== undefined &&
+      store.imageCards[store.selectedCard]?.id !== undefined
         ? store.imageCards
         : store.imageCards?.filter(
             (card, index) => index !== store.selectedCard
           );
+
     const cardsToCreate =
       nonActiveCard?.filter((card) => card.id === undefined) ?? [];
     const cardsToDelete =
@@ -352,71 +356,102 @@ export async function updateCards(
       data: {
         activeCard:
           store.selectedCard !== null &&
-          store.imageCards[store.selectedCard] !== undefined
+          store.imageCards?.[store.selectedCard] !== undefined
             ? {
                 connectOrCreate: {
                   where: {
-                    id: store.imageCards[store.selectedCard].id ?? -1,
+                    id: store.imageCards[store.selectedCard]?.id ?? -1,
                   },
                   create: {
                     backgroundImgURL:
-                      store.imageCards[store.selectedCard].backgroundImgURL,
+                      store.imageCards[store.selectedCard]?.backgroundImgURL,
                     backgroundColor:
-                      store.imageCards[store.selectedCard].backgroundColor ||
+                      store.imageCards[store.selectedCard]?.backgroundColor ||
                       null,
                     avatarBorderColor:
-                      store.imageCards[store.selectedCard].avatarBorderColor ||
+                      store.imageCards[store.selectedCard]?.avatarBorderColor ||
                       null,
-                    mainText: store.imageCards[store.selectedCard].mainText
+                    mainText: store.imageCards[store.selectedCard]?.mainText
                       ? {
-                          create: {
-                            content:
-                              store.imageCards[store.selectedCard]?.mainText
-                                ?.content ?? "",
-                            color:
-                              store.imageCards[store.selectedCard].mainText
-                                ?.color || null,
-                            font:
-                              store.imageCards[store.selectedCard].mainText
-                                ?.font || null,
-                          },
+                          connect: store.imageCards[store.selectedCard]?.mainText
+                            ?.id
+                            ? {
+                                id: store.imageCards[store.selectedCard]?.mainText
+                                  ?.id,
+                              }
+                            : undefined,
+                          create: !store.imageCards[store.selectedCard]?.mainText
+                            ?.id
+                            ? {
+                                content:
+                                  store.imageCards[store.selectedCard]?.mainText
+                                    ?.content || "",
+                                color:
+                                  store.imageCards[store.selectedCard]?.mainText
+                                    ?.color || null,
+                                font:
+                                  store.imageCards[store.selectedCard]?.mainText
+                                    ?.font || null,
+                              }
+                            : undefined,
                         }
                       : undefined,
-                    secondText: store.imageCards[store.selectedCard].secondText
+                    secondText: store.imageCards[store.selectedCard]?.secondText
                       ? {
-                          create: {
-                            content:
-                              store.imageCards[store.selectedCard].secondText
-                                ?.content ?? "",
-                            color:
-                              store.imageCards[store.selectedCard].secondText
-                                ?.color || null,
-                            font:
-                              store.imageCards[store.selectedCard].secondText
-                                ?.font || null,
-                          },
+                          connect: store.imageCards[store.selectedCard]?.secondText
+                            ?.id
+                            ? {
+                                id: store.imageCards[store.selectedCard]?.secondText
+                                  ?.id,
+                              }
+                            : undefined,
+                          create: !store.imageCards[store.selectedCard]?.secondText
+                            ?.id
+                            ? {
+                                content:
+                                  store.imageCards[store.selectedCard]?.secondText
+                                    ?.content || "",
+                                color:
+                                  store.imageCards[store.selectedCard]?.secondText
+                                    ?.color || null,
+                                font:
+                                  store.imageCards[store.selectedCard]?.secondText
+                                    ?.font || null,
+                              }
+                            : undefined,
                         }
                       : undefined,
-                    nicknameText: store.imageCards[store.selectedCard]
-                      .nicknameText
+                    nicknameText: store.imageCards[store.selectedCard]?.nicknameText
                       ? {
-                          create: {
-                            content:
-                              store.imageCards[store.selectedCard].nicknameText
-                                ?.content ?? "",
-                            color:
-                              store.imageCards[store.selectedCard].nicknameText
-                                ?.color || null,
-                            font:
-                              store.imageCards[store.selectedCard].nicknameText
-                                ?.font || null,
-                          },
+                          connect: store.imageCards[store.selectedCard]?.nicknameText
+                            ?.id
+                            ? {
+                                id: store.imageCards[store.selectedCard]?.nicknameText
+                                  ?.id,
+                              }
+                            : undefined,
+                          create: !store.imageCards[store.selectedCard]?.nicknameText
+                            ?.id
+                            ? {
+                                content:
+                                  store.imageCards[store.selectedCard]?.nicknameText
+                                    ?.content || "",
+                                color:
+                                  store.imageCards[store.selectedCard]?.nicknameText
+                                    ?.color || null,
+                                font:
+                                  store.imageCards[store.selectedCard]?.nicknameText
+                                    ?.font || null,
+                              }
+                            : undefined,
                         }
                       : undefined,
                     Source: {
-                      connect: {
-                        id: sourceId,
-                      },
+                      connect: store.sourceId
+                        ? {
+                            id: store.sourceId,
+                          }
+                        : undefined,
                     },
                   },
                 },
@@ -458,86 +493,61 @@ export async function updateCards(
                 }
               : undefined,
           })),
-          deleteMany: cardsToDelete
-            .filter((card) => card.id !== undefined)
-            .map((card) => ({
+          deleteMany: cardsToDelete.map((card) => ({
+            id: card.id,
+          })),
+          update: cardsToUpdate.map((card) => ({
+            where: {
               id: card.id,
-            })),
-          update: cardsToUpdate
-            .filter((card) => card.id !== undefined)
-            .map((card) => ({
-              where: {
-                id: card.id,
-              },
-              data: {
-                backgroundImgURL: card.backgroundImgURL,
-                backgroundColor: card.backgroundColor || null,
-                avatarBorderColor: card.avatarBorderColor || null,
-                mainText: card.mainText
-                  ? {
-                      upsert: {
-                        where: {
-                          id: card.mainText.id ?? -1,
-                        },
-                        create: {
+            },
+            data: {
+              backgroundImgURL: card.backgroundImgURL,
+              backgroundColor: card.backgroundColor || null,
+              avatarBorderColor: card.avatarBorderColor || null,
+              mainText: card.mainText
+                ? {
+                    connect: card.mainText?.id
+                      ? { id: card.mainText.id }
+                      : undefined,
+                    create: card.mainText?.id
+                      ? undefined
+                      : {
                           content: card.mainText.content,
                           color: card.mainText.color || null,
                           font: card.mainText.font || null,
                         },
-                        update: {
-                          content: card.mainText.content,
-                          color: card.mainText.color || null,
-                          font: card.mainText.font || null,
-                        },
-                      },
-                    }
-                  : {
-                      disconnect: true,
-                    },
-                secondText: card.secondText
-                  ? {
-                      upsert: {
-                        where: {
-                          id: card.secondText.id ?? -1,
-                        },
-                        create: {
+                  }
+                : undefined,
+              secondText: card.secondText
+                ? {
+                    connect: card.secondText?.id
+                      ? { id: card.secondText.id }
+                      : undefined,
+                    create: card.secondText?.id
+                      ? undefined
+                      : {
                           content: card.secondText.content,
                           color: card.secondText.color || null,
                           font: card.secondText.font || null,
                         },
-                        update: {
-                          content: card.secondText.content,
-                          color: card.secondText.color || null,
-                          font: card.secondText.font || null,
-                        },
-                      },
-                    }
-                  : {
-                      disconnect: true,
-                    },
-                nicknameText: card.nicknameText
-                  ? {
-                      upsert: {
-                        where: {
-                          id: card.nicknameText.id ?? -1,
-                        },
-                        create: {
+                  }
+                : undefined,
+              nicknameText: card.nicknameText
+                ? {
+                    connect: card.nicknameText?.id
+                      ? { id: card.nicknameText.id }
+                      : undefined,
+                    create: card.nicknameText?.id
+                      ? undefined
+                      : {
                           content: card.nicknameText.content,
                           color: card.nicknameText.color || null,
                           font: card.nicknameText.font || null,
                         },
-                        update: {
-                          content: card.nicknameText.content,
-                          color: card.nicknameText.color || null,
-                          font: card.nicknameText.font || null,
-                        },
-                      },
-                    }
-                  : {
-                      disconnect: true,
-                    },
-              },
-            })),
+                  }
+                : undefined,
+            },
+          })),
         },
       },
       include: {
@@ -557,9 +567,6 @@ export async function updateCards(
         },
       },
     });
-    revalidatePath(
-      `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`
-    );
 
     return {
       data: res,
@@ -575,11 +582,10 @@ export async function updateCards(
         error: error.message,
       };
     }
-
     return {
       data: null,
       done: false,
-      error: "An error occurred while updating the image module",
+      error: "An error occurred while updating the source",
     };
   }
 }
