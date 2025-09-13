@@ -8,11 +8,15 @@ import { useStore } from "zustand";
 export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const author = useStore(
+  const embed = useStore(
     store,
-    (state) => state.embeds[embedIndex].author?.name
+    (state) =>
+      state.modified.message?.embeds?.[embedIndex] ??
+      state.message?.embeds?.[embedIndex]
   );
-  const setAuthor = useStore(store, (state) => state.setEmbedAuthorName);
+
+  const author = embed?.author?.name;
+  const editEmbed = useStore(store, (state) => state.editEmbed);
 
   return (
     <Input
@@ -23,7 +27,10 @@ export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
         if (value.length > 256) return "Author must not exceed 256 characters!";
       }}
       value={author ?? ""}
-      onValueChange={(value) => setAuthor(embedIndex, value)}
+      onValueChange={(value) => editEmbed(embedIndex, {
+        ...embed,
+        author: {...embed?.author, name: value},
+      })}
     />
   );
 }

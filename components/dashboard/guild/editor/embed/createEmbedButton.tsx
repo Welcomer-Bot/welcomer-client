@@ -8,8 +8,8 @@ import { useStore } from "zustand";
 export default function CreateEmbedButton() {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const embedsLength = useStore(store, (state) => state.embeds.length);
-  const addDefaultEmbed = useStore(store, (state) => state.addDefaultEmbed);
+  const embedsLength = useStore(store, (state) => (state.modified.message?.embeds?.length ?? state.message?.embeds?.length) || 0);
+  const addDefaultEmbed = useStore(store, (state) => state.addEmbed);
 
   return (
     <Button

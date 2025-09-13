@@ -8,7 +8,7 @@ import { useStore } from "zustand";
 export default function ContentEditor() {
     const store = useContext(SourceStoreContext);
     if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-    const value = useStore(store, (state) => state.content);
+    const value = useStore(store, (state) => state.modified.message?.content ?? state.message?.content);
     const setValue = useStore(store, (state) => state.setContent);
   return (
     <Textarea

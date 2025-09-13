@@ -14,10 +14,10 @@ import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 export default function EmbedsViewer() {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const embeds = useStore(store, (state) => state.embeds);
-  const removeEmbed = useStore(store, (state) => state.removeEmbed);
-  const setToPrevious = useStore(store, (state) => state.setToPreviousEmbed);
-  const setToNext = useStore(store, (state) => state.setToNextEmbed);
+  const embeds = useStore(store, (state) => state.modified.message?.embeds ?? state.message?.embeds ?? []);
+  const removeEmbed = useStore(store, (state) => state.deleteEmbed);
+  const setToPrevious = useStore(store, (state) => state.moveEmbedUp);
+  const setToNext = useStore(store, (state) => state.moveEmbedDown);
 
   return (
     <>
@@ -77,7 +77,7 @@ export default function EmbedsViewer() {
               <AccordionItem
                 key={5}
                 aria-label="Fields"
-                title={`Fields (${embed.fields.length}/25)`}
+                title={`Fields (${embed.fields?.length || 0}/25)`}
               >
                 <EmbedFieldsFields embedIndex={index} />
               </AccordionItem>

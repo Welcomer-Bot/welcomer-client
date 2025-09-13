@@ -15,19 +15,16 @@ export function EmbedBodyTimestampInput({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const timestampNow = useStore(
-    store,
-    (state) => state.embeds[embedIndex].timestampNow
-  );
-  const timestamp = useStore(
-    store,
-    (state) => state.embeds[embedIndex].timestamp
-  );
-  const setTimestampNow = useStore(
-    store,
-    (state) => state.setEmbedTimestampNow
-  );
-  const setTimestamp = useStore(store, (state) => state.setEmbedTimestamp);
+    const embed = useStore(
+      store,
+      (state) =>
+        state.modified.message?.embeds?.[embedIndex] ??
+        state.message?.embeds?.[embedIndex]
+    );
+    const editEmbed = useStore(store, (state) => state.editEmbed);
+  const timestamp = embed?.timestamp
+    ? new Date(embed.timestamp).getTime()
+    : null;
 
   const [timestampEnabled, setTimestampEnabled] = useState(false);
   return (
@@ -43,8 +40,10 @@ export function EmbedBodyTimestampInput({
                 setTimestampEnabled(true);
               } else {
                 setTimestampEnabled(false);
-                setTimestampNow(embedIndex, false);
-                setTimestamp(embedIndex, null);
+                editEmbed(embedIndex, {
+                  ...embed,
+                  timestamp: undefined,
+                });
               }
             }}
           >
@@ -52,9 +51,12 @@ export function EmbedBodyTimestampInput({
           </Switch>
           {timestampEnabled ? (
             <Switch
-              isSelected={timestampNow ?? false}
+              isSelected={timestampEnabled ?? false}
               onChange={() => {
-                setTimestampNow(embedIndex, !timestampNow);
+                editEmbed(embedIndex, {
+                  ...embed,
+                  timestamp: "true",
+                });
               }}
             >
               <p>Use current time </p>
@@ -63,7 +65,7 @@ export function EmbedBodyTimestampInput({
         </div>
         {timestampEnabled ? (
           <>
-            {timestampNow ? (
+            {embed?.timestamp == "true" ? (
               <p>Current time will be used</p>
             ) : (
               <DatePicker
@@ -77,7 +79,12 @@ export function EmbedBodyTimestampInput({
                     : undefined
                 }
                 onChange={(value: ZonedDateTime | null) =>
-                  setTimestamp(embedIndex, value?.toDate() ?? null)
+                  editEmbed(embedIndex, {
+                    ...embed,
+                    timestamp: value
+                      ? new Date(value.toString().substring(0, 19)).toISOString()
+                      : undefined,
+                  })
                 }
               />
             )}

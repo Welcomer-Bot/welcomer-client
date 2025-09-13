@@ -22,7 +22,7 @@ export async function Editor({ guild }: { guild: Guild }) {
             <ContentEditor />
             <EmbedEditor />
             <Divider className="my-4" />
-            <CardPositionEditor />
+            {/* <CardPositionEditor /> */}
           </form>
         </div>
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
@@ -36,7 +36,7 @@ export async function Editor({ guild }: { guild: Guild }) {
           />
         </div>
       </div>
-      <SaveButton />
+      {/* <SaveButton /> */}
     </div>
   );
 }

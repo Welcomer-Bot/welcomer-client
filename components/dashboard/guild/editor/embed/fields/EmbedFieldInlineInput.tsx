@@ -14,16 +14,20 @@ export function EmbedFieldInlineInput({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const fieldInline = useStore(
-    store,
-    (state) => state.embeds[embedIndex].fields[fieldIndex].inline
-  );
-  const setFieldInline = useStore(store, (state) => state.setFieldInline);
+      const embed = useStore(
+        store,
+        (state) =>
+          state.modified.message?.embeds?.[embedIndex] ??
+          state.message?.embeds?.[embedIndex]
+      );
+  const editField = useStore(store, (state) => state.editField);
+  
+  const fieldInline = embed?.fields?.[fieldIndex]?.inline;
 
   return (
     <Checkbox
       isSelected={fieldInline ?? false}
-      onValueChange={(value) => setFieldInline(embedIndex, fieldIndex, value)}
+      onValueChange={(value) => editField(embedIndex, fieldIndex, { inline: value })}
     >
       Inline
     </Checkbox>

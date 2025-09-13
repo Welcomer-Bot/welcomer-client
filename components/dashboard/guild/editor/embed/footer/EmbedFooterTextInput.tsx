@@ -8,22 +8,34 @@ import { useStore } from "zustand";
 export function EmbedFooterNameInput({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const footer = useStore(
-    store,
-    (state) => state.embeds[embedIndex].footer?.text
-  );
-  const setFooter = useStore(store, (state) => state.setEmbedFooterText);
-  return (
+       const embed = useStore(
+         store,
+         (state) =>
+           state.modified.message?.embeds?.[embedIndex] ??
+           state.message?.embeds?.[embedIndex]
+       );
+  const editEmbed = useStore(store, (state) => state.editEmbed);
+  
+ return (
     <Input
       type="text"
-      label={`Footer text ( ${footer?.length ?? 0}/2048 )`}
+      label={`Footer text ( ${embed?.footer?.text?.length ?? 0}/2048 )`}
       aria-label="Text"
       validate={(value) => {
         if (value.length > 2048)
           return "Footer must not exceed 2048 characters!";
       }}
-      value={footer ?? ""}
-      onValueChange={(value) => setFooter(embedIndex, value)}
+      value={embed?.footer?.text ?? ""}
+      onValueChange={(value) => editEmbed(embedIndex, {
+        ...embed!,
+        footer: {
+          ...embed?.footer,
+          text: value || "",
+          icon_url: embed?.footer?.icon_url || "", // Ensure 'icon_url' is always defined
+        },
+      })}
+      placeholder="Footer text"
+      className="w-full"
     />
   );
 }

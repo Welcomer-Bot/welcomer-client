@@ -12,7 +12,7 @@ export default function EmbedsAccordionWrapper({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const embedsLength = useStore(store, (state) => state.embeds?.length);
+  const embedsLength = useStore(store, (state) => (state.modified.message?.embeds?.length ?? state.message?.embeds?.length) || 0);
   return (
     <Accordion variant="splitted">
       <AccordionItem aria-label="Embeds" title={`Embeds (${embedsLength}/10)`}>

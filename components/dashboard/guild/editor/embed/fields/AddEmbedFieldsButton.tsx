@@ -12,11 +12,15 @@ export default function AddEmbedFieldsButton({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+
+      const embed = useStore(
+        store,
+        (state) =>
+          state.modified.message?.embeds?.[embedIndex] ??
+          state.message?.embeds?.[embedIndex]
+      );
   const addField = useStore(store, (state) => state.addField);
-  const fieldsLength = useStore(
-    store,
-    (state) => state.embeds[embedIndex].fields.length
-  );
+  const fieldsLength = embed?.fields?.length ?? 0;
 
   return (
     <Button

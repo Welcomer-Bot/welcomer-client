@@ -1,19 +1,23 @@
 "use client";
 
-import { Input } from "@heroui/input";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { Input } from "@heroui/input";
+import { APIEmbedAuthor } from "discord.js";
 import { useContext } from "react";
 import { useStore } from "zustand";
 
-export function EmbedAuthorUrlInput({
-  embedIndex,
-}: {
-  embedIndex: number;
-}) {
-    const store = useContext(SourceStoreContext);
-     if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-    const url = useStore(store, (state) => state.embeds[embedIndex].author?.url);
-    const setUrl = useStore(store, (state) => state.setEmbedAuthorUrl);
+export function EmbedAuthorUrlInput({ embedIndex }: { embedIndex: number }) {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const embed = useStore(
+    store,
+    (state) =>
+      state.modified.message?.embeds?.[embedIndex] ??
+      state.message?.embeds?.[embedIndex]
+  );
+
+  const url = embed?.author?.url;
+  const editEmbed = useStore(store, (state) => state.editEmbed);
 
   return (
     <Input
@@ -22,7 +26,12 @@ export function EmbedAuthorUrlInput({
       aria-label="Author url"
       label="Author url"
       value={url ?? ""}
-      onValueChange={(value) => setUrl(embedIndex, value)}
+      onValueChange={(value) =>
+        editEmbed(embedIndex, {
+          ...embed,
+          author: { ...embed?.author as APIEmbedAuthor, url: value },
+        })
+      }
     />
   );
 }

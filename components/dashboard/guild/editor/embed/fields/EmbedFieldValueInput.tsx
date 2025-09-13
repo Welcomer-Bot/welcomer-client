@@ -14,12 +14,18 @@ export function EmbedFieldValueInput({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const fieldValue = useStore(
-    store,
-    (state) => state.embeds[embedIndex].fields[fieldIndex].value
-  );
-  const setFieldValue = useStore(store, (state) => state.setFieldValue);
 
+    const embed = useStore(
+      store,
+      (state) =>
+        state.modified.message?.embeds?.[embedIndex] ??
+        state.message?.embeds?.[embedIndex]
+    );
+  const editField = useStore(store, (state) => state.editField);
+  
+
+  const fieldValue = embed?.fields?.[fieldIndex]?.value;
+ 
   return (
     <Input
       type="text"
@@ -30,7 +36,8 @@ export function EmbedFieldValueInput({
           return "Footer must not exceed 1024 characters!";
       }}
       value={fieldValue ?? ""}
-      onValueChange={(value) => setFieldValue(embedIndex, fieldIndex, value)}
+      onValueChange={(value) => editField(embedIndex, fieldIndex, { value })}
+      placeholder="Field Value"
     />
   );
 }

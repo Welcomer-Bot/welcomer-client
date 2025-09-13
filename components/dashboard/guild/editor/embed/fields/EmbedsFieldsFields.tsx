@@ -13,10 +13,18 @@ import { EmbedFieldValueInput } from "./EmbedFieldValueInput";
 export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const fields = useStore(store, (state) => state.embeds[embedIndex].fields);
-  const removeField = useStore(store, (state) => state.removeField);
-  const setToPrevious = useStore(store, (state) => state.setToPreviousField);
-  const setToNext = useStore(store, (state) => state.setToNextField);
+
+  const embed = useStore(
+    store,
+    (state) =>
+      state.modified.message?.embeds?.[embedIndex] ??
+      state.message?.embeds?.[embedIndex]
+  );
+
+  const fields = embed?.fields ?? [];
+  const removeField = useStore(store, (state) => state.deleteField);
+  const setToPrevious = useStore(store, (state) => state.moveFieldUp);
+  const setToNext = useStore(store, (state) => state.moveFieldDown);
 
   return (
     <div className="space-y-2">

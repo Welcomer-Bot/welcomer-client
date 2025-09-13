@@ -14,11 +14,16 @@ export function EmbedFieldNameInput({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const fieldName = useStore(
-    store,
-    (state) => state.embeds[embedIndex].fields[fieldIndex].name
-  );
-  const setFieldName = useStore(store, (state) => state.setFieldName);
+
+    const embed = useStore(
+      store,
+      (state) =>
+        state.modified.message?.embeds?.[embedIndex] ??
+        state.message?.embeds?.[embedIndex]
+    );
+    const editField = useStore(store, (state) => state.editField);
+
+  const fieldName = embed?.fields?.[fieldIndex]?.name;
 
   return (
     <Input
@@ -29,7 +34,8 @@ export function EmbedFieldNameInput({
         if (value.length > 256) return "Footer must not exceed 256 characters!";
       }}
       value={fieldName ?? ""}
-      onValueChange={(value) => setFieldName(embedIndex, fieldIndex, value)}
+      onValueChange={(value) => editField(embedIndex, fieldIndex, { name: value })}
+      placeholder="Field Name"
     />
   );
 }
