@@ -36,7 +36,7 @@ export async function Editor({ guild }: { guild: Guild }) {
           />
         </div>
       </div>
-      {/* <SaveButton /> */}
+      <SaveButton />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { updateSource } from "@/lib/actions";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { extractSourceState } from "@/state/source";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/react";
 import { useContext, useState } from "react";
@@ -13,12 +12,11 @@ export default function SaveButton() {
   const [isLoading, setIsLoading] = useState(false);
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const edited = useStore(store, (state) => state.edited);
+  const state = useStore(store, (state) => state);
+  const edited = useStore(store, (state) => state.modified);
   const reset = useStore(store, (state) => state.reset);
-  const storeState = useStore(store);
-  const data = extractSourceState(storeState);
-
-  if (!edited) return null;
+  console.log("render save button", edited);
+  if (Object.keys(edited).length === 0) return null;
   return (
     <div
       className={`fixed sm:w-3/5 w-4/5 flex justify-between bottom-5 z-50 left-0 right-0 mx-auto`}
@@ -44,7 +42,13 @@ export default function SaveButton() {
                   data: updatedData,
                   done,
                   error,
-                } = await updateSource(data);
+                } = await updateSource({
+                  guildId: state.guildId,
+                  sourceId: state.sourceId,
+                  message: state.message,
+                  channelId: state.channelId,
+                  ...edited,
+                });
                 if (error) {
                   console.error(error);
                   toast.error(error);
@@ -53,16 +57,7 @@ export default function SaveButton() {
                   store.setState((prevState) => ({
                     ...prevState,
                     ...updatedData,
-                    activeCardToEmbedId:
-                      updatedData.activeCardToEmbedId !== undefined
-                        ? updatedData.embeds.findIndex(
-                            (embed) =>
-                              embed.id === updatedData.activeCardToEmbedId
-                          )
-                        : undefined,
-                    edited: false,
-                    deletedEmbeds: [],
-                    deletedFields: [],
+                    modified: undefined,
                   }));
                 }
                 setIsLoading(false);

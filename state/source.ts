@@ -4,6 +4,8 @@ import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 export type SourceState = Source & {
+  guildId: string;
+  sourceId?: number;
   modified: Partial<Source>;
 };
 

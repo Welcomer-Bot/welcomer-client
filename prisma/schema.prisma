@@ -51,7 +51,7 @@ model Source {
   guildId      String
   type         SourceType
   channelId    String?
-  /// [DiscordMessage] @zod.optional()
+  /// [DiscordMessage]
   message      Json?
   createdAt    DateTime?   @default(now())
   updatedAt    DateTime?   @updatedAt
