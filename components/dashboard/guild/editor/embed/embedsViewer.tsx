@@ -14,7 +14,7 @@ import { EmbedFooterFields } from "./footer/EmbedFooterFields";
 export default function EmbedsViewer() {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const embeds = useStore(store, (state) => state.modified.message?.embeds ?? state.message?.embeds ?? []);
+  const embeds = useStore(store, (state) => (state.modified.message?.embeds ?? state.message?.embeds)) || [];
   const removeEmbed = useStore(store, (state) => state.deleteEmbed);
   const setToPrevious = useStore(store, (state) => state.moveEmbedUp);
   const setToNext = useStore(store, (state) => state.moveEmbedDown);
