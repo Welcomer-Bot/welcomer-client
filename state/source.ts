@@ -5,7 +5,6 @@ import { immer } from "zustand/middleware/immer";
 
 export type SourceState = Source & {
   guildId: string;
-  sourceId?: number;
   modified: Partial<Source>;
 };
 
@@ -81,7 +80,7 @@ export const createSourceStore = (initState: Source = defaultState) => {
             } else if (!state.modified.message.embeds) {
               state.modified.message.embeds = [];
             }
-            state.modified.message.embeds!.push(embed || defaultEmbed);
+            state.modified.message.embeds!.push(embed ?? defaultEmbed);
           }),
         moveEmbedUp: (index) =>
           set((state) => {

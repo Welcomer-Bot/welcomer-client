@@ -44,7 +44,7 @@ export default function SaveButton() {
                   error,
                 } = await updateSource({
                   guildId: state.guildId,
-                  sourceId: state.sourceId,
+                  id: state.id,
                   message: state.message,
                   channelId: state.channelId,
                   ...edited,

@@ -17,7 +17,7 @@ import {
 import prisma from "./prisma";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
-import { MessageBuilder } from "@discordjs/builders";
+import { MessageBuilder, ValidationError } from "@discordjs/builders";
 
 export async function signIn() {
   redirect("/api/auth/login");
@@ -101,8 +101,29 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
       error: "Message cannot be null",
     };
   }
-  const messageBuilder = new MessageBuilder(store.message)
-  const validation = messageBuilder.toJSON();
+
+  try{
+    new MessageBuilder(store.message).toJSON();
+  }
+  catch (e) {
+    if (e instanceof ValidationError) {
+      console.log("Validation error details:", e.name);
+      console.log(e.stack)
+      // return error and format message correctly to be user friendly
+      return {
+        data: null,
+        done: false,
+        error: e.message,
+      };
+    } else {
+      console.error("Unexpected error:", e);
+    }
+    return {
+      data: null,
+      done: false,
+      error: "Message is not valid",
+    };
+  }
   // if (!validation.success) {
   //   return {
   //     data: null,

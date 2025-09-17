@@ -4,7 +4,7 @@ import {
   DiscordItalic,
   DiscordMention,
 } from "@skyra/discord-components-react";
-import { RESTPostAPIChannelMessageJSONBody } from "discord.js";
+import { APIEmbed, RESTPostAPIChannelMessageJSONBody } from "discord.js";
 import reactStringReplace from "react-string-replace";
 import { GuildObject } from "./guild";
 import { UserObject } from "./user";
@@ -131,30 +131,12 @@ import {
   DiscordMessages,
 } from "@skyra/discord-components-react";
 
-// Types for Discord embed and fields (partial, for rendering)
-type DiscordEmbedFieldType = {
-  name: string;
-  value: string;
-  inline?: boolean;
-};
-
-type DiscordEmbedType = {
-  color?: number;
-  author?: { name?: string; icon_url?: string };
-  title?: string;
-  url?: string;
-  thumbnail?: { url: string };
-  description?: string;
-  fields?: DiscordEmbedFieldType[];
-  image?: { url: string };
-  footer?: { text?: string; icon_url?: string };
-};
 
 // Helper to render embed fields using DiscordEmbedFields/DiscordEmbedField
-function renderEmbedFields(fields: DiscordEmbedFieldType[]) {
+function renderEmbedFields(fields: APIEmbed["fields"]) {
   return (
-    <DiscordEmbedFields>
-      {fields.map((field, i) => (
+    <DiscordEmbedFields slot="fields">
+      {fields?.map((field, i) => (
         <DiscordEmbedField
           key={i}
           fieldTitle={field.name}
@@ -168,7 +150,8 @@ function renderEmbedFields(fields: DiscordEmbedFieldType[]) {
 }
 
 // Helper to render a single embed using DiscordEmbed and related components
-function renderEmbed(embed: DiscordEmbedType, idx: number) {
+function renderEmbed(embed: APIEmbed, idx: number) {
+  console.log("Rendering embed:", embed);
   return (
     <DiscordEmbed
       key={idx}
@@ -178,6 +161,7 @@ function renderEmbed(embed: DiscordEmbedType, idx: number) {
           ? `#${embed.color.toString(16).padStart(6, "0")}`
           : undefined
       }
+      embedTitle={embed.title}
       authorName={embed.author?.name}
       authorImage={embed.author?.icon_url}
       title={embed.title}
@@ -185,7 +169,7 @@ function renderEmbed(embed: DiscordEmbedType, idx: number) {
       thumbnail={embed.thumbnail?.url}
     >
       {embed.description && (
-        <DiscordEmbedDescription>{embed.description}</DiscordEmbedDescription>
+        <DiscordEmbedDescription slot="description">{embed.description}</DiscordEmbedDescription>
       )}
       {embed.fields &&
         Array.isArray(embed.fields) &&
@@ -198,7 +182,7 @@ function renderEmbed(embed: DiscordEmbedType, idx: number) {
         />
       )}
       {embed.footer && (
-        <DiscordEmbedFooter footerImage={embed.footer.icon_url}>
+        <DiscordEmbedFooter footerImage={embed.footer.icon_url} timestamp={embed.timestamp} slot="footer">
           {embed.footer.text}
         </DiscordEmbedFooter>
       )}
@@ -220,7 +204,7 @@ export function parseMessageToReactElement(
   // Render embeds if present
   let embeds = null;
   if (Array.isArray(message.embeds) && message.embeds.length > 0) {
-    embeds = (message.embeds as DiscordEmbedType[]).map((embed, idx) =>
+    embeds = (message.embeds as APIEmbed[]).map((embed, idx) =>
       renderEmbed(embed, idx)
     );
   }
