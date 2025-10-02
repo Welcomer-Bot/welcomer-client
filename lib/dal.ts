@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 
-import { BaseCardParams } from "@/lib/discord/schema";
+import { BaseCardParams } from "@welcomer-bot/card-canvas";
 
 import { REST } from "@discordjs/rest";
 import {
@@ -12,6 +12,7 @@ import {
   type RESTGetAPIGuildResult,
   RESTGetAPIGuildRolesResult,
   RESTGetAPIUserResult,
+  RESTPostAPIChannelMessageJSONBody,
   Routes,
 } from "discord-api-types/v10";
 import { cache } from "react";
@@ -30,8 +31,6 @@ import { SessionPayload } from "@/types";
 import Guild from "./discord/guild";
 import rest from "./discord/rest";
 import User from "./discord/user";
-import { BaseMessageOptions, Embed, Message } from "discord.js";
-import { MessageBuilder } from "@discordjs/builders";
 
 export const verifySession = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession();
@@ -175,32 +174,36 @@ export async function createModuleStats(guildId: string, source: SourceType) {
   });
 }
 
-const defaultWelcomerMessage: BaseMessageOptions = {
+const defaultWelcomerMessage: RESTPostAPIChannelMessageJSONBody = {
   content: "Welcome {user} to {guild}",
-  embeds: [{
-    title: "Welcome to the server",
-    description: "Welcome {user} to {guild}",
-    fields: [
-      {
-        name: "Member count",
-        value: "{membercount}",
-      },
-    ],
-  }]
+  embeds: [
+    {
+      title: "Welcome to the server",
+      description: "Welcome {user} to {guild}",
+      fields: [
+        {
+          name: "Member count",
+          value: "{membercount}",
+        },
+      ],
+    },
+  ],
 };
 
-const defaultLeaverMessage = {
+const defaultLeaverMessage: RESTPostAPIChannelMessageJSONBody = {
   content: "Goodbye {user} from {guild}",
-  embeds: [{
-    title: "Goodbye from the server",
-    description: "Goodbye {user} from {guild}",
-    fields: [
-      {
-        name: "Member count",
-        value: "{membercount}",
-      },
-    ],
-  }]
+  embeds: [
+    {
+      title: "Goodbye from the server",
+      description: "Goodbye {user} from {guild}",
+      fields: [
+        {
+          name: "Member count",
+          value: "{membercount}",
+        },
+      ],
+    },
+  ],
 };
 
 export async function createSource(guildId: string, type: SourceType) {
@@ -215,7 +218,7 @@ export async function createSource(guildId: string, type: SourceType) {
         },
       },
       type: type,
-      message
+      message,
     },
   });
 
@@ -273,7 +276,6 @@ export async function deleteCardQuery(card: ImageCard) {
     },
   });
 }
-
 
 export async function updateImageCardQuery(
   card: ImageCard,
@@ -568,13 +570,12 @@ export const getUser = cache(async () => {
 export const getUserByAccessToken = cache(async (accessToken: string) => {
   const rest = new REST({ version: "10" }).setToken(accessToken);
   try {
-    
     const data = (await rest.get(Routes.user(), {
       auth: true,
       authPrefix: "Bearer",
     })) as RESTGetAPIUserResult | RESTError;
     if (!data || "message" in data) return null;
-    
+
     return new User(data);
   } catch (error) {
     console.error("Error fetching user data:", error);

@@ -36,7 +36,14 @@ export default function EnableModuleButton({
             edited: true,
           }));
         } catch (e) {
-          toast.error(e as string);
+          setLoading(false);
+          console.log("error", e);
+          if (e instanceof Error) {
+            toast.error(e.message || "An error occurred");
+          } else {
+            toast.error("An error occurred");
+          }
+          // toast.error("An error occured while creating the source" as string);
         }
       }}
     >

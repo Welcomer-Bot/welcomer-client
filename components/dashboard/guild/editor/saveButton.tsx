@@ -15,7 +15,6 @@ export default function SaveButton() {
   const state = useStore(store, (state) => state);
   const edited = useStore(store, (state) => state.modified);
   const reset = useStore(store, (state) => state.reset);
-  console.log("render save button", edited);
   if (Object.keys(edited).length === 0) return null;
   return (
     <div
@@ -57,7 +56,7 @@ export default function SaveButton() {
                   store.setState((prevState) => ({
                     ...prevState,
                     ...updatedData,
-                    modified: undefined,
+                    modifided: {},
                   }));
                 }
                 setIsLoading(false);

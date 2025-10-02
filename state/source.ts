@@ -62,8 +62,8 @@ export const createSourceStore = (initState: Source = defaultState) => {
   return createStore<SourceStore>()(
     immer<SourceStore>((set) => {
       return {
-        ...initState,
         modified: {},
+        ...initState,
         setChannelId: (channelId) =>
           set((state) => {
             state.modified.channelId = channelId;

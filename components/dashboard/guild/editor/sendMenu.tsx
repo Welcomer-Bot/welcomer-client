@@ -22,7 +22,10 @@ export default function SendMenu({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const currentChannel = useStore(store, (state) => state.modified.channelId ?? state.channelId);
+  const currentChannel = useStore(
+    store,
+    (state) => state.modified?.channelId ?? state.channelId
+  );
   const updateChannel = useStore(store, (state) => state.setChannelId);
   // console.log(channels);
   return (
@@ -42,7 +45,9 @@ export default function SendMenu({
       color={
         hasRequiredPermissions(
           channels?.find(({ id }) => currentChannel == id)?.permissions
-        ) ? "default" : "warning"
+        )
+          ? "default"
+          : "warning"
       }
     >
       {channels ? (

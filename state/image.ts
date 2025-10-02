@@ -1,4 +1,5 @@
-import { BaseCardParams, TextCard } from "@/lib/discord/schema";
+import { BaseCardParams, TextCard } from "@welcomer-bot/card-canvas";
+
 import { ImageTextType } from "@/types";
 import { Color } from "@welcomer-bot/card-canvas";
 import { createStore } from "zustand";
@@ -105,7 +106,6 @@ export const createImageStore = (
         ...initState,
         setActiveCard: (index) =>
           set((state) => {
-
             if (state.imageCards[index] === undefined) {
               return;
             }
@@ -255,7 +255,7 @@ export const createImageStore = (
                   : defaultNicknameText;
           }),
         reset: () =>
-          set((state) => ({ 
+          set((state) => ({
             removedCard: [],
             removedText: [],
             edited: false,
@@ -263,8 +263,7 @@ export const createImageStore = (
             selectedCard: null,
             imageCards: [],
             ...state.initialState,
-          }))
-
+          })),
       };
     })
   );

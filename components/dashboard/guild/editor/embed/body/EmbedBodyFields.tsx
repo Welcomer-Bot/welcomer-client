@@ -1,6 +1,5 @@
 import { EmbedBodyColorInput } from "./EmbedBodyColorInput";
 import { EmbedBodyDescriptionInput } from "./EmbedBodyDescription";
-import { EmbedBodyTimestampInput } from "./EmbedBodyTimestampInput";
 import { EmbedBodyTitleInput } from "./EmbedBodyTitle";
 
 export function EmbedBodyFields({
@@ -13,7 +12,6 @@ export function EmbedBodyFields({
       <EmbedBodyTitleInput embedIndex={embedIndex} />
       <EmbedBodyDescriptionInput embedIndex={embedIndex}/>
       <EmbedBodyColorInput embedIndex={embedIndex} />
-      <EmbedBodyTimestampInput embedIndex={embedIndex} />
     </div>
   );
 }

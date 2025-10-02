@@ -38,8 +38,13 @@ export async function createSource(
   if (!guild) {
     throw new Error("You do not have permission to manage this guild");
   }
-  await createSourceRequest(guild.id, source);
-  revalidatePath(`/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`);
+  try {
+    await createSourceRequest(guild.id, source);
+  } catch (e) {
+    console.log("error", e);
+    throw new Error("An error occurred while creating the source");
+  }
+    revalidatePath(`/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`);
 }
 
 export async function removeSource(
