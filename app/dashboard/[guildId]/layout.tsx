@@ -10,7 +10,7 @@ import {
   getUserGuild,
 } from "@/lib/dal";
 
-type Params = Promise<{ guildId: string; module: string }>;
+type Params = Promise<{ guildId: string }>;
 
 export default async function Layout({
   children,

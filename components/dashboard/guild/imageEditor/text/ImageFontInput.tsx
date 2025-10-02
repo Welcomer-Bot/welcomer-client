@@ -4,7 +4,6 @@ import { fetchFontList } from "@/lib/dto";
 import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { ImageTextType } from "@/types";
 import { Select, SelectItem } from "@heroui/select";
-import { FontList } from "font-list";
 import { useContext, useEffect, useState } from "react";
 import { useStore } from "zustand";
 
@@ -18,7 +17,7 @@ export function ImageFontInput({ textType }: { textType: ImageTextType }) {
   );
   const setFont = useStore(store, (state) => state.setTextFont);
 
-  const [fontsList, setFontsList] = useState<FontList | null>(null);
+  const [fontsList, setFontsList] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     const updateStats = async () => {
