@@ -18,6 +18,8 @@ import prisma from "./prisma";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
 import { MessageBuilder, ValidationError } from "@discordjs/builders";
+import z from "zod";
+import { formatDiscordMessage } from "@/utils/formatter";
 
 export async function signIn() {
   redirect("/api/auth/login");
@@ -102,18 +104,20 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
     };
   }
 
+  
   try{
-    new MessageBuilder(store.message).toJSON();
+    new MessageBuilder(formatDiscordMessage(store.message)).toJSON();
   }
   catch (e) {
     if (e instanceof ValidationError) {
       console.log("Validation error details:", e.name);
-      console.log(e.stack)
+      console.log(e.cause)
+      
       // return error and format message correctly to be user friendly
       return {
         data: null,
         done: false,
-        error: e.message,
+        error: z.prettifyError(e.cause)
       };
     } else {
       console.error("Unexpected error:", e);

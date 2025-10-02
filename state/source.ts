@@ -39,7 +39,6 @@ const defaultField: APIEmbedField = {
 
 const defaultEmbed: APIEmbed = {
   title: "New Embed",
-  description: "",
   color: 0x0099ff,
   fields: [],
 };
