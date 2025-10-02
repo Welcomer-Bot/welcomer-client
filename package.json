@@ -28,7 +28,7 @@
     "debounce": "^2.2.0",
     "discord-api-types": "^0.38.17",
     "font-list": "^1.5.1",
-    "framer-motion": "12.23.9",
+    "framer-motion": "12.23.22",
     "immer": "^10.1.1",
     "jose": "^6.0.12",
     "next": "^15.5.4",
