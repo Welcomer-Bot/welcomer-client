@@ -13,9 +13,20 @@ export default function SaveButton() {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
   const state = useStore(store, (state) => state);
-  const edited = useStore(store, (state) => state.modified);
+
+  // Détecte s'il y a des modifications en comparant avec l'état initial
+  const hasChanges = useStore(store, (state) => {
+    const initialState = store.getInitialState();
+    return (
+      state.channelId !== initialState.channelId ||
+      JSON.stringify(state.message) !== JSON.stringify(initialState.message)
+    );
+  });
+
   const reset = useStore(store, (state) => state.reset);
-  if (Object.keys(edited).length === 0) return null;
+
+  // N'affiche pas le bouton s'il n'y a pas de changements
+  if (!hasChanges) return null;
   return (
     <div
       className={`fixed sm:w-3/5 w-4/5 flex justify-between bottom-5 z-50 left-0 right-0 mx-auto`}
@@ -44,9 +55,8 @@ export default function SaveButton() {
                 } = await updateSource({
                   guildId: state.guildId,
                   id: state.id,
-                  message: state.message,
                   channelId: state.channelId,
-                  ...edited,
+                  message: state.message,
                 });
                 if (error) {
                   console.error(error);
@@ -56,7 +66,7 @@ export default function SaveButton() {
                   store.setState((prevState) => ({
                     ...prevState,
                     ...updatedData,
-                    modifided: {},
+                    modified: {},
                   }));
                 }
                 setIsLoading(false);

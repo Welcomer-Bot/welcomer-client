@@ -12,22 +12,19 @@ export function EmbedBodyDescriptionInput({
 }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-    const embed = useStore(
-      store,
-      (state) =>
-        state.modified.message?.embeds?.[embedIndex] ??
-        state.message?.embeds?.[embedIndex]
-    );
-    const editEmbed = useStore(store, (state) => state.editEmbed);
+  const embed = useStore(store, (state) => state.message?.embeds?.[embedIndex]);
+  const editEmbed = useStore(store, (state) => state.editEmbed);
   const description = embed?.description;
   return (
     <Textarea
       label="Description"
       value={description ?? ""}
-      onValueChange={(value) => editEmbed(embedIndex, {
-        ...embed,
-        description: value,
-      })}
+      onValueChange={(value) =>
+        editEmbed(embedIndex, {
+          ...embed,
+          description: value,
+        })
+      }
       validate={(value) => {
         if (value.length > 4096)
           return "Description must not exceed 4096 characters!";

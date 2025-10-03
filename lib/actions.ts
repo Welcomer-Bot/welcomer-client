@@ -57,7 +57,6 @@ export async function removeSource(
     throw new Error("You do not have permission to manage this guild");
   }
   await deleteSource(guildId, sourceId);
-
   revalidatePath(
     `/dashboard/${guildId}/${sourceType.toLowerCase().slice(0, -1)}`
   );

@@ -14,12 +14,7 @@ export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
 
-  const embed = useStore(
-    store,
-    (state) =>
-      state.modified.message?.embeds?.[embedIndex] ??
-      state.message?.embeds?.[embedIndex]
-  );
+  const embed = useStore(store, (state) => state.message?.embeds?.[embedIndex]);
 
   const fields = embed?.fields ?? [];
   const removeField = useStore(store, (state) => state.deleteField);

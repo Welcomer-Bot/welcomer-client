@@ -15,17 +15,11 @@ export function EmbedFieldValueInput({
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
 
-    const embed = useStore(
-      store,
-      (state) =>
-        state.modified.message?.embeds?.[embedIndex] ??
-        state.message?.embeds?.[embedIndex]
-    );
+  const embed = useStore(store, (state) => state.message?.embeds?.[embedIndex]);
   const editField = useStore(store, (state) => state.editField);
-  
 
   const fieldValue = embed?.fields?.[fieldIndex]?.value;
- 
+
   return (
     <Input
       type="text"

@@ -14,13 +14,8 @@ export default function ClearEmbedFieldsButton({
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
 
-    const embed = useStore(
-      store,
-      (state) =>
-        state.modified.message?.embeds?.[embedIndex] ??
-        state.message?.embeds?.[embedIndex]
-    );
-    const clearFields = useStore(store, (state) => state.clearFields);
+  const embed = useStore(store, (state) => state.message?.embeds?.[embedIndex]);
+  const clearFields = useStore(store, (state) => state.clearFields);
 
   const fieldsLength = embed?.fields?.length ?? 0;
 

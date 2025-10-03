@@ -9,12 +9,7 @@ export function EmbedBodyTitleInput({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
 
-  const embed = useStore(
-    store,
-    (state) =>
-      state.modified.message?.embeds?.[embedIndex] ??
-      state.message?.embeds?.[embedIndex]
-  );
+  const embed = useStore(store, (state) => state.message?.embeds?.[embedIndex]);
   const editEmbed = useStore(store, (state) => state.editEmbed);
 
   return (

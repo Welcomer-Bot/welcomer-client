@@ -1,9 +1,11 @@
 "use client";
 import { removeSource } from "@/lib/actions";
 import { SourceType } from "@/prisma/generated/client";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/react";
 import { usePlausible } from "next-plausible";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useStore } from "zustand";
 
 export default function RemoveModuleButton({
   guildId,
@@ -15,6 +17,9 @@ export default function RemoveModuleButton({
   sourceType: SourceType;
 }) {
   const [loading, setLoading] = useState(false);
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const reset = useStore(store, (state) => state.reset);
   const plausible = usePlausible();
   return (
     <Button
@@ -29,6 +34,7 @@ export default function RemoveModuleButton({
           },
         });
         await removeSource(guildId, sourceId, sourceType);
+        reset();
       }}
     >
       Disable {sourceType}

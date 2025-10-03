@@ -1,15 +1,15 @@
 "use client";
 
-import { Textarea } from "@heroui/input";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { Textarea } from "@heroui/input";
 import { useContext } from "react";
 import { useStore } from "zustand";
 
 export default function ContentEditor() {
-    const store = useContext(SourceStoreContext);
-    if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-    const value = useStore(store, (state) => state.modified.message?.content ?? state.message?.content);
-    const setValue = useStore(store, (state) => state.setContent);
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const value = useStore(store, (state) => state.message?.content);
+  const setValue = useStore(store, (state) => state.setContent);
   return (
     <Textarea
       label={"Content " + `( ${value?.length ?? 0}/2000 )`}

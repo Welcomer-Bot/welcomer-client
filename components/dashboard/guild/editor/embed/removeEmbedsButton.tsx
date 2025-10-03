@@ -8,7 +8,10 @@ import { useStore } from "zustand";
 export default function RemoveEmbedsButton() {
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
-  const embedsLength = useStore(store, (state) => (state.modified.message?.embeds?.length ?? state.message?.embeds?.length) || 0);
+  const embedsLength = useStore(
+    store,
+    (state) => state.message?.embeds?.length || 0
+  );
   const clearEmbeds = useStore(store, (state) => state.clearEmbeds);
 
   return (

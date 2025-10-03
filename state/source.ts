@@ -5,7 +5,6 @@ import { immer } from "zustand/middleware/immer";
 
 export type SourceState = Source & {
   guildId: string;
-  modified: Partial<Source>;
 };
 
 export type SourceActions = {
@@ -60,48 +59,36 @@ const defaultState: Source = {
 
 export const createSourceStore = (initState: Source = defaultState) => {
   return createStore<SourceStore>()(
-    immer<SourceStore>((set) => {
+    immer<SourceStore>((set, get, store) => {
       return {
         modified: {},
         ...initState,
         setChannelId: (channelId) =>
           set((state) => {
-            state.modified.channelId = channelId;
+            state.channelId = channelId;
           }),
         setContent: (content) =>
           set((state) => {
-            state.modified.message = { content: content || "" };
+            state.message = { content: content || "" };
           }),
         addEmbed: (embed) =>
           set((state) => {
-            if (!state.modified.message) {
-              state.modified.message = { embeds: [] };
-            } else if (!state.modified.message.embeds) {
-              state.modified.message.embeds = [];
+            if (!state.message) {
+              state.message = { embeds: [] };
+            } else if (!state.message.embeds) {
+              state.message.embeds = [];
             }
-            state.modified.message.embeds!.push(embed ?? defaultEmbed);
+            state.message.embeds!.push(embed ?? defaultEmbed);
           }),
         moveEmbedUp: (index) =>
           set((state) => {
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier les embeds originaux si pas encore modifiés
             if (
-              state.message?.embeds &&
-              state.modified.message.embeds.length < state.message.embeds.length
-            ) {
-              for (let i = 0; i < state.message.embeds.length; i++) {
-                if (!state.modified.message.embeds[i]) {
-                  state.modified.message.embeds[i] = {
-                    ...state.message.embeds[i],
-                  };
-                }
-              }
-            }
-            if (index <= 0 || index >= state.modified.message.embeds.length)
+              !state.message?.embeds ||
+              index <= 0 ||
+              index >= state.message.embeds.length
+            )
               return;
-            const embeds = state.modified.message.embeds;
+            const embeds = state.message.embeds;
             [embeds[index - 1], embeds[index]] = [
               embeds[index],
               embeds[index - 1],
@@ -109,25 +96,13 @@ export const createSourceStore = (initState: Source = defaultState) => {
           }),
         moveEmbedDown: (index) =>
           set((state) => {
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier les embeds originaux si pas encore modifiés
             if (
-              state.message?.embeds &&
-              state.modified.message.embeds.length < state.message.embeds.length
-            ) {
-              for (let i = 0; i < state.message.embeds.length; i++) {
-                if (!state.modified.message.embeds[i]) {
-                  state.modified.message.embeds[i] = {
-                    ...state.message.embeds[i],
-                  };
-                }
-              }
-            }
-            if (index < 0 || index >= state.modified.message.embeds.length - 1)
+              !state.message?.embeds ||
+              index < 0 ||
+              index >= state.message.embeds.length - 1
+            )
               return;
-            const embeds = state.modified.message.embeds;
+            const embeds = state.message.embeds;
             [embeds[index], embeds[index + 1]] = [
               embeds[index + 1],
               embeds[index],
@@ -135,196 +110,115 @@ export const createSourceStore = (initState: Source = defaultState) => {
           }),
         deleteEmbed: (index) =>
           set((state) => {
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier les embeds originaux si pas encore modifiés
-            if (
-              state.message?.embeds &&
-              state.modified.message.embeds.length < state.message.embeds.length
-            ) {
-              for (let i = 0; i < state.message.embeds.length; i++) {
-                if (!state.modified.message.embeds[i]) {
-                  state.modified.message.embeds[i] = {
-                    ...state.message.embeds[i],
-                  };
-                }
-              }
-            }
-            if (index < 0 || index >= state.modified.message.embeds.length)
-              return;
-            state.modified.message.embeds!.splice(index, 1);
+            if (!state.message) state.message = {};
+            if (!state.message.embeds) state.message.embeds = [];
+
+            if (index < 0 || index >= state.message.embeds.length) return;
+            state.message.embeds!.splice(index, 1);
           }),
         editEmbed: (index, embed) =>
           set((state) => {
-            // S'assurer que les embeds modifiés existent
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier l'embed original si pas encore modifié
-            if (
-              !state.modified.message.embeds[index] &&
-              state.message?.embeds?.[index]
-            ) {
-              state.modified.message.embeds[index] = {
-                ...state.message.embeds[index],
-              };
-            }
+            if (!state.message) state.message = {};
+            if (!state.message.embeds) state.message.embeds = [];
             // Appliquer la modification
-            if (state.modified.message.embeds[index]) {
-              state.modified.message.embeds[index] = embed;
+            if (state.message.embeds[index]) {
+              state.message.embeds[index] = embed;
             }
           }),
         clearEmbeds: () =>
           set((state) => {
-            if (!state.modified.message) {
-              state.modified.message = { embeds: [] };
-            } else {
-              state.modified.message.embeds = [];
-            }
+            if (state.message) {
+              state.message.embeds = [];
+            } else state.message = { embeds: [] };
           }),
-        moveFieldUp: (embedIndex, fieldIndex) =>
+
+        addField: (embedIndex) =>
           set((state) => {
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier l'embed original si pas encore modifié
             if (
-              !state.modified.message.embeds[embedIndex] &&
-              state.message?.embeds?.[embedIndex]
+              !state.message ||
+              !state.message.embeds ||
+              !state.message.embeds[embedIndex]
             ) {
-              state.modified.message.embeds[embedIndex] = {
-                ...state.message.embeds[embedIndex],
-              };
+              return;
             }
-            // Copier les fields originaux si pas encore modifiés
+            if (!state.message.embeds[embedIndex].fields) {
+              state.message.embeds[embedIndex].fields = [];
+            }
+            state.message.embeds[embedIndex].fields!.push(defaultField);
+          }),
+        moveFieldUp: (embedIndex: number, fieldIndex: number) =>
+          set((state) => {
+            const embed = state.message?.embeds?.[embedIndex];
             if (
-              !state.modified.message.embeds[embedIndex].fields &&
-              state.message?.embeds?.[embedIndex]?.fields
-            ) {
-              state.modified.message.embeds[embedIndex].fields =
-                state.message.embeds[embedIndex].fields.map((f) => ({ ...f }));
-            }
-            const fields = state.modified.message.embeds[embedIndex].fields!;
-            if (fieldIndex <= 0 || fieldIndex >= fields.length) return;
+              !embed ||
+              !embed.fields ||
+              fieldIndex <= 0 ||
+              fieldIndex >= embed.fields.length
+            )
+              return;
+            const fields = embed.fields;
             [fields[fieldIndex - 1], fields[fieldIndex]] = [
               fields[fieldIndex],
               fields[fieldIndex - 1],
             ];
           }),
-        moveFieldDown: (embedIndex, fieldIndex) =>
+        moveFieldDown: (embedIndex: number, fieldIndex: number) =>
           set((state) => {
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier l'embed original si pas encore modifié
+            const embed = state.message?.embeds?.[embedIndex];
             if (
-              !state.modified.message.embeds[embedIndex] &&
-              state.message?.embeds?.[embedIndex]
-            ) {
-              state.modified.message.embeds[embedIndex] = {
-                ...state.message.embeds[embedIndex],
-              };
-            }
-            // Copier les fields originaux si pas encore modifiés
-            if (
-              !state.modified.message.embeds[embedIndex].fields &&
-              state.message?.embeds?.[embedIndex]?.fields
-            ) {
-              state.modified.message.embeds[embedIndex].fields =
-                state.message.embeds[embedIndex].fields.map((f) => ({ ...f }));
-            }
-            const fields = state.modified.message.embeds[embedIndex].fields!;
-            if (fieldIndex < 0 || fieldIndex >= fields.length - 1) return;
+              !embed ||
+              !embed.fields ||
+              fieldIndex < 0 ||
+              fieldIndex >= embed.fields.length - 1
+            )
+              return;
+            const fields = embed.fields;
             [fields[fieldIndex], fields[fieldIndex + 1]] = [
               fields[fieldIndex + 1],
               fields[fieldIndex],
             ];
           }),
-        deleteField: (embedIndex, fieldIndex) =>
-          set((state) => {
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier l'embed original si pas encore modifié
-            if (
-              !state.modified.message.embeds[embedIndex] &&
-              state.message?.embeds?.[embedIndex]
-            ) {
-              state.modified.message.embeds[embedIndex] = {
-                ...state.message.embeds[embedIndex],
-              };
-            }
-            // Copier les fields originaux si pas encore modifiés
-            if (
-              !state.modified.message.embeds[embedIndex].fields &&
-              state.message?.embeds?.[embedIndex]?.fields
-            ) {
-              state.modified.message.embeds[embedIndex].fields =
-                state.message.embeds[embedIndex].fields.map((f) => ({ ...f }));
-            }
-            const fields = state.modified.message.embeds[embedIndex].fields!;
-            if (fieldIndex < 0 || fieldIndex >= fields.length) return;
-            fields.splice(fieldIndex, 1);
-          }),
-        editField: (embedIndex, fieldIndex, field) =>
-          set((state) => {
-            // S'assurer que les embeds modifiés existent
-            if (!state.modified.message) state.modified.message = {};
-            if (!state.modified.message.embeds)
-              state.modified.message.embeds = [];
-            // Copier l'embed original si pas encore modifié
-            if (
-              !state.modified.message.embeds[embedIndex] &&
-              state.message?.embeds?.[embedIndex]
-            ) {
-              state.modified.message.embeds[embedIndex] = {
-                ...state.message.embeds[embedIndex],
-              };
-            }
-            // S'assurer que les fields modifiés existent
-            if (
-              !state.modified.message.embeds[embedIndex].fields &&
-              state.message?.embeds?.[embedIndex]?.fields
-            ) {
-              state.modified.message.embeds[embedIndex].fields =
-                state.message.embeds[embedIndex].fields.map((f) => ({ ...f }));
-            }
-            const fields = state.modified.message.embeds[embedIndex].fields!;
-            if (fieldIndex < 0 || fieldIndex >= fields.length) return;
-            fields[fieldIndex] = {
-              ...fields[fieldIndex],
-              ...field,
-            };
-          }),
-        addField: (embedIndex) =>
-          set((state) => {
-            if (
-              !state.modified.message ||
-              !state.modified.message.embeds ||
-              !state.modified.message.embeds[embedIndex]
-            ) {
-              return;
-            }
-            if (!state.modified.message.embeds[embedIndex].fields) {
-              state.modified.message.embeds[embedIndex].fields = [];
-            }
-            state.modified.message.embeds[embedIndex].fields!.push(
-              defaultField
-            );
-          }),
         clearFields: (embedIndex) =>
           set((state) => {
             if (
-              !state.modified.message ||
-              !state.modified.message.embeds ||
-              !state.modified.message.embeds[embedIndex]
+              !state.message ||
+              !state.message.embeds ||
+              !state.message.embeds[embedIndex]
             ) {
               return;
             }
-            state.modified.message.embeds[embedIndex].fields = [];
+            state.message.embeds[embedIndex].fields = [];
           }),
-        reset: () => set(() => ({ modified: {} })),
+        deleteField: (embedIndex, fieldIndex) =>
+          set((state) => {
+            const embed = state.message?.embeds?.[embedIndex];
+            if (
+              !embed ||
+              !embed.fields ||
+              fieldIndex < 0 ||
+              fieldIndex >= embed.fields.length
+            )
+              return;
+            embed.fields.splice(fieldIndex, 1);
+          }),
+        editField: (embedIndex, fieldIndex, field) =>
+          set((state) => {
+            const embed = state.message?.embeds?.[embedIndex];
+            if (
+              !embed ||
+              !embed.fields ||
+              fieldIndex < 0 ||
+              fieldIndex >= embed.fields.length
+            )
+              return;
+            embed.fields[fieldIndex] = {
+              ...embed.fields[fieldIndex],
+              ...field,
+            };
+          }),
+        reset: () => {
+          set(store.getInitialState());
+        },
       };
     })
   );
