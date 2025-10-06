@@ -1,3 +1,4 @@
+// client - uses useTheme hook for theme switching
 "use client";
 
 import { FC } from "react";

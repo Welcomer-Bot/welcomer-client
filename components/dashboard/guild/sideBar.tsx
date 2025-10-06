@@ -1,3 +1,4 @@
+// client - uses useState, useEffect, and useContext hooks for sidebar state
 "use client";
 import { Divider } from "@heroui/divider";
 import { Button, User as UIUser } from "@heroui/react";

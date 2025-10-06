@@ -1,3 +1,4 @@
+// client - wraps Accordion component which requires client
 "use client";
 
 import { Accordion, AccordionItem } from "@heroui/accordion";
