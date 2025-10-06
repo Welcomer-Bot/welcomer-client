@@ -19,7 +19,7 @@ import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
 import { MessageBuilder, ValidationError } from "@discordjs/builders";
 import z from "zod";
-import { formatDiscordMessage } from "@/utils/formatter";
+import { formatDiscordMessage } from "@/lib/utils";
 
 export async function signIn() {
   redirect("/api/auth/login");

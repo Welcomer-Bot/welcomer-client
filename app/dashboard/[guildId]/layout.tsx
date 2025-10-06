@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 import { Sidebar } from "@/components/dashboard/guild/sideBar";
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 import {
   fetchUserFromSession,
   getGuild,

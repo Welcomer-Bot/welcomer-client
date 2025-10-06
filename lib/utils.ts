@@ -1,5 +1,4 @@
-
-
+import { RESTPostAPIChannelMessageJSONBody, APIEmbed } from "discord.js";
 import Guild from "./discord/guild";
 import User from "./discord/user";
 
@@ -20,4 +19,26 @@ export function getGuildBanner(guild: Guild) {
 
 export function getUniqueId(): number {
   return Math.floor(Math.random() * 1000000000);
+}
+
+export const formatDiscordMessage = (message: RESTPostAPIChannelMessageJSONBody): RESTPostAPIChannelMessageJSONBody =>{
+    return {
+        content: message.content ?? undefined,
+        embeds: message.embeds?.length ? message.embeds.map((e) => formatDiscordEmbed(e)) : undefined,
+        components: message.components?.length ? message.components : undefined,
+        attachments: message.attachments?.length ? message.attachments : undefined,
+    }
+}
+
+export const formatDiscordEmbed = (embed: APIEmbed):APIEmbed => {
+    return {
+        title: embed.title ?? undefined,
+        description: embed.description ?? undefined,
+        url: embed.url ?? undefined,
+        timestamp: embed.timestamp ?? undefined,
+        color: embed.color ?? undefined,
+        footer: embed.footer ?? undefined,
+        image: embed.image ?? undefined,
+        thumbnail: embed.thumbnail ?? undefined,
+    }
 }

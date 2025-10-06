@@ -2,7 +2,7 @@ import CreateEmbedButton from "./createEmbedButton";
 import EmbedsViewer from "./embedsViewer";
 import RemoveEmbedsButton from "./removeEmbedsButton";
 
-import EmbedsAccordionWrapper from "@/components/Accordion/EmbedsAccordionWrapper";
+import EmbedsAccordionWrapper from "@/components/ui/Accordion/EmbedsAccordionWrapper";
 
 export async function EmbedEditor() {
   return (
