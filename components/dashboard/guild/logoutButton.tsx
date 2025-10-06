@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@heroui/react";
 
 import { LogoutIcon } from "@/components/shared/icons";

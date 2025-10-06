@@ -1,3 +1,4 @@
+// client - uses onPress event handler
 "use client";
 import { Avatar } from "@heroui/avatar";
 import {

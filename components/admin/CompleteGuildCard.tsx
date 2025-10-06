@@ -1,3 +1,4 @@
+// client - uses onPress event handlers
 "use client";
 
 import {
