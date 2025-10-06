@@ -1,3 +1,4 @@
+// client - uses useState and usePlausible hooks
 "use client";
 
 import { Button } from "@heroui/react";

@@ -16,10 +16,10 @@ import { Suspense } from "react";
 
 import NavbarUser from "./navbarUser";
 
-import { DiscordIcon, GithubIcon } from "@/components/icons";
-import { ThemeSwitch } from "@/components/theme-switch";
+import { DiscordIcon, GithubIcon } from "@/components/shared/icons";
+import { ThemeSwitch } from "@/components/shared/theme-switch";
 import { siteConfig } from "@/config/site";
-import { Logo } from "./Logo";
+import { Logo } from "../shared/Logo";
 
 export const Navbar = () => {
   return (

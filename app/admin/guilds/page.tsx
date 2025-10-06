@@ -1,4 +1,4 @@
-import CompleteGuildCard from "@/components/Admin/CompleteGuildCard";
+import CompleteGuildCard from "@/components/admin/CompleteGuildCard";
 import { getBetaTester, getBotGuilds, getSources } from "@/lib/dal";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 

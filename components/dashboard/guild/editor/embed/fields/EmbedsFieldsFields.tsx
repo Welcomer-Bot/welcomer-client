@@ -1,4 +1,4 @@
-import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
+import EmbedsFieldsAccordionWrapper from "@/components/ui/Accordion/EmbedsFieldsAccordionWrapper";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/react";
 import { useContext } from "react";

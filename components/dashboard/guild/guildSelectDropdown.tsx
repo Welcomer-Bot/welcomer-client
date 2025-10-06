@@ -1,3 +1,4 @@
+// client - uses onClick event handler
 "use client";
 
 import {

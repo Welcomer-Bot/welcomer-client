@@ -3,10 +3,7 @@
 import { GuildStats, Period, SourceType } from "@/prisma/generated/client";
 import { getFonts } from "font-list";
 import { getAllGuildStatsSinceTime, getLatestGuildStats } from "./dal";
-
-type StatsDictionary = {
-  [key in Period]: GuildStats | null;
-};
+import { StatsDictionary } from "@/types";
 
 export async function fetchGuildStats(
   guildId: string,

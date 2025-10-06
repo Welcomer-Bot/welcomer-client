@@ -1,3 +1,4 @@
+// client - uses useState, useEffect, and useContext hooks for sidebar state
 "use client";
 import { Divider } from "@heroui/divider";
 import { Button, User as UIUser } from "@heroui/react";
@@ -9,8 +10,8 @@ import { MdDashboard } from "react-icons/md";
 import { GuildSelectDropdown } from "./guildSelectDropdown";
 import { LogoutIcon } from "./logoutIcon";
 
-import { SidebarContext } from "@/app/providers";
-import { Logo } from "@/components/icons";
+import { SidebarContext } from "@/providers/providers";
+import { Logo } from "@/components/shared/icons";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
 import { usePathname } from "next/navigation";

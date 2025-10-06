@@ -1,3 +1,4 @@
+// client - uses useState and useEffect hooks
 "use client";
 
 import { getGuildsByUserId } from "@/lib/dal";

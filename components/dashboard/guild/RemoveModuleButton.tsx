@@ -1,3 +1,4 @@
+// client - uses useState, useContext, and useStore hooks
 "use client";
 import { removeSource } from "@/lib/actions";
 import { SourceType } from "@/prisma/generated/client";

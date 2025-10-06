@@ -1,3 +1,4 @@
+// client - uses useDisclosure hook and usePlausible
 "use client";
 import {
   Button,

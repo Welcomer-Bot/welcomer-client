@@ -1,4 +1,4 @@
-import UserSearch from "@/components/Admin/UserSearch";
+import UserSearch from "@/components/admin/UserSearch";
 import { getUsers } from "@/lib/dal";
 
 export default async function Page() {

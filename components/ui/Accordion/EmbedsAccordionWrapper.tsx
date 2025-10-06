@@ -1,3 +1,4 @@
+// client - uses useContext and useStore hooks
 "use client";
 
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
