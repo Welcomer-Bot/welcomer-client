@@ -1,5 +1,5 @@
-import { EmbedFooterIconInput } from "./EmbedFooterIconInput";
-import { EmbedFooterNameInput } from "./EmbedFooterTextInput";
+import { EmbedFooterIconInput } from "./embed-footer-icon-input";
+import { EmbedFooterNameInput } from "./embed-footer-text-input";
 
 export function EmbedFooterFields({ embedIndex }: { embedIndex: number }) {
   return (

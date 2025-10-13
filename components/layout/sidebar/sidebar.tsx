@@ -1,4 +1,6 @@
 "use client";
+import { GuildSelectDropdown } from "@/components/dashboard/guild/guild-select-dropdown";
+import { LogoutIcon } from "@/components/dashboard/guild/logout-icon";
 import { Divider } from "@heroui/divider";
 import { Button, User as UIUser } from "@heroui/react";
 import Link from "next/link";
@@ -6,11 +8,9 @@ import { useContext, useEffect, useState } from "react";
 import { FaDoorOpen, FaHome } from "react-icons/fa";
 import { ImEnter } from "react-icons/im";
 import { MdDashboard } from "react-icons/md";
-import { GuildSelectDropdown } from "./guildSelectDropdown";
-import { LogoutIcon } from "./logoutIcon";
 
 import { SidebarContext } from "@/app/providers";
-import { Logo } from "@/components/icons";
+import { Logo } from "@/components/ui/icons/icons";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
 import { usePathname } from "next/navigation";

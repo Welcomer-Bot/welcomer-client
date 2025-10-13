@@ -1,16 +1,15 @@
-import SendMenu from "@/components/dashboard/guild/editor/sendMenu";
+import SendMenu from "@/components/dashboard/guild/editor/send-menu";
 import Guild from "@/lib/discord/guild";
 
-import { Divider } from "@heroui/divider";
-import { CardPositionEditor } from "./card/editor";
-import ContentEditor from "./contentEditor";
-import EditorMessagePreview from "./editorMessagePreview";
-import { EmbedEditor } from "./embed/embedEditor";
-import SaveButton from "./saveButton";
 import { getUser } from "@/lib/dal";
+import { Divider } from "@heroui/divider";
+import ContentEditor from "./content-editor";
+import EditorMessagePreview from "./editor-message-preview";
+import { EmbedEditor } from "./embed/embed-editor";
+import SaveButton from "./save-button";
 
 export async function Editor({ guild }: { guild: Guild }) {
-  const user = await getUser()
+  const user = await getUser();
   const channels = await guild.getChannels();
   return (
     <div className="flex h-full w-full editor relative">

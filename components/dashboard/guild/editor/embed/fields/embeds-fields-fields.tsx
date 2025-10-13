@@ -1,14 +1,14 @@
-import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
+import EmbedsFieldsAccordionWrapper from "@/components/ui/accordion/embeds-fields-accordion-wrapper";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/react";
 import { useContext } from "react";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import { useStore } from "zustand";
-import AddEmbedFieldsButton from "./AddEmbedFieldsButton";
-import ClearEmbedFieldsButton from "./ClearEmbedFieldsButton";
-import { EmbedFieldInlineInput } from "./EmbedFieldInlineInput";
-import { EmbedFieldNameInput } from "./EmbedFieldNameInput";
-import { EmbedFieldValueInput } from "./EmbedFieldValueInput";
+import AddEmbedFieldsButton from "./add-embed-fields-button";
+import ClearEmbedFieldsButton from "./clear-embed-fields-button";
+import { EmbedFieldInlineInput } from "./embed-field-inline-input";
+import { EmbedFieldNameInput } from "./embed-field-name-input";
+import { EmbedFieldValueInput } from "./embed-field-value-input";
 
 export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);

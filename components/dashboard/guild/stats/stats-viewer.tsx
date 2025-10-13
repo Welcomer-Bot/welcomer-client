@@ -6,7 +6,7 @@ import { GuildStats, Period, SourceType } from "@/prisma/generated/client";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
 import { useEffect, useState } from "react";
-import PeriodSelector from "./PeriodSelector";
+import PeriodSelector from "./period-selector";
 
 export default function StatsViewer({
   guildId,

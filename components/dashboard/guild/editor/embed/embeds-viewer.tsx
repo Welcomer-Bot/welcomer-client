@@ -6,10 +6,10 @@ import { Button } from "@heroui/react";
 import { useContext } from "react";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import { useStore } from "zustand";
-import { EmbedAuthorFields } from "./author/EmbedAuthorFields";
-import { EmbedBodyFields } from "./body/EmbedBodyFields";
-import { EmbedFieldsFields } from "./fields/EmbedsFieldsFields";
-import { EmbedFooterFields } from "./footer/EmbedFooterFields";
+import { EmbedAuthorFields } from "./author/embed-author-fields";
+import { EmbedBodyFields } from "./body/embed-body-fields";
+import { EmbedFieldsFields } from "./fields/embeds-fields-fields";
+import { EmbedFooterFields } from "./footer/embed-footer-fields";
 
 export default function EmbedsViewer() {
   const store = useContext(SourceStoreContext);

@@ -4,22 +4,18 @@ import { redirect } from "next/navigation";
 
 import { revalidatePath } from "next/cache";
 
-import { ImageCard, Source, SourceType } from "@/prisma/generated/client";
-import { ImageState } from "@/state/image";
+import { Source, SourceType } from "@/prisma/generated/client";
 import { SourceState } from "@/state/source";
+import { formatDiscordMessage } from "@/utils/formatter";
+import { MessageBuilder, ValidationError } from "@discordjs/builders";
+import z from "zod";
 import {
   createSource as createSourceRequest,
   deleteSource,
-  getSource,
-  getSourceCards,
   getUserGuild,
 } from "./dal";
 import prisma from "./prisma";
 import { deleteSession } from "./session";
-import { MessageSchema } from "./validator";
-import { MessageBuilder, ValidationError } from "@discordjs/builders";
-import z from "zod";
-import { formatDiscordMessage } from "@/utils/formatter";
 
 export async function signIn() {
   redirect("/api/auth/login");
@@ -44,7 +40,7 @@ export async function createSource(
     console.log("error", e);
     throw new Error("An error occurred while creating the source");
   }
-    revalidatePath(`/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`);
+  revalidatePath(`/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`);
 }
 
 export async function removeSource(
@@ -108,20 +104,18 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
     };
   }
 
-  
-  try{
+  try {
     new MessageBuilder(formatDiscordMessage(store.message)).toJSON();
-  }
-  catch (e) {
+  } catch (e) {
     if (e instanceof ValidationError) {
       console.log("Validation error details:", e.name);
-      console.log(e.cause)
-      
+      console.log(e.cause);
+
       // return error and format message correctly to be user friendly
       return {
         data: null,
         done: false,
-        error: z.prettifyError(e.cause)
+        error: z.prettifyError(e.cause),
       };
     } else {
       console.error("Unexpected error:", e);

@@ -10,7 +10,7 @@ import NextLink from "next/link";
 
 import { GuildObject } from "@/lib/discord/guild";
 import { inviteBotToGuild } from "@/lib/discord/invite";
-import GuildCard from "./guildCard";
+import GuildCard from "./guild-card";
 
 export function GuildSelectDropdown({
   guilds,

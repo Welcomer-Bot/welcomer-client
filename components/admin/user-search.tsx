@@ -6,7 +6,7 @@ import { User } from "@/prisma/generated/client";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Card } from "@heroui/card";
 import { useEffect, useState } from "react";
-import GuildCard from "./GuildCard";
+import GuildCard from "./guild-card";
 export default function UserSearch({ users }: { users: User[] }) {
   const [value, setValue] = useState<React.Key | null>(null);
   const [user, setUser] = useState<User | null | undefined>(null);

@@ -4,7 +4,7 @@ import { GuildObject } from "@/lib/discord/guild";
 import { parseMessageToReactElement } from "@/lib/discord/text";
 import { UserObject } from "@/lib/discord/user";
 import { SourceState } from "@/state/source";
-import { useEffect, useState, JSX } from "react";
+import { JSX, useEffect, useState } from "react";
 export default function MessagePreview({
   msg,
   guild,
@@ -33,17 +33,8 @@ export default function MessagePreview({
 
   useEffect(() => {
     if (!user || !guild) return;
-    setText(parseMessageToReactElement({
-      ...msg.message,
-      ...msg.modified.message
-    }, user, guild)
-    );
+    setText(parseMessageToReactElement(msg.message, user, guild));
   }, [msg, user, guild]);
 
-
-  return (
-    <div className="rounded-lg min-h-full w-full min-w-fit">
-      {text}
-    </div>
-  );
+  return <div className="rounded-lg min-h-full w-full min-w-fit">{text}</div>;
 }

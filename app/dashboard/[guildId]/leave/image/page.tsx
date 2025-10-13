@@ -1,4 +1,4 @@
-import { Editor } from "@/components/dashboard/guild/imageEditor/editor";
+import { Editor } from "@/components/dashboard/guild/image-editor/editor";
 import { Card } from "@heroui/card";
 
 export default function Page() {

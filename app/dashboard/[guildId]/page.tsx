@@ -1,9 +1,9 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { redirect } from "next/navigation";
 
-import GuildCard from "@/components/dashboard/guild/guildCard";
-import ManageButton from "@/components/dashboard/guild/manageButton";
-import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
+import GuildCard from "@/components/dashboard/guild/guild-card";
+import ManageButton from "@/components/dashboard/guild/manage-button";
+import StatsViewer from "@/components/dashboard/guild/stats/stats-viewer";
 import { getGuild, getSources } from "@/lib/dal";
 
 import { DiscordMention } from "@skyra/discord-components-react";

@@ -2,9 +2,9 @@ import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Image as UIImage } from "@heroui/image";
 import NextImage from "next/image";
 
-import InviteBotButton from "@/components/dashboard/InviteBotButton";
-import ManageGuildButton from "@/components/dashboard/ManageGuildButton";
-import RequestBetaAccessButton from "@/components/dashboard/RequestBetaAccesButton";
+import InviteBotButton from "@/components/ui/buttons/invite-bot-button";
+import ManageGuildButton from "@/components/ui/buttons/manage-guild-button";
+import RequestBetaAccessButton from "@/components/ui/buttons/request-beta-access-button";
 import { getGuilds } from "@/lib/dal";
 import { getGuildBanner } from "@/lib/utils";
 

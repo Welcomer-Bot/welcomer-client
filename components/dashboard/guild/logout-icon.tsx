@@ -1,6 +1,6 @@
 import { Button } from "@heroui/react";
 
-import { LogoutIcon as Icon } from "@/components/icons";
+import { LogoutIcon as Icon } from "@/components/ui/icons/icons";
 import { signOut } from "@/lib/actions";
 
 export function LogoutIcon() {

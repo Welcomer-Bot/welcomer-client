@@ -6,7 +6,7 @@ import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { lazy, Suspense, useContext } from "react";
 import { useStore } from "zustand";
 
-const LazyMessagePreview = lazy(() => import("./messagePreview"));
+const LazyMessagePreview = lazy(() => import("./message-preview"));
 
 export default function EditorMessagePreview({
   guild,

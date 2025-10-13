@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { Sidebar } from "@/components/dashboard/guild/sideBar";
-import Footer from "@/components/Footer";
+import { Sidebar } from "@/components/layout/sidebar/sidebar";
+import Footer from "@/components/layout/footer/footer";
 import {
   fetchUserFromSession,
   getGuild,
@@ -10,7 +10,7 @@ import {
   getUserGuild,
 } from "@/lib/dal";
 
-type Params = Promise<{ guildId: string; module: string }>;
+type Params = Promise<{ guildId: string }>;
 
 export default async function Layout({
   children,

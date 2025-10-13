@@ -1,5 +1,6 @@
 "use client";
 
+import ManageGuildButton from "@/components/ui/buttons/manage-guild-button";
 import {
   enrollGuildToBetaProgram,
   leaveGuild,
@@ -13,7 +14,6 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { User } from "@heroui/react";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import ManageGuildButton from "../dashboard/ManageGuildButton";
 
 export default function CompleteGuildCard({
   guild,

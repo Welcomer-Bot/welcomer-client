@@ -1,10 +1,10 @@
+import { SignIn } from "@/components/auth/signin-button";
 import { Avatar } from "@heroui/avatar";
-import NavbarUserDropdown from "./navbarUserDropdown";
-import { SignIn } from "./signinButton";
+import NavbarUserDropdown from "./navbar-user-dropdown";
 
+import { LogoutButton } from "@/components/dashboard/guild/logout-button";
 import { fetchUserFromSession } from "@/lib/dal";
 import React from "react";
-import { LogoutButton } from "./dashboard/guild/logoutButton";
 
 export default async function NavbarUser(): Promise<React.ReactElement> {
   const user = await fetchUserFromSession();

@@ -1,8 +1,8 @@
-import CreateEmbedButton from "./createEmbedButton";
-import EmbedsViewer from "./embedsViewer";
-import RemoveEmbedsButton from "./removeEmbedsButton";
+import CreateEmbedButton from "./create-embed-button";
+import EmbedsViewer from "./embeds-viewer";
+import RemoveEmbedsButton from "./remove-embeds-button";
 
-import EmbedsAccordionWrapper from "@/components/Accordion/EmbedsAccordionWrapper";
+import EmbedsAccordionWrapper from "@/components/ui/accordion/embeds-accordion-wrapper";
 
 export async function EmbedEditor() {
   return (

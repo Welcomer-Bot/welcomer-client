@@ -24,7 +24,8 @@ export default function SendMenu({
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
   const currentChannel = useStore(store, (state) => state.channelId);
   const updateChannel = useStore(store, (state) => state.setChannelId);
-  // console.log(channels);
+  // TODO: Verfiy channel permissions
+  // TODO: refactor
   return (
     <Select
       label="Channel"

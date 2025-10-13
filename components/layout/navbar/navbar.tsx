@@ -14,12 +14,12 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import { Suspense } from "react";
 
-import NavbarUser from "./navbarUser";
+import NavbarUser from "./navbar-user";
 
-import { DiscordIcon, GithubIcon } from "@/components/icons";
-import { ThemeSwitch } from "@/components/theme-switch";
+import { Logo } from "@/components/shared/logo";
+import { ThemeSwitch } from "@/components/ui/buttons/theme-switch";
+import { DiscordIcon, GithubIcon } from "@/components/ui/icons/icons";
 import { siteConfig } from "@/config/site";
-import { Logo } from "./Logo";
 
 export const Navbar = () => {
   return (

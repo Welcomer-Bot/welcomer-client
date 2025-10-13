@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { Logo } from "./Logo";
+import { Logo } from "@/components/shared/logo";
 import { Divider } from "@heroui/divider";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -48,7 +48,11 @@ export default function Footer() {
               >
                 Github
               </Link>
-              <Link href="/support" prefetch={false} className="text-gray-400 hover:text-white">
+              <Link
+                href="/support"
+                prefetch={false}
+                className="text-gray-400 hover:text-white"
+              >
                 Support Server
               </Link>
             </div>
