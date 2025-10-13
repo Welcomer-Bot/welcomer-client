@@ -1,9 +1,9 @@
 import { Card, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 
-import RemoveModuleButton from "@/components/dashboard/guild/remove-module-button";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enable-module-button";
+import RemoveModuleButton from "@/components/dashboard/guild/remove-module-button";
 import { getSources, getUserGuild } from "@/lib/dal";
 
 export default async function Page({

@@ -28,9 +28,13 @@ export default async function Layout({
         sourceId: source.id,
         imageCards: cards ?? [],
         selectedCard:
-          cards?.findIndex((card) => (card as { id?: number }).id === source.activeCardId) === -1
+          cards?.findIndex(
+            (card) => (card as { id?: number }).id === source.activeCardId
+          ) === -1
             ? null
-            : cards?.findIndex((card) => (card as { id?: number }).id === source.activeCardId),
+            : cards?.findIndex(
+                (card) => (card as { id?: number }).id === source.activeCardId
+              ),
       }}
     >
       {children}

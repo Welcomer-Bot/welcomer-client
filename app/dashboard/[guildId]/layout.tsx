@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { Sidebar } from "@/components/layout/sidebar/sidebar";
 import Footer from "@/components/layout/footer/footer";
+import { Sidebar } from "@/components/layout/sidebar/sidebar";
 import {
   fetchUserFromSession,
   getGuild,

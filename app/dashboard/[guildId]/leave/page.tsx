@@ -2,9 +2,9 @@ import { Card, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { redirect } from "next/navigation";
 
-import RemoveModuleButton from "@/components/dashboard/guild/remove-module-button";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enable-module-button";
+import RemoveModuleButton from "@/components/dashboard/guild/remove-module-button";
 import { getGuild, getSources, getUser } from "@/lib/dal";
 
 export default async function Page({
@@ -13,8 +13,8 @@ export default async function Page({
   params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
-    const source = await getSources(guildId, "Leaver");
-    const leaverParams = source?.[0];
+  const source = await getSources(guildId, "Leaver");
+  const leaverParams = source?.[0];
   const guild = await getGuild(guildId);
   const user = await getUser();
 
