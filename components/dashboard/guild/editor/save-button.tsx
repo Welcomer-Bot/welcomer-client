@@ -23,6 +23,8 @@ export default function SaveButton() {
     );
   });
 
+  console.log("new state", state);
+
   const reset = useStore(store, (state) => state.reset);
 
   // N'affiche pas le bouton s'il n'y a pas de changements
@@ -66,7 +68,6 @@ export default function SaveButton() {
                   store.setState((prevState) => ({
                     ...prevState,
                     ...updatedData,
-                    modified: {},
                   }));
                 }
                 setIsLoading(false);

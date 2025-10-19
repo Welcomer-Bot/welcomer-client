@@ -5,8 +5,10 @@ import { Color } from "@welcomer-bot/card-canvas";
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
+// TODO: Change image store to reflect json structure
+
 export type ImageState = {
-  imageCards: (BaseCardParams & { imagePreview?: string })[];
+  imageCards: (BaseCardParams & { imagePreview?: string, id?: number })[];
   removedCard: BaseCardParams[];
   removedText: TextCard[];
   edited: boolean;

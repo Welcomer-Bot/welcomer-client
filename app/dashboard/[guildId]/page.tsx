@@ -18,12 +18,16 @@ export default async function Page({
   if (!guild) redirect("/dashboard");
   const welcomer = await getSources(guildId, "Welcomer");
   const leaver = await getSources(guildId, "Leaver");
+
+  const welcomerEnabled = welcomer && welcomer.length > 0;
+  const leaverEnabled = leaver && leaver.length > 0;
+
   const welcomerChannel =
-    welcomer && welcomer[0]?.channelId
+    welcomer && welcomerEnabled&& welcomer[0]?.channelId
       ? await guild.getChannel(welcomer[0].channelId)
       : null;
   const leaverChannel =
-    leaver && leaver[0]?.channelId
+    leaver && leaverEnabled && leaver[0]?.channelId
       ? await guild.getChannel(leaver[0].channelId)
       : null;
 
@@ -45,7 +49,16 @@ export default async function Page({
                 <CardHeader>Welcomer status</CardHeader>
                 <CardBody className="flex flex-row justify-between">
                   <div>
-                    <p>Status: {welcomer ? "Enabled" : "Disabled"}</p>
+                    <p>
+                      Status:{" "}
+                      <span
+                        className={
+                          welcomerEnabled ? "text-green-500" : "text-red-500"
+                        }
+                      >
+                        {welcomer && welcomerEnabled ? "Enabled" : "Disabled"}
+                      </span>
+                    </p>
                     <p>
                       Channel:{" "}
                       {welcomerChannel ? (
@@ -64,7 +77,16 @@ export default async function Page({
                 <CardHeader>Leaver status</CardHeader>
                 <CardBody className="flex flex-row justify-between">
                   <div>
-                    <p>Status: {leaver ? "Enabled" : "Disabled"}</p>
+                    <p>
+                      Status:{" "}
+                      <span
+                        className={
+                          leaverEnabled ? "text-green-500" : "text-red-500"
+                        }
+                      >
+                        {leaver && leaverEnabled ? "Enabled" : "Disabled"}
+                      </span>
+                    </p>
                     <p>
                       Channel:{" "}
                       {leaverChannel ? (

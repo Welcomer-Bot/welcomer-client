@@ -18,12 +18,9 @@ export interface SourceStoreProviderProps {
 export const SourceStoreProvider = ({
   children,
   initialState,
-}: SourceStoreProviderProps & { initialState?: Source }) => {
+}: SourceStoreProviderProps & { initialState?: Partial<Source> }) => {
   const storeRef = useRef<SourceStoreAPI | null>(null);
-  if (storeRef.current === null) {
-    // console.log("Initial state", initialState);
-    storeRef.current = createSourceStore(initialState);
-  }
+  storeRef.current = createSourceStore(initialState);
 
   return (
     <SourceStoreContext.Provider value={storeRef.current}>

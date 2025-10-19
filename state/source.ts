@@ -1,5 +1,10 @@
 import { Source } from "@/prisma/generated/client";
-import { APIEmbed, APIEmbedField } from "discord.js";
+import {
+  defaultEmbedField,
+  defaultLeaverEmbed,
+  defaultWelcomeEmbed,
+} from "@/types/embed";
+import { APIEmbed } from "discord.js";
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -9,7 +14,7 @@ export type SourceState = Source & {
 
 export type SourceActions = {
   setChannelId: (channelId: string) => void;
-  setContent: (content?: string | null) => void;
+  setContent: (content?: string) => void;
   addEmbed: (embed?: APIEmbed) => void;
   moveEmbedUp: (index: number) => void;
   moveEmbedDown: (index: number) => void;
@@ -29,12 +34,6 @@ export type SourceActions = {
   reset(): void;
 };
 export type SourceStore = SourceState & SourceActions;
-
-const defaultField: APIEmbedField = {
-  name: "Field Name",
-  value: "Field Value",
-  inline: false,
-};
 
 const defaultEmbed: APIEmbed = {
   title: "New Embed",
@@ -57,11 +56,11 @@ const defaultState: Source = {
   deleteAfter: null,
 };
 
-export const createSourceStore = (initState: Source = defaultState) => {
+export const createSourceStore = (initState?: Partial<Source>) => {
   return createStore<SourceStore>()(
     immer<SourceStore>((set, get, store) => {
       return {
-        modified: {},
+        ...defaultState,
         ...initState,
         setChannelId: (channelId) =>
           set((state) => {
@@ -69,7 +68,11 @@ export const createSourceStore = (initState: Source = defaultState) => {
           }),
         setContent: (content) =>
           set((state) => {
-            state.message = { content: content || "" };
+            if (!state.message) {
+              state.message = { content: undefined };
+            }
+
+            state.message.content = content;
           }),
         addEmbed: (embed) =>
           set((state) => {
@@ -77,6 +80,11 @@ export const createSourceStore = (initState: Source = defaultState) => {
               state.message = { embeds: [] };
             } else if (!state.message.embeds) {
               state.message.embeds = [];
+            }
+            if (state.type === "Welcomer" && !embed) {
+              embed = defaultWelcomeEmbed;
+            } else if (state.type === "Leaver" && !embed) {
+              embed = defaultLeaverEmbed;
             }
             state.message.embeds!.push(embed ?? defaultEmbed);
           }),
@@ -144,7 +152,7 @@ export const createSourceStore = (initState: Source = defaultState) => {
             if (!state.message.embeds[embedIndex].fields) {
               state.message.embeds[embedIndex].fields = [];
             }
-            state.message.embeds[embedIndex].fields!.push(defaultField);
+            state.message.embeds[embedIndex].fields!.push(defaultEmbedField);
           }),
         moveFieldUp: (embedIndex: number, fieldIndex: number) =>
           set((state) => {

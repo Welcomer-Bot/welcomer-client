@@ -92,7 +92,6 @@ export default function CompleteGuildCard({
                 if (res) {
                   toast.success("Enrolled guild to beta program");
                 } else {
-                  console.log(res);
                   toast.error("Failed to enroll guild to beta program");
                 }
               }}

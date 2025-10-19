@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 
 import { Source, SourceType } from "@/prisma/generated/client";
 import { SourceState } from "@/state/source";
-import { formatDiscordMessage } from "@/utils/formatter";
 import { MessageBuilder, ValidationError } from "@discordjs/builders";
 import z from "zod";
 import {
@@ -40,22 +39,19 @@ export async function createSource(
     console.log("error", e);
     throw new Error("An error occurred while creating the source");
   }
-  revalidatePath(`/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`);
+  revalidatePath(`/dashboard/${guildId}`);
 }
 
 export async function removeSource(
   guildId: string,
-  sourceId: number,
-  sourceType: SourceType
+  sourceId: number
 ): Promise<void> {
   const guild = await getUserGuild(guildId);
   if (!guild) {
     throw new Error("You do not have permission to manage this guild");
   }
   await deleteSource(guildId, sourceId);
-  revalidatePath(
-    `/dashboard/${guildId}/${sourceType.toLowerCase().slice(0, -1)}`
-  );
+  revalidatePath(`/dashboard/${guildId}`);
 }
 
 export async function updateSource(store: Partial<SourceState>): Promise<{
@@ -105,13 +101,15 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
   }
 
   try {
-    new MessageBuilder(formatDiscordMessage(store.message)).toJSON();
+    console.log("Validating message", store.message);
+    new MessageBuilder(store.message).toJSON();
   } catch (e) {
     if (e instanceof ValidationError) {
       console.log("Validation error details:", e.name);
       console.log(e.cause);
 
       // return error and format message correctly to be user friendly
+      // TODO: prettify error message
       return {
         data: null,
         done: false,
@@ -145,9 +143,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
       },
     });
 
-    revalidatePath(
-      `/dashboard/${guildId}/${res.type.toLowerCase().slice(0, -1)}`
-    );
+    revalidatePath(`/dashboard/${guildId}`);
     return {
       data: res,
       done: true,

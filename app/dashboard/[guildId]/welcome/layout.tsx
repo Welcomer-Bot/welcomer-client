@@ -15,7 +15,9 @@ export default async function Layout({
   //TODO: handle multiple sources and sources selection
   return (
     <SourceStoreProvider
-      initialState={sources && sources[0] ? (sources[0] as Source) : undefined}
+      initialState={sources && sources[0] ? (sources[0] as Source) : {
+        guildId: guildId,
+      }}
     >
       {children}
     </SourceStoreProvider>

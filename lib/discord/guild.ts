@@ -208,7 +208,6 @@ export const RequiredPermissions = [
 export function hasRequiredPermissions(
   permissions: bigint | number | undefined | null
 ) {
-  console.log("Checking permissions:", permissions);
   if (permissions === undefined || permissions === null) permissions = 0n;
   permissions =
     typeof permissions === "bigint" ? permissions : BigInt(permissions);

@@ -3,6 +3,7 @@ import "server-only";
 
 import { BaseCardParams } from "@welcomer-bot/card-canvas";
 
+import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
 import { REST } from "@discordjs/rest";
 import {
   type RESTError,
@@ -173,37 +174,14 @@ export async function createModuleStats(guildId: string, source: SourceType) {
     await createGuildStats(guildId, period, source);
   });
 }
-
 const defaultWelcomerMessage: RESTPostAPIChannelMessageJSONBody = {
   content: "Welcome {user} to {guild}",
-  embeds: [
-    {
-      title: "Welcome to the server",
-      description: "Welcome {user} to {guild}",
-      fields: [
-        {
-          name: "Member count",
-          value: "{membercount}",
-        },
-      ],
-    },
-  ],
+  embeds: [defaultWelcomeEmbed],
 };
 
 const defaultLeaverMessage: RESTPostAPIChannelMessageJSONBody = {
   content: "Goodbye {user} from {guild}",
-  embeds: [
-    {
-      title: "Goodbye from the server",
-      description: "Goodbye {user} from {guild}",
-      fields: [
-        {
-          name: "Member count",
-          value: "{membercount}",
-        },
-      ],
-    },
-  ],
+  embeds: [defaultLeaverEmbed],
 };
 
 export async function createSource(guildId: string, type: SourceType) {

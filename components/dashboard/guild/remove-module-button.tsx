@@ -33,7 +33,7 @@ export default function RemoveModuleButton({
             sourceType,
           },
         });
-        await removeSource(guildId, sourceId, sourceType);
+        await removeSource(guildId, sourceId);
         reset();
       }}
     >
