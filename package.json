@@ -27,7 +27,7 @@
     "date-fns": "^4.1.0",
     "debounce": "^2.2.0",
     "discord-api-types": "^0.38.17",
-    "font-list": "^2.0.0",
+    "font-list": "^1.4.5",
     "framer-motion": "12.23.22",
     "immer": "^10.1.1",
     "jose": "^6.0.12",
