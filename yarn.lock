@@ -5095,10 +5095,10 @@ flatted@^3.2.9:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.3.tgz#67c8fad95454a7c7abebf74bb78ee74a44023358"
   integrity sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==
 
-font-list@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/font-list/-/font-list-2.0.1.tgz#e9a94bc081a2af0ebd017b2304f1617ed0410dab"
-  integrity sha512-vYOrRyJ6n+/v7lw/EhZXxt+jtd8++OgaaL+B3C8vi0XVw5awCX2WR1crcCtoWg5p+lbmI+hehFwqWo0BYNtofQ==
+font-list@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/font-list/-/font-list-2.0.0.tgz#9ee76a5088062951acde50396fa19da7b12b0669"
+  integrity sha512-9QteZJOQpaAHucOiHmmBZCleNWnTBpcE9EDRZ2uDTarySKxgceBNe8GVWynUU2wSzu6hyzXSa3T9+uD5KKV9XA==
 
 for-each@^0.3.3, for-each@^0.3.5:
   version "0.3.5"
