@@ -1,7 +1,6 @@
 "use server";
 import "server-only";
 
-import { BaseCardParams } from "@welcomer-bot/card-canvas";
 
 import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
 import { REST } from "@discordjs/rest";
@@ -111,21 +110,21 @@ export async function getSource(
     return null;
   }
 }
-export async function getSourceCards(
-  sourceId: number
-): Promise<BaseCardParams[] | null> {
-  try {
-    const cards = await prisma.imageCard.findMany({
-      where: {
-        sourceId: sourceId,
-      },
-    });
+// export async function getSourceCards(
+//   sourceId: number
+// ): Promise<BaseCardParams[] | null> {
+//   try {
+//     const cards = await prisma.imageCard.findMany({
+//       where: {
+//         sourceId: sourceId,
+//       },
+//     });
 
-    return cards as BaseCardParams[];
-  } catch {
-    return null;
-  }
-}
+//     return cards as BaseCardParams[];
+//   } catch {
+//     return null;
+//   }
+// }
 
 export async function getLatestGuildStats(
   guildId: string,
