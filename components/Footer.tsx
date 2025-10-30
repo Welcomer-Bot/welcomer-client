@@ -1,6 +1,6 @@
+import { Divider } from "@heroui/divider";
 import Link from "next/link";
 import { Logo } from "./Logo";
-import { Divider } from "@heroui/divider";
 
 export default function Footer() {
   return (
@@ -37,7 +37,6 @@ export default function Footer() {
             <p className="text-lg">Other Links</p>
             <div className="flex flex-col gap-1">
               <Link
-                
                 prefetch={false}
                 href="https://top.gg/bot/1008260316192329749"
                 className="text-gray-400 hover:text-white"
@@ -63,7 +62,6 @@ export default function Footer() {
           <div className="flex flex-col gap-2">
             <p className="text-lg">Legal</p>
             <div className="flex flex-col gap-1">
-              prefetch={false}
               <Link
                 prefetch={false}
                 href="/terms"
