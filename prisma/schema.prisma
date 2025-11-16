@@ -57,10 +57,10 @@ model Source {
   updatedAt    DateTime?   @updatedAt
   activeCardId Int?        @unique
   images       ImageCard[] @relation("SourceCard")
-  activeCard   ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id], onDelete: Cascade)
+  activeCard   ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id])
   Guild        Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey", onDelete: Cascade)
   deleteAfter  Int?        @default(0)
-  ActiveGuild  Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey", onDelete: Cascade)
+  ActiveGuild  Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey")
 }
 
 model ImageCard {
@@ -69,7 +69,7 @@ model ImageCard {
   data         Json
   createdAt    DateTime  @default(now())
   updatedAt    DateTime? @updatedAt
-  Source       Source    @relation("SourceCard", fields: [sourceId], references: [id], onDelete: Cascade)
+  Source       Source    @relation("SourceCard", fields: [sourceId], references: [id])
   sourceId     Int
   SourceActive Source?   @relation("SourceActiveCard")
 }
@@ -81,7 +81,7 @@ model Session {
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
   userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
 }
 
 model User {
@@ -95,8 +95,8 @@ model User {
 
 model betaGuild {
   id        String    @id
-  guild     Guild     @relation(fields: [id], references: [id], onDelete: Cascade)
-  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guild     Guild     @relation(fields: [id], references: [id])
+  user      User?     @relation(fields: [userId], references: [id])
   userId    String?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -104,7 +104,7 @@ model betaGuild {
 
 model premiumGuild {
   id        String    @id
-  guild     Guild     @relation(fields: [id], references: [id], onDelete: Cascade)
+  guild     Guild     @relation(fields: [id], references: [id])
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }

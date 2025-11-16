@@ -1,4 +1,4 @@
-import { Source } from "@/prisma/generated/client";
+import { ImageCard, Source } from "@/prisma/generated/client";
 import {
   defaultEmbedField,
   defaultLeaverEmbed,
@@ -10,6 +10,9 @@ import { immer } from "zustand/middleware/immer";
 
 export type SourceState = Source & {
   guildId: string;
+  activeCard?: ImageCard;
+  imagePosition?: "outside" | "embed";
+  imageEmbedIndex?: number;
 };
 
 export type SourceActions = {
@@ -31,6 +34,10 @@ export type SourceActions = {
   ) => void;
   addField: (embedIndex: number) => void;
   clearFields: (embedIndex: number) => void;
+  setImagePosition: (
+    position: "outside" | "embed",
+    embedIndex?: number
+  ) => void;
   reset(): void;
 };
 export type SourceStore = SourceState & SourceActions;
@@ -41,8 +48,9 @@ const defaultEmbed: APIEmbed = {
   fields: [],
 };
 
-const defaultState: Source = {
+const defaultState: SourceState = {
   id: 0,
+  activeCard: undefined,
   guildId: "",
   type: "Welcomer",
   channelId: "",
@@ -59,8 +67,24 @@ const defaultState: Source = {
 export const createSourceStore = (initState?: Partial<Source>) => {
   return createStore<SourceStore>()(
     immer<SourceStore>((set, get, store) => {
+      // Determine initial image position from embeds
+      let imagePosition: "outside" | "embed" = "outside";
+      let imageEmbedIndex: number | undefined = undefined;
+
+      const embeds = initState?.message?.embeds;
+      if (embeds) {
+        embeds.forEach((embed, index) => {
+          if (embed.image && embed.image.url) {
+            imagePosition = "embed";
+            imageEmbedIndex = index;
+          }
+        });
+      }
+
       return {
         ...defaultState,
+        imagePosition,
+        imageEmbedIndex,
         ...initState,
         setChannelId: (channelId) =>
           set((state) => {
@@ -223,6 +247,11 @@ export const createSourceStore = (initState?: Partial<Source>) => {
               ...embed.fields[fieldIndex],
               ...field,
             };
+          }),
+        setImagePosition: (position, embedIndex) =>
+          set((state) => {
+            state.imagePosition = position;
+            state.imageEmbedIndex = embedIndex;
           }),
         reset: () => {
           set(store.getInitialState());

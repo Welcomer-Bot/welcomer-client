@@ -9,8 +9,13 @@ import reactStringReplace from "react-string-replace";
 import { GuildObject } from "./guild";
 import { UserObject } from "./user";
 
-export function parseText(text: string, user: UserObject, guild: GuildObject) {
+export function parseText(
+  text: string | undefined,
+  user: UserObject,
+  guild: GuildObject
+) {
   //TODO: add all the other variables
+  if (!text) return "";
   return text
     .replaceAll(/{id}/g, user.id)
     .replaceAll(/{displayname}/g, user.username)
@@ -19,7 +24,7 @@ export function parseText(text: string, user: UserObject, guild: GuildObject) {
     .replaceAll(/{membercount}/g, guild.memberCount.toString())
     .replaceAll(/{guildid}/g, guild.id)
     .replaceAll(/{username}/g, user.username)
-    .replaceAll(/{membercount}/g, guild.memberCount.toString());
+    .replaceAll(/{user}/g, user.username);
 }
 
 export function parseMessageText(
@@ -131,7 +136,6 @@ import {
   DiscordMessages,
 } from "@skyra/discord-components-react";
 
-
 // Helper to render embed fields using DiscordEmbedFields/DiscordEmbedField
 function renderEmbedFields(fields: APIEmbed["fields"]) {
   return (
@@ -150,8 +154,14 @@ function renderEmbedFields(fields: APIEmbed["fields"]) {
 }
 
 // Helper to render a single embed using DiscordEmbed and related components
-function renderEmbed(embed: APIEmbed, idx: number) {
-  console.log("Rendering embed:", embed);
+function renderEmbed(
+  embed: APIEmbed,
+  user: UserObject,
+  guild: GuildObject,
+  idx: number,
+  imageUrl?: string
+) {
+  console.log("Rendering embed:", embed, imageUrl);
   return (
     <DiscordEmbed
       key={idx}
@@ -161,29 +171,35 @@ function renderEmbed(embed: APIEmbed, idx: number) {
           ? `#${embed.color.toString(16).padStart(6, "0")}`
           : undefined
       }
-      embedTitle={embed.title}
+      embedTitle={parseText(embed.title, user, guild)}
       authorName={embed.author?.name}
       authorImage={embed.author?.icon_url}
-      title={embed.title}
+      title={parseText(embed.title, user, guild)}
       url={embed.url}
+      image={imageUrl || embed.image?.url}
       thumbnail={embed.thumbnail?.url}
     >
       {embed.description && (
-        <DiscordEmbedDescription slot="description">{embed.description}</DiscordEmbedDescription>
+        <DiscordEmbedDescription slot="description">
+          {parseText(embed.description, user, guild)}
+        </DiscordEmbedDescription>
       )}
       {embed.fields &&
         Array.isArray(embed.fields) &&
-        renderEmbedFields(embed.fields)}
-      {embed.image && embed.image.url && (
-        <DiscordImageAttachment
-          slot="image"
-          url={embed.image.url}
-          alt="embed image"
-        />
-      )}
+        renderEmbedFields(
+          embed.fields.map((field) => ({
+            name: parseText(field.name, user, guild),
+            value: parseText(field.value, user, guild),
+            inline: field.inline,
+          }))
+        )}
       {embed.footer && (
-        <DiscordEmbedFooter footerImage={embed.footer.icon_url} timestamp={embed.timestamp} slot="footer">
-          {embed.footer.text}
+        <DiscordEmbedFooter
+          footerImage={embed.footer.icon_url}
+          timestamp={embed.timestamp}
+          slot="footer"
+        >
+          {parseText(embed.footer.text, user, guild)}
         </DiscordEmbedFooter>
       )}
     </DiscordEmbed>
@@ -193,9 +209,13 @@ function renderEmbed(embed: APIEmbed, idx: number) {
 export function parseMessageToReactElement(
   message: RESTPostAPIChannelMessageJSONBody,
   user: UserObject,
-  guild: GuildObject
+  guild: GuildObject,
+  options?: {
+    image?: string;
+    imagePosition?: "outside" | "embed";
+    imageEmbedIndex?: number;
+  }
 ) {
-  console.log("Parsing message:", message);
   // Render the main message content using parseMessageText
   const content = message.content
     ? parseMessageText(message.content, user, guild)
@@ -204,12 +224,32 @@ export function parseMessageToReactElement(
   // Render embeds if present
   let embeds = null;
   if (Array.isArray(message.embeds) && message.embeds.length > 0) {
-    embeds = (message.embeds as APIEmbed[]).map((embed, idx) =>
-      renderEmbed(embed, idx)
-    );
+    embeds = (message.embeds as APIEmbed[]).map((embed, idx) => {
+      // Si l'image doit être dans un embed et c'est le bon index
+      const shouldIncludeImage =
+        options?.image &&
+        options.imagePosition === "embed" &&
+        options.imageEmbedIndex === idx;
+
+      return renderEmbed(
+        embed,
+        user,
+        guild,
+        idx,
+        shouldIncludeImage ? options.image : undefined
+      );
+    });
   }
 
-  // Optionally, render attachments (not implemented here)
+  // Image à l'extérieur des embeds
+  const outsideImage =
+    options?.image && options.imagePosition === "outside" ? (
+      <DiscordImageAttachment
+        slot="attachments"
+        url={options.image}
+        alt="generated card"
+      />
+    ) : null;
 
   return (
     <DiscordMessages>
@@ -223,6 +263,7 @@ export function parseMessageToReactElement(
       >
         {content}
         {embeds}
+        {outsideImage}
       </DiscordMessage>
     </DiscordMessages>
   );

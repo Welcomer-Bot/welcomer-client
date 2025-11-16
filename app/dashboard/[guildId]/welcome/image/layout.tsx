@@ -1,5 +1,7 @@
-import { getSourceCards, getSources } from "@/lib/dal";
-import { ImageStoreProvider } from "@/providers/imageStoreProvider";
+import { BaseCardConfig } from "@/components/dashboard/guild/image-editor/types";
+import { getSources } from "@/lib/dal";
+import prisma from "@/lib/prisma";
+import { ImageCardStoreProvider } from "@/providers/imageCardStoreProvider";
 import { redirect } from "next/navigation";
 
 export default async function Layout({
@@ -13,31 +15,43 @@ export default async function Layout({
 }) {
   const { guildId } = await params;
   const sources = await getSources(guildId, "Welcomer");
-  if (!sources || sources.length === 0) {
-    return redirect(`/dashboard/${guildId}/leave`);
+
+  // Get the first source and its active card
+  const source = sources && sources[0] ? sources[0] : null;
+  if (!source) {
+    redirect("/dashboard/" + guildId);
   }
-  const source = sources[0];
-  if (!source) return redirect(`/dashboard/${guildId}/leave`);
-  // console.log("source", source);
-  const cards = await getSourceCards(source.id);
-  // console.log("cards", cards);
+  let imageCard = null;
+  if (source?.activeCardId) {
+    imageCard = await prisma.imageCard.findUnique({
+      where: { id: source.activeCardId },
+    });
+  }
+
+  console.log("ImageCardStoreProvider - Welcome Image Layout", {
+    hasSource: !!source,
+    sourceId: source?.id,
+    hasImageCard: !!imageCard,
+    imageCardId: imageCard?.id,
+  });
 
   return (
-    <ImageStoreProvider
-      initialState={{
-        sourceId: source.id,
-        imageCards: cards ?? [],
-        selectedCard:
-          cards?.findIndex(
-            (card) => (card as { id?: number }).id === source.activeCardId
-          ) === -1
-            ? null
-            : cards?.findIndex(
-                (card) => (card as { id?: number }).id === source.activeCardId
-              ),
-      }}
+    <ImageCardStoreProvider
+      initialState={
+        imageCard
+          ? {
+              id: imageCard.id,
+              sourceId: imageCard.sourceId,
+              data: imageCard.data as BaseCardConfig,
+              createdAt: imageCard.createdAt,
+              updatedAt: imageCard.updatedAt,
+            }
+          : {
+              sourceId: source?.id || 0,
+            }
+      }
     >
       {children}
-    </ImageStoreProvider>
+    </ImageCardStoreProvider>
   );
 }

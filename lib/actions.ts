@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 
 import { revalidatePath } from "next/cache";
 
-import { Source, SourceType } from "@/prisma/generated/client";
+import { ImageCard, Source, SourceType } from "@/prisma/generated/client";
+import { ImageCardState } from "@/state/imageCard";
 import { SourceState } from "@/state/source";
 import { MessageBuilder, ValidationError } from "@discordjs/builders";
 import z from "zod";
@@ -131,6 +132,23 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
   //     error: "Message is not valid",
   //   };
   // }
+  if (
+    store.imagePosition &&
+    store.imagePosition == "embed" &&
+    store.imageEmbedIndex !== undefined
+  ) {
+    const embed = store.message.embeds?.[store.imageEmbedIndex];
+    if (!embed) {
+      return {
+        data: null,
+        done: false,
+        error: "Embed index for image is invalid",
+      };
+    }
+    console.log("Setting embed image");
+    embed.image = { url: "imageCard" };
+  }
+
   try {
     const res = await prisma.source.update({
       where: {
@@ -455,3 +473,169 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
 //     };
 //   }
 // }
+
+// ImageCard actions
+export async function createImageCard(
+  sourceId: number,
+  guildId: string
+): Promise<{
+  data: ImageCard | null;
+  done: boolean;
+  error: string | null;
+}> {
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return {
+      data: null,
+      done: false,
+      error: "You do not have permission to manage this guild",
+    };
+  }
+
+  try {
+    const card = await prisma.imageCard.create({
+      data: {
+        sourceId,
+        data: {},
+      },
+    });
+
+    // Set as active card if none exists
+    const source = await prisma.source.findUnique({
+      where: { id: sourceId },
+      select: { activeCardId: true },
+    });
+
+    if (!source?.activeCardId) {
+      await prisma.source.update({
+        where: { id: sourceId },
+        data: { activeCardId: card.id },
+      });
+    }
+
+    revalidatePath(`/dashboard/${guildId}`);
+    return {
+      data: card,
+      done: true,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error creating image card:", error);
+    return {
+      data: null,
+      done: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred while creating the image card",
+    };
+  }
+}
+
+export async function updateImageCard(
+  store: Partial<ImageCardState>,
+  guildId: string
+): Promise<{
+  data: ImageCard | null;
+  done: boolean;
+  error: string | null;
+}> {
+  const cardId = store.id;
+  const sourceId = store.sourceId;
+
+  if (!cardId) {
+    return {
+      data: null,
+      done: false,
+      error: "You need to select a card",
+    };
+  }
+
+  if (!sourceId) {
+    return {
+      data: null,
+      done: false,
+      error: "You need to select a source",
+    };
+  }
+
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return {
+      data: null,
+      done: false,
+      error: "You do not have permission to manage this guild",
+    };
+  }
+
+  if (!store.data) {
+    return {
+      data: null,
+      done: false,
+      error: "Card data cannot be null",
+    };
+  }
+
+  try {
+    const card = await prisma.imageCard.update({
+      where: { id: cardId },
+      data: {
+        data: store.data,
+      },
+    });
+
+    revalidatePath(`/dashboard/${guildId}`);
+    return {
+      data: card,
+      done: true,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error updating image card:", error);
+    return {
+      data: null,
+      done: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred while updating the image card",
+    };
+  }
+}
+
+export async function deleteImageCard(
+  cardId: number,
+  guildId: string
+): Promise<{
+  done: boolean;
+  error: string | null;
+}> {
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return {
+      done: false,
+      error: "You do not have permission to manage this guild",
+    };
+  }
+
+  try {
+    await prisma.imageCard.delete({
+      where: { id: cardId },
+    });
+
+    revalidatePath(`/dashboard/${guildId}`);
+    return {
+      done: true,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error deleting image card:", error);
+    return {
+      done: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred while deleting the image card",
+    };
+  }
+}

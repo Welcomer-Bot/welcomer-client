@@ -6,6 +6,7 @@ import { Divider } from "@heroui/divider";
 import ContentEditor from "./content-editor";
 import EditorMessagePreview from "./editor-message-preview";
 import { EmbedEditor } from "./embed/embed-editor";
+import ImagePositionEditor from "./image-position-editor";
 import SaveButton from "./save-button";
 
 export async function Editor({ guild }: { guild: Guild }) {
@@ -21,7 +22,7 @@ export async function Editor({ guild }: { guild: Guild }) {
             <ContentEditor />
             <EmbedEditor />
             <Divider className="my-4" />
-            {/* <CardPositionEditor /> */}
+            <ImagePositionEditor />
           </form>
         </div>
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">

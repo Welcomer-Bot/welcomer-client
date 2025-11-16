@@ -19,7 +19,9 @@ export default function SaveButton() {
     const initialState = store.getInitialState();
     return (
       state.channelId !== initialState.channelId ||
-      JSON.stringify(state.message) !== JSON.stringify(initialState.message)
+      JSON.stringify(state.message) !== JSON.stringify(initialState.message) ||
+      state.imagePosition !== initialState.imagePosition ||
+      state.imageEmbedIndex !== initialState.imageEmbedIndex
     );
   });
 
@@ -59,6 +61,8 @@ export default function SaveButton() {
                   id: state.id,
                   channelId: state.channelId,
                   message: state.message,
+                  imagePosition: state.imagePosition,
+                  imageEmbedIndex: state.imageEmbedIndex,
                 });
                 if (error) {
                   console.error(error);

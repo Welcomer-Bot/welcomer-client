@@ -7,6 +7,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.discordapp.com",
       },
+      {
+        protocol: "https",
+        hostname: "beta.welcomer.app",
+      },
     ],
   },
   crossOrigin: "anonymous",

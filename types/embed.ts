@@ -1,9 +1,4 @@
-import {
-  APIEmbed,
-  APIEmbedField,
-  RESTPostAPIChannelMessageJSONBody,
-} from "discord-api-types/v10";
-
+import { APIEmbed, APIEmbedField } from "discord-api-types/v10";
 
 export const defaultEmbedField: APIEmbedField = {
   name: "Member count",
