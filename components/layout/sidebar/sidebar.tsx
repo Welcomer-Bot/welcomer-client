@@ -27,7 +27,7 @@ export function Sidebar({
   const active = pathname
     ? (pathname.split("/")[3] ?? "dashboard")
     : "dashboard";
-  
+
   const { isOpen, setIsOpen } = useContext(SidebarContext);
   return (
     <>

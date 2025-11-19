@@ -25,7 +25,10 @@ export const ImageCardStoreProvider = ({
 }: ImageCardStoreProviderProps & {
   initialState?: Partial<ImageCardState>;
 }) => {
-  const store = useMemo(() => createImageCardStore(initialState), [initialState]);
+  const store = useMemo(
+    () => createImageCardStore(initialState),
+    [initialState]
+  );
 
   return (
     <ImageCardStoreContext.Provider value={store}>

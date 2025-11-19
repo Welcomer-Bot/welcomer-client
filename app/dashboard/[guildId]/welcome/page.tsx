@@ -11,7 +11,10 @@ interface WelcomeCardHeaderProps {
   guildId: string;
 }
 
-function WelcomeCardHeader({ welcomerParams, guildId }: WelcomeCardHeaderProps) {
+function WelcomeCardHeader({
+  welcomerParams,
+  guildId,
+}: WelcomeCardHeaderProps) {
   return (
     <CardHeader className="flex justify-between">
       <p>Welcome module status</p>
