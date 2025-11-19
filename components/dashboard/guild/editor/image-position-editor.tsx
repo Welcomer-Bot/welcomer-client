@@ -25,13 +25,13 @@ export default function ImagePositionEditor() {
   }
 
   const positionOptions = [
-    { value: "outside", label: "À l'extérieur des embeds" },
-    { value: "embed", label: "Dans un embed" },
+    { value: "outside", label: "Outside of the embeds" },
+    { value: "embed", label: "Inside of an embed" },
   ];
 
   const embedOptions = embeds.map((embed, index) => ({
     value: index.toString(),
-    label: `Embed ${index + 1}: ${embed.title || "Sans titre"}`,
+    label: `Embed ${index + 1}: ${embed.title || "No title"}`,
   }));
 
   return (
@@ -40,7 +40,7 @@ export default function ImagePositionEditor() {
       <CardBody className="space-y-4">
         <Select
           label="Position"
-          placeholder="Sélectionner une position"
+          placeholder="Select image position"
           selectedKeys={[imagePosition]}
           onSelectionChange={(keys) => {
             const value = Array.from(keys)[0] as "outside" | "embed";
@@ -60,8 +60,8 @@ export default function ImagePositionEditor() {
 
         {imagePosition === "embed" && embedOptions.length > 0 && (
           <Select
-            label="Embed cible"
-            placeholder="Sélectionner un embed"
+            label="Embed"
+            placeholder="Select embed"
             selectedKeys={
               imageEmbedIndex !== undefined ? [imageEmbedIndex.toString()] : []
             }
@@ -83,7 +83,7 @@ export default function ImagePositionEditor() {
 
         {imagePosition === "embed" && embedOptions.length === 0 && (
           <p className="text-warning text-sm">
-            Aucun embed disponible. Créez un embed pour pouvoir y placer
+            Warning: There are no embeds in the message to place the image.
             l&apos;image.
           </p>
         )}

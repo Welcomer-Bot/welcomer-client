@@ -7,6 +7,28 @@ import EnableModuleButton from "@/components/dashboard/guild/enable-module-butto
 import RemoveModuleButton from "@/components/dashboard/guild/remove-module-button";
 import { getGuild, getSources, getUser } from "@/lib/dal";
 
+interface LeaverCardHeaderProps {
+  leaverParams: { id: number } | undefined;
+  guildId: string;
+}
+
+function LeaverCardHeader({ leaverParams, guildId }: LeaverCardHeaderProps) {
+  return (
+    <CardHeader className="flex justify-between">
+      <p>Welcome module status</p>
+      {leaverParams ? (
+        <RemoveModuleButton
+          guildId={guildId}
+          sourceId={leaverParams.id}
+          sourceType="Leaver"
+        />
+      ) : (
+        <EnableModuleButton guildId={guildId} sourceType="Leaver" />
+      )}
+    </CardHeader>
+  );
+}
+
 export default async function Page({
   params,
 }: {
@@ -20,23 +42,9 @@ export default async function Page({
 
   if (!guild || !user) redirect("/dashboard");
 
-  const LeaverCardHeader = () => (
-    <CardHeader className="flex justify-between">
-      <p>Welcome module status</p>
-      {leaverParams ? (
-        <RemoveModuleButton
-          guildId={guild.id}
-          sourceId={leaverParams.id}
-          sourceType="Leaver"
-        />
-      ) : (
-        <EnableModuleButton guildId={guild.id} sourceType="Leaver" />
-      )}
-    </CardHeader>
-  );
   return (
     <Card radius="none" className="w-full min-h-full">
-      <LeaverCardHeader />
+      <LeaverCardHeader leaverParams={leaverParams} guildId={guild.id} />
       {leaverParams ? (
         <>
           <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll overflow-x-hidden w-full ">

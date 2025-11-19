@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useStore } from "zustand";
 
 import {
@@ -25,11 +25,10 @@ export const ImageCardStoreProvider = ({
 }: ImageCardStoreProviderProps & {
   initialState?: Partial<ImageCardState>;
 }) => {
-  const storeRef = useRef<ImageCardStoreAPI | null>(null);
-  storeRef.current = createImageCardStore(initialState);
+  const store = useMemo(() => createImageCardStore(initialState), [initialState]);
 
   return (
-    <ImageCardStoreContext.Provider value={storeRef.current}>
+    <ImageCardStoreContext.Provider value={store}>
       {children}
     </ImageCardStoreContext.Provider>
   );

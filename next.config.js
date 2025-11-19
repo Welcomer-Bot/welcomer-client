@@ -1,6 +1,9 @@
 import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Cache Components enabled - Next.js 16.0.3
+  // Note: As of 16.0.3, this is still experimental but will move to root level in future canary
+  cacheComponents: true,
   images: {
     remotePatterns: [
       {
@@ -14,11 +17,6 @@ const nextConfig = {
     ],
   },
   crossOrigin: "anonymous",
-};
-
-// Injected content via Sentry wizard below
-
-export default withSentryConfig(nextConfig, {
   async headers() {
     return [
       {
@@ -32,6 +30,11 @@ export default withSentryConfig(nextConfig, {
       },
     ];
   },
+};
+
+// Injected content via Sentry wizard below
+
+export default withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 

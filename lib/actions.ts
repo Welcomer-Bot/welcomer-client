@@ -103,7 +103,21 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
 
   try {
     console.log("Validating message", store.message);
+    let embedIndex: number | undefined = undefined;
+    store.message.embeds?.map((embed, i) => {
+      if (embed.image && embed.image.url === "imageCard") {
+        // Remove image before validation
+        embed.image = undefined;
+        embedIndex = i;
+      }
+    });
     new MessageBuilder(store.message).toJSON();
+    store.message.embeds?.map((embed, i) => {
+      if (embedIndex !== undefined && i === embedIndex) {
+        // Restore image after validation
+        embed.image = { url: "imageCard" };
+      }
+    });
   } catch (e) {
     if (e instanceof ValidationError) {
       console.log("Validation error details:", e.name);

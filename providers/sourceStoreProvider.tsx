@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useStore } from "zustand";
 
 import { Source } from "@/prisma/generated/client";
@@ -19,11 +19,10 @@ export const SourceStoreProvider = ({
   children,
   initialState,
 }: SourceStoreProviderProps & { initialState?: Partial<Source> }) => {
-  const storeRef = useRef<SourceStoreAPI | null>(null);
-  storeRef.current = createSourceStore(initialState);
+  const store = useMemo(() => createSourceStore(initialState), [initialState]);
 
   return (
-    <SourceStoreContext.Provider value={storeRef.current}>
+    <SourceStoreContext.Provider value={store}>
       {children}
     </SourceStoreContext.Provider>
   );

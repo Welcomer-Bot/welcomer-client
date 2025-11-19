@@ -55,5 +55,7 @@ export default function MessagePreview({
     );
   }, [msg, user, guild, image]);
 
-  return <div className="rounded-lg min-h-full w-full min-w-fit">{text}</div>;
+  return (
+    <div className="rounded-lg min-h-1/2 h-fit w-full min-w-fit">{text}</div>
+  );
 }

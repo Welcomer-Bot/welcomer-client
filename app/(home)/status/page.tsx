@@ -15,6 +15,7 @@ export default function Page() {
     async function updateStatus() {
       const statusUpdate = await fetchClustersShardsSatus();
       setStatus(statusUpdate);
+      setUpdateTime(20); // Reset timer when status updates
     }
     updateStatus();
     const interval = setInterval(() => {
@@ -25,13 +26,12 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    setUpdateTime(20);
     const interval = setInterval(() => {
       setUpdateTime((prev) => prev - 1);
     }, 1000); // Update every second
 
     return () => clearInterval(interval);
-  }, [status]);
+  }, []);
 
   const allGood = status.every((cluster) =>
     cluster.perShardCluster.every((shard) => shard.status === 0)

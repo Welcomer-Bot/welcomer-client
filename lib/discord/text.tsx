@@ -252,7 +252,7 @@ export function parseMessageToReactElement(
     ) : null;
 
   return (
-    <DiscordMessages>
+    <DiscordMessages className="h-full">
       <DiscordMessage
         author={"Welcomer"}
         avatar="/logo.svg"

@@ -4,7 +4,7 @@ import { LogoutIcon } from "@/components/dashboard/guild/logout-icon";
 import { Divider } from "@heroui/divider";
 import { Button, User as UIUser } from "@heroui/react";
 import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { FaDoorOpen, FaHome } from "react-icons/fa";
 import { ImEnter } from "react-icons/im";
 import { MdDashboard } from "react-icons/md";
@@ -24,13 +24,10 @@ export function Sidebar({
   user: UserObject;
 }) {
   const pathname = usePathname();
-  const [active, setActive] = useState("dashboard");
-  useEffect(() => {
-    const active = pathname
-      ? (pathname.split("/")[3] ?? "dashboard")
-      : "dashboard";
-    setActive(active);
-  }, [pathname]);
+  const active = pathname
+    ? (pathname.split("/")[3] ?? "dashboard")
+    : "dashboard";
+  
   const { isOpen, setIsOpen } = useContext(SidebarContext);
   return (
     <>

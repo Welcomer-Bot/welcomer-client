@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import { Providers } from "./providers";
 
@@ -45,7 +46,9 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <main className="min-h-screen w-full grid content-center">
-            {children}
+            {/* MIGRATED: Added Suspense boundary for Cache Components */}
+            {/* Routes with dynamic data (params, searchParams, cookies) now render without blocking the static shell */}
+            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
           </main>
           <ToastContainer />
         </Providers>
