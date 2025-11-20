@@ -248,6 +248,7 @@ export function parseMessageToReactElement(
         slot="attachments"
         url={options.image}
         alt="generated card"
+        width={400}
       />
     ) : null;
 

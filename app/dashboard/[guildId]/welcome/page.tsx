@@ -16,7 +16,7 @@ function WelcomeCardHeader({
   guildId,
 }: WelcomeCardHeaderProps) {
   return (
-    <CardHeader className="flex justify-between">
+    <CardHeader className="flex justify-between space-x-3">
       <p>Welcome module status</p>
       {welcomerParams ? (
         <RemoveModuleButton

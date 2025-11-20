@@ -113,7 +113,11 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
     });
     new MessageBuilder(store.message).toJSON();
     store.message.embeds?.map((embed, i) => {
-      if (embedIndex !== undefined && i === embedIndex) {
+      if (
+        embedIndex !== undefined &&
+        i === embedIndex &&
+        store.imagePosition === "embed"
+      ) {
         // Restore image after validation
         embed.image = { url: "imageCard" };
       }
