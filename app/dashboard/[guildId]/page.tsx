@@ -1,19 +1,51 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import GuildCard from "@/components/dashboard/guild/guild-card";
 import ManageButton from "@/components/dashboard/guild/manage-button";
 import StatsViewer from "@/components/dashboard/guild/stats/stats-viewer";
 import { getGuild, getSources } from "@/lib/dal";
+import { Period } from "@/prisma/generated/client";
 
+import { Skeleton } from "@heroui/skeleton";
 import { DiscordMention } from "@skyra/discord-components-react";
+
+function StatsViewerSkeleton() {
+  return (
+    <Card className="grid gap-5 px-5 pb-5">
+      <CardHeader className="flex justify-between">
+        <Skeleton className="h-6 w-32 rounded-lg" />
+        <Skeleton className="h-10 w-40 rounded-lg" />
+      </CardHeader>
+      <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i}>
+            <CardHeader className="text-gray-400 text-sm">
+              <Skeleton className="h-4 w-32 rounded-lg" />
+            </CardHeader>
+            <CardBody>
+              <Skeleton className="h-6 w-16 rounded-lg" />
+            </CardBody>
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
+}
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ guildId: string }>;
+  searchParams: Promise<{ welcomerPeriod?: string; leaverPeriod?: string }>;
 }) {
   const { guildId } = await params;
+  const search = await searchParams;
+
+  const welcomerPeriod = (search.welcomerPeriod as Period) || Period.DAILY;
+  const leaverPeriod = (search.leaverPeriod as Period) || Period.DAILY;
   const guild = await getGuild(guildId);
   if (!guild) redirect("/dashboard");
   const welcomer = await getSources(guildId, "Welcomer");
@@ -23,7 +55,7 @@ export default async function Page({
   const leaverEnabled = leaver && leaver.length > 0;
 
   const welcomerChannel =
-    welcomer && welcomerEnabled&& welcomer[0]?.channelId
+    welcomer && welcomerEnabled && welcomer[0]?.channelId
       ? await guild.getChannel(welcomer[0].channelId)
       : null;
   const leaverChannel =
@@ -102,8 +134,20 @@ export default async function Page({
                 </CardBody>
               </Card>
             </div>
-            <StatsViewer guildId={guild.id} module={"Welcomer"} />
-            <StatsViewer guildId={guild.id} module={"Leaver"} />
+            <Suspense fallback={<StatsViewerSkeleton />}>
+              <StatsViewer
+                guildId={guild.id}
+                module={"Welcomer"}
+                period={welcomerPeriod}
+              />
+            </Suspense>
+            <Suspense fallback={<StatsViewerSkeleton />}>
+              <StatsViewer
+                guildId={guild.id}
+                module={"Leaver"}
+                period={leaverPeriod}
+              />
+            </Suspense>
           </CardBody>
         </>
       </Card>

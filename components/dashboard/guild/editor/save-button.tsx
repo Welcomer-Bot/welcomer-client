@@ -2,8 +2,8 @@
 
 import { updateSource } from "@/lib/actions";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
-import { Button } from "@heroui/react";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore } from "zustand";

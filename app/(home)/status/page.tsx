@@ -3,8 +3,10 @@
 import { GuildInput } from "@/components/shared/status/guild-input";
 import { fetchClustersShardsSatus } from "@/lib/discord/shard";
 import { type clusterStatus } from "@/lib/discord/status";
+import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Button, Divider, Tooltip } from "@heroui/react";
+import { Divider } from "@heroui/divider";
+import { Tooltip } from "@heroui/tooltip";
 import { useEffect, useState } from "react";
 
 export default function Page() {

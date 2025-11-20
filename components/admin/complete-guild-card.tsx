@@ -11,7 +11,7 @@ import { UserObject } from "@/lib/discord/user";
 import { Source } from "@/prisma/generated/client";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { User } from "@heroui/react";
+import { User } from "@heroui/user";
 import Image from "next/image";
 import { toast } from "react-toastify";
 

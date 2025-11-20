@@ -1,13 +1,13 @@
 "use client";
+import { Button } from "@heroui/button";
 import {
-  Button,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   useDisclosure,
-} from "@heroui/react";
+} from "@heroui/modal";
 import { DiscordMention } from "@skyra/discord-components-react";
 import { usePlausible } from "next-plausible";
 import Image from "next/image";

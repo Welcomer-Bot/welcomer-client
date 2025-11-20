@@ -1,6 +1,6 @@
 import EmbedsFieldsAccordionWrapper from "@/components/ui/accordion/embeds-fields-accordion-wrapper";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 import { useContext } from "react";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
 import { useStore } from "zustand";

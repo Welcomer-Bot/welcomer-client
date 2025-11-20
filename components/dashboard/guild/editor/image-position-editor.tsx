@@ -1,7 +1,7 @@
 "use client";
 
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Select, SelectItem } from "@heroui/select";
 import { useContext } from "react";
 import { useStore } from "zustand";

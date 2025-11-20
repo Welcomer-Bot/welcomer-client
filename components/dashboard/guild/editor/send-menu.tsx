@@ -6,8 +6,8 @@ import {
   Permissions,
 } from "@/lib/discord/guild";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { Tooltip } from "@heroui/react";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
+import { Tooltip } from "@heroui/tooltip";
 import { DiscordMention } from "@skyra/discord-components-react";
 import { APIChannel } from "discord.js";
 import { useContext } from "react";

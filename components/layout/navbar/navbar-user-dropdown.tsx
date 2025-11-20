@@ -10,7 +10,7 @@ import {
 
 import { signOut } from "@/lib/actions";
 import { UserObject } from "@/lib/discord/user";
-import { User as UIUser } from "@heroui/react";
+import { User as UIUser } from "@heroui/user";
 
 export default function NavbarUserDropdown({ user }: { user: UserObject }) {
   if (!user) return null;

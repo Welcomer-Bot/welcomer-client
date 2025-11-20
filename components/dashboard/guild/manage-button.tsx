@@ -1,8 +1,8 @@
 "use client";
 
 import { SourceType } from "@/prisma/generated/client";
-import { Button } from "@heroui/react";
-import { redirect } from "next/navigation";
+import { Button } from "@heroui/button";
+import Link from "next/link";
 
 export default function ManageButton({
   guildId,
@@ -11,13 +11,10 @@ export default function ManageButton({
   guildId: string;
   module: SourceType;
 }) {
+  const link = `/dashboard/${guildId}/${module.slice(0, -1).toLowerCase()}`;
+
   return (
-    <Button
-      color="primary"
-      onPress={() =>
-        redirect(`/dashboard/${guildId}/${module.slice(0, -1).toLowerCase()}`)
-      }
-    >
+    <Button as={Link} href={link} color="primary">
       Manage
     </Button>
   );

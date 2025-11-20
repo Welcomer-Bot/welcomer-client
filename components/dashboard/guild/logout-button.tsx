@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 
 import { LogoutIcon } from "@/components/ui/icons/icons";
 import { signOut } from "@/lib/actions";

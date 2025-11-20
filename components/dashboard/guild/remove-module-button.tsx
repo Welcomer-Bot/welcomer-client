@@ -2,10 +2,21 @@
 import { removeSource } from "@/lib/actions";
 import { SourceType } from "@/prisma/generated/client";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 import { usePlausible } from "next-plausible";
-import { useContext, useState } from "react";
+import { useContext } from "react";
+import { useFormStatus } from "react-dom";
 import { useStore } from "zustand";
+
+function SubmitButton({ sourceType }: { sourceType: SourceType }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button color="danger" variant="ghost" isLoading={pending} type="submit">
+      Disable {sourceType}
+    </Button>
+  );
+}
 
 export default function RemoveModuleButton({
   guildId,
@@ -16,28 +27,24 @@ export default function RemoveModuleButton({
   sourceId: number;
   sourceType: SourceType;
 }) {
-  const [loading, setLoading] = useState(false);
   const store = useContext(SourceStoreContext);
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
   const reset = useStore(store, (state) => state.reset);
   const plausible = usePlausible();
+
+  async function handleSubmit() {
+    plausible("RemoveModuleButton", {
+      props: {
+        sourceType,
+      },
+    });
+    await removeSource(guildId, sourceId);
+    reset();
+  }
+
   return (
-    <Button
-      color="danger"
-      variant="ghost"
-      isLoading={loading}
-      onPress={async () => {
-        setLoading(true);
-        plausible("RemoveModuleButton", {
-          props: {
-            sourceType,
-          },
-        });
-        await removeSource(guildId, sourceId);
-        reset();
-      }}
-    >
-      Disable {sourceType}
-    </Button>
+    <form action={handleSubmit}>
+      <SubmitButton sourceType={sourceType} />
+    </form>
   );
 }
