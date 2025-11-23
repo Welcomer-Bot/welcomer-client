@@ -28,7 +28,7 @@ export async function signOut() {
 
 export async function createSource(
   guildId: string,
-  source: SourceType
+  source: SourceType,
 ): Promise<void> {
   const guild = await getUserGuild(guildId);
   if (!guild) {
@@ -45,7 +45,7 @@ export async function createSource(
 
 export async function removeSource(
   guildId: string,
-  sourceId: number
+  sourceId: number,
 ): Promise<void> {
   const guild = await getUserGuild(guildId);
   if (!guild) {
@@ -99,6 +99,15 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
       done: false,
       error: "Message cannot be null",
     };
+  }
+
+  console.log("Checking image card deletion");
+  console.log("store.imageEmbedIndex", store.imageEmbedIndex);
+  console.log("store.imagePosition", store.imagePosition);
+
+  if (store.imageEmbedIndex == undefined && store.imagePosition === undefined) {
+    deleteActiveImageCard(sourceId, guildId);
+    store.imagePosition = undefined;
   }
 
   try {
@@ -495,7 +504,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
 // ImageCard actions
 export async function createImageCard(
   sourceId: number,
-  guildId: string
+  guildId: string,
 ): Promise<{
   data: ImageCard | null;
   done: boolean;
@@ -531,7 +540,6 @@ export async function createImageCard(
       });
     }
 
-    revalidatePath(`/dashboard/${guildId}`);
     return {
       data: card,
       done: true,
@@ -552,7 +560,7 @@ export async function createImageCard(
 
 export async function updateImageCard(
   store: Partial<ImageCardState>,
-  guildId: string
+  guildId: string,
 ): Promise<{
   data: ImageCard | null;
   done: boolean;
@@ -621,9 +629,56 @@ export async function updateImageCard(
   }
 }
 
+export async function deleteActiveImageCard(
+  sourceId: number,
+  guildId: string,
+): Promise<{
+  done: boolean;
+  error: string | null;
+}> {
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return {
+      done: false,
+      error: "You do not have permission to manage this guild",
+    };
+  }
+
+  try {
+    const source = await prisma.source.findUnique({
+      where: { id: sourceId },
+      select: { activeCardId: true },
+    });
+
+    if (!source?.activeCardId) {
+      return {
+        done: false,
+        error: "No active card to delete",
+      };
+    }
+
+    await deleteImageCard(source.activeCardId, guildId);
+
+    revalidatePath(`/dashboard/${guildId}`);
+    return {
+      done: true,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error deleting active image card:", error);
+    return {
+      done: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred while deleting the active image card",
+    };
+  }
+}
+
 export async function deleteImageCard(
   cardId: number,
-  guildId: string
+  guildId: string,
 ): Promise<{
   done: boolean;
   error: string | null;

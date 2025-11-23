@@ -49,7 +49,7 @@ export default function MessagePreview({
     setText(
       parseMessageToReactElement(msg.message, user, guild, {
         image: image,
-        imagePosition: msg.imagePosition || "outside",
+        imagePosition: msg.imagePosition,
         imageEmbedIndex: msg.imageEmbedIndex,
       })
     );

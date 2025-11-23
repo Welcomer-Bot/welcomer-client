@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "./generated/client"
 }
 
@@ -17,7 +17,6 @@ generator zod {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model GuildStats {
@@ -69,7 +68,7 @@ model ImageCard {
   data         Json
   createdAt    DateTime  @default(now())
   updatedAt    DateTime? @updatedAt
-  Source       Source    @relation("SourceCard", fields: [sourceId], references: [id])
+  Source       Source    @relation("SourceCard", fields: [sourceId], references: [id], onDelete: Cascade)
   sourceId     Int
   SourceActive Source?   @relation("SourceActiveCard")
 }

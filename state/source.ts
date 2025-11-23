@@ -30,13 +30,13 @@ export type SourceActions = {
   editField: (
     embedIndex: number,
     fieldIndex: number,
-    field: { name?: string; value?: string; inline?: boolean }
+    field: { name?: string; value?: string; inline?: boolean },
   ) => void;
   addField: (embedIndex: number) => void;
   clearFields: (embedIndex: number) => void;
   setImagePosition: (
-    position: "outside" | "embed",
-    embedIndex?: number
+    position?: "outside" | "embed",
+    embedIndex?: number,
   ) => void;
   reset(): void;
 };
@@ -68,7 +68,7 @@ export const createSourceStore = (initState?: Partial<Source>) => {
   return createStore<SourceStore>()(
     immer<SourceStore>((set, get, store) => {
       // Determine initial image position from embeds
-      let imagePosition: "outside" | "embed" = "outside";
+      let imagePosition: "outside" | "embed" | undefined = undefined;
       let imageEmbedIndex: number | undefined = undefined;
 
       const embeds = initState?.message?.embeds;
@@ -257,7 +257,7 @@ export const createSourceStore = (initState?: Partial<Source>) => {
           set(store.getInitialState());
         },
       };
-    })
+    }),
   );
 };
 
