@@ -9,9 +9,12 @@ import { FaDoorOpen, FaHome } from "react-icons/fa";
 import { ImEnter } from "react-icons/im";
 import { MdDashboard } from "react-icons/md";
 
+import { SidebarContext } from "@/app/providers";
 import { Logo } from "@/components/ui/icons/icons";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
+import { useSelectedLayoutSegment } from "next/navigation";
+import { useContext } from "react";
 import {
   SidebarContent,
   SidebarUserSection,
@@ -31,18 +34,26 @@ export function Sidebar({
   user: UserObject;
   activeSection?: string;
 }) {
-  const active = activeSection ?? "dashboard";
+  const segment = useSelectedLayoutSegment();
+  const { isOpen } = useContext(SidebarContext);
+  const active = activeSection ?? segment ?? "dashboard";
 
   return (
     <SidebarWrapper>
       <div className="p-4 pb-2 justify-between items-center align-center sm:flex hidden">
-        <div className={` items-center h-10 justify-start flex flex-row `}>
-          <Logo className={`overflow-hidden transition-all w-10`} size={40} />
+        <div className="items-center h-10 justify-start flex flex-row">
+          <div
+            className={`overflow-hidden transition-all flex-shrink-0 ${
+              isOpen ? "w-10 h-10 opacity-100" : "w-0 h-0 opacity-0"
+            }`}
+          >
+            <Logo size={40} />
+          </div>
           <SidebarContent>
             <Link href="/dashboard">
-              <div className={`flex flex-col leading-3 text-center `}>
+              <div className="flex flex-col leading-3 text-center">
                 <h1>Welcomer</h1>
-                <span className="text-small text-gray-500 ">Dashboard</span>
+                <span className="text-small text-gray-500">Dashboard</span>
               </div>
             </Link>
           </SidebarContent>
@@ -53,7 +64,7 @@ export function Sidebar({
       <GuildSelectDropdown
         currentGuild={currentGuild}
         guilds={guilds}
-        isOpen={true}
+        isOpen={isOpen}
       />
       <Divider className="mb-2 sm:block hidden" />
 
@@ -87,7 +98,7 @@ export function Sidebar({
       <Divider className="sm:block hidden" />
 
       <div className="p-3 justify-center sm:flex hidden">
-        <SidebarUserSection isOpen={true}>
+        <SidebarUserSection isOpen={isOpen}>
           <UIUser
             avatarProps={{
               src: user.avatarUrl,

@@ -73,7 +73,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "prisma-json-types-generator": "^3.6.0",
+    "prisma-json-types-generator": "^3.6.2",
     "prisma-markdown": "^3.0.1",
     "tailwind-variants": "1.0.0",
     "tailwindcss": "4.1.11",
@@ -83,5 +83,6 @@
   "resolutions": {
     "@types/react": "19.2.5",
     "@types/react-dom": "19.2.3"
-  }
+  },
+  "packageManager": "yarn@4.12.0"
 }
