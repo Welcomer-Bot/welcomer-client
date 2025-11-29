@@ -12,6 +12,7 @@ const eslintConfig = defineConfig([
     // Default ignores of eslint-config-next:
     ".next/**",
     "prisma/**",
+    "generated/**",
     "node_modules/**",
     "bower_components/**",
     "public/**",
