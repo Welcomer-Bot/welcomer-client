@@ -1,9 +1,9 @@
 "use client";
 
-import { Period, SourceType } from "@/prisma/generated/client";
 import { Select, SelectItem } from "@heroui/select";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { Period, SourceType } from "../../../../generated/prisma/browser";
 
 export default function PeriodSelector({
   guildId,

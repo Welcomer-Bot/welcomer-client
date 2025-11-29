@@ -2,10 +2,10 @@
 
 import { getGuildsByUserId } from "@/lib/dal";
 import { GuildObject } from "@/lib/discord/guild";
-import { User } from "@/prisma/generated/client";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Card } from "@heroui/card";
 import { useEffect, useState } from "react";
+import { User } from "../../generated/prisma/browser";
 import GuildCard from "./guild-card";
 export default function UserSearch({ users }: { users: User[] }) {
   const [value, setValue] = useState<React.Key | null>(null);

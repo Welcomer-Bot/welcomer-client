@@ -3,12 +3,12 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useStore } from "zustand";
 
-import { Source } from "@/prisma/generated/client";
 import { createSourceStore, type SourceStore } from "@/state/source";
+import { Source } from "../generated/prisma/browser";
 export type SourceStoreAPI = ReturnType<typeof createSourceStore>;
 
 export const SourceStoreContext = createContext<SourceStoreAPI | undefined>(
-  undefined
+  undefined,
 );
 
 export interface SourceStoreProviderProps {

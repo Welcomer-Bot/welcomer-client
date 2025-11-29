@@ -1,4 +1,3 @@
-import { ImageCard, Source } from "@/prisma/generated/client";
 import {
   defaultEmbedField,
   defaultLeaverEmbed,
@@ -7,6 +6,7 @@ import {
 import { APIEmbed } from "discord.js";
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { ImageCard, Source } from "../generated/prisma/client";
 
 export type SourceState = Source & {
   guildId: string;

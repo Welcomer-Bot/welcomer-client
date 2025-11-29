@@ -2,8 +2,8 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import "server-only";
 
-import { Session } from "@/prisma/generated/client";
 import { SessionPayload } from "@/types";
+import { Session } from "../generated/prisma/client";
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
@@ -16,7 +16,7 @@ export async function encrypt(payload: SessionPayload) {
 }
 
 export async function decrypt(
-  session: string | undefined = ""
+  session: string | undefined = "",
 ): Promise<SessionPayload | null> {
   try {
     const { payload } = (await jwtVerify(session, encodedKey, {

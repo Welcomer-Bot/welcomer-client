@@ -3455,6 +3455,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@prisma/adapter-pg@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@prisma/adapter-pg@npm:7.0.1"
+  dependencies:
+    "@prisma/driver-adapter-utils": "npm:7.0.1"
+    pg: "npm:^8.16.3"
+    postgres-array: "npm:3.0.4"
+  checksum: 10c0/cff271c0b3f741515acc101e778780ce4d3be5040f29270d6b1b9f357a3a47cd47c24ff9040938d668931da4b81d2babcadb735603d6f1c988dc85408472c619
+  languageName: node
+  linkType: hard
+
 "@prisma/client-runtime-utils@npm:7.0.1":
   version: 7.0.1
   resolution: "@prisma/client-runtime-utils@npm:7.0.1"
@@ -3462,7 +3473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:7":
+"@prisma/client@npm:^7.0.1":
   version: 7.0.1
   resolution: "@prisma/client@npm:7.0.1"
   dependencies:
@@ -3552,6 +3563,15 @@ __metadata:
   version: 6.19.0
   resolution: "@prisma/dmmf@npm:6.19.0"
   checksum: 10c0/a68de35db23fa029b5d8764a28afc068789de78c888ffaee1cc54f4ffb83db145df309f87de5d986de79712fd01c4ea718d979718fbcb92dd70df72b60c08d5a
+  languageName: node
+  linkType: hard
+
+"@prisma/driver-adapter-utils@npm:7.0.1":
+  version: 7.0.1
+  resolution: "@prisma/driver-adapter-utils@npm:7.0.1"
+  dependencies:
+    "@prisma/debug": "npm:7.0.1"
+  checksum: 10c0/90cae427db248c6ef1c3c036b84108bed58505468417dfeb859ae593e43ca89c39c5a65b8d420162480a267063533d7a73930339c2bbde41d659e10aecf14aae
   languageName: node
   linkType: hard
 
@@ -5928,21 +5948,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:^24.10.1":
   version: 24.10.1
   resolution: "@types/node@npm:24.10.1"
   dependencies:
     undici-types: "npm:~7.16.0"
   checksum: 10c0/d6bca7a78f550fbb376f236f92b405d676003a8a09a1b411f55920ef34286ee3ee51f566203920e835478784df52662b5b2af89159d9d319352e9ea21801c002
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:24.1.0":
-  version: 24.1.0
-  resolution: "@types/node@npm:24.1.0"
-  dependencies:
-    undici-types: "npm:~7.8.0"
-  checksum: 10c0/6c4686bc144f6ce7bffd4cadc3e1196e2217c1da4c639c637213719c8a3ee58b6c596b994befcbffeacd9d9eb0c3bff6529d2bc27da5d1cb9d58b1da0056f9f4
   languageName: node
   linkType: hard
 
@@ -5955,7 +5966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg@npm:*, @types/pg@npm:8.15.6":
+"@types/pg@npm:*, @types/pg@npm:8.15.6, @types/pg@npm:^8.15.6":
   version: 8.15.6
   resolution: "@types/pg@npm:8.15.6"
   dependencies:
@@ -8462,9 +8473,9 @@ __metadata:
   linkType: hard
 
 "grammex@npm:^3.1.10":
-  version: 3.1.11
-  resolution: "grammex@npm:3.1.11"
-  checksum: 10c0/e06d92c5a08ed094bc7310fdac2fbaf2940ae54f18e7e186f23f4bb87e26cc75c633051ee8525ce16c9835e4ca9d3207148826d2c4a149d25e671eefb407aa5b
+  version: 3.1.12
+  resolution: "grammex@npm:3.1.12"
+  checksum: 10c0/6c096ef84e1a6a0e4a50a6ba11b582b5d61d60b76830d38a5cee0383529ccdb2ac1b419695edb9877bf93717bb0ff71fba54e1e2a76bbfb61a2cca456164ef44
   languageName: node
   linkType: hard
 
@@ -9792,13 +9803,15 @@ __metadata:
     "@internationalized/date": "npm:3.8.2"
     "@napi-rs/canvas": "npm:^0.1.51"
     "@next/eslint-plugin-next": "npm:16.0.3"
-    "@prisma/client": "npm:7"
+    "@prisma/adapter-pg": "npm:^7.0.1"
+    "@prisma/client": "npm:^7.0.1"
     "@sentry/nextjs": "npm:^10.25.0"
     "@sentry/profiling-node": "npm:^9.42.0"
     "@skyra/discord-components-react": "npm:^4.0.2"
     "@tailwindcss/postcss": "npm:^4.1.11"
     "@tanstack/eslint-plugin-query": "npm:^5.81.2"
-    "@types/node": "npm:24.1.0"
+    "@types/node": "npm:^24.10.1"
+    "@types/pg": "npm:^8.15.6"
     "@types/react": "npm:19.2.5"
     "@types/react-dom": "npm:19.2.3"
     "@typescript-eslint/eslint-plugin": "npm:8.38.0"
@@ -9827,10 +9840,11 @@ __metadata:
     next-plausible: "npm:^3.12.5"
     next-themes: "npm:0.4.6"
     node-loader: "npm:^2.1.0"
+    pg: "npm:^8.16.3"
     postcss: "npm:^8.5.6"
     prettier: "npm:^3.6.2"
     prettier-plugin-tailwindcss: "npm:^0.6.14"
-    prisma: "npm:7"
+    prisma: "npm:^7.0.1"
     prisma-json-types-generator: "npm:^3.6.2"
     prisma-markdown: "npm:^3.0.1"
     react: "npm:19.2.0"
@@ -10279,6 +10293,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-cloudflare@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "pg-cloudflare@npm:1.2.7"
+  checksum: 10c0/8a52713dbdecc9d389dc4e65e3b7ede2e199ec3715f7491ee80a15db171f2d75677a102e9c2cef0cb91a2f310e91f976eaec0dd6ef5d8bf357de0b948f9d9431
+  languageName: node
+  linkType: hard
+
+"pg-connection-string@npm:^2.9.1":
+  version: 2.9.1
+  resolution: "pg-connection-string@npm:2.9.1"
+  checksum: 10c0/9a646529bbc0843806fc5de98ce93735a4612b571f11867178a85665d11989a827e6fd157388ca0e34ec948098564fce836c178cfd499b9f0e8cd9972b8e2e5c
+  languageName: node
+  linkType: hard
+
 "pg-int8@npm:1.0.1":
   version: 1.0.1
   resolution: "pg-int8@npm:1.0.1"
@@ -10286,14 +10314,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-protocol@npm:*":
+"pg-pool@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "pg-pool@npm:3.10.1"
+  peerDependencies:
+    pg: ">=8.0"
+  checksum: 10c0/a00916b7df64226cc597fe769e3a757ff9b11562dc87ce5b0a54101a18c1fe282daaa2accaf27221e81e1e4cdf4da6a33dab09614734d32904d6c4e11c44a079
+  languageName: node
+  linkType: hard
+
+"pg-protocol@npm:*, pg-protocol@npm:^1.10.3":
   version: 1.10.3
   resolution: "pg-protocol@npm:1.10.3"
   checksum: 10c0/f7ef54708c93ee6d271e37678296fc5097e4337fca91a88a3d99359b78633dbdbf6e983f0adb34b7cdd261b7ec7266deb20c3233bf3dfdb498b3e1098e8750b9
   languageName: node
   linkType: hard
 
-"pg-types@npm:^2.2.0":
+"pg-types@npm:2.2.0, pg-types@npm:^2.2.0":
   version: 2.2.0
   resolution: "pg-types@npm:2.2.0"
   dependencies:
@@ -10303,6 +10340,37 @@ __metadata:
     postgres-date: "npm:~1.0.4"
     postgres-interval: "npm:^1.1.0"
   checksum: 10c0/ab3f8069a323f601cd2d2279ca8c425447dab3f9b61d933b0601d7ffc00d6200df25e26a4290b2b0783b59278198f7dd2ed03e94c4875797919605116a577c65
+  languageName: node
+  linkType: hard
+
+"pg@npm:^8.16.3":
+  version: 8.16.3
+  resolution: "pg@npm:8.16.3"
+  dependencies:
+    pg-cloudflare: "npm:^1.2.7"
+    pg-connection-string: "npm:^2.9.1"
+    pg-pool: "npm:^3.10.1"
+    pg-protocol: "npm:^1.10.3"
+    pg-types: "npm:2.2.0"
+    pgpass: "npm:1.0.5"
+  peerDependencies:
+    pg-native: ">=3.0.1"
+  dependenciesMeta:
+    pg-cloudflare:
+      optional: true
+  peerDependenciesMeta:
+    pg-native:
+      optional: true
+  checksum: 10c0/a6a407ff0efb7599760d72ffdcda47a74c34c0fd71d896623caac45cf2cfb0f49a10973cce23110f182b9810639a1e9f6904454d7358c7001574ee0ffdcbce2a
+  languageName: node
+  linkType: hard
+
+"pgpass@npm:1.0.5":
+  version: 1.0.5
+  resolution: "pgpass@npm:1.0.5"
+  dependencies:
+    split2: "npm:^4.1.0"
+  checksum: 10c0/5ea6c9b2de04c33abb08d33a2dded303c4a3c7162a9264519cbe85c0a9857d712463140ba42fad0c7cd4b21f644dd870b45bb2e02fcbe505b4de0744fd802c1d
   languageName: node
   linkType: hard
 
@@ -10371,6 +10439,13 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/5127cc7c91ed7a133a1b7318012d8bfa112da9ef092dddf369ae699a1f10ebbd89b1b9f25f3228795b84585c72aabd5ced5fc11f2ba467eedf7b081a66fad024
+  languageName: node
+  linkType: hard
+
+"postgres-array@npm:3.0.4":
+  version: 3.0.4
+  resolution: "postgres-array@npm:3.0.4"
+  checksum: 10c0/47f3e648da512bacdd6a5ed55cf770605ec271330789faeece0fd13805a49f376d6e5c9e0e353377be11a9545e727dceaa2473566c505432bf06366ccd04c6b2
   languageName: node
   linkType: hard
 
@@ -10553,7 +10628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prisma@npm:7":
+"prisma@npm:^7.0.1":
   version: 7.0.1
   resolution: "prisma@npm:7.0.1"
   dependencies:
@@ -11398,6 +11473,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"split2@npm:^4.1.0":
+  version: 4.2.0
+  resolution: "split2@npm:4.2.0"
+  checksum: 10c0/b292beb8ce9215f8c642bb68be6249c5a4c7f332fc8ecadae7be5cbdf1ea95addc95f0459ef2e7ad9d45fd1064698a097e4eb211c83e772b49bc0ee423e91534
+  languageName: node
+  linkType: hard
+
 "sqlstring@npm:^2.3.2":
   version: 2.3.3
   resolution: "sqlstring@npm:2.3.3"
@@ -11949,13 +12031,6 @@ __metadata:
   version: 7.16.0
   resolution: "undici-types@npm:7.16.0"
   checksum: 10c0/3033e2f2b5c9f1504bdc5934646cb54e37ecaca0f9249c983f7b1fc2e87c6d18399ebb05dc7fd5419e02b2e915f734d872a65da2e3eeed1813951c427d33cc9a
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~7.8.0":
-  version: 7.8.0
-  resolution: "undici-types@npm:7.8.0"
-  checksum: 10c0/9d9d246d1dc32f318d46116efe3cfca5a72d4f16828febc1918d94e58f6ffcf39c158aa28bf5b4fc52f410446bc7858f35151367bd7a49f21746cab6497b709b
   languageName: node
   linkType: hard
 

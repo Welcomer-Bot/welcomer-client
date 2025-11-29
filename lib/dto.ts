@@ -1,6 +1,6 @@
 "use server";
 
-import { GuildStats, Period, SourceType } from "@/prisma/generated/client";
+import { GuildStats, Period, SourceType } from "../generated/prisma/client";
 import { getFonts } from "font-list";
 import { getAllGuildStatsSinceTime, getLatestGuildStats } from "./dal";
 

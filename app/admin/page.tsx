@@ -1,7 +1,9 @@
 import UserSearch from "@/components/admin/user-search";
 import { getUsers } from "@/lib/dal";
+import { cookies } from "next/headers";
 
 export default async function Page() {
+  await cookies(); // Access request data to opt out of static rendering
   const users = await getUsers();
   return (
     <div className="p-4">

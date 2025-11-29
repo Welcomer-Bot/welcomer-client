@@ -1,6 +1,6 @@
 import { getSources } from "@/lib/dal";
-import { Source } from "@/prisma/generated/client";
 import { SourceStoreProvider } from "@/providers/sourceStoreProvider";
+import { Source } from "../../../../generated/prisma/client";
 
 export default async function Layout({
   children,

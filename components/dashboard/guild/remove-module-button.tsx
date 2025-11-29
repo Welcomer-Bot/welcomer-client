@@ -1,12 +1,12 @@
 "use client";
 import { removeSource } from "@/lib/actions";
-import { SourceType } from "@/prisma/generated/client";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/button";
 import { usePlausible } from "next-plausible";
 import { useContext } from "react";
 import { useFormStatus } from "react-dom";
 import { useStore } from "zustand";
+import { SourceType } from "../../../generated/prisma/browser";
 
 function SubmitButton({ sourceType }: { sourceType: SourceType }) {
   const { pending } = useFormStatus();

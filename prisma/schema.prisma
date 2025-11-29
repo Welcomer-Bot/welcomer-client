@@ -1,22 +1,14 @@
 generator client {
   provider = "prisma-client"
-  output   = "./generated/client"
-}
-
-generator json {
-  provider = "prisma-json-types-generator"
-}
-
-generator zod {
-  provider      = "zod-prisma"
-  output        = "./schema"
-  modelCase     = "PascalCase"
-  modelSuffix   = "Model"
-  relationModel = "true"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+generator json {
+  provider = "prisma-json-types-generator"
 }
 
 model GuildStats {

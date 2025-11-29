@@ -4,10 +4,12 @@ import { redirect } from "next/navigation";
 
 import { revalidatePath } from "next/cache";
 
-import { ImageCard, Source, SourceType } from "@/prisma/generated/client";
+import { ImageCard, Source } from "@/generated/prisma/client";
+import { SourceType } from "@/generated/prisma/enums";
 import { ImageCardState } from "@/state/imageCard";
 import { SourceState } from "@/state/source";
 import { MessageBuilder, ValidationError } from "@discordjs/builders";
+import { EmbedData } from "discord.js";
 import z from "zod";
 import {
   createSource as createSourceRequest,
@@ -113,15 +115,15 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
   try {
     console.log("Validating message", store.message);
     let embedIndex: number | undefined = undefined;
-    store.message.embeds?.map((embed, i) => {
+    store.message.embeds?.map((embed, i: number) => {
       if (embed.image && embed.image.url === "imageCard") {
-        // Remove image before validation
-        embed.image = undefined;
-        embedIndex = i;
+      // Remove image before validation
+      embed.image = undefined;
+      embedIndex = i;
       }
     });
     new MessageBuilder(store.message).toJSON();
-    store.message.embeds?.map((embed, i) => {
+    store.message.embeds?.map((embed, i: number) => {
       if (
         embedIndex !== undefined &&
         i === embedIndex &&
@@ -606,7 +608,7 @@ export async function updateImageCard(
     const card = await prisma.imageCard.update({
       where: { id: cardId },
       data: {
-        data: store.data,
+        data: store.data as object,
       },
     });
 

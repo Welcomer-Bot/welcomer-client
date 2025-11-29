@@ -6,7 +6,7 @@ import GuildCard from "@/components/dashboard/guild/guild-card";
 import ManageButton from "@/components/dashboard/guild/manage-button";
 import StatsViewer from "@/components/dashboard/guild/stats/stats-viewer";
 import { getGuild, getSources } from "@/lib/dal";
-import { Period } from "@/prisma/generated/client";
+import { Period } from "../../../generated/prisma/client";
 
 import { Skeleton } from "@heroui/skeleton";
 import { DiscordMention } from "@skyra/discord-components-react";

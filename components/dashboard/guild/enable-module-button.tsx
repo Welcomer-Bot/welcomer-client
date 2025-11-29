@@ -1,10 +1,10 @@
 "use client";
 import { createSource } from "@/lib/actions";
-import { SourceType } from "@/prisma/generated/client";
 import { Button } from "@heroui/button";
 import { usePlausible } from "next-plausible";
 import { useFormStatus } from "react-dom";
 import { toast } from "react-toastify";
+import { SourceType } from "../../../generated/prisma/browser";
 
 function SubmitButton({ sourceType }: { sourceType: SourceType }) {
   const { pending } = useFormStatus();

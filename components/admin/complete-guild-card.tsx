@@ -8,12 +8,12 @@ import {
 } from "@/lib/admin/actions";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
-import { Source } from "@/prisma/generated/client";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { User } from "@heroui/user";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { Source } from "../../generated/prisma/browser";
 
 export default function CompleteGuildCard({
   guild,
@@ -87,7 +87,7 @@ export default function CompleteGuildCard({
               onPress={async () => {
                 const res = await enrollGuildToBetaProgram(
                   guild.id,
-                  betaTester?.id
+                  betaTester?.id,
                 );
                 if (res) {
                   toast.success("Enrolled guild to beta program");

@@ -3,7 +3,7 @@
 prisma/schema
 .yarn 
 .editorconfig
-
+generated
 # dependencies
 /node_modules
 /.pnp
@@ -48,3 +48,5 @@ next-env.d.ts
 /prisma/ERD.md
 # Sentry Config File
 .env.sentry-build-plugin
+
+/generated/prisma

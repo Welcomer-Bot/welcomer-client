@@ -1,7 +1,7 @@
 import { fetchGuildStat } from "@/lib/dto";
 
-import { Period, SourceType } from "@/prisma/generated/client";
 import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Period, SourceType } from "../../../../generated/prisma/browser";
 import PeriodSelector from "./period-selector";
 
 export default async function StatsViewer({

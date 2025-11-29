@@ -26,7 +26,7 @@ import {
   Prisma,
   Source,
   SourceType,
-} from "@/prisma/generated/client";
+} from "../generated/prisma/client";
 import { SessionPayload } from "@/types";
 import Guild from "./discord/guild";
 import rest from "./discord/rest";
@@ -184,7 +184,7 @@ const defaultLeaverMessage: RESTPostAPIChannelMessageJSONBody = {
 };
 
 export async function createSource(guildId: string, type: SourceType) {
-  const message =
+  const message: object =
     type == "Welcomer" ? defaultWelcomerMessage : defaultLeaverMessage;
   const source = await prisma.source.create({
     data: {

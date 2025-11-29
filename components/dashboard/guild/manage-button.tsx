@@ -1,8 +1,8 @@
 "use client";
 
-import { SourceType } from "@/prisma/generated/client";
 import { Button } from "@heroui/button";
 import Link from "next/link";
+import { SourceType } from "../../../generated/prisma/browser";
 
 export default function ManageButton({
   guildId,
