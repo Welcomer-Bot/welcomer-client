@@ -1,4 +1,6 @@
 name: Deployment Workflow
+permissions:
+  contents: read
 
 on:
   push:
