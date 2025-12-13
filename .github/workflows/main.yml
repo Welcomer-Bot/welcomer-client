@@ -63,4 +63,4 @@ jobs:
             git pull
             yarn
             yarn prisma generate
-            pm2 restart welcomer-client
+            pm2 restart beta_client
