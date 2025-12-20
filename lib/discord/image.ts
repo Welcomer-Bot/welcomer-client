@@ -13,21 +13,21 @@ export const generateImage = cache(
         msg.mainText.content = parseText(
           msg.mainText.content ?? "",
           user,
-          guild
+          guild,
         );
       }
       if (msg.nicknameText) {
         msg.nicknameText.content = parseText(
           msg.nicknameText.content ?? "",
           user,
-          guild
+          guild,
         );
       }
       if (msg.secondText) {
         msg.secondText.content = parseText(
           msg.secondText.content ?? "",
           user,
-          guild
+          guild,
         );
       }
     }
@@ -38,5 +38,5 @@ export const generateImage = cache(
     });
     const res = await card.toDataURL();
     return res;
-  }
+  },
 );

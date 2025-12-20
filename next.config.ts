@@ -1,9 +1,7 @@
+import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Cache Components enabled - Next.js 16.0.3
-  // Note: As of 16.0.3, this is still experimental but will move to root level in future canary
-  cacheComponents: true,
+
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
@@ -17,24 +15,13 @@ const nextConfig = {
     ],
   },
   crossOrigin: "anonymous",
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          {
-            key: "Document-Policy",
-            value: "js-profiling",
-          },
-        ],
-      },
-    ];
-  },
 };
+
+export default nextConfig;
 
 // Injected content via Sentry wizard below
 
-export default withSentryConfig(nextConfig, {
+module.exports = withSentryConfig(module.exports, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
@@ -48,7 +35,7 @@ export default withSentryConfig(nextConfig, {
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
   // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: false,
+  widenClientFileUpload: true,
 
   // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
   // This can increase your server load as well as your hosting bill.
@@ -56,13 +43,17 @@ export default withSentryConfig(nextConfig, {
   // side errors will fail.
   tunnelRoute: "/monitoring",
 
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
-  telemetry: false,
+  webpack: {
+    // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+    // See the following for more information:
+    // https://docs.sentry.io/product/crons/
+    // https://vercel.com/docs/cron-jobs
+    automaticVercelMonitors: true,
 
-  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-  // See the following for more information:
-  // https://docs.sentry.io/product/crons/
-  // https://vercel.com/docs/cron-jobs
-  automaticVercelMonitors: true,
+    // Tree-shaking options for reducing bundle size
+    treeshake: {
+      // Automatically tree-shake Sentry logger statements to reduce bundle size
+      removeDebugLogging: true,
+    },
+  },
 });

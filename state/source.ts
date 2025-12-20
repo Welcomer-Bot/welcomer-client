@@ -72,7 +72,7 @@ export const createSourceStore = (initState?: Partial<Source>) => {
       let imageEmbedIndex: number | undefined = undefined;
 
       const embeds = initState?.message?.embeds;
-      if (embeds) {
+      if (embeds && initState.activeCardId != null) {
         embeds.forEach((embed, index) => {
           if (embed.image && embed.image.url) {
             imagePosition = "embed";

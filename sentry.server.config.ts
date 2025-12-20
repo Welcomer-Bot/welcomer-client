@@ -6,15 +6,14 @@ import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: "https://1e4ac005f063c4e051f529596491a4b8@o4508545743388672.ingest.de.sentry.io/4508875963826256",
-  enabled: process.env.NODE_ENV === "production",
+
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
-  // Tracing must be enabled for profiling to work
-  // Set sampling rate for profiling - this is evaluated only once per SDK.init call
-  profileSessionSampleRate: 1.0,
-  // Trace lifecycle automatically enables profiling during active traces
-  profileLifecycle: "trace",
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
+  // Enable logs to be sent to Sentry
+  enableLogs: true,
+
+  // Enable sending user PII (Personally Identifiable Information)
+  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
+  sendDefaultPii: true,
 });

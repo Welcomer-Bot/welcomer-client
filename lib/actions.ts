@@ -9,7 +9,6 @@ import { SourceType } from "@/generated/prisma/enums";
 import { ImageCardState } from "@/state/imageCard";
 import { SourceState } from "@/state/source";
 import { MessageBuilder, ValidationError } from "@discordjs/builders";
-import { EmbedData } from "discord.js";
 import z from "zod";
 import {
   createSource as createSourceRequest,
@@ -108,7 +107,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
   console.log("store.imagePosition", store.imagePosition);
 
   if (store.imageEmbedIndex == undefined && store.imagePosition === undefined) {
-    deleteActiveImageCard(sourceId, guildId);
+    await deleteActiveImageCardInternal(sourceId, guildId);
     store.imagePosition = undefined;
   }
 
@@ -117,9 +116,9 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
     let embedIndex: number | undefined = undefined;
     store.message.embeds?.map((embed, i: number) => {
       if (embed.image && embed.image.url === "imageCard") {
-      // Remove image before validation
-      embed.image = undefined;
-      embedIndex = i;
+        // Remove image before validation
+        embed.image = undefined;
+        embedIndex = i;
       }
     });
     new MessageBuilder(store.message).toJSON();
@@ -631,7 +630,45 @@ export async function updateImageCard(
   }
 }
 
-export async function deleteActiveImageCard(
+// Internal helper without revalidation (used within other server actions)
+async function deleteImageCardInternal(
+  cardId: number,
+  guildId: string,
+): Promise<{
+  done: boolean;
+  error: string | null;
+}> {
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return {
+      done: false,
+      error: "You do not have permission to manage this guild",
+    };
+  }
+
+  try {
+    await prisma.imageCard.delete({
+      where: { id: cardId },
+    });
+
+    return {
+      done: true,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error deleting image card:", error);
+    return {
+      done: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "An error occurred while deleting the image card",
+    };
+  }
+}
+
+// Internal helper without revalidation (used within updateSource)
+async function deleteActiveImageCardInternal(
   sourceId: number,
   guildId: string,
 ): Promise<{
@@ -659,9 +696,8 @@ export async function deleteActiveImageCard(
       };
     }
 
-    await deleteImageCard(source.activeCardId, guildId);
+    await deleteImageCardInternal(source.activeCardId, guildId);
 
-    revalidatePath(`/dashboard/${guildId}`);
     return {
       done: true,
       error: null,
@@ -678,6 +714,20 @@ export async function deleteActiveImageCard(
   }
 }
 
+export async function deleteActiveImageCard(
+  sourceId: number,
+  guildId: string,
+): Promise<{
+  done: boolean;
+  error: string | null;
+}> {
+  const result = await deleteActiveImageCardInternal(sourceId, guildId);
+  if (result.done) {
+    revalidatePath(`/dashboard/${guildId}`);
+  }
+  return result;
+}
+
 export async function deleteImageCard(
   cardId: number,
   guildId: string,
@@ -685,32 +735,9 @@ export async function deleteImageCard(
   done: boolean;
   error: string | null;
 }> {
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    return {
-      done: false,
-      error: "You do not have permission to manage this guild",
-    };
-  }
-
-  try {
-    await prisma.imageCard.delete({
-      where: { id: cardId },
-    });
-
+  const result = await deleteImageCardInternal(cardId, guildId);
+  if (result.done) {
     revalidatePath(`/dashboard/${guildId}`);
-    return {
-      done: true,
-      error: null,
-    };
-  } catch (error) {
-    console.error("Error deleting image card:", error);
-    return {
-      done: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "An error occurred while deleting the image card",
-    };
   }
+  return result;
 }
