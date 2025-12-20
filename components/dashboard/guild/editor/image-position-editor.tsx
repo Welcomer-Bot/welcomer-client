@@ -56,9 +56,9 @@ export default function ImagePositionEditor() {
           {hasImage
             ? imagePosition
               ? imagePosition === "outside"
-                ? "Positioned outside"
+                ? "Positioned"
                 : imageEmbedIndex !== undefined
-                  ? `Positioned in embed ${imageEmbedIndex + 1}`
+                  ? `Positioned`
                   : "Not positioned"
               : "Not positioned"
             : "Not created"}
