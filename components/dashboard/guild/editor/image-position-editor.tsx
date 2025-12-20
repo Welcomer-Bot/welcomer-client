@@ -41,11 +41,25 @@ export default function ImagePositionEditor() {
         <Chip
           size="sm"
           variant="flat"
-          color={hasImage ? (imagePosition ? "success" : "warning") : "default"}
+          color={
+            hasImage
+              ? imagePosition
+                ? imagePosition === "outside"
+                  ? "success"
+                  : imageEmbedIndex !== undefined
+                    ? "warning"
+                    : "default"
+                : "default"
+              : "default"
+          }
         >
           {hasImage
             ? imagePosition
-              ? "Configured"
+              ? imagePosition === "outside"
+                ? "Positioned outside"
+                : imageEmbedIndex !== undefined
+                  ? `Positioned in embed ${imageEmbedIndex + 1}`
+                  : "Not positioned"
               : "Not positioned"
             : "Not created"}
         </Chip>

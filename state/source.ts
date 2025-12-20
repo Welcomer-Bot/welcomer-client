@@ -61,7 +61,6 @@ const defaultState: SourceState = {
   activeCardId: null,
   createdAt: null,
   updatedAt: null,
-  deleteAfter: null,
 };
 
 export const createSourceStore = (initState?: Partial<Source>) => {
@@ -73,6 +72,7 @@ export const createSourceStore = (initState?: Partial<Source>) => {
 
       const embeds = initState?.message?.embeds;
       if (embeds && initState.activeCardId != null) {
+        imagePosition = "outside";
         embeds.forEach((embed, index) => {
           if (embed.image && embed.image.url) {
             imagePosition = "embed";

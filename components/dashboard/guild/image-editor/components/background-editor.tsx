@@ -29,8 +29,9 @@ export function BackgroundEditor({
 }: BackgroundEditorProps) {
   const currentColor = backgroundColor || "#2c2f33";
   // Check if backgroundImgURL is not null (including empty string)
-  const hasImage = backgroundImgURL !== null && backgroundImgURL !== undefined;
-
+  const hasImage = backgroundImgURL !== null;
+  console.log("hasImage", hasImage);
+  console.log("backgroundImgURL", backgroundImgURL);
   return (
     <Card shadow="sm">
       <CardHeader className="pb-0 flex justify-between items-center">
@@ -111,7 +112,7 @@ export function BackgroundEditor({
             <div className="space-y-4 pt-4">
               <Input
                 label="Background Image URL"
-                placeholder="https://example.com/image.png"
+                placeholder="Default background used here"
                 value={backgroundImgURL || ""}
                 onValueChange={(value) =>
                   onBackgroundImgURLChange(value || null)
@@ -120,7 +121,7 @@ export function BackgroundEditor({
                 labelPlacement="outside"
                 isClearable
                 onClear={() => onBackgroundImgURLChange(null)}
-                description="Enter a valid image URL (PNG, JPG, GIF)"
+                description="Enter a valid image URL (PNG, JPG). Leave empty to use the default background."
                 startContent={
                   <svg
                     className="w-4 h-4 text-default-400"

@@ -50,7 +50,6 @@ model Source {
   images       ImageCard[] @relation("SourceCard")
   activeCard   ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id])
   Guild        Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey", onDelete: Cascade)
-  deleteAfter  Int?        @default(0)
   ActiveGuild  Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey")
 }
 

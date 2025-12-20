@@ -19,7 +19,28 @@ export function Preview({ card, isLoading, error }: PreviewProps) {
         </div>
       </CardHeader>
       <CardBody className="p-4">
-        {isLoading && (
+        {card && isLoading && (
+          <div className="space-y-3">
+            <div className="relative rounded-lg overflow-hidden shadow-lg border border-default-200">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={card}
+                crossOrigin="anonymous"
+                alt="Generated Card Preview"
+                className="w-full h-auto"
+              />
+              <Spinner
+                size="lg"
+                color="primary"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md p-4"
+              />
+            </div>
+            <p className="text-xs text-center text-default-400">
+              This is how your image card will appear
+            </p>
+          </div>
+        )}
+        {!card && isLoading && (
           <div className="flex flex-col items-center justify-center h-64 gap-4 bg-default-50 rounded-lg">
             <Spinner
               size="lg"

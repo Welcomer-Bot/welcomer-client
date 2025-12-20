@@ -4,7 +4,7 @@ import { updateSource } from "@/lib/actions";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore } from "zustand";
 
@@ -17,25 +17,45 @@ export default function SaveButton() {
   // Track the last saved state
   const lastSavedStateRef = useRef<string | null>(null);
 
-  // Initialize the last saved state ref on first render
-  if (lastSavedStateRef.current === null) {
-    const initialState = store.getInitialState();
-    lastSavedStateRef.current = JSON.stringify({
-      channelId: initialState.channelId,
-      message: initialState.message,
-      imagePosition: initialState.imagePosition,
-      imageEmbedIndex: initialState.imageEmbedIndex,
-    });
-  }
+  // Initialize the last saved state ref on mount using useEffect
+  useEffect(() => {
+    if (lastSavedStateRef.current === null) {
+      const initialState = store.getInitialState();
+      lastSavedStateRef.current = JSON.stringify({
+        channelId: initialState.channelId,
+        message: initialState.message,
+        imagePosition: initialState.imagePosition,
+        imageEmbedIndex: initialState.imageEmbedIndex,
+      });
+    }
+  }, [store]);
 
-  // Détecte s'il y a des modifications en comparant avec l'état sauvegardé
-  const currentStateStr = JSON.stringify({
-    channelId: state.channelId,
-    message: state.message,
-    imagePosition: state.imagePosition,
-    imageEmbedIndex: state.imageEmbedIndex,
-  });
-  const hasChanges = currentStateStr !== lastSavedStateRef.current;
+  // Calculate current state string
+  const currentStateStr = useMemo(
+    () =>
+      JSON.stringify({
+        channelId: state.channelId,
+        message: state.message,
+        imagePosition: state.imagePosition,
+        imageEmbedIndex: state.imageEmbedIndex,
+      }),
+    [
+      state.channelId,
+      state.message,
+      state.imagePosition,
+      state.imageEmbedIndex,
+    ],
+  );
+
+  // Use state to track changes instead of ref comparison during render
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Detect changes in an effect
+  useEffect(() => {
+    if (lastSavedStateRef.current !== null) {
+      setHasChanges(currentStateStr !== lastSavedStateRef.current);
+    }
+  }, [currentStateStr]);
 
   const reset = useStore(store, (state) => state.reset);
 
@@ -56,12 +76,14 @@ export default function SaveButton() {
                 reset();
                 // Reset to initial state
                 const initialState = store.getInitialState();
-                lastSavedStateRef.current = JSON.stringify({
+                const resetStateStr = JSON.stringify({
                   channelId: initialState.channelId,
                   message: initialState.message,
                   imagePosition: initialState.imagePosition,
                   imageEmbedIndex: initialState.imageEmbedIndex,
                 });
+                lastSavedStateRef.current = resetStateStr;
+                setHasChanges(false);
               }}
               disabled={isLoading}
               className="hover:text-foreground text-foreground/60 hover:underline transition-colors disabled:opacity-50"
@@ -73,11 +95,7 @@ export default function SaveButton() {
               isLoading={isLoading}
               onPress={async () => {
                 setIsLoading(true);
-                const {
-                  data: updatedData,
-                  done,
-                  error,
-                } = await updateSource({
+                const { done, error } = await updateSource({
                   guildId: state.guildId,
                   id: state.id,
                   channelId: state.channelId,
@@ -91,12 +109,8 @@ export default function SaveButton() {
                 } else if (done) {
                   toast.success("Settings updated successfully!");
                   // Update the last saved state
-                  lastSavedStateRef.current = JSON.stringify({
-                    channelId: state.channelId,
-                    message: state.message,
-                    imagePosition: state.imagePosition,
-                    imageEmbedIndex: state.imageEmbedIndex,
-                  });
+                  lastSavedStateRef.current = currentStateStr;
+                  setHasChanges(false);
                 }
                 setIsLoading(false);
               }}
