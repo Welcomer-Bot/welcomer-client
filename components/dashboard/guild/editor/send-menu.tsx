@@ -6,6 +6,8 @@ import {
   Permissions,
 } from "@/lib/discord/guild";
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Chip } from "@heroui/chip";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
 import { Tooltip } from "@heroui/tooltip";
 import { DiscordMention } from "@skyra/discord-components-react";
@@ -24,48 +26,160 @@ export default function SendMenu({
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
   const currentChannel = useStore(store, (state) => state.channelId);
   const updateChannel = useStore(store, (state) => state.setChannelId);
-  // TODO: Verfiy channel permissions
-  // TODO: refactor
+
+  const selectedChannel = channels?.find(({ id }) => currentChannel === id);
+  const hasPermissions = selectedChannel
+    ? hasRequiredPermissions(selectedChannel.permissions)
+    : true;
+
   return (
-    <Select
-      label="Channel"
-      placeholder="Select a channel"
-      disabledKeys={["0"]}
-      required
-      onChange={(e) => updateChannel(e.target.value)}
-      selectedKeys={[
-        currentChannel &&
-        channels &&
-        channels?.find(({ id }) => currentChannel == id)
-          ? currentChannel
-          : "",
-      ]}
-      color={
-        hasRequiredPermissions(
-          channels?.find(({ id }) => currentChannel == id)?.permissions
-        )
-          ? "default"
-          : "warning"
-      }
-    >
-      {channels ? (
-        <>
-          {channels
-            .filter((channel) => channel.type === 4)
-            .map((channel) => {
-              const children = channels.filter(
-                (c) =>
-                  (c.type === 0 || c.type === 5) && c.parent_id === channel.id
-              );
-              if (children.length === 0) return null;
-              return (
-                <>
+    <Card shadow="sm">
+      <CardHeader className="pb-0 flex justify-between items-center">
+        <h3 className="font-semibold text-lg text-foreground">
+          Destination Channel
+        </h3>
+        {currentChannel && (
+          <Chip
+            size="sm"
+            variant="flat"
+            color={hasPermissions ? "success" : "warning"}
+          >
+            {hasPermissions ? "Ready" : "Missing permissions"}
+          </Chip>
+        )}
+      </CardHeader>
+      <CardBody className="pt-4">
+        <Select
+          label="Channel"
+          placeholder="Select a channel"
+          variant="bordered"
+          disabledKeys={["0"]}
+          required
+          onChange={(e) => updateChannel(e.target.value)}
+          selectedKeys={[
+            currentChannel &&
+            channels &&
+            channels?.find(({ id }) => currentChannel == id)
+              ? currentChannel
+              : "",
+          ]}
+          color={hasPermissions ? "default" : "warning"}
+          description={
+            !hasPermissions
+              ? "The bot is missing some permissions for this channel"
+              : "Select the channel where welcome messages will be sent"
+          }
+          startContent={
+            <svg
+              className="w-4 h-4 text-default-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+              />
+            </svg>
+          }
+        >
+          {channels ? (
+            <>
+              {channels
+                .filter((channel) => channel.type === 4)
+                .map((channel) => {
+                  const children = channels.filter(
+                    (c) =>
+                      (c.type === 0 || c.type === 5) &&
+                      c.parent_id === channel.id,
+                  );
+                  if (children.length === 0) return null;
+                  return (
+                    <>
+                      <SelectSection
+                        key={channel.id}
+                        showDivider
+                        title={channel.name}
+                      >
+                        {children.map((c) => (
+                          <SelectItem
+                            key={c.id}
+                            variant="flat"
+                            textValue={c.name ?? c.id}
+                            color={
+                              hasRequiredPermissions(c.permissions)
+                                ? "default"
+                                : "warning"
+                            }
+                            endContent={
+                              !hasRequiredPermissions(c.permissions) ? (
+                                <Tooltip
+                                  content={
+                                    <div className="flex flex-col">
+                                      <h3>
+                                        Missing permissions for{" "}
+                                        <DiscordMention type="channel">
+                                          {c.name}
+                                        </DiscordMention>
+                                      </h3>
+                                      <p>
+                                        You need to grant Welcomer Beta the
+                                        following permissions for this channel:
+                                        <ul className="list-disc pl-5">
+                                          {!hasPermission(
+                                            c.permissions,
+                                            Permissions.VIEW_CHANNEL,
+                                          ) && <li>View Channel</li>}
+                                          {!hasPermission(
+                                            c.permissions,
+                                            Permissions.SEND_MESSAGES,
+                                          ) && <li>Send Messages</li>}
+                                          {!hasPermission(
+                                            c.permissions,
+                                            Permissions.ATTACH_FILES,
+                                          ) && <li>Attach Files</li>}
+                                        </ul>
+                                      </p>
+                                    </div>
+                                  }
+                                  placement="right"
+                                  color="warning"
+                                >
+                                  <span className="text-xs text-warning-600 cursor-help">
+                                    ⚠ Missing permissions
+                                  </span>
+                                </Tooltip>
+                              ) : (
+                                <span className="text-xs text-gray-500">
+                                  {c.type === 5 ? "Thread" : "Channel"}
+                                </span>
+                              )
+                            }
+                          >
+                            {c.name} ({c.id})
+                          </SelectItem>
+                        ))}
+                      </SelectSection>
+                    </>
+                  );
+                })}
+              {/* Uncategorised channels */}
+              {(() => {
+                const uncategorized = channels.filter(
+                  (c) =>
+                    (c.type === 0 || c.type === 5) &&
+                    (!c.parent_id || c.parent_id === null),
+                );
+                if (uncategorized.length === 0) return null;
+                return (
                   <SelectSection
-                    key={channel.id}
+                    key="uncategorized"
                     showDivider
-                    title={channel.name}
+                    title="Uncategorised"
                   >
-                    {children.map((c) => (
+                    {uncategorized.map((c) => (
                       <SelectItem
                         key={c.id}
                         variant="flat"
@@ -88,19 +202,19 @@ export default function SendMenu({
                                   </h3>
                                   <p>
                                     You need to grant Welcomer Beta the
-                                    following permissions for this channel:
+                                    following permissions for this channel
                                     <ul className="list-disc pl-5">
                                       {!hasPermission(
                                         c.permissions,
-                                        Permissions.VIEW_CHANNEL
+                                        Permissions.VIEW_CHANNEL,
                                       ) && <li>View Channel</li>}
                                       {!hasPermission(
                                         c.permissions,
-                                        Permissions.SEND_MESSAGES
+                                        Permissions.SEND_MESSAGES,
                                       ) && <li>Send Messages</li>}
                                       {!hasPermission(
                                         c.permissions,
-                                        Permissions.ATTACH_FILES
+                                        Permissions.ATTACH_FILES,
                                       ) && <li>Attach Files</li>}
                                     </ul>
                                   </p>
@@ -124,90 +238,16 @@ export default function SendMenu({
                       </SelectItem>
                     ))}
                   </SelectSection>
-                </>
-              );
-            })}
-          {/* Uncategorised channels */}
-          {(() => {
-            const uncategorized = channels.filter(
-              (c) =>
-                (c.type === 0 || c.type === 5) &&
-                (!c.parent_id || c.parent_id === null)
-            );
-            if (uncategorized.length === 0) return null;
-            return (
-              <SelectSection
-                key="uncategorized"
-                showDivider
-                title="Uncategorised"
-              >
-                {uncategorized.map((c) => (
-                  <SelectItem
-                    key={c.id}
-                    variant="flat"
-                    textValue={c.name ?? c.id}
-                    color={
-                      hasRequiredPermissions(c.permissions)
-                        ? "default"
-                        : "warning"
-                    }
-                    endContent={
-                      !hasRequiredPermissions(c.permissions) ? (
-                        <Tooltip
-                          content={
-                            <div className="flex flex-col">
-                              <h3>
-                                Missing permissions for{" "}
-                                <DiscordMention type="channel">
-                                  {c.name}
-                                </DiscordMention>
-                              </h3>
-                              <p>
-                                You need to grant Welcomer Beta the following
-                                permissions for this channel
-                                <ul className="list-disc pl-5">
-                                  {!hasPermission(
-                                    c.permissions,
-                                    Permissions.VIEW_CHANNEL
-                                  ) && <li>View Channel</li>}
-                                  {!hasPermission(
-                                    c.permissions,
-                                    Permissions.SEND_MESSAGES
-                                  ) && <li>Send Messages</li>}
-                                  {!hasPermission(
-                                    c.permissions,
-                                    Permissions.ATTACH_FILES
-                                  ) && <li>Attach Files</li>}
-                                </ul>
-                              </p>
-                            </div>
-                          }
-                          placement="right"
-                          color="warning"
-                        >
-                          <span className="text-xs text-warning-600 cursor-help">
-                            ⚠ Missing permissions
-                          </span>
-                        </Tooltip>
-                      ) : (
-                        <span className="text-xs text-gray-500">
-                          {c.type === 5 ? "Thread" : "Channel"}
-                        </span>
-                      )
-                    }
-                  >
-                    {c.name} ({c.id})
-                  </SelectItem>
-                ))}
-              </SelectSection>
-            );
-          })()}
-        </>
-      ) : (
-        <SelectItem key={0} textValue="No channels found">
-          No channels found
-        </SelectItem>
-      )}
-    </Select>
+                );
+              })()}
+            </>
+          ) : (
+            <SelectItem key={0} textValue="No channels found">
+              No channels found
+            </SelectItem>
+          )}
+        </Select>
+      </CardBody>
+    </Card>
   );
 }

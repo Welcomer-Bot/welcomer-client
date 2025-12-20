@@ -15,4 +15,3 @@ export { BackgroundEditor } from "./components/background-editor";
 export { JsonEditor } from "./components/json-editor";
 export { Preview } from "./components/preview";
 export { TextEditor } from "./components/text-editor";
-export { Toolbar } from "./components/toolbar";

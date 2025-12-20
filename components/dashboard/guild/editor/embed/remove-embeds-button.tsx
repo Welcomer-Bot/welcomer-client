@@ -3,6 +3,7 @@
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Button } from "@heroui/button";
 import { useContext } from "react";
+import { HiOutlineTrash } from "react-icons/hi";
 import { useStore } from "zustand";
 
 export default function RemoveEmbedsButton() {
@@ -10,7 +11,7 @@ export default function RemoveEmbedsButton() {
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
   const embedsLength = useStore(
     store,
-    (state) => state.message?.embeds?.length || 0
+    (state) => state.message?.embeds?.length || 0,
   );
   const clearEmbeds = useStore(store, (state) => state.clearEmbeds);
 
@@ -18,10 +19,11 @@ export default function RemoveEmbedsButton() {
     <Button
       color="danger"
       isDisabled={embedsLength == 0}
-      variant="ghost"
+      variant="flat"
       onPress={() => clearEmbeds()}
+      startContent={<HiOutlineTrash />}
     >
-      Clear Embeds
+      Clear All Embeds
     </Button>
   );
 }
