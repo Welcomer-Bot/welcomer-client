@@ -11,24 +11,30 @@ export const generateImage = cache(
     if (guild && user) {
       if (msg.mainText) {
         msg.mainText.content = parseText(
-          msg.mainText.content ?? "",
+          msg.mainText.content ?? null,
           user,
           guild,
         );
+      } else {
+        msg.mainText = null;
       }
       if (msg.nicknameText) {
         msg.nicknameText.content = parseText(
-          msg.nicknameText.content ?? "",
+          msg.nicknameText.content ?? null,
           user,
           guild,
         );
+      } else {
+        msg.nicknameText = null;
       }
       if (msg.secondText) {
         msg.secondText.content = parseText(
-          msg.secondText.content ?? "",
+          msg.secondText.content ?? null,
           user,
           guild,
         );
+      } else {
+        msg.secondText = null;
       }
     }
     console.log("Generating image with config:", msg);
