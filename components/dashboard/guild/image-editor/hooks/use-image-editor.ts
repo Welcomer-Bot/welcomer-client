@@ -7,6 +7,7 @@ export function useImageEditor(guildId: string, config: BaseCardConfig) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  
   // Sérialiser la config pour éviter les re-renders inutiles
   const configStr = useMemo(() => JSON.stringify(config), [config]);
 

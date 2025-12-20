@@ -16,7 +16,10 @@ export default function MessagePreview({
   guild: GuildObject;
   user: UserObject;
 }) {
-  const { card } = useImageEditor(msg.guildId, msg.activeCard?.data || {});
+  const { card, isLoading } = useImageEditor(
+    msg.guildId,
+    msg.activeCard?.data || {},
+  );
 
   const text = useMemo(() => {
     if (!user || !guild) return null;
@@ -24,8 +27,17 @@ export default function MessagePreview({
       image: card || undefined,
       imagePosition: msg.imagePosition,
       imageEmbedIndex: msg.imageEmbedIndex,
+      isLoadingImage: isLoading,
     });
-  }, [msg.message, msg.imagePosition, msg.imageEmbedIndex, user, guild, card]);
+  }, [
+    msg.message,
+    msg.imagePosition,
+    msg.imageEmbedIndex,
+    user,
+    guild,
+    card,
+    isLoading,
+  ]);
 
   return (
     <div className="rounded-lg min-h-1/2 h-fit w-full min-w-fit">{text}</div>

@@ -1,3 +1,4 @@
+import { Skeleton } from "@heroui/skeleton";
 import {
   DiscordBold,
   DiscordCode,
@@ -12,7 +13,7 @@ import { UserObject } from "./user";
 export function parseText(
   text: string | undefined,
   user: UserObject,
-  guild: GuildObject
+  guild: GuildObject,
 ) {
   //TODO: add all the other variables
   if (!text) return "";
@@ -30,7 +31,7 @@ export function parseText(
 export function parseMessageText(
   text: string,
   user: UserObject,
-  guild: GuildObject
+  guild: GuildObject,
 ) {
   let replacedText;
 
@@ -42,7 +43,7 @@ export function parseMessageText(
       <DiscordMention highlight key={match + i}>
         {user.username}
       </DiscordMention>
-    )
+    ),
   );
 
   // Replace multiline code blocks (```code```)
@@ -53,7 +54,7 @@ export function parseMessageText(
       <DiscordCode multiline key={match + i}>
         {match}
       </DiscordCode>
-    )
+    ),
   );
 
   // Replace inline code (`code`)
@@ -71,7 +72,7 @@ export function parseMessageText(
           <u>{match}</u>
         </DiscordItalic>
       </DiscordBold>
-    )
+    ),
   );
 
   // Replace bold underline (**_text_**)
@@ -82,7 +83,7 @@ export function parseMessageText(
       <DiscordBold key={match + i}>
         <u>{match}</u>
       </DiscordBold>
-    )
+    ),
   );
 
   // Replace bold italic (***text***)
@@ -93,14 +94,14 @@ export function parseMessageText(
       <DiscordBold key={match + i}>
         <DiscordItalic>{match}</DiscordItalic>
       </DiscordBold>
-    )
+    ),
   );
 
   // Replace bold (**text**)
   replacedText = reactStringReplace(
     replacedText,
     /\*\*(.+?)\*\*/g,
-    (match, i) => <DiscordBold key={match + i}>{match}</DiscordBold>
+    (match, i) => <DiscordBold key={match + i}>{match}</DiscordBold>,
   );
 
   // Replace italic (*text*)
@@ -112,14 +113,14 @@ export function parseMessageText(
   replacedText = reactStringReplace(
     replacedText,
     /\_\_(.+?)\_\_/g,
-    (match, i) => <u key={match + i}>{match}</u>
+    (match, i) => <u key={match + i}>{match}</u>,
   );
 
   // Replace strikethrough (~~text~~)
   replacedText = reactStringReplace(
     replacedText,
     /\~\~(.+?)\~\~/g,
-    (match, i) => <s key={match + i}>{match}</s>
+    (match, i) => <s key={match + i}>{match}</s>,
   );
 
   return replacedText;
@@ -159,50 +160,60 @@ function renderEmbed(
   user: UserObject,
   guild: GuildObject,
   idx: number,
-  imageUrl?: string
+  imageUrl?: string,
+  isLoadingImage?: boolean,
 ) {
   console.log("Rendering embed:", embed, imageUrl);
+
+  // Si l'image est en cours de chargement, afficher un skeleton à la place
+  const embedImage = isLoadingImage ? undefined : imageUrl || embed.image?.url;
+
   return (
-    <DiscordEmbed
-      key={idx}
-      slot="embeds"
-      color={
-        embed.color
-          ? `#${embed.color.toString(16).padStart(6, "0")}`
-          : undefined
-      }
-      embedTitle={parseText(embed.title, user, guild)}
-      authorName={embed.author?.name}
-      authorImage={embed.author?.icon_url}
-      title={parseText(embed.title, user, guild)}
-      url={embed.url}
-      image={imageUrl || embed.image?.url}
-      thumbnail={embed.thumbnail?.url}
-    >
-      {embed.description && (
-        <DiscordEmbedDescription slot="description">
-          {parseText(embed.description, user, guild)}
-        </DiscordEmbedDescription>
-      )}
-      {embed.fields &&
-        Array.isArray(embed.fields) &&
-        renderEmbedFields(
-          embed.fields.map((field) => ({
-            name: parseText(field.name, user, guild),
-            value: parseText(field.value, user, guild),
-            inline: field.inline,
-          }))
+    <>
+      <DiscordEmbed
+        key={idx}
+        slot="embeds"
+        color={
+          embed.color
+            ? `#${embed.color.toString(16).padStart(6, "0")}`
+            : undefined
+        }
+        embedTitle={parseText(embed.title, user, guild)}
+        authorName={embed.author?.name}
+        authorImage={embed.author?.icon_url}
+        title={parseText(embed.title, user, guild)}
+        url={embed.url}
+        image={embedImage}
+        thumbnail={embed.thumbnail?.url}
+      >
+        {embed.description && (
+          <DiscordEmbedDescription slot="description">
+            {parseText(embed.description, user, guild)}
+          </DiscordEmbedDescription>
         )}
-      {embed.footer && (
-        <DiscordEmbedFooter
-          footerImage={embed.footer.icon_url}
-          timestamp={embed.timestamp}
-          slot="footer"
-        >
-          {parseText(embed.footer.text, user, guild)}
-        </DiscordEmbedFooter>
+        {embed.fields &&
+          Array.isArray(embed.fields) &&
+          renderEmbedFields(
+            embed.fields.map((field) => ({
+              name: parseText(field.name, user, guild),
+              value: parseText(field.value, user, guild),
+              inline: field.inline,
+            })),
+          )}
+        {embed.footer && (
+          <DiscordEmbedFooter
+            footerImage={embed.footer.icon_url}
+            timestamp={embed.timestamp}
+            slot="footer"
+          >
+            {parseText(embed.footer.text, user, guild)}
+          </DiscordEmbedFooter>
+        )}
+      </DiscordEmbed>
+      {isLoadingImage && (
+        <Skeleton className="rounded-lg w-[400px] aspect-[16/9] mt-2" />
       )}
-    </DiscordEmbed>
+    </>
   );
 }
 
@@ -214,7 +225,8 @@ export function parseMessageToReactElement(
     image?: string;
     imagePosition?: "outside" | "embed";
     imageEmbedIndex?: number;
-  }
+    isLoadingImage?: boolean;
+  },
 ) {
   // Render the main message content using parseMessageText
   const content = message.content
@@ -227,29 +239,34 @@ export function parseMessageToReactElement(
     embeds = (message.embeds as APIEmbed[]).map((embed, idx) => {
       // Si l'image doit être dans un embed et c'est le bon index
       const shouldIncludeImage =
-        options?.image &&
-        options.imagePosition === "embed" &&
-        options.imageEmbedIndex === idx;
+        options?.imagePosition === "embed" && options.imageEmbedIndex === idx;
 
       return renderEmbed(
         embed,
         user,
         guild,
         idx,
-        shouldIncludeImage ? options.image : undefined
+        shouldIncludeImage && options?.image ? options.image : undefined,
+        shouldIncludeImage && options?.isLoadingImage
+          ? options.isLoadingImage
+          : undefined,
       );
     });
   }
 
   // Image à l'extérieur des embeds
   const outsideImage =
-    options?.image && options.imagePosition === "outside" ? (
-      <DiscordImageAttachment
-        slot="attachments"
-        url={options.image}
-        alt="generated card"
-        width={400}
-      />
+    options?.imagePosition === "outside" ? (
+      options?.isLoadingImage ? (
+        <Skeleton className="rounded-lg w-[400px] aspect-[16/9]" />
+      ) : options?.image ? (
+        <DiscordImageAttachment
+          slot="attachments"
+          url={options.image}
+          alt="generated card"
+          width={400}
+        />
+      ) : null
     ) : null;
 
   return (
