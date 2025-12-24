@@ -24,8 +24,8 @@ export function parseText(
     .replaceAll(/{guild}/g, guild.name)
     .replaceAll(/{membercount}/g, guild.memberCount.toString())
     .replaceAll(/{guildid}/g, guild.id)
-    .replaceAll(/{username}/g, user.username)
-    .replaceAll(/{user}/g, user.username);
+    .replaceAll(/{username}/g, user.username);
+  // Note: {user} is NOT replaced here, it's handled by parseMessageText for mentions
 }
 
 export function parseMessageText(
@@ -33,14 +33,23 @@ export function parseMessageText(
   user: UserObject,
   guild: GuildObject,
 ) {
-  let replacedText;
+  // First, replace all non-mention variables with a simple string replacement
+  const processedText = text
+    .replaceAll(/{id}/g, user.id)
+    .replaceAll(/{displayname}/g, user.username)
+    .replaceAll(/{discriminator}/g, user.discriminator)
+    .replaceAll(/{guild}/g, guild.name)
+    .replaceAll(/{membercount}/g, guild.memberCount.toString())
+    .replaceAll(/{guildid}/g, guild.id)
+    .replaceAll(/{username}/g, user.username);
 
-  // Replace {user} with a DiscordMention
-  replacedText = reactStringReplace(
-    parseText(text, user, guild),
-    /({user})/g,
+  // Now replace {user} with DiscordMention component
+  // Use a capturing group to ensure the pattern works correctly
+  let replacedText: React.ReactNode[] | string = reactStringReplace(
+    processedText,
+    /(\{user\})/g,
     (match, i) => (
-      <DiscordMention highlight key={match + i}>
+      <DiscordMention highlight key={`user-${i}`}>
         {user.username}
       </DiscordMention>
     ),
@@ -163,8 +172,6 @@ function renderEmbed(
   imageUrl?: string,
   isLoadingImage?: boolean,
 ) {
-  console.log("Rendering embed:", embed, imageUrl);
-
   // Si l'image est en cours de chargement, afficher un skeleton à la place
   const embedImage = isLoadingImage ? undefined : imageUrl || embed.image?.url;
 
@@ -178,6 +185,7 @@ function renderEmbed(
             ? `#${embed.color.toString(16).padStart(6, "0")}`
             : undefined
         }
+        className="w-full"
         embedTitle={parseText(embed.title, user, guild)}
         authorName={embed.author?.name}
         authorImage={embed.author?.icon_url}
@@ -240,7 +248,6 @@ export function parseMessageToReactElement(
       // Si l'image doit être dans un embed et c'est le bon index
       const shouldIncludeImage =
         options?.imagePosition === "embed" && options.imageEmbedIndex === idx;
-
       return renderEmbed(
         embed,
         user,

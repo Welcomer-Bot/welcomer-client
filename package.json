@@ -23,7 +23,7 @@
     "@sentry/nextjs": "^10",
     "@sentry/profiling-node": "^9.42.0",
     "@skyra/discord-components-react": "^4.0.2",
-    "@welcomer-bot/card-canvas": "^2.0.0",
+    "@welcomer-bot/card-canvas": "^1.0.1",
     "clsx": "2.1.1",
     "debounce": "^2.2.0",
     "discord-api-types": "^0.38.17",

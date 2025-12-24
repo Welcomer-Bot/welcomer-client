@@ -6885,12 +6885,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@welcomer-bot/card-canvas@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@welcomer-bot/card-canvas@npm:2.0.0::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Fcard-canvas%2F2.0.0%2Fcb7233bc1f235114709894e70230161d24eb42a0"
+"@welcomer-bot/card-canvas@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@welcomer-bot/card-canvas@npm:1.0.1::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Fcard-canvas%2F1.0.1%2F02a31b058b584ae07605038110795920cf0a9246"
   dependencies:
     canvas: "npm:^3.0.1"
-  checksum: 10c0/aa952581b75c79e57b3943b6f330c60e1a32534b8272f34cf657a4953cc08a61da1a3de233d0a59bab1ca247e0b64d2e1f975765b1c289b034df760c853dd6ad
+  checksum: 10c0/ac4ea3fe4608421700d16c58caa9c1391749ffdf6582f38dbe6258aa3c21d34eccc2ba3751980c0c203204d7221cef068d97442ceb246be8a3527db203537de9
   languageName: node
   linkType: hard
 
@@ -10189,7 +10189,7 @@ __metadata:
     "@types/react-dom": "npm:19.2.3"
     "@typescript-eslint/eslint-plugin": "npm:8.38.0"
     "@typescript-eslint/parser": "npm:8.38.0"
-    "@welcomer-bot/card-canvas": "npm:^2.0.0"
+    "@welcomer-bot/card-canvas": "npm:^1.0.1"
     autoprefixer: "npm:^10.4.21"
     clsx: "npm:2.1.1"
     debounce: "npm:^2.2.0"

@@ -129,7 +129,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
         store.imagePosition === "embed"
       ) {
         // Restore image after validation
-        embed.image = { url: "imageCard" };
+        embed.image = { url: "attachment://card.png" };
       }
     });
   } catch (e) {
