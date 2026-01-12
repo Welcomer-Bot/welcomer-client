@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 import { AvatarEditor } from "./components/avatar-editor";
 import { BackgroundEditor } from "./components/background-editor";
 import { EditorHeader } from "./components/editor-header";
-import { JsonEditor } from "./components/json-editor";
 import { Preview } from "./components/preview";
 import { SaveButton } from "./components/save-button";
 import { TextEditor } from "./components/text-editor";
@@ -249,10 +248,6 @@ export function Editor({ module, guildId }: EditorProps) {
                     updateConfig({ avatarBorderColor: color })
                   }
                 />
-
-                <Divider className="my-4" />
-
-                <JsonEditor config={data} onImport={updateConfig} />
               </>
             )}
           </div>
