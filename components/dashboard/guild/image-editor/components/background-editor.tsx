@@ -145,6 +145,7 @@ export function BackgroundEditor({
                   <img
                     src={backgroundImgURL}
                     alt="Background preview"
+                    id="card-bg"
                     className="w-full h-32 object-cover"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";

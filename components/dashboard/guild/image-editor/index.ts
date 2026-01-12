@@ -12,6 +12,5 @@ export { useImageEditor } from "./hooks/use-image-editor";
 // Components
 export { AvatarEditor } from "./components/avatar-editor";
 export { BackgroundEditor } from "./components/background-editor";
-export { JsonEditor } from "./components/json-editor";
 export { Preview } from "./components/preview";
 export { TextEditor } from "./components/text-editor";

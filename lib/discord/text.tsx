@@ -1,3 +1,5 @@
+"use client";
+
 import { Skeleton } from "@heroui/skeleton";
 import {
   DiscordBold,
@@ -14,17 +16,23 @@ export function parseText(
   text: string | undefined,
   user: UserObject,
   guild: GuildObject,
+  image: boolean = false,
 ) {
   //TODO: add all the other variables
   if (!text) return "";
-  return text
+  let replacedText = text
     .replaceAll(/{id}/g, user.id)
+    .replaceAll(/{userid}/g, user.id)
     .replaceAll(/{displayname}/g, user.username)
     .replaceAll(/{discriminator}/g, user.discriminator)
     .replaceAll(/{guild}/g, guild.name)
-    .replaceAll(/{membercount}/g, guild.memberCount.toString())
+    .replaceAll(/{memberCount}/g, guild.memberCount.toString())
     .replaceAll(/{guildid}/g, guild.id)
     .replaceAll(/{username}/g, user.username);
+  if (image) {
+    replacedText = replacedText.replaceAll(/{user}/g, user.username);
+  }
+  return replacedText;
   // Note: {user} is NOT replaced here, it's handled by parseMessageText for mentions
 }
 
@@ -34,14 +42,7 @@ export function parseMessageText(
   guild: GuildObject,
 ) {
   // First, replace all non-mention variables with a simple string replacement
-  const processedText = text
-    .replaceAll(/{id}/g, user.id)
-    .replaceAll(/{displayname}/g, user.username)
-    .replaceAll(/{discriminator}/g, user.discriminator)
-    .replaceAll(/{guild}/g, guild.name)
-    .replaceAll(/{membercount}/g, guild.memberCount.toString())
-    .replaceAll(/{guildid}/g, guild.id)
-    .replaceAll(/{username}/g, user.username);
+  const processedText = parseText(text, user, guild);
 
   // Now replace {user} with DiscordMention component
   // Use a capturing group to ensure the pattern works correctly
@@ -145,6 +146,7 @@ import {
   DiscordMessage,
   DiscordMessages,
 } from "@skyra/discord-components-react";
+import React from "react";
 
 // Helper to render embed fields using DiscordEmbedFields/DiscordEmbedField
 function renderEmbedFields(fields: APIEmbed["fields"]) {
@@ -172,11 +174,12 @@ function renderEmbed(
   imageUrl?: string,
   isLoadingImage?: boolean,
 ) {
-  // Si l'image est en cours de chargement, afficher un skeleton à la place
-  const embedImage = isLoadingImage ? undefined : imageUrl || embed.image?.url;
+  const embedImage = isLoadingImage
+    ? undefined
+    : (imageUrl ?? embed.image?.url);
 
   return (
-    <>
+    <div key={idx}>
       <DiscordEmbed
         key={idx}
         slot="embeds"
@@ -221,7 +224,7 @@ function renderEmbed(
       {isLoadingImage && (
         <Skeleton className="rounded-lg w-[400px] aspect-[16/9] mt-2" />
       )}
-    </>
+    </div>
   );
 }
 
@@ -248,16 +251,16 @@ export function parseMessageToReactElement(
       // Si l'image doit être dans un embed et c'est le bon index
       const shouldIncludeImage =
         options?.imagePosition === "embed" && options.imageEmbedIndex === idx;
-      return renderEmbed(
-        embed,
-        user,
-        guild,
-        idx,
-        shouldIncludeImage && options?.image ? options.image : undefined,
+
+      // Utiliser l'image custom si elle doit être affichée, sinon undefined (pas de fallback sur embed.image)
+      const imageUrl =
+        shouldIncludeImage && options?.image ? options.image : undefined;
+      const isLoading =
         shouldIncludeImage && options?.isLoadingImage
           ? options.isLoadingImage
-          : undefined,
-      );
+          : undefined;
+
+      return renderEmbed(embed, user, guild, idx, imageUrl, isLoading);
     });
   }
 

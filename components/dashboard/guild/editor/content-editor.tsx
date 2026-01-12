@@ -9,10 +9,14 @@ import { useStore } from "zustand";
 
 const VARIABLE_HINTS = [
   { variable: "{user}", description: "User mention" },
-  { variable: "{user.username}", description: "Username" },
-  { variable: "{user.displayName}", description: "Display name" },
+  { variable: "{username}", description: "Username" },
+  { variable: "{displayName}", description: "Display name" },
   { variable: "{guild}", description: "Server name" },
-  { variable: "{guild.memberCount}", description: "Member count" },
+  { variable: "{memberCount}", description: "Member count" },
+  { variable: "{memberCountFormatted}", description: "Formatted member count" },
+  { variable: "{guildId}", description: "Guild ID" },
+  { variable: "{userId}", description: "User ID" },
+  { variable: "{discriminator}", description: "User discriminator" },
 ];
 
 export default function ContentEditor() {

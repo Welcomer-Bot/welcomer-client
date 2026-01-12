@@ -29,15 +29,7 @@ export default function MessagePreview({
       imageEmbedIndex: msg.imageEmbedIndex,
       isLoadingImage: isLoading,
     });
-  }, [
-    msg.message,
-    msg.imagePosition,
-    msg.imageEmbedIndex,
-    user,
-    guild,
-    card,
-    isLoading,
-  ]);
+  }, [msg, user, guild, card, isLoading]);
 
   return (
     <div className="rounded-lg min-h-1/2 h-fit w-full min-w-fit">{text}</div>

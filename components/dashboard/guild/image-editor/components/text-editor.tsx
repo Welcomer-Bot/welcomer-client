@@ -12,11 +12,14 @@ interface TextEditorProps {
 }
 
 const VARIABLE_HINTS = [
-  { variable: "{user.username}", description: "Username" },
-  { variable: "{user.displayName}", description: "Display name" },
-  { variable: "{user.mention}", description: "User mention" },
-  { variable: "{guild.name}", description: "Server name" },
-  { variable: "{guild.memberCount}", description: "Member count" },
+  { variable: "{username}", description: "Username" },
+  { variable: "{displayName}", description: "Display name" },
+  { variable: "{userId}", description: "User ID" },
+  { variable: "{guild}", description: "Server name" },
+  { variable: "{guildId}", description: "Guild ID" },
+  { variable: "{memberCount}", description: "Member count" },
+  { variable: "{memberCountFormatted}", description: "Formatted member count" },
+  { variable: "{discriminator}", description: "User discriminator" },
 ];
 
 export function TextEditor({

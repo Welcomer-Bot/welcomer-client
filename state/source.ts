@@ -92,25 +92,20 @@ export const createSourceStore = (initState?: Partial<Source>) => {
           }),
         setContent: (content) =>
           set((state) => {
-            if (!state.message) {
-              state.message = { content: undefined };
-            }
-
+            state.message = state.message ?? {};
             state.message.content = content;
           }),
         addEmbed: (embed) =>
           set((state) => {
-            if (!state.message) {
-              state.message = { embeds: [] };
-            } else if (!state.message.embeds) {
-              state.message.embeds = [];
-            }
+            state.message = state.message ?? { embeds: [] };
+            state.message.embeds = state.message.embeds ?? [];
+
             if (state.type === "Welcomer" && !embed) {
               embed = defaultWelcomeEmbed;
             } else if (state.type === "Leaver" && !embed) {
               embed = defaultLeaverEmbed;
             }
-            state.message.embeds!.push(embed ?? defaultEmbed);
+            state.message.embeds.push(embed ?? defaultEmbed);
           }),
         moveEmbedUp: (index) =>
           set((state) => {
@@ -142,41 +137,32 @@ export const createSourceStore = (initState?: Partial<Source>) => {
           }),
         deleteEmbed: (index) =>
           set((state) => {
-            if (!state.message) state.message = {};
-            if (!state.message.embeds) state.message.embeds = [];
-
-            if (index < 0 || index >= state.message.embeds.length) return;
-            state.message.embeds!.splice(index, 1);
+            if (!state.message?.embeds || index < 0 || index >= state.message.embeds.length) {
+              return;
+            }
+            state.message.embeds.splice(index, 1);
           }),
         editEmbed: (index, embed) =>
           set((state) => {
-            if (!state.message) state.message = {};
-            if (!state.message.embeds) state.message.embeds = [];
-            // Appliquer la modification
-            if (state.message.embeds[index]) {
-              state.message.embeds[index] = embed;
+            if (!state.message?.embeds?.[index]) {
+              return;
             }
+            state.message.embeds[index] = embed;
           }),
         clearEmbeds: () =>
           set((state) => {
-            if (state.message) {
-              state.message.embeds = [];
-            } else state.message = { embeds: [] };
+            state.message = state.message ?? {};
+            state.message.embeds = [];
           }),
 
         addField: (embedIndex) =>
           set((state) => {
-            if (
-              !state.message ||
-              !state.message.embeds ||
-              !state.message.embeds[embedIndex]
-            ) {
+            const embed = state.message?.embeds?.[embedIndex];
+            if (!embed) {
               return;
             }
-            if (!state.message.embeds[embedIndex].fields) {
-              state.message.embeds[embedIndex].fields = [];
-            }
-            state.message.embeds[embedIndex].fields!.push(defaultEmbedField);
+            embed.fields = embed.fields ?? [];
+            embed.fields.push(defaultEmbedField);
           }),
         moveFieldUp: (embedIndex: number, fieldIndex: number) =>
           set((state) => {
@@ -212,14 +198,11 @@ export const createSourceStore = (initState?: Partial<Source>) => {
           }),
         clearFields: (embedIndex) =>
           set((state) => {
-            if (
-              !state.message ||
-              !state.message.embeds ||
-              !state.message.embeds[embedIndex]
-            ) {
+            const embed = state.message?.embeds?.[embedIndex];
+            if (!embed) {
               return;
             }
-            state.message.embeds[embedIndex].fields = [];
+            embed.fields = [];
           }),
         deleteField: (embedIndex, fieldIndex) =>
           set((state) => {
@@ -250,6 +233,25 @@ export const createSourceStore = (initState?: Partial<Source>) => {
           }),
         setImagePosition: (position, embedIndex) =>
           set((state) => {
+            const embeds = state.message?.embeds;
+
+            if (position === undefined) {
+              embeds?.forEach((embed) => {
+                delete embed.image;
+              });
+              state.imagePosition = undefined;
+              state.imageEmbedIndex = undefined;
+              return;
+            }
+
+            // Remove image from old position when moving
+            if (state.imagePosition === "embed" && state.imageEmbedIndex !== undefined) {
+              const oldEmbed = embeds?.[state.imageEmbedIndex];
+              if (oldEmbed?.image && (position !== "embed" || state.imageEmbedIndex !== embedIndex)) {
+                delete oldEmbed.image;
+              }
+            }
+
             state.imagePosition = position;
             state.imageEmbedIndex = embedIndex;
           }),
