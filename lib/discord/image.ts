@@ -1,24 +1,37 @@
-import { BaseCardConfig, DefaultCard } from "@welcomer-bot/card-canvas";
-import { cache } from "react";
-import { getGuildData, getUserData } from "../dal";
-import { parseText } from "./text";
+"use client";
+
+import {BaseCardConfig, DefaultCard} from "@welcomer-bot/card-canvas";
+import {cache} from "react";
+import {getGuildData, getUserData} from "../dal";
+import {parseText} from "./text";
+
 export const generateImage = cache(
-  async (msg: BaseCardConfig, guildId: string) => {
+  async (
+    msg: BaseCardConfig,
+    guildId: string,
+  ): Promise<void> => {
+    console.log("Generating image with config:", msg);
     const user = await getUserData();
     const guild = await getGuildData(guildId);
-
     if (!user || !guild) {
-      throw new Error("User or Guild not found");
+      throw new Error("User or Guild data not found");
     }
-    console.log("Generating image with config:", msg);
-    const card = DefaultCard.fromJSON({
+
+    const canvas = document.getElementById(
+      "preview-canvas",
+    ) as HTMLCanvasElement | null;
+
+    const cardConfig: BaseCardConfig = {
       ...msg,
-      avatarImgURL: user?.avatarUrl,
+      avatarImgURL: user.avatarUrl,
       renderer: "browser",
+    };
+
+    const card = DefaultCard.fromJSON(cardConfig);
+    await card.build({
+      canvasElement: canvas || undefined,
+      replacer: (text: string) => parseText(text, user, guild, true) || "",
     });
-    const res = await card.build({
-      replacer: (text: string) => parseText(text, user, guild) || "",
-    });
-    return res.toDataURL("image/png");
+
   },
 );
