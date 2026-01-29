@@ -1,27 +1,25 @@
 "use client";
 
-import { useImageStore } from "@/state/image";
-import { useModuleNameStore } from "@/state/moduleName";
+import { SourceType } from "@/prisma/generated/client";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { Accordion, AccordionItem } from "@heroui/accordion";
+import { useContext } from "react";
+import { useStore } from "zustand";
 import { ImageBackgroundFields } from "./background/ImageBackgroundFields";
 import { ImageTextFields } from "./text/ImageTextFields";
 
-export function CardEditor() {
-  const currentCard = useImageStore((state) => state.getActiveCard());
-  const moduleName = useModuleNameStore((state) => state.moduleName);
-
-  // useEffect(() => {
-  //   console.log(currentCard);
-  // }, [currentCard]);
-  if (!currentCard)
+export function CardEditor({ module }: { module: SourceType }) {
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const currentCard = useStore(store, (state) => state.selectedCard);
+  if (currentCard === null)
     return (
       <div className="text-white w-full text-center">No card selected</div>
     );
 
   return (
     <>
-      {/* <form className="px-5 pt-5 pb-20 space-y-5 w-full relative"> */}
-      <h1 className="mb-3">Edit {moduleName} card</h1>
+      <h1 className="mb-3">Edit {module} card</h1>
       <Accordion
         variant="bordered"
         aria-label="accordion"
@@ -44,7 +42,6 @@ export function CardEditor() {
           <ImageBackgroundFields />
         </AccordionItem>
       </Accordion>
-      {/* </form> */}
     </>
   );
 }

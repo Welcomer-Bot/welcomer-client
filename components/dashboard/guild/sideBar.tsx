@@ -1,60 +1,44 @@
 "use client";
-import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
-import { User as UIUser } from "@heroui/user";
-import { User, UserGuild } from "@prisma/client";
+import { Button, User as UIUser } from "@heroui/react";
 import Link from "next/link";
-import { createContext, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaDoorOpen, FaHome } from "react-icons/fa";
 import { ImEnter } from "react-icons/im";
-
+import { MdDashboard } from "react-icons/md";
 import { GuildSelectDropdown } from "./guildSelectDropdown";
 import { LogoutIcon } from "./logoutIcon";
 
+import { SidebarContext } from "@/app/providers";
 import { Logo } from "@/components/icons";
-import { getUserAvatar } from "@/lib/utils";
-import { useGuildStore } from "@/state/guild";
-import { useModuleNameStore } from "@/state/moduleName";
-import { GuildExtended } from "@/types";
-
-const SidebarContext = createContext<{
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  active: string;
-  setActive: React.Dispatch<React.SetStateAction<string>>;
-}>({
-  isOpen: true,
-  setIsOpen: () => {},
-  active: "dashboard",
-  setActive: () => {},
-});
-
+import { GuildObject } from "@/lib/discord/guild";
+import { UserObject } from "@/lib/discord/user";
+import { usePathname } from "next/navigation";
 export function Sidebar({
   currentGuild,
   guilds,
   user,
 }: {
-  currentGuild: UserGuild;
-  guilds: GuildExtended[];
-  user: User;
+  currentGuild: GuildObject;
+  guilds: GuildObject[];
+  user: UserObject;
 }) {
-  const currentModule = useModuleNameStore((state) => state.moduleName);
-  const [isOpen, setIsOpen] = useState(true);
-  const [active, setActive] = useState(currentModule ?? "dashboard");
+  const pathname = usePathname();
+  const [active, setActive] = useState("dashboard");
   useEffect(() => {
-    useGuildStore.setState({ id: currentGuild.id });
-  }, [currentGuild.id]);
-  useEffect(() => {
-    setActive(currentModule ?? "dashboard");
-  }, [currentModule]);
-
+    const active = pathname
+      ? (pathname.split("/")[3] ?? "dashboard")
+      : "dashboard";
+    setActive(active);
+  }, [pathname]);
+  const { isOpen, setIsOpen } = useContext(SidebarContext);
   return (
     <>
       <aside
-        className={`h-full z-30 sticky sm:block`}
+        className={`sm:h-screen h-fit z-30 sm:sticky sm:w-auto w-full bottom-0`}
       >
-        <nav className="h-full flex flex-col bg-slate-800 border-r border-slate-700 shadow-sm">
-          <div className="p-4 pb-2 flex justify-between items-center align-center">
+        <nav className="sm:h-full flex flex-row sm:flex-col bg-slate-800 border-r border-slate-700 shadow-sm sm:py-0 py-2 rounded-t-md sm:rounded-t-none">
+          <div className="p-4 pb-2 justify-between items-center align-center sm:flex hidden">
             <div className={` items-center h-10 justify-start flex flex-row `}>
               <Logo
                 className={`overflow-hidden transition-all ${
@@ -77,7 +61,7 @@ export function Sidebar({
             </div>
             <Button
               isIconOnly
-              className="p-1.5 rounded-lg"
+              className="p-1.5 rounded-lg hidden sm:grid"
               onPress={() => setIsOpen(!isOpen)}
             >
               <svg
@@ -105,47 +89,44 @@ export function Sidebar({
               </svg>
             </Button>
           </div>
-          <Divider className="mb-2" />
-
+          <Divider className="mb-2 sm:block hidden" />
           <GuildSelectDropdown
             currentGuild={currentGuild}
             guilds={guilds}
             isOpen={isOpen}
           />
-          <Divider className="my-2" />
+          <Divider className="mb-2 sm:block hidden" />
 
-          <SidebarContext.Provider
-            value={{ isOpen, setIsOpen, active, setActive }}
-          >
-            <ul className="flex-1 px-3">
-              <SidebarItem
-                active={active === "home"}
-                icon={<FaHome />}
-                link={"/dashboard"}
-                text="Home"
-              />
-              <SidebarItem
-                active={active === "dashboard"}
-                icon={<FaHome />}
-                link={`/dashboard/${currentGuild.id}`}
-                text="Dashboard"
-              />
-              <SidebarItem
-                active={active === "welcomer"}
-                icon={<ImEnter />}
-                link={`/dashboard/${currentGuild.id}/welcome`}
-                text="Welcomer"
-              />
-              <SidebarItem
-                active={active === "leaver"}
-                icon={<FaDoorOpen />}
-                link={`/dashboard/${currentGuild.id}/leave`}
-                text="Leaver"
-              />
-            </ul>
-          </SidebarContext.Provider>
-          <Divider />
-          <div className="flex p-3 justify-center">
+          <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3">
+            <SidebarItem
+              active={active === "home"}
+              icon={<FaHome />}
+              link={"/dashboard"}
+              text="Home"
+            />
+            <SidebarItem
+              active={active === "dashboard"}
+              icon={<MdDashboard />}
+              link={`/dashboard/${currentGuild.id}`}
+              text="Dashboard"
+            />
+            <SidebarItem
+              active={active === "welcome"}
+              icon={<ImEnter />}
+              link={`/dashboard/${currentGuild.id}/welcome`}
+              text="Welcomer"
+            />
+            <SidebarItem
+              active={active === "leave"}
+              icon={<FaDoorOpen />}
+              link={`/dashboard/${currentGuild.id}/leave`}
+              text="Leaver"
+            />
+          </ul>
+
+          <Divider className="sm:block hidden" />
+
+          <div className="p-3 justify-center sm:flex hidden">
             <div
               className={`
               flex justify-between items-center
@@ -154,7 +135,7 @@ export function Sidebar({
             >
               <UIUser
                 avatarProps={{
-                  src: getUserAvatar(user),
+                  src: user.avatarUrl,
                 }}
                 description={user.id}
                 name={user.username}
@@ -166,7 +147,6 @@ export function Sidebar({
       </aside>
     </>
   );
-    
 }
 
 export function SidebarItem({
@@ -180,13 +160,12 @@ export function SidebarItem({
   link: string;
   active?: boolean;
 }) {
-  const { isOpen, setIsOpen, setActive } = useContext(SidebarContext);
+  const { isOpen, setIsOpen } = useContext(SidebarContext);
   return (
     <Link
       href={link}
       onClick={() => {
         setIsOpen(false);
-        setActive(text.toLowerCase());
       }}
     >
       <li
@@ -197,7 +176,7 @@ export function SidebarItem({
       >
         {icon}
         <span
-          className={`overflow-hidden transition-all ${
+          className={`overflow-hidden transition-all sm:block hidden ${
             isOpen ? "w-48 ml-3" : "w-0"
           }`}
         >
@@ -206,7 +185,7 @@ export function SidebarItem({
 
         {!isOpen && (
           <div
-            className={`absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
+            className={`hidden sm:absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
           >
             {text}
           </div>

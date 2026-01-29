@@ -1,23 +1,23 @@
 "use client";
 
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
-import { useWelcomerStore } from "@/state/welcomer";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export default function ClearEmbedFieldsButton({
   embedIndex,
 }: {
   embedIndex: number;
 }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
-
-  const clearFields = store.clearFields;
-  const fieldsLength = store.embeds[embedIndex].fields.length;
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const fieldsLength = useStore(
+    store,
+    (state) => state.embeds[embedIndex].fields.length
+  );
+  const clearFields = useStore(store, (state) => state.clearFields);
 
   return (
     <Button

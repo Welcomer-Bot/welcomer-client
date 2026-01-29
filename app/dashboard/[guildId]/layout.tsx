@@ -2,17 +2,25 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 import { Sidebar } from "@/components/dashboard/guild/sideBar";
-import { getGuild, getGuilds, getUserData, getUserGuild } from "@/lib/dal";
+import Footer from "@/components/Footer";
+import {
+  fetchUserFromSession,
+  getGuild,
+  getGuilds,
+  getUserGuild,
+} from "@/lib/dal";
+
+type Params = Promise<{ guildId: string }>;
 
 export default async function Layout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{
-    guildId: string;
-  }>;
+  params: Params;
 }) {
+  const user = await fetchUserFromSession();
+  if (!user) redirect("/dashboard");
   const { guildId } = await params;
   const userGuild = await getUserGuild(guildId);
   if (!userGuild) redirect("/dashboard");
@@ -22,12 +30,17 @@ export default async function Layout({
 
   const otherGuilds =
     (await getGuilds())?.filter((g) => g.id !== userGuild.id) ?? [];
-  const user = await getUserData();
-
   return (
-    <div className="flex h-full w-full  overflow-hidden">
-      <Sidebar currentGuild={userGuild} guilds={otherGuilds} user={user!} />
-      <div className="w-full h-screen">{children}</div>
+    <div className="flex h-screen w-full sm:flex-row flex-col-reverse overflow-hidden">
+      <Sidebar
+        currentGuild={userGuild.toObject()}
+        guilds={otherGuilds.map((guild) => guild.toObject())}
+        user={user.toObject()}
+      />
+      <div className="w-full h-full overflow-y-visible overflow-x-hidden">
+        {children}
+        <Footer />
+      </div>
     </div>
   );
 }

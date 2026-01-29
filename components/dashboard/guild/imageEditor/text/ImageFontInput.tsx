@@ -1,21 +1,32 @@
 "use client";
 
-import { useImageStore } from "@/state/image";
+import { fetchFontList } from "@/lib/dto";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { ImageTextType } from "@/types";
 import { Select, SelectItem } from "@heroui/select";
-import { FontList } from "font-list";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useStore } from "zustand";
 
 export function ImageFontInput({ textType }: { textType: ImageTextType }) {
-  const font = useImageStore((state) => state.getActiveCard()![textType]?.font);
-  const setFont = useImageStore((state) => state.setTextFont);
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing ImageStore.Provider in the tree");
 
-  const [fontsList, setFontsList] = useState<FontList | null>(null);
+  const font = useStore(
+    store,
+    (state) => state.getActiveCard()![textType]?.font
+  );
+  const setFont = useStore(store, (state) => state.setTextFont);
+
+  const [fontsList, setFontsList] = useState<string[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
-    fetch("/api/font").then(async (res) => {
-      const fonts = await res.json();
-      setFontsList(fonts);
-    });
+    const updateStats = async () => {
+      setIsLoading(true);
+      const updatedChannels = await fetchFontList();
+      setFontsList(updatedChannels);
+      setIsLoading(false);
+    };
+    updateStats();
   }, []);
 
   const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -25,7 +36,7 @@ export function ImageFontInput({ textType }: { textType: ImageTextType }) {
     <Select
       label="Font"
       value={font ?? ""}
-      isLoading={!fontsList}
+      isLoading={isLoading}
       isVirtualized
       onChange={handleSelectionChange}
       selectedKeys={font && fontsList ? [font] : []}

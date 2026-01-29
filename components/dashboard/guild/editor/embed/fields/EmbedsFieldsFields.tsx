@@ -1,9 +1,9 @@
 import EmbedsFieldsAccordionWrapper from "@/components/Accordion/EmbedsFieldsAccordionWrapper";
-import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
-import { useWelcomerStore } from "@/state/welcomer";
-import { Button } from "@heroui/button";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { Button } from "@heroui/react";
+import { useContext } from "react";
 import { FaArrowDown, FaArrowUp, FaTrash } from "react-icons/fa";
+import { useStore } from "zustand";
 import AddEmbedFieldsButton from "./AddEmbedFieldsButton";
 import ClearEmbedFieldsButton from "./ClearEmbedFieldsButton";
 import { EmbedFieldInlineInput } from "./EmbedFieldInlineInput";
@@ -11,15 +11,12 @@ import { EmbedFieldNameInput } from "./EmbedFieldNameInput";
 import { EmbedFieldValueInput } from "./EmbedFieldValueInput";
 
 export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
-
-  const fields = store.embeds[embedIndex].fields;
-  const removeField = store.removeField;
-  const setToPrevious = store.setToPreviousField;
-  const setToNext = store.setToNextField;
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const fields = useStore(store, (state) => state.embeds[embedIndex].fields);
+  const removeField = useStore(store, (state) => state.removeField);
+  const setToPrevious = useStore(store, (state) => state.setToPreviousField);
+  const setToNext = useStore(store, (state) => state.setToNextField);
 
   return (
     <div className="space-y-2">

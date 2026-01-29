@@ -1,20 +1,24 @@
 import { BaseCardParams, TextCard } from "@/lib/discord/schema";
 import { ImageTextType } from "@/types";
 import { Color } from "@welcomer-bot/card-canvas";
-import { create } from "zustand";
+import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
-export interface ImageStore {
-  moduleId: number | null;
+
+export type ImageState = {
   imageCards: (BaseCardParams & { imagePreview?: string })[];
-  activeCard: number | null;
   removedCard: BaseCardParams[];
   removedText: TextCard[];
   edited: boolean;
-  setModuleId: (id: number) => void;
+  sourceId: number | null;
+  selectedCard: number | null;
+  initialState?: Partial<ImageState>;
+};
+
+export type ImageActions = {
   setCards: (cards: BaseCardParams[]) => void;
   setActiveCard: (index: number) => void;
   setActiveCardId: (id: number) => void;
-  getActiveCard: () => BaseCardParams | null;
+  getActiveCard: () => (BaseCardParams & { imagePreview?: string }) | null;
   setPreviewImage: (image: string) => void;
   createCard: () => void;
   clearCards: () => void;
@@ -29,16 +33,17 @@ export interface ImageStore {
   removeText: (textType: ImageTextType) => void;
   addText: (textType: ImageTextType) => void;
   reset: () => void;
-}
+};
+export type ImageStore = ImageState & ImageActions;
 
 const defaultMainText: TextCard = {
-  content: "Welcome {user} to the server!",
+  content: "Welcome {username} to the server!",
   color: "#ffffff",
   font: "Arial",
 };
 
 const defaultSecondText: TextCard = {
-  content: "You are the {memberCount} member!",
+  content: "You are the {membercount} member!",
   color: "#ffffff",
   font: "Arial",
 };
@@ -56,179 +61,226 @@ const defaultImage: BaseCardParams & { imagePreview?: string } = {
   backgroundImgURL: "",
 };
 
-export const useImageStore = create<ImageStore>()(
-  immer((set, get) => {
-    const setToActive = (
-      fn: (state: ImageStore & { activeCard: number }) => void,
-      edited: boolean = true
-    ) => {
-      set((state) => {
-        if (
-          state.activeCard === null ||
-          state.imageCards[state.activeCard] === undefined
-        )
-          return;
-        if (edited) state.edited = true;
-        fn(state as ImageStore & { activeCard: number });
-      });
-    };
-
-    return {
-      moduleId: null,
-      imageCards: [],
-      removedCard: [],
-      activeCard: null,
-      removedText: [],
-      edited: false,
-      setActiveCard: (index) =>
+export const createImageStore = (
+  initState: Partial<ImageState> = {
+    imageCards: [],
+    removedCard: [],
+    removedText: [],
+    edited: false,
+    sourceId: null,
+    selectedCard: null,
+  }
+) => {
+  return createStore<ImageStore>()(
+    immer((set, get) => {
+      const setToActive = (
+        fn: (
+          state: ImageStore & { activeCard: number; selectedCard: number }
+        ) => void,
+        edited: boolean = true
+      ) => {
         set((state) => {
-          if (state.imageCards[index] === undefined) {
+          if (
+            state.selectedCard === null ||
+            state.imageCards[state.selectedCard] === undefined
+          )
             return;
+          if (edited) {
+            state.edited = true;
           }
-          if (state.activeCard === index) {
-            state.activeCard = null;
-          } else {
-            state.activeCard = index;
-          }
-          state.edited = true;
-        }),
-      setActiveCardId: (id) =>
-        set((state) => {
-          state.activeCard = state.imageCards.findIndex(
-            (card) => card.id === id
+          fn(
+            state as ImageStore & { activeCard: number; selectedCard: number }
           );
-        }),
-      setModuleId: (id) =>
-        set((state) => {
-          state.moduleId = id;
-        }),
+        });
+      };
 
-      setCards: (cards) =>
-        set((state) => {
-          state.imageCards = cards;
-        }),
-      getActiveCard: () => {
-        const state = get();
-        if (state.activeCard === null) {
-          return null;
-        }
-        return state.imageCards[state.activeCard];
-      },
-      setPreviewImage: (image, edited = false) =>
-        setToActive((state) => {
-          if (state.imageCards[state.activeCard]) {
-            state.imageCards[state.activeCard].imagePreview = image;
-          }
-        }, false),
+      return {
+        initialState: initState,
+        removedCard: [],
+        removedText: [],
+        edited: false,
+        sourceId: null,
+        selectedCard: null,
+        imageCards: [],
+        ...initState,
+        setActiveCard: (index) =>
+          set((state) => {
 
-      createCard: () =>
-        set((state) => {
-          const index = state.imageCards.push(defaultImage);
-          state.activeCard = index - 1;
-          state.edited = true;
-        }),
-      clearCards: () =>
-        set((state) => {
-          state.removedCard.push(...state.imageCards);
-          state.imageCards = [];
-          state.activeCard = null;
-          state.edited = true;
-        }),
-      deleteCard: (index) =>
-        set((state) => {
-          state.removedCard.push(state.imageCards[index]);
-          state.imageCards.splice(index, 1);
-          state.edited = true;
-        }),
-      setBackgroundUrl: (backgroundUrl) =>
-        setToActive((state) => {
-          state.imageCards[state.activeCard].backgroundImgURL = backgroundUrl;
-        }),
-      setBackgroundColor: (backgroundColor) =>
-        setToActive((state) => {
-          if (state.imageCards[state.activeCard]) {
-            state.imageCards[state.activeCard].backgroundColor =
-              backgroundColor;
+            if (state.imageCards[index] === undefined) {
+              return;
+            }
+            if (state.selectedCard === index) {
+              state.selectedCard = null;
+            } else {
+              state.selectedCard = index;
+            }
+            state.edited = true;
+          }),
+        setActiveCardId: (id) =>
+          set((state) => {
+            state.selectedCard = state.imageCards.findIndex(
+              (card) => card.id === id
+            );
+          }),
+
+        setCards: (cards) =>
+          set((state) => {
+            state.imageCards = cards;
+          }),
+        getActiveCard: () => {
+          const state = get();
+          if (state.selectedCard === null) {
+            return null;
           }
-        }),
-      setMainText: (mainText) =>
-        setToActive((state) => {
-          state.imageCards[state.activeCard].mainText = mainText;
-        }),
-      setSecondText: (secondText) =>
-        setToActive((state) => {
-          state.imageCards[state.activeCard].secondText = secondText;
-        }),
-      setTextContent: (textType, content) =>
-        setToActive((state) => {
-          if (state.imageCards[state.activeCard][textType]) {
-            state.imageCards[state.activeCard][textType]!.content = content;
-          } else {
-            state.imageCards[state.activeCard][textType] = {
-              ...(textType === "mainText"
+          return state.imageCards[state.selectedCard];
+        },
+        setPreviewImage: (image) =>
+          setToActive((state) => {
+            if (state.imageCards[state.selectedCard]) {
+              state.imageCards[state.selectedCard].imagePreview = image;
+            }
+          }, false),
+
+        createCard: () =>
+          set((state) => {
+            const index = state.imageCards.push(defaultImage);
+            state.selectedCard = index - 1;
+            state.edited = true;
+          }),
+        clearCards: () =>
+          set((state) => {
+            state.removedCard.push(...state.imageCards);
+            state.imageCards = [];
+            state.selectedCard = null;
+            state.edited = true;
+          }),
+        deleteCard: (index) =>
+          set((state) => {
+            state.removedCard.push(state.imageCards[index]);
+            state.imageCards.splice(index, 1);
+            if (state.selectedCard === index) {
+              state.selectedCard = null;
+            } else if (state.selectedCard !== null) {
+              state.selectedCard =
+                state.selectedCard > index
+                  ? state.selectedCard - 1
+                  : state.selectedCard;
+            }
+            if (state.imageCards.length === 0) {
+              state.selectedCard = null;
+            }
+            state.edited = true;
+          }),
+        setBackgroundUrl: (backgroundUrl) =>
+          setToActive((state) => {
+            state.imageCards[state.selectedCard].backgroundImgURL =
+              backgroundUrl;
+          }),
+        setBackgroundColor: (backgroundColor) =>
+          setToActive((state) => {
+            if (state.imageCards[state.selectedCard]) {
+              state.imageCards[state.selectedCard].backgroundColor =
+                backgroundColor;
+            }
+          }),
+        setMainText: (mainText) =>
+          setToActive((state) => {
+            state.imageCards[state.selectedCard].mainText = mainText;
+          }),
+        setSecondText: (secondText) =>
+          setToActive((state) => {
+            state.imageCards[state.selectedCard].secondText = secondText;
+          }),
+        setTextContent: (textType, content) =>
+          setToActive((state) => {
+            if (state.imageCards[state.selectedCard][textType]) {
+              state.imageCards[state.selectedCard][textType]!.content = content;
+            } else {
+              state.imageCards[state.selectedCard][textType] = {
+                ...(textType === "mainText"
+                  ? defaultMainText
+                  : textType === "secondText"
+                    ? defaultSecondText
+                    : defaultNicknameText),
+                content,
+              };
+            }
+          }),
+
+        setTextColor: (textType, color) =>
+          setToActive((state) => {
+            if (state.imageCards[state.selectedCard][textType]) {
+              state.imageCards[state.selectedCard][textType]!.color = color;
+            } else {
+              state.imageCards[state.selectedCard][textType] = {
+                ...(textType === "mainText"
+                  ? defaultMainText
+                  : textType === "secondText"
+                    ? defaultSecondText
+                    : defaultNicknameText),
+                color,
+              };
+            }
+          }),
+        setTextFont: (textType, font) =>
+          setToActive((state) => {
+            if (state.imageCards[state.selectedCard][textType]) {
+              state.imageCards[state.selectedCard][textType]!.font = font;
+            } else {
+              state.imageCards[state.selectedCard][textType] = {
+                ...(textType === "mainText"
+                  ? defaultMainText
+                  : textType === "secondText"
+                    ? defaultSecondText
+                    : defaultNicknameText),
+                font,
+              };
+            }
+          }),
+        removeText: (textType) =>
+          setToActive((state) => {
+            const text = state.imageCards[state.selectedCard][textType];
+            if (text) {
+              state.removedText.push(text);
+            }
+            state.imageCards[state.selectedCard][textType] = null;
+          }),
+        addText: (textType) =>
+          setToActive((state) => {
+            state.imageCards[state.selectedCard][textType] =
+              textType === "mainText"
                 ? defaultMainText
                 : textType === "secondText"
                   ? defaultSecondText
-                  : defaultNicknameText),
-              content,
-            };
-          }
-        }),
+                  : defaultNicknameText;
+          }),
+        reset: () =>
+          set((state) => ({ 
+            removedCard: [],
+            removedText: [],
+            edited: false,
+            sourceId: null,
+            selectedCard: null,
+            imageCards: [],
+            ...state.initialState,
+          }))
 
-      setTextColor: (textType, color) =>
-        setToActive((state) => {
-          if (state.imageCards[state.activeCard][textType]) {
-            state.imageCards[state.activeCard][textType]!.color = color;
-          } else {
-            state.imageCards[state.activeCard][textType] = {
-              ...(textType === "mainText"
-                ? defaultMainText
-                : textType === "secondText"
-                  ? defaultSecondText
-                  : defaultNicknameText),
-              color,
-            };
-          }
-        }),
-      setTextFont: (textType, font) =>
-        setToActive((state) => {
-          if (state.imageCards[state.activeCard][textType]) {
-            state.imageCards[state.activeCard][textType]!.font = font;
-          } else {
-            state.imageCards[state.activeCard][textType] = {
-              ...(textType === "mainText"
-                ? defaultMainText
-                : textType === "secondText"
-                  ? defaultSecondText
-                  : defaultNicknameText),
-              font,
-            };
-          }
-        }),
-      removeText: (textType) =>
-        setToActive((state) => {
-          const text = state.imageCards[state.activeCard][textType];
-          if (text) {
-            state.removedText.push(text);
-          }
-          state.imageCards[state.activeCard][textType] = null;
-        }),
-      addText: (textType) =>
-        setToActive((state) => {
-          state.imageCards[state.activeCard][textType] =
-            textType === "mainText"
-              ? defaultMainText
-              : textType === "secondText"
-                ? defaultSecondText
-                : defaultNicknameText;
-        }),
-      reset: () =>
-        set((state) => ({
-          ...state,
-          edited: false,
-          removedCard: [],
-          removedText: [],
-        })),
-    };
-  })
-);
+      };
+    })
+  );
+};
+
+export const extractImageState = (data: ImageStore): ImageState => {
+  return {
+    imageCards: data.imageCards.map((card) => {
+      return { ...card, imagePreview: undefined };
+    }),
+    removedCard: data.removedCard.map((card) => {
+      return { ...card, imagePreview: undefined };
+    }),
+    removedText: data.removedText,
+    edited: data.edited,
+    sourceId: data.sourceId,
+    selectedCard: data.selectedCard,
+  };
+};

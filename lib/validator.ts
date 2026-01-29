@@ -231,11 +231,10 @@ export const MessageSchema = z
       .refine((value) => !value || value.length <= 10, {
         message: "Message embeds must be less than 10.",
       }),
-    files: z
+    images: z
       .array(
         z.object({
-          attachment: z.string(),
-          name: z.string(),
+          id: z.number(),
         })
       )
       .optional()
@@ -243,16 +242,31 @@ export const MessageSchema = z
       .refine((value) => !value || value.length <= 10, {
         message: "Message files must be less than 10.",
       }),
+    activeCardId: z
+      .number()
+      .optional()
+      .nullable(),
+    activeCardToEmbedId: z
+      .number()
+      .optional()
+      .nullable()
   })
-    .refine((value) => {
-  // Check if at least one of content, embeds, or files is present and not empty
-  const hasContent = value.content && value.content.trim().length > 0;
-  const hasEmbeds = value.embeds && value.embeds.length > 0;
-  const hasFiles = value.files && value.files.length > 0;
-  return hasContent || hasEmbeds || hasFiles;
-}, {
-  message: "Message must have at least one of content, embeds, or files.",
-})
+  .refine(
+    (value) => {
+      // Check if at least one of content, embeds, or files is present and not empty
+      const hasContent = value.content && value.content.trim().length > 0;
+      const hasEmbeds = value.embeds && value.embeds.length > 0;
+      const hasFiles =(
+        value.activeCardId &&
+        value.activeCardId >= 0) || (
+        value.activeCardToEmbedId &&
+        value.activeCardToEmbedId >= -1);
+      return hasContent || hasEmbeds || hasFiles;
+    },
+    {
+      message: "Message must have at least one of content, embeds, or files.",
+    }
+  )
   .refine(
     (value) =>
       (value.content?.length || 0) +

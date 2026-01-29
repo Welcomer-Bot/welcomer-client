@@ -1,28 +1,30 @@
 "use client";
 
-import { LeaverStore, useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
-import { useWelcomerStore, WelcomerStore } from "@/state/welcomer";
-import debounce from "debounce";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { GuildObject } from "@/lib/discord/guild";
+import { UserObject } from "@/lib/discord/user";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { lazy, Suspense, useContext } from "react";
+import { useStore } from "zustand";
 
 const LazyMessagePreview = lazy(() => import("./messagePreview"));
 
-export default function EditorMessagePreview() {
-  const [msg, setMsg] = useState<WelcomerStore | LeaverStore>();
-  const debouncedSetMessage = debounce(setMsg, 250);
-  const moduleName = useModuleNameStore((state) => state.moduleName);
-  const store = moduleName === "welcomer" ? useWelcomerStore : useLeaverStore;
-
-  const state = store();
-  useEffect(() => {
-    debouncedSetMessage(state);
-  }, [state, debouncedSetMessage]);
+export default function EditorMessagePreview({
+  guild,
+  user,
+}: {
+  guild: GuildObject;
+  user: UserObject;
+}) {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const msg = useStore(store, (state) => state);
 
   if (!msg) return null;
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LazyMessagePreview msg={msg} />
-    </Suspense>
+    <div className="overflow-x-scroll h-full">
+      <Suspense fallback={<div>Loading...</div>}>
+        <LazyMessagePreview msg={msg} guild={guild} user={user} />
+      </Suspense>
+    </div>
   );
 }

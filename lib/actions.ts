@@ -2,38 +2,19 @@
 
 import { redirect } from "next/navigation";
 
-import { BaseCardParams } from "@/lib/discord/schema";
-import { CompleteEmbed } from "@/prisma/schema";
-import { ImageStore } from "@/state/image";
-import { LeaverStore } from "@/state/leaver";
-import { WelcomerStore } from "@/state/welcomer";
-import { ModuleName } from "@/types";
-import { Welcomer } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+
+import { ImageCard, Source, SourceType } from "@/prisma/generated/client";
+import { ImageState } from "@/state/image";
+import { SourceState } from "@/state/source";
 import {
-  canUserManageGuild,
-  createEmbed,
-  createImageCard,
-  createLeaver,
-  createWelcomer,
-  deleteCard,
-  deleteCardText,
-  deleteEmbed,
-  deleteEmbedField,
-  deleteLeaver,
-  deleteWelcomer,
-  getEmbeds,
-  getLeaverById,
-  getModuleCards,
-  getWelcomerById,
-  updateEmbed,
-  updateImageCard,
-  updateImageCardText,
-  updateLeaver,
-  updateLeaverChannelAndContent,
-  updateWelcomer,
-  updateWelcomerChannelAndContent,
+  createSource as createSourceRequest,
+  deleteSource,
+  getSource,
+  getSourceCards,
+  getUserGuild,
 } from "./dal";
+import prisma from "./prisma";
 import { deleteSession } from "./session";
 import { MessageSchema } from "./validator";
 
@@ -46,615 +27,565 @@ export async function signOut() {
   redirect("/");
 }
 
-export async function createModule(
+export async function createSource(
   guildId: string,
-  moduleName: ModuleName
-): Promise<Welcomer> {
-  if (!guildId || !(await canUserManageGuild(guildId))) {
+  source: SourceType
+): Promise<void> {
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
     throw new Error("You do not have permission to manage this guild");
   }
-  let res;
-  if (moduleName === "welcomer") {
-    res = await createWelcomer(guildId);
-  } else if (moduleName === "leaver") {
-    res = await createLeaver(guildId);
-  } else {
-    throw new Error("Invalid module name");
-  }
-
-  revalidatePath(`/app/dashboard/${guildId}/welcome`);
-
-  return res;
+  await createSourceRequest(guild.id, source);
+  revalidatePath(`/dashboard/${guildId}/${source.toLowerCase().slice(0, -1)}`);
 }
 
-export async function updateModule(
-  store: WelcomerStore | LeaverStore,
-  moduleName: ModuleName | null
-) {
-  try {
-    const guildId = store.guildId;
-    if (!guildId || !(await canUserManageGuild(guildId))) {
-      return {
-        error: "You do not have permission to manage this guild",
-      };
-    }
-    if (!store.channelId) {
-      return {
-        error: "You need to select a channel",
-      };
-    }
-    const messageValidated = MessageSchema.safeParse(store);
-    if (!messageValidated.success) {
-      return {
-        error: messageValidated.error.errors[0].path[-1]
-          ? messageValidated.error.errors[0].path[-1] + ": "
-          : "" + messageValidated.error.errors[0].message,
-      };
-    }
-    let libModule;
-    if (moduleName === "welcomer") {
-      libModule = await updateWelcomerChannelAndContent(
-        guildId,
-        store.channelId,
-        store.content
-      );
-    } else if (moduleName === "leaver") {
-      libModule = await updateLeaverChannelAndContent(
-        guildId,
-        store.channelId,
-        store.content
-      );
-    } else {
-      return {
-        error: "Invalid module name",
-      };
-    }
-    const embeds = await getEmbeds(libModule.id, moduleName);
-    const embedsToCreate = store.embeds.filter((embed) => embed.id === null);
-    if ((embeds?.length ?? 0) + embedsToCreate.length > 10)
-      return {
-        error: "You cannot have more than 10 embeds",
-      };
-    for (const embed of store.embeds) {
-      if (
-        embed.id &&
-        embed[`${moduleName}Id`] &&
-        libModule.id != embed[`${moduleName}Id`]
-      )
-        return {
-          error: "You cannot update an embed that is not in the module",
-        };
-      const embedUpdated = await createOrUpdateEmbed(
-        embed,
-        libModule.id,
-        moduleName
-      );
-      if (!embedUpdated) {
-        return {
-          error: "An error occurred while updating the module",
-        };
-      }
-      store.embeds[store.embeds.indexOf(embed)] = embedUpdated;
-    }
-    for (const embed of store.deletedEmbeds) {
-      if (embed.id) {
-        if (embed[`${moduleName}Id`] && libModule.id != embed[`${moduleName}Id`])
-          return {
-            error: "You cannot delete an embed that is not in the module",
-          };
-        await deleteEmbed(embed.id, moduleName, libModule.id);
-      }
-    }
-    for (const field of store.deletedFields) {
-      if (field.id) {
-        if (field.embedId && !(field.embedId in store.embeds))
-          return {
-            error: "You cannot delete a field that is not in the embed",
-          };
-        await deleteEmbedField(field.id);
-      }
-    }
-    if (store.activeCard && store.activeCardToEmbedId !== null) {
-      if (store.activeCardToEmbedId === -2) {
-        if (moduleName === "welcomer") {
-          await updateWelcomer(
-            guildId,
+export async function removeSource(
+  guildId: string,
+  sourceId: number,
+  sourceType: SourceType
+): Promise<void> {
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    throw new Error("You do not have permission to manage this guild");
+  }
+  await deleteSource(guildId, sourceId);
 
-            {
-              activeCard: {
-                disconnect: true,
-              },
-              activeCardToEmbed: {
-                disconnect: true,
-              },
-            }
-          );
-        }
-      } else if (moduleName === "leaver") {
-        await updateLeaver(
-          guildId,
+  revalidatePath(
+    `/dashboard/${guildId}/${sourceType.toLowerCase().slice(0, -1)}`
+  );
+}
 
-          {
-            activeCard: {
-              disconnect: true,
-            },
-            activeCardToEmbed: {
-              disconnect: true,
-            },
-          }
-        );
-      }
-    } else if (store.activeCardToEmbedId === -1) {
-      if (moduleName === "welcomer") {
-        await updateWelcomer(guildId, {
-          activeCardToEmbed: {
-            disconnect: true,
-            // set to -1 to show on the bottom
-          },
-        });
-      }
-    } else if (moduleName === "leaver") {
-      await updateLeaver(
-        guildId,
-
-        {
-          activeCardToEmbed: {
-            disconnect: true,
-          },
-        }
-      );
-    } else {
-      const embedId =
-        store.activeCardToEmbedId &&
-        store.embeds[store.activeCardToEmbedId]?.id;
-      if (!embedId)
-        return {
-          error: "You need to select an embed to be the active one",
-        };
-      if (moduleName === "welcomer") {
-        await updateWelcomer(
-          guildId,
-
-          {
-            activeCardToEmbed: {
-              connect: {
-                id: embedId,
-              },
-            },
-          }
-        );
-      } else if (moduleName === "leaver") {
-        await updateLeaver(
-          guildId,
-
-          {
-            activeCardToEmbed: {
-              connect: {
-                id: embedId,
-              },
-            },
-          }
-        );
-      }
-    }
-    revalidatePath(`/app/dashboard/${guildId}/welcome`);
-
+export async function updateSource(store: SourceState) {
+  const guildId = store.guildId;
+  const sourceId = store.id;
+  console.log("store", store);
+  if (!guildId) {
     return {
+      error: "You need to select a guild",
+    };
+  }
+  if (!sourceId) {
+    return {
+      error: "You need to select a source",
+    };
+  }
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return {
+      error: "You do not have permission to manage this guild",
+    };
+  }
+  if (!store.channelId) {
+    return {
+      error: "You need to select a channel",
+    };
+  }
+  const messageValidated = MessageSchema.safeParse(store);
+  if (!messageValidated.success) {
+    console.log("messageValidated.error", messageValidated.error);
+    return {
+      error:
+        messageValidated.error.issues[0].path.length > 0
+          ? messageValidated.error.issues[0].path.join(".") +
+            ": " +
+            messageValidated.error.issues[0].message
+          : messageValidated.error.issues[0].message,
+    };
+  }
+  const source = await getSource(guildId, sourceId);
+  if (!source) {
+    return {
+      error: "This source does not exist",
+    };
+  }
+
+  const embedsToCreate = store.embeds.filter((embed) => embed.id == undefined);
+  const embedsToDelete = store.deletedEmbeds.filter(
+    (embed) => embed.id != undefined
+  );
+  const embedsToUpdate = store.embeds.filter((embed) => embed.id != undefined);
+  console.log(
+    "store.activeCardToEmbedId != undefined  && store.activeCardToEmbedId >= 0 && store.embeds[store.activeCardToEmbedId] !== undefined",
+    store.activeCardToEmbedId != undefined &&
+      store.activeCardToEmbedId >= 0 &&
+      store.embeds[store.activeCardToEmbedId] !== undefined
+  );
+  console.log(
+    "cardWithEmbedToConnect",
+    store.embeds[store.activeCardToEmbedId!]
+  );
+  try {
+    const res = await prisma.source.update({
+      where: {
+        id: sourceId,
+      },
+      data: {
+        channelId: store.channelId,
+        content: store.content,
+        embeds: {
+          create: embedsToCreate.map((embed) => ({
+            title: embed.title,
+            description: embed.description,
+            color: embed.color,
+            timestamp: embed.timestamp,
+            author: embed.author
+              ? {
+                  create: {
+                    name: embed.author.name,
+                    iconUrl: embed.author.iconUrl,
+                    url: embed.author.url,
+                  },
+                }
+              : undefined,
+            footer: embed.footer
+              ? {
+                  create: {
+                    text: embed.footer.text,
+                    iconUrl: embed.footer.iconUrl,
+                  },
+                }
+              : undefined,
+            fields: embed.fields
+              ? {
+                  create: embed.fields.map((field) => ({
+                    name: field.name,
+                    value: field.value,
+                    inline: field.inline,
+                  })),
+                }
+              : undefined,
+          })),
+          deleteMany: embedsToDelete.map((embed) => ({
+            id: embed.id,
+          })),
+          update: embedsToUpdate.map((embed) => ({
+            where: {
+              id: embed.id,
+            },
+            data: {
+              title: embed.title,
+              description: embed.description,
+              color: embed.color,
+              timestamp: embed.timestamp,
+              author: embed.author
+                ? {
+                    upsert: {
+                      where: {
+                        id: embed.author.id ?? -1,
+                      },
+                      create: {
+                        name: embed.author.name,
+                        iconUrl: embed.author.iconUrl,
+                        url: embed.author.url,
+                      },
+                      update: {
+                        name: embed.author.name,
+                        iconUrl: embed.author.iconUrl,
+                        url: embed.author.url,
+                      },
+                    },
+                  }
+                : undefined,
+              footer: embed.footer
+                ? {
+                    upsert: {
+                      where: {
+                        id: embed.footer.id ?? -1,
+                      },
+                      create: {
+                        text: embed.footer.text,
+                        iconUrl: embed.footer.iconUrl,
+                      },
+                      update: {
+                        text: embed.footer.text,
+                        iconUrl: embed.footer.iconUrl,
+                      },
+                    },
+                  }
+                : undefined,
+              fields: {
+                deleteMany: store.deletedFields
+                  .filter((field) => field.embedId === embed.id)
+                  .map((field) => ({
+                    id: field.id,
+                  })),
+                upsert: embed.fields?.map((field) => ({
+                  where: {
+                    id: field.id ?? -1,
+                  },
+                  update: {
+                    name: field.name,
+                    value: field.value,
+                    inline: field.inline,
+                  },
+                  create: {
+                    name: field.name,
+                    value: field.value,
+                    inline: field.inline,
+                  },
+                })),
+              },
+            },
+          })),
+        },
+        activeCard:
+          store.activeCardId != undefined && store.activeCardToEmbedId !== -2
+            ? {
+                connect: {
+                  id: store.activeCardId,
+                },
+              }
+            : {
+                disconnect: true,
+              },
+        activeCardToEmbed:
+          store.activeCardToEmbedId != undefined &&
+          store.activeCardToEmbedId >= 0 &&
+          store.embeds[store.activeCardToEmbedId] !== undefined
+            ? {
+                connect: {
+                  id: store.embeds[store.activeCardToEmbedId].id,
+                },
+              }
+            : {
+                disconnect: true,
+              },
+      },
+      include: {
+        embeds: {
+          include: {
+            author: true,
+            footer: true,
+            fields: true,
+          },
+        },
+        images: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
+        activeCard: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
+          },
+        },
+        activeCardToEmbed: true,
+      },
+    });
+
+    revalidatePath(
+      `/dashboard/${guildId}/${source.type.toLowerCase().slice(0, -1)}`
+    );
+    return {
+      data: res,
       done: true,
     };
   } catch (error) {
     console.log(error);
+    if (error instanceof Error) {
+      return {
+        error: error.message,
+      };
+    }
     return {
-      error: "An error occurred while updating the welcomer module",
+      error: "An error occurred while updating the source",
     };
   }
 }
 
-export async function createOrUpdateEmbed(
-  embed: CompleteEmbed,
-  moduleId: number,
-  moduleType: "welcomer" | "leaver"
-): Promise<CompleteEmbed | null> {
-  let embedDb;
-  const createOrUpdateAuthor = {
-    author: embed.author?.name
-      ? {
-        upsert: {
-          where: {
-            embedId: embed.id,
-          },
-          update: {
-            name: embed.author?.name,
-            iconUrl: embed.author?.iconUrl,
-            url: embed.author?.url,
-          },
-          create: {
-            id: embed.id,
-            name: embed.author?.name,
-            iconUrl: embed.author?.iconUrl,
-            url: embed.author?.url,
-          },
-        },
-      }
-      : undefined,
-  };
-
-  const createOrUpdateFooter = {
-    footer: embed.footer?.text
-      ? {
-        upsert: {
-          where: {
-            embedId: embed.id,
-          },
-          update: {
-            text: embed.footer?.text,
-            iconUrl: embed.footer?.iconUrl,
-          },
-          create: {
-            id: embed.id,
-            text: embed.footer?.text,
-            iconUrl: embed.footer?.iconUrl,
-          },
-        },
-      }
-      : undefined,
-  };
-
-  const createOrUpdateFields = {
-    fields: {
-      upsert: embed.fields.map((field) => ({
-        where: {
-          embedId: embed.id,
-          id: field.id ?? -1,
-        },
-        update: {
-          name: field.name,
-          value: field.value,
-          inline: field.inline,
-        },
-        create: {
-          name: field.name,
-          value: field.value,
-          inline: field.inline,
-        },
-      })),
-    },
-  };
-
-  const createAuthor = {
-    author: embed.author?.name
-      ? {
-        create: {
-          name: embed.author?.name,
-          iconUrl: embed.author?.iconUrl,
-          url: embed.author?.url,
-        },
-      }
-      : undefined,
-  };
-
-  const createFooter = {
-    footer: embed.footer?.text
-      ? {
-        create: {
-          text: embed.footer?.text,
-          iconUrl: embed.footer?.iconUrl,
-        },
-      }
-      : undefined,
-  };
-
-  const createFields = {
-    fields: {
-      create: embed.fields.map((field) => ({
-        name: field.name,
-        value: field.value,
-        inline: field.inline,
-      })),
-    },
-  };
-
-  try {
-    if (embed.id) {
-      embedDb = await updateEmbed(embed.id, moduleType, moduleId, {
-        title: embed.title,
-        description: embed.description,
-        color: embed.color,
-        timestamp: embed.timestamp,
-        ...createOrUpdateAuthor,
-        ...createOrUpdateFooter,
-        ...createOrUpdateFields,
-      },
-      );
-    } else {
-      embedDb = await createEmbed(
-        {
-          [`${moduleType}Id`]: moduleId,
-          title: embed.title,
-          description: embed.description,
-          color: embed.color,
-          timestamp: embed.timestamp,
-          ...createAuthor,
-          ...createFooter,
-          ...createFields,
-        },
-      )
-    }
-    return embedDb as CompleteEmbed;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
-export async function removeModule(
-  guildId: string,
-  moduleName: ModuleName
-): Promise<boolean> {
-  if (!(await canUserManageGuild(guildId))) {
-    throw new Error("You do not have permission to manage this guild");
-  }
-  try {
-    if (moduleName === "welcomer") {
-      await deleteWelcomer(guildId);
-    } else if (moduleName === "leaver") {
-      await deleteLeaver(guildId);
-    } else {
-      throw new Error("Invalid module name");
-    }
-
-    revalidatePath(`/app/dashboard/${guildId}/welcome`);
-    return true;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
 export async function updateCards(
-  currentStore: Partial<ImageStore>,
-  moduleName: ModuleName | null
+  currentStore: ImageState,
+  guildId: string
 ): Promise<{
-  store?: Partial<ImageStore> | null;
+  data:
+    | (Source & {
+        images: ImageCard[];
+      })
+    | null;
   done: boolean;
   error: string | null;
 }> {
-  // try {
-  const store = currentStore;
-  const moduleId = store.moduleId;
-  if (!moduleId) {
-    throw new Error("You need to select a module");
-  }
-
-  if (!moduleName) {
-    throw new Error("Invalid module name");
-  }
-  const cardsDb = await getModuleCards(moduleId, moduleName);
-  const welcomeOrLeaveModule =
-    moduleName === "welcomer"
-      ? await getWelcomerById(moduleId)
-      : await getLeaverById(moduleId);
-  if (!welcomeOrLeaveModule) {
-    throw new Error("You need to enable the module first");
-  }
-  const guildId = welcomeOrLeaveModule.guildId;
-  if (!guildId || !(await canUserManageGuild(guildId))) {
-    throw new Error("You do not have permission to manage this guild");
-  }
-  const cardsToCreate =
-    store.imageCards?.filter((card) => card.id === null) ?? [];
-  if ((cardsDb?.length ?? 0) + cardsToCreate.length > 5)
-    throw new Error("You cannot have more than 5 cards");
-
-  for (const card of store.removedCard ?? []) {
-    if (card.id) {
-      const deletedCard = await deleteCard(card.id);
-
-      if (deletedCard) {
-        store.removedCard?.splice(store.removedCard.indexOf(card), 1);
-      }
+  try {
+    const store = currentStore;
+    // console.log("store", store);
+    const sourceId = store.sourceId;
+    if (!sourceId) {
+      throw new Error("You need to select a module");
     }
-  }
-
-  for (const text of store.removedText ?? []) {
-    if (text.id) {
-      await deleteCardText(text.id);
-      store.removedText?.splice(store.removedText.indexOf(text), 1);
+    // console.log("guildId", guildId);
+    const guild = await getUserGuild(guildId);
+    // console.log("guild", guild);
+    if (!guild) {
+      throw new Error("You do not have permission to manage this guild");
     }
-  }
-  const cards = [];
-  if (store.imageCards) {
-    for (const card of store.imageCards) {
-      const cardUpdated = await createOrUpdateCard(card, moduleId, moduleName);
-      if (!cardUpdated) {
-        throw new Error("An error occurred while updating the image module");
-      }
-      cards.push(cardUpdated);
-    }
-    // set active card
-    if (store.activeCard !== null && store.activeCard !== undefined) {
-      const id = cards[store.activeCard]?.id;
+    const source = await getSource(guildId, sourceId);
 
-      if (!id)
-        throw new Error(
-          "You need to select an image card to be the active one"
-        );
-      if (moduleName === "welcomer") {
-        await updateWelcomer(guildId, {
-          activeCard: {
-            connect: {
-              id: id,
+    if (!source) {
+      throw new Error("This module does not exist");
+    }
+    const cardsLength = (await getSourceCards(source.id))?.length ?? 0;
+
+    // All cards except the active card, we can get the active card with selectedCard which is the index of the card in store.imageCards
+    const nonActiveCard =
+      store.selectedCard !== null &&
+      store.imageCards?.[store.selectedCard] !== undefined &&
+      store.imageCards[store.selectedCard]?.id !== undefined
+        ? store.imageCards
+        : store.imageCards?.filter(
+            (card, index) => index !== store.selectedCard
+          );
+
+    const cardsToCreate =
+      nonActiveCard?.filter((card) => card.id === undefined) ?? [];
+    const cardsToDelete =
+      store.removedCard?.filter((card) => card.id !== undefined) ?? [];
+    const cardsToUpdate =
+      nonActiveCard?.filter((card) => card.id !== undefined) ?? [];
+
+    if (cardsLength + cardsToCreate.length > 5)
+      throw new Error("You cannot have more than 5 cards");
+
+    const res = await prisma.source.update({
+      where: {
+        id: sourceId,
+      },
+      data: {
+        activeCard:
+          store.selectedCard !== null &&
+          store.imageCards?.[store.selectedCard] !== undefined
+            ? {
+                connectOrCreate: {
+                  where: {
+                    id: store.imageCards[store.selectedCard]?.id ?? -1,
+                  },
+                  create: {
+                    backgroundImgURL:
+                      store.imageCards[store.selectedCard]?.backgroundImgURL,
+                    backgroundColor:
+                      store.imageCards[store.selectedCard]?.backgroundColor ||
+                      null,
+                    avatarBorderColor:
+                      store.imageCards[store.selectedCard]?.avatarBorderColor ||
+                      null,
+                    mainText: store.imageCards[store.selectedCard]?.mainText
+                      ? {
+                          connect: store.imageCards[store.selectedCard]?.mainText
+                            ?.id
+                            ? {
+                                id: store.imageCards[store.selectedCard]?.mainText
+                                  ?.id,
+                              }
+                            : undefined,
+                          create: !store.imageCards[store.selectedCard]?.mainText
+                            ?.id
+                            ? {
+                                content:
+                                  store.imageCards[store.selectedCard]?.mainText
+                                    ?.content || "",
+                                color:
+                                  store.imageCards[store.selectedCard]?.mainText
+                                    ?.color || null,
+                                font:
+                                  store.imageCards[store.selectedCard]?.mainText
+                                    ?.font || null,
+                              }
+                            : undefined,
+                        }
+                      : undefined,
+                    secondText: store.imageCards[store.selectedCard]?.secondText
+                      ? {
+                          connect: store.imageCards[store.selectedCard]?.secondText
+                            ?.id
+                            ? {
+                                id: store.imageCards[store.selectedCard]?.secondText
+                                  ?.id,
+                              }
+                            : undefined,
+                          create: !store.imageCards[store.selectedCard]?.secondText
+                            ?.id
+                            ? {
+                                content:
+                                  store.imageCards[store.selectedCard]?.secondText
+                                    ?.content || "",
+                                color:
+                                  store.imageCards[store.selectedCard]?.secondText
+                                    ?.color || null,
+                                font:
+                                  store.imageCards[store.selectedCard]?.secondText
+                                    ?.font || null,
+                              }
+                            : undefined,
+                        }
+                      : undefined,
+                    nicknameText: store.imageCards[store.selectedCard]?.nicknameText
+                      ? {
+                          connect: store.imageCards[store.selectedCard]?.nicknameText
+                            ?.id
+                            ? {
+                                id: store.imageCards[store.selectedCard]?.nicknameText
+                                  ?.id,
+                              }
+                            : undefined,
+                          create: !store.imageCards[store.selectedCard]?.nicknameText
+                            ?.id
+                            ? {
+                                content:
+                                  store.imageCards[store.selectedCard]?.nicknameText
+                                    ?.content || "",
+                                color:
+                                  store.imageCards[store.selectedCard]?.nicknameText
+                                    ?.color || null,
+                                font:
+                                  store.imageCards[store.selectedCard]?.nicknameText
+                                    ?.font || null,
+                              }
+                            : undefined,
+                        }
+                      : undefined,
+                    Source: {
+                      connect: store.sourceId
+                        ? {
+                            id: store.sourceId,
+                          }
+                        : undefined,
+                    },
+                  },
+                },
+              }
+            : {
+                disconnect: true,
+              },
+
+        images: {
+          create: cardsToCreate.map((card) => ({
+            backgroundImgURL: card.backgroundImgURL,
+            backgroundColor: card.backgroundColor || null,
+            avatarBorderColor: card.avatarBorderColor || null,
+            mainText: card.mainText
+              ? {
+                  create: {
+                    content: card.mainText.content,
+                    color: card.mainText.color || null,
+                    font: card.mainText.font || null,
+                  },
+                }
+              : undefined,
+            secondText: card.secondText
+              ? {
+                  create: {
+                    content: card.secondText.content,
+                    color: card.secondText.color || null,
+                    font: card.secondText.font || null,
+                  },
+                }
+              : undefined,
+            nicknameText: card.nicknameText
+              ? {
+                  create: {
+                    content: card.nicknameText.content,
+                    color: card.nicknameText.color || null,
+                    font: card.nicknameText.font || null,
+                  },
+                }
+              : undefined,
+          })),
+          deleteMany: cardsToDelete.map((card) => ({
+            id: card.id,
+          })),
+          update: cardsToUpdate.map((card) => ({
+            where: {
+              id: card.id,
             },
-          },
-        });
-      } else if (moduleName === "leaver") {
-        await updateLeaver(guildId, {
-          activeCard: {
-            connect: {
-              id: id,
+            data: {
+              backgroundImgURL: card.backgroundImgURL,
+              backgroundColor: card.backgroundColor || null,
+              avatarBorderColor: card.avatarBorderColor || null,
+              mainText: card.mainText
+                ? {
+                    connect: card.mainText?.id
+                      ? { id: card.mainText.id }
+                      : undefined,
+                    create: card.mainText?.id
+                      ? undefined
+                      : {
+                          content: card.mainText.content,
+                          color: card.mainText.color || null,
+                          font: card.mainText.font || null,
+                        },
+                  }
+                : undefined,
+              secondText: card.secondText
+                ? {
+                    connect: card.secondText?.id
+                      ? { id: card.secondText.id }
+                      : undefined,
+                    create: card.secondText?.id
+                      ? undefined
+                      : {
+                          content: card.secondText.content,
+                          color: card.secondText.color || null,
+                          font: card.secondText.font || null,
+                        },
+                  }
+                : undefined,
+              nicknameText: card.nicknameText
+                ? {
+                    connect: card.nicknameText?.id
+                      ? { id: card.nicknameText.id }
+                      : undefined,
+                    create: card.nicknameText?.id
+                      ? undefined
+                      : {
+                          content: card.nicknameText.content,
+                          color: card.nicknameText.color || null,
+                          font: card.nicknameText.font || null,
+                        },
+                  }
+                : undefined,
             },
+          })),
+        },
+      },
+      include: {
+        images: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
           },
-        });
-      }
-    } else {
-      if (moduleName === "welcomer") {
-        await updateWelcomer(guildId, {
-          activeCard: {
-            disconnect: true,
-          },
-          activeCardToEmbed: {
-            disconnect: true,
-          },
-        })
-      } else if (moduleName === "leaver") {
-        await updateLeaver(guildId, {
-          activeCard: {
-            disconnect: true,
-          },
-          activeCardToEmbed: {
-            disconnect: true,
-          },
-        })
-      }
-    }
-  }
-
-  revalidatePath(`/app/dashboard/${guildId}/welcome/image`);
-
-  return {
-    store: {
-      imageCards: cards,
-    },
-    done: true,
-    error: null,
-  };
-  // } catch (error) {
-  //   console.log(error);
-  //   if (error instanceof Error) {
-  //     return {
-  //       done: false,
-  //       error: error.message,
-  //     };
-  //   }
-
-  //   return {
-  //     done: false,
-  //     error: "An error occurred while updating the image module",
-  //   };
-  // }
-}
-
-export async function createOrUpdateCard(
-  card: BaseCardParams,
-  moduleId: number,
-  moduleName: ModuleName
-): Promise<BaseCardParams | null> {
-  let cardDb;
-  const connectOrCreateMainText = card.mainText
-    ? {
-      mainText: {
-        connectOrCreate: {
-          where: {
-            id: card.mainText?.id ?? -1,
-          },
-          create: {
-            content: card.mainText.content,
-            color: card.mainText?.color,
-            font: card.mainText?.font,
+        },
+        activeCard: {
+          include: {
+            mainText: true,
+            secondText: true,
+            nicknameText: true,
           },
         },
       },
-    }
-    : {};
-
-  const connectOrCreateSecondText = card.secondText
-    ? {
-      secondText: {
-        connectOrCreate: {
-          where: {
-            id: card.secondText?.id ?? -1,
-          },
-          create: {
-            content: card.secondText!.content,
-            color: card.secondText?.color,
-            font: card.secondText?.font,
-          },
-        },
-      },
-    }
-    : {};
-
-  const connectOrCreateNicknameText = card.nicknameText
-    ? {
-      nicknameText: {
-        connectOrCreate: {
-          where: {
-            id: card.nicknameText?.id ?? -1,
-          },
-          create: {
-            content: card.nicknameText!.content,
-            color: card.nicknameText?.color,
-            font: card.nicknameText?.font,
-          },
-        },
-      },
-    }
-    : {};
-
-  if (card.mainText?.id) {
-    await updateImageCardText(card.mainText.id, card.mainText)
-  }
-
-  if (card.secondText?.id) {
-    await updateImageCardText(card.secondText.id, card.secondText)
-  }
-
-  if (card.nicknameText?.id) {
-    await updateImageCardText(card.nicknameText.id, card.nicknameText)
-  }
-
-  // try {
-  if (card.id) {
-    cardDb = await updateImageCard(card.id, {
-      [moduleName]: {
-        connect: {
-          id: moduleId,
-        },
-      },
-      backgroundImgURL: card.backgroundImgURL,
-      backgroundColor:
-        typeof card.backgroundColor === "string"
-          ? card.backgroundColor
-          : undefined,
-      avatarBorderColor: card.avatarBorderColor,
-      ...connectOrCreateMainText,
-      ...connectOrCreateSecondText,
-      ...connectOrCreateNicknameText,
     });
-  } else {
-    cardDb = await createImageCard(
-      {
-        [moduleName]: {
-          connect: {
-            id: moduleId,
-          },
-        },
-        backgroundImgURL: card.backgroundImgURL,
-        backgroundColor:
-          typeof card.backgroundColor === "string"
-            ? card.backgroundColor
-            : undefined,
-        avatarBorderColor: card.avatarBorderColor,
-        ...connectOrCreateMainText,
-        ...connectOrCreateSecondText,
-        ...connectOrCreateNicknameText,
-      });
+
+    return {
+      data: res,
+      done: true,
+      error: null,
+    };
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
+      return {
+        data: null,
+        done: false,
+        error: error.message,
+      };
+    }
+    return {
+      data: null,
+      done: false,
+      error: "An error occurred while updating the source",
+    };
   }
-  return {
-    ...(cardDb as BaseCardParams),
-  };
-  // } catch (error) {
-  //   console.error(error);
-  //   return null;
-  // }
 }

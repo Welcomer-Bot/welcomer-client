@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import GuildCard from "@/components/dashboard/guild/guildCard";
 import ManageButton from "@/components/dashboard/guild/manageButton";
 import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
-import { getChannel, getGuild, getUserGuild } from "@/lib/dal";
+import { getGuild, getSources } from "@/lib/dal";
+
 import { DiscordMention } from "@skyra/discord-components-react";
 
 export default async function Page({
@@ -13,18 +14,26 @@ export default async function Page({
   params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
-  const guild = await getUserGuild(guildId);
-  const guildModules = await getGuild(guildId);
-  const welcomerChannel = guildModules?.welcomer?.channelId ? await getChannel(guildModules.welcomer.channelId) : null;
-  const leaverChannel = guildModules?.leaver?.channelId
-    ? await getChannel(guildModules.leaver.channelId)
-    : null;
-
+  const guild = await getGuild(guildId);
   if (!guild) redirect("/dashboard");
+  const welcomer = await getSources(guildId, "Welcomer");
+  const leaver = await getSources(guildId, "Leaver");
+  const welcomerChannel =
+    welcomer && welcomer[0]?.channelId
+      ? await guild.getChannel(welcomer[0].channelId)
+      : null;
+  const leaverChannel =
+    leaver && leaver[0]?.channelId
+      ? await guild.getChannel(leaver[0].channelId)
+      : null;
 
   return (
-    <div className="overflow-y-scroll h-full no-scrollbar">
-      <Card className="sm:mx-5 sm:my-3">
+    <div className="w-full h-full no-scrollbar sm:px-4 sm:py-3">
+      <Card
+        classNames={{
+          base: "w-full",
+        }}
+      >
         <CardHeader>
           <GuildCard guild={guild} />
         </CardHeader>
@@ -36,9 +45,7 @@ export default async function Page({
                 <CardHeader>Welcomer status</CardHeader>
                 <CardBody className="flex flex-row justify-between">
                   <div>
-                    <p>
-                      Status: {guildModules?.welcomer ? "Enabled" : "Disabled"}
-                    </p>
+                    <p>Status: {welcomer ? "Enabled" : "Disabled"}</p>
                     <p>
                       Channel:{" "}
                       {welcomerChannel ? (
@@ -50,16 +57,14 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"welcomer"} />
+                  <ManageButton guildId={guild.id} module={"Welcomer"} />
                 </CardBody>
               </Card>
               <Card>
                 <CardHeader>Leaver status</CardHeader>
                 <CardBody className="flex flex-row justify-between">
                   <div>
-                    <p>
-                      Status: {guildModules?.leaver ? "Enabled" : "Disabled"}
-                    </p>
+                    <p>Status: {leaver ? "Enabled" : "Disabled"}</p>
                     <p>
                       Channel:{" "}
                       {leaverChannel ? (
@@ -71,12 +76,12 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"leaver"} />
+                  <ManageButton guildId={guild.id} module={"Leaver"} />
                 </CardBody>
               </Card>
             </div>
-            <StatsViewer guildId={guild.id} module={"welcomer"} />
-            <StatsViewer guildId={guild.id} module={"leaver"} />
+            <StatsViewer guildId={guild.id} module={"Welcomer"} />
+            <StatsViewer guildId={guild.id} module={"Leaver"} />
           </CardBody>
         </>
       </Card>

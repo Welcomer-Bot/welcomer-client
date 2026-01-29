@@ -1,7 +1,7 @@
 "use client";
 
+import { Period } from "@/prisma/generated/client";
 import { Select, SelectItem } from "@heroui/select";
-import { Period } from "@prisma/client";
 
 export default function PeriodSelector({
   value,

@@ -1,17 +1,16 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
-import { useWelcomerStore } from "@/state/welcomer";
-import { Button } from "@heroui/button";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { Button } from "@heroui/react";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export default function CreateEmbedButton() {
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
-  const addDefaultEmbed = store.addDefaultEmbed;
-  const embedsLength = store.embeds.length;
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const embedsLength = useStore(store, (state) => state.embeds.length);
+  const addDefaultEmbed = useStore(store, (state) => state.addDefaultEmbed);
+
   return (
     <Button
       className="sm:mr-4 sm:mb-0 mb-2"

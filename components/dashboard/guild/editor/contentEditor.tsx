@@ -1,17 +1,15 @@
 "use client";
 
-import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
-import { useWelcomerStore } from "@/state/welcomer";
 import { Textarea } from "@heroui/input";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export default function ContentEditor() {
-  const moduleName = useModuleNameStore((state) => state.moduleName);
-  const store = moduleName === "welcomer" ? useWelcomerStore : useLeaverStore;
-  const state = store();
-  const value = state.content;
-  const setValue = state.setContent;
-
+    const store = useContext(SourceStoreContext);
+    if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+    const value = useStore(store, (state) => state.content);
+    const setValue = useStore(store, (state) => state.setContent);
   return (
     <Textarea
       label={"Content " + `( ${value?.length ?? 0}/2000 )`}

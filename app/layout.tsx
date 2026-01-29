@@ -8,6 +8,7 @@ import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://beta.welcomer.app"),
   title: {
     default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
@@ -15,6 +16,9 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   icons: {
     icon: "/favicon.ico",
+  },
+  openGraph: {
+    images: "/opengraph-image.png",
   },
 };
 
@@ -31,20 +35,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="en" className="dark">
       <head />
-      <body>
-        <Providers
-          themeProps={{ attribute: "class", defaultTheme: "dark", children }}
-        >
-          <div
-            className={clsx(
-              "h-screen w-screen overflow-y-auto bg-background font-sans antialiased",
-              fontSans.variable
-            )}
-          >
+      <body
+        className={clsx(
+          "bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+          <main className="min-h-screen w-full grid content-center">
             {children}
-          </div>
+          </main>
           <ToastContainer />
         </Providers>
       </body>

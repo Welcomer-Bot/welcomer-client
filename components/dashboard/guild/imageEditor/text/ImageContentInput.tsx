@@ -1,18 +1,20 @@
 "use client";
 
-import { useImageStore } from "@/state/image";
+import { ImageStoreContext } from "@/providers/imageStoreProvider";
 import { ImageTextType } from "@/types";
 import { Input } from "@heroui/input";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
-export function ImageContentInput({
-  textType,
-}: {
-  textType: ImageTextType
-}) {
-  const content = useImageStore(
+export function ImageContentInput({ textType }: { textType: ImageTextType }) {
+  const store = useContext(ImageStoreContext);
+  if (!store) throw new Error("Missing ImageStore.Provider in the tree");
+
+  const content = useStore(
+    store,
     (state) => state.getActiveCard()![textType]?.content
   );
-  const setContent = useImageStore((state) => state.setTextContent);
+  const setContent = useStore(store, (state) => state.setTextContent);
 
   return (
     <Input

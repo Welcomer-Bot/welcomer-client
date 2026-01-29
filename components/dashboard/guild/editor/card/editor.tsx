@@ -1,20 +1,26 @@
 "use client";
-import { useLeaverStore } from "@/state/leaver";
-import { useModuleNameStore } from "@/state/moduleName";
-import { useWelcomerStore } from "@/state/welcomer";
-import { Button } from "@heroui/button";
+import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Radio, RadioGroup } from "@heroui/radio";
+import { Button } from "@heroui/react";
 import { usePathname, useRouter } from "next/navigation";
+import { useContext } from "react";
+import { useStore } from "zustand";
 
 export function CardPositionEditor() {
   const router = useRouter();
   const path = usePathname();
-  const currentModuleName = useModuleNameStore((state) => state.moduleName);
-  const welcomerStore = useWelcomerStore();
-  const leaverStore = useLeaverStore();
-  const store = currentModuleName === "welcomer" ? welcomerStore : leaverStore;
-  const activeCardId = store.activeCardId;
-  const embeds = store.embeds;
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const activeCardId = useStore(store, (state) => state.activeCardId);
+  const activeCardToEmbedId = useStore(
+    store,
+    (state) => state.activeCardToEmbedId
+  );
+  const embeds = useStore(store, (state) => state.embeds);
+  const setActiveCardEmbedPosition = useStore(
+    store,
+    (state) => state.setActiveCardEmbedPosition
+  );
 
   return activeCardId === null ? (
     <div className="text-center w-full">
@@ -35,11 +41,11 @@ export function CardPositionEditor() {
       <RadioGroup
         label="Card Position"
         value={
-          store.activeCardToEmbedId?.toString() ||
-          (store.activeCardToEmbedId == null && store.activeCardId ? "-1" : null)
+          activeCardToEmbedId?.toString() ||
+          (activeCardToEmbedId == null && activeCardId ? "-1" : null)
         }
         onValueChange={(value) => {
-          store.setActiveCardEmbedPosition(Number(value));
+          setActiveCardEmbedPosition(Number(value));
         }}
       >
         {embeds.map((embed, index) => (
@@ -47,7 +53,7 @@ export function CardPositionEditor() {
             {`Embed ${index + 1}`}
           </Radio>
         ))}
-        <Radio value={"-1"}>On the message bottom</Radio>
+        <Radio value={"-1"}>Outside the embeds</Radio>
         <Radio value={"-2"}>Do not show card</Radio>
       </RadioGroup>
     </div>

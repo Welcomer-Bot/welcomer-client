@@ -1,4 +1,4 @@
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 
 import { LogoutIcon as Icon } from "@/components/icons";
 import { signOut } from "@/lib/actions";

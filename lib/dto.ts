@@ -1,7 +1,8 @@
-import { ModuleName } from "@/types";
-import { GuildStats, Period } from "@prisma/client";
-import "server-only";
-import { getLatestGuildStats } from "./dal";
+"use server";
+
+import { GuildStats, Period, SourceType } from "@/prisma/generated/client";
+import { getFonts } from "font-list";
+import { getAllGuildStatsSinceTime, getLatestGuildStats } from "./dal";
 
 type StatsDictionary = {
   [key in Period]: GuildStats | null;
@@ -9,7 +10,7 @@ type StatsDictionary = {
 
 export async function fetchGuildStats(
   guildId: string,
-  type: ModuleName
+  type: SourceType
 ): Promise<StatsDictionary> {
   const res: StatsDictionary = {} as StatsDictionary;
 
@@ -25,8 +26,33 @@ export async function fetchGuildStats(
 export async function fetchGuildStat(
   guildId: string,
   period: Period,
-  type: ModuleName
+  type: SourceType
 ) {
-      return await getLatestGuildStats(guildId, period, type);
-
+  return await getLatestGuildStats(guildId, period, type);
 }
+
+export async function fetchAllGuildStatsSinceTime(
+  guildId: string,
+  period: Period,
+  type: SourceType,
+  since: Date
+) {
+  // const guild = await getGuild(guildId)
+  // if (!guild?.premium) {
+  //   return null;
+  // }
+  return await getAllGuildStatsSinceTime(guildId, period, type, since);
+}
+
+export async function fetchFontList() {
+  return await getFonts({ disableQuoting: true });
+}
+
+// export async function fetchUserDataAdmin(userId: string) {
+//   const user = await fetchUserFromSession()
+//   if (user?.id !== "479216487173980160") throw new Error("Unauthorized");
+//   const userGuilds = await getGuildsByUserId(userId);
+//   const targetUser = await getUserById(userId)
+//   if (!targetUser) throw new Error("User not found");
+//   return { ...targetUser, guilds: userGuilds };
+// }

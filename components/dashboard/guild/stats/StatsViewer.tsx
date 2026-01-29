@@ -1,11 +1,11 @@
 "use client";
 
-import { usePeriodStatsQuery } from "@/lib/queries";
-import { ModuleName } from "@/types";
+import { fetchGuildStat } from "@/lib/dto";
+
+import { GuildStats, Period, SourceType } from "@/prisma/generated/client";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
-import { Period } from "@prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PeriodSelector from "./PeriodSelector";
 
 export default function StatsViewer({
@@ -13,22 +13,40 @@ export default function StatsViewer({
   module,
 }: {
   guildId: string;
-  module: ModuleName;
+  module: SourceType;
 }) {
   const [period, setPeriod] = useState<Period>(Period.DAILY);
-  const { data, isLoading } = usePeriodStatsQuery(guildId, period, module);
+  const [data, setData] = useState<GuildStats | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const updateStats = async () => {
+      setIsLoading(true);
+      const updatedData = await fetchGuildStat(guildId, period, module);
+      // const chartData = await fetchAllGuildStatsSinceTime(guildId, period, module, new Date("12/05/24"))
+      // console.log(chartData);
+      setData(updatedData);
+      setIsLoading(false);
+    };
+    updateStats();
+  }, [period, guildId, module]);
+
+  const formattedModule = `${module[0].toUpperCase() + module.slice(1)} stats`;
+  const countableModule = module.slice(0, module.length - 1) + "d";
 
   return (
     <Card className="grid gap-5 px-5 pb-5">
       <CardHeader className="flex justify-between">
-        <h2>{module[0].toUpperCase() + module.slice(1)} stats</h2>
+        <h2>{formattedModule}</h2>
         <PeriodSelector value={period} setValue={setPeriod} />
       </CardHeader>
       {isLoading ? (
         <div className="grid  md:grid-cols-4 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -36,7 +54,9 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -44,7 +64,9 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
@@ -52,18 +74,20 @@ export default function StatsViewer({
           </Card>
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="rounded-lg">Members welcomed</Skeleton>
+              <Skeleton className="rounded-lg">
+                Members {countableModule}
+              </Skeleton>
             </CardHeader>
             <CardBody>
               <Skeleton className="rounded-lg">999</Skeleton>
             </CardBody>
           </Card>
         </div>
-      ) : (
+      ) : data ? (
         <div className="grid  md:grid-cols-4 sm:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="text-gray-400 text-sm">
-              Members welcomed
+              Members {countableModule}
             </CardHeader>
             <CardBody>{data?.membersEvent}</CardBody>
           </Card>
@@ -86,6 +110,10 @@ export default function StatsViewer({
             <CardBody>{data?.generatedEmbeds}</CardBody>
           </Card>
         </div>
+      ) : (
+        <p className="flex justify-center align-middle">
+          No data for this module{" "}
+        </p>
       )}
     </Card>
   );

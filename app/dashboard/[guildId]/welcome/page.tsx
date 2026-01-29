@@ -3,11 +3,9 @@ import { Divider } from "@heroui/divider";
 import { redirect } from "next/navigation";
 
 import RemoveModuleButton from "@/components/dashboard/guild/RemoveModuleButton";
-import AppInitializer from "@/components/dashboard/guild/editor/appInitialiser";
 import { Editor } from "@/components/dashboard/guild/editor/editor";
 import EnableModuleButton from "@/components/dashboard/guild/enableModuleButton";
-import { getGuild, getWelcomer } from "@/lib/dal";
-import { CompleteWelcomer } from "@/prisma/schema";
+import { getGuild, getSources, getUser } from "@/lib/dal";
 
 export default async function Page({
   params,
@@ -15,39 +13,40 @@ export default async function Page({
   params: Promise<{ guildId: string }>;
 }) {
   const { guildId } = await params;
-  const welcomerParams = await getWelcomer(guildId);
+  const source = await getSources(guildId, "Welcomer");
+  const welcomerParams = source?.[0];
   const guild = await getGuild(guildId);
+  // guild?.getPermissions();
+  const user = await getUser();
 
-  if (!guild) redirect("/dashboard");
+  if (!guild || !user) redirect("/dashboard");
 
   const WelcomeCardHeader = () => (
     <CardHeader className="flex justify-between">
       <p>Welcome module status</p>
       {welcomerParams ? (
-        <RemoveModuleButton guildId={guildId} moduleName="welcomer" />
+        <RemoveModuleButton
+          guildId={guild.id}
+          sourceId={welcomerParams.id}
+          sourceType="Welcomer"
+        />
       ) : (
-        <EnableModuleButton guildId={guildId} moduleName="welcomer"/>
+        <EnableModuleButton guildId={guild.id} sourceType="Welcomer" />
       )}
     </CardHeader>
   );
 
   return (
-    <AppInitializer
-      module={welcomerParams as CompleteWelcomer}
-      moduleName="welcomer"
-      guildId={guildId}
-    >
-      <Card radius="none" className="w-full h-full">
-        <WelcomeCardHeader />
-        {welcomerParams ? (
-          <>
-            <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll w-full ">
-              <Divider className="mb-2" />
-              <Editor />
-            </div>
-          </>
-        ) : null}
-      </Card>
-    </AppInitializer>
+    <Card radius="none" className="w-full min-h-full">
+      <WelcomeCardHeader />
+      {welcomerParams ? (
+        <>
+          <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll overflow-x-hidden w-full ">
+            <Divider className="mb-2" />
+            <Editor guild={guild} user={user} />
+          </div>
+        </>
+      ) : null}
+    </Card>
   );
 }

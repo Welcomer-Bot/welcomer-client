@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Card, CardBody } from "@heroui/react";
+import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { use, useEffect } from "react";
 
@@ -25,11 +26,16 @@ export default function Page({
     }
     fetch(`/api/auth/callback?code=${code}`)
       .then((res) => res.json())
-      .then((data) => {
+      .then(async (data) => {
         if (data.error) {
           return router.push(
             `/auth/error?error=${data.error}&error_description=${data.error_description}`
           );
+        }
+        const redirectUrl = data.redirectUrl;
+        if (redirectUrl) {
+          console.log("Redirecting to:", redirectUrl);
+          return router.push(redirectUrl);
         }
         return router.push("/dashboard");
       });
