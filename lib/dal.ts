@@ -41,8 +41,7 @@ export const fetchUserFromSession = cache(async () => {
     const session = await verifySession();
     if (!session) return null;
     try {
-        const user = await getUser();
-        return user;
+        return await getUser();
     } catch {
         return null;
     }
@@ -89,7 +88,7 @@ export async function getSource(
     sourceId: number
 ): Promise<Source | null> {
     try {
-        const source = await prisma.source.findFirst({
+        return await prisma.source.findFirst({
             where: {
                 guildId: guildId,
                 id: sourceId,
@@ -99,7 +98,6 @@ export async function getSource(
                 images: true,
             },
         });
-        return source;
     } catch {
         return null;
     }
@@ -441,7 +439,7 @@ export async function createDBSession(access_token: string, expires: number) {
     if (!user) {
         return null;
     }
-    const dbSession = await prisma.session.create({
+    return await prisma.session.create({
         data: {
             accessToken: access_token,
             expiresAt: new Date(Date.now() + expires * 1000),
@@ -453,7 +451,6 @@ export async function createDBSession(access_token: string, expires: number) {
             },
         },
     });
-    return dbSession;
 }
 
 export const getGuild = cache(async (guildId: string) => {
@@ -463,9 +460,8 @@ export const getGuild = cache(async (guildId: string) => {
         )) as RESTGetAPIGuildResult | RESTError;
         if (!data || "message" in data) return null;
 
-        const guild = new Guild(data);
+        return new Guild(data);
 
-        return guild;
     } catch {
         return null;
     }
