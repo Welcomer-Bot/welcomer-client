@@ -160,12 +160,15 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
   //     error: "Message is not valid",
   //   };
   // }
+  let updatedMessage = store.message;
   if (
     store.imagePosition &&
     store.imagePosition == "embed" &&
     store.imageEmbedIndex !== undefined
   ) {
-    const embed = store.message.embeds?.[store.imageEmbedIndex];
+    const currentMessage = store.message;
+    const embed =
+      currentMessage?.embeds?.[store.imageEmbedIndex];
     if (!embed) {
       return {
         data: null,
@@ -174,7 +177,16 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
       };
     }
     console.log("Setting embed image");
-    embed.image = { url: "imageCard" };
+    const embeds = [...(currentMessage.embeds ?? [])];
+    const updatedEmbed = {
+      ...embed,
+      image: { url: "imageCard" },
+    };
+    embeds[store.imageEmbedIndex] = updatedEmbed;
+    updatedMessage = {
+      ...currentMessage,
+      embeds,
+    };
   }
 
   try {
@@ -184,7 +196,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
       },
       data: {
         channelId: store.channelId,
-        message: store.message,
+        message: updatedMessage,
         // TODO: Update image
       },
     });
