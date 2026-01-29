@@ -1,5 +1,3 @@
-"server-only";
-
 import {
   APIChannel,
   APIGuild,
@@ -107,7 +105,7 @@ export default class Guild implements GuildObject {
       channels.map(async (channel) => {
         const perms = await this.getChannelsPermissions(channel.id);
         return { ...channel, permissions: perms };
-      })
+      }),
     );
     this.channels = channelsWithPermissions;
     return this.channels;
@@ -144,11 +142,11 @@ export default class Guild implements GuildObject {
       deny = 0n;
     // a. Overwrite @everyone
     const channel = this.channels.find(
-      (c) => c.id === channelId
+      (c) => c.id === channelId,
     ) as APITextChannel;
     if (!channel) return permissions;
     const overwriteEveryone = (channel.permission_overwrites ?? []).find(
-      (ow) => ow.id === this.id && ow.type === 0
+      (ow) => ow.id === this.id && ow.type === 0,
     );
     if (overwriteEveryone) {
       deny |= BigInt(overwriteEveryone.deny);
@@ -157,7 +155,7 @@ export default class Guild implements GuildObject {
     // b. Overwrites des rôles (somme tous les allow/deny des rôles du membre)
     for (const roleId of member.roles) {
       const ow = (channel.permission_overwrites ?? []).find(
-        (ow) => ow.id === roleId && ow.type === 0
+        (ow) => ow.id === roleId && ow.type === 0,
       );
       if (ow) {
         deny |= BigInt(ow.deny);
@@ -166,7 +164,7 @@ export default class Guild implements GuildObject {
     }
     // c. Overwrite utilisateur
     const overwriteUser = (channel.permission_overwrites ?? []).find(
-      (ow) => ow.id === member.user.id && ow.type === 1
+      (ow) => ow.id === member.user.id && ow.type === 1,
     );
     if (overwriteUser) {
       deny |= BigInt(overwriteUser.deny);
@@ -206,7 +204,7 @@ export const RequiredPermissions = [
 ].reduce((acc, perm) => acc | perm, 0n);
 
 export function hasRequiredPermissions(
-  permissions: bigint | number | undefined | null
+  permissions: bigint | number | undefined | null,
 ) {
   if (permissions === undefined || permissions === null) permissions = 0n;
   permissions =
@@ -219,7 +217,7 @@ export function hasRequiredPermissions(
 
 export function hasPermission(
   permissions: bigint | number | undefined | null,
-  flag: bigint | number | undefined | null
+  flag: bigint | number | undefined | null,
 ) {
   if (permissions === undefined || permissions === null) permissions = 0n;
   if (flag === undefined || flag === null) flag = 0n;

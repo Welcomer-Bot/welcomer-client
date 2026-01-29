@@ -6,7 +6,7 @@ import {
 import { APIEmbed } from "discord.js";
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { ImageCard, Source } from "../generated/prisma/client";
+import { ImageCard, Source } from "@/generated/prisma/client";
 
 export type SourceState = Source & {
   guildId: string;

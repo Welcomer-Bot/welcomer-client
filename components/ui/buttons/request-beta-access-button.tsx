@@ -1,21 +1,14 @@
 "use client";
-import { Button } from "@heroui/button";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from "@heroui/modal";
-import { DiscordMention } from "@skyra/discord-components-react";
-import { usePlausible } from "next-plausible";
+import {Button} from "@heroui/button";
+import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure,} from "@heroui/modal";
+import {DiscordMention} from "@clementvt/discord-components-react";
+import {usePlausible} from "next-plausible";
 import Image from "next/image";
-import { redirect } from "next/navigation";
+import {redirect} from "next/navigation";
 
 export default function RequestBetaAccessButton() {
   const plausible = usePlausible();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   return (
     <>

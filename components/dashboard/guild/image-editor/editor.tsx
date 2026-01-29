@@ -1,30 +1,27 @@
 "use client";
 
-import { createImageCard, deleteImageCard } from "@/lib/actions";
-import {
-  ImageCardStoreContext,
-  useImageCardStore,
-} from "@/providers/imageCardStoreProvider";
-import { Button } from "@heroui/button";
-import { Divider } from "@heroui/divider";
-import { useRouter } from "next/navigation";
-import { useContext, useState, useTransition } from "react";
-import { toast } from "react-toastify";
-import { AvatarEditor } from "./components/avatar-editor";
-import { BackgroundEditor } from "./components/background-editor";
-import { EditorHeader } from "./components/editor-header";
-import { Preview } from "./components/preview";
-import { SaveButton } from "./components/save-button";
-import { TextEditor } from "./components/text-editor";
-import { useImageEditor } from "./hooks/use-image-editor";
-import { BaseCardConfig } from "./types";
+import {createImageCard, deleteImageCard} from "@/lib/actions";
+import {ImageCardStoreContext, useImageCardStore,} from "@/providers/imageCardStoreProvider";
+import {Button} from "@heroui/button";
+import {Divider} from "@heroui/divider";
+import {useRouter} from "next/navigation";
+import {useContext, useState, useTransition} from "react";
+import {toast} from "react-toastify";
+import {AvatarEditor} from "./components/avatar-editor";
+import {BackgroundEditor} from "./components/background-editor";
+import {EditorHeader} from "./components/editor-header";
+import {Preview} from "./components/preview";
+import {SaveButton} from "./components/save-button";
+import {TextEditor} from "./components/text-editor";
+import {useImageEditor} from "./hooks/use-image-editor";
+import {BaseCardConfig} from "./types";
 
 interface EditorProps {
   module?: string;
   guildId: string;
 }
 
-export function Editor({ module, guildId }: EditorProps) {
+export function Editor({module, guildId}: EditorProps) {
   const [isPending, startTransition] = useTransition();
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -33,7 +30,6 @@ export function Editor({ module, guildId }: EditorProps) {
   // Get store context for direct state updates
   const store = useContext(ImageCardStoreContext);
 
-  // Get data from store
   const data = useImageCardStore((state) => state.data);
   const updateConfig = useImageCardStore((state) => state.updateConfig);
   const cardId = useImageCardStore((state) => state.id);
@@ -41,12 +37,7 @@ export function Editor({ module, guildId }: EditorProps) {
 
   const hasCard = cardId !== null && cardId !== undefined;
 
-  // Use the preview hook with store data only if card exists
-  const {
-    card,
-    error: previewError,
-    isLoading,
-  } = useImageEditor(guildId, data);
+  const {error: previewError, isLoading} = useImageEditor(guildId, data);
 
   const handleCreate = async () => {
     if (!sourceId || !store) return;
@@ -122,9 +113,9 @@ export function Editor({ module, guildId }: EditorProps) {
         <div className="lg:w-1/2 lg:h-full lg:overflow-y-scroll no-scrollbar lg:pb-24">
           <div className="px-5 pt-5 lg:pb-20 space-y-5 w-full relative">
             {/* Header with back button */}
-            <EditorHeader module={module} guildId={guildId} />
+            <EditorHeader module={module} guildId={guildId}/>
 
-            <Divider className="my-4" />
+            <Divider className="my-4"/>
 
             {!hasCard ? (
               <div className="flex flex-col items-center justify-center space-y-6 py-16 px-4">
@@ -211,41 +202,41 @@ export function Editor({ module, guildId }: EditorProps) {
                 <TextEditor
                   label="Main Text"
                   text={data.mainText}
-                  onChange={(text) => updateConfig({ mainText: text })}
+                  onChange={(text) => updateConfig({mainText: text})}
                   placeholder="Welcome {user.username}!"
                 />
 
                 <TextEditor
                   label="Nickname Text"
                   text={data.nicknameText}
-                  onChange={(text) => updateConfig({ nicknameText: text })}
+                  onChange={(text) => updateConfig({nicknameText: text})}
                   placeholder="@{user.username}"
                 />
 
                 <TextEditor
                   label="Secondary Text"
                   text={data.secondText}
-                  onChange={(text) => updateConfig({ secondText: text })}
+                  onChange={(text) => updateConfig({secondText: text})}
                   placeholder="Member #{guild.memberCount}"
                 />
 
-                <Divider className="my-4" />
+                <Divider className="my-4"/>
 
                 <BackgroundEditor
                   backgroundColor={data.backgroundColor}
                   backgroundImgURL={data.backgroundImgURL}
                   onBackgroundColorChange={(color) =>
-                    updateConfig({ backgroundColor: color })
+                    updateConfig({backgroundColor: color})
                   }
                   onBackgroundImgURLChange={(url) =>
-                    updateConfig({ backgroundImgURL: url })
+                    updateConfig({backgroundImgURL: url})
                   }
                 />
 
                 <AvatarEditor
                   avatarBorderColor={data.avatarBorderColor}
                   onAvatarBorderColorChange={(color) =>
-                    updateConfig({ avatarBorderColor: color })
+                    updateConfig({avatarBorderColor: color})
                   }
                 />
               </>
@@ -256,12 +247,11 @@ export function Editor({ module, guildId }: EditorProps) {
         {/* Right Column - Preview */}
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
           <div className="px-5 pt-5 lg:hidden block">
-            <Divider className="my-4" />
+            <Divider className="my-4"/>
             <h2 className="text-white text-lg font-semibold">Preview</h2>
           </div>
           <div className="p-5">
             <Preview
-              card={hasCard ? card : null}
               isLoading={hasCard ? isLoading : false}
               error={previewError}
             />
@@ -270,7 +260,7 @@ export function Editor({ module, guildId }: EditorProps) {
       </div>
 
       {/* Floating save button */}
-      <SaveButton guildId={guildId} />
+      <SaveButton guildId={guildId}/>
     </div>
   );
 }

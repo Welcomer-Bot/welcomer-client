@@ -1,23 +1,19 @@
 "use client";
 
-import {
-  hasPermission,
-  hasRequiredPermissions,
-  Permissions,
-} from "@/lib/discord/guild";
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
-import { Select, SelectItem, SelectSection } from "@heroui/select";
-import { Tooltip } from "@heroui/tooltip";
-import { DiscordMention } from "@skyra/discord-components-react";
-import { APIChannel } from "discord.js";
-import { useContext } from "react";
-import { useStore } from "zustand";
+import {hasPermission, hasRequiredPermissions, Permissions,} from "@/lib/discord/guild";
+import {SourceStoreContext} from "@/providers/sourceStoreProvider";
+import {Card, CardBody, CardHeader} from "@heroui/card";
+import {Chip} from "@heroui/chip";
+import {Select, SelectItem, SelectSection} from "@heroui/select";
+import {Tooltip} from "@heroui/tooltip";
+import {DiscordMention} from "@clementvt/discord-components-react";
+import {APIChannel} from "discord.js";
+import {useContext} from "react";
+import {useStore} from "zustand";
 
 export default function SendMenu({
-  channels,
-}: {
+                                   channels,
+                                 }: {
   channels: (APIChannel & {
     permissions: bigint;
   })[];
@@ -27,7 +23,7 @@ export default function SendMenu({
   const currentChannel = useStore(store, (state) => state.channelId);
   const updateChannel = useStore(store, (state) => state.setChannelId);
 
-  const selectedChannel = channels?.find(({ id }) => currentChannel === id);
+  const selectedChannel = channels?.find(({id}) => currentChannel === id);
   const hasPermissions = selectedChannel
     ? hasRequiredPermissions(selectedChannel.permissions)
     : true;
@@ -59,7 +55,7 @@ export default function SendMenu({
           selectedKeys={[
             currentChannel &&
             channels &&
-            channels?.find(({ id }) => currentChannel == id)
+            channels?.find(({id}) => currentChannel == id)
               ? currentChannel
               : "",
           ]}

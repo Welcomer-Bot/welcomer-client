@@ -12,6 +12,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@clementvt/discord-components-react": "^4.0.7",
     "@discordjs/builders": "2.0.0-dev.1755864085-55ab46dbc",
     "@discordjs/rest": "^2.5.1",
     "@heroui/react": "^2.8.1",
@@ -22,7 +23,6 @@
     "@prisma/client": "^7.0.1",
     "@sentry/nextjs": "^10",
     "@sentry/profiling-node": "^9.42.0",
-    "@skyra/discord-components-react": "^4.0.2",
     "@welcomer-bot/card-canvas": "^1.0.1",
     "clsx": "2.1.1",
     "debounce": "^2.2.0",
@@ -32,7 +32,7 @@
     "framer-motion": "^12.23.26",
     "immer": "^10.1.1",
     "jose": "^6.0.12",
-    "next": "^16.1.0",
+    "next": "^16.1.6",
     "next-plausible": "^3.12.5",
     "next-themes": "0.4.6",
     "react": "19.2.0",
