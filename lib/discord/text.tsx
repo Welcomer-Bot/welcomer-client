@@ -28,7 +28,7 @@ function CanvasRenderer({canvas}: { canvas: HTMLCanvasElement }) {
     useEffect(() => {
         if (containerRef.current && canvas) {
             // Clear previous canvas if any
-            containerRef.current.innerHTML = "";
+            containerRef.current.replaceChildren()
 
             // Clone the canvas to avoid modifying props directly
             const clonedCanvas = document.createElement("canvas");
@@ -44,7 +44,7 @@ function CanvasRenderer({canvas}: { canvas: HTMLCanvasElement }) {
         }
     }, [canvas]);
 
-    return <div ref={containerRef}/>;
+    return <div ref={containerRef} role={'img'}/>;
 }
 
 export function parseText(
