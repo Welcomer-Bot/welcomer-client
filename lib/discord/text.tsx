@@ -16,35 +16,27 @@ import {
 } from "@clementvt/discord-components-react";
 import {Skeleton} from "@heroui/skeleton";
 import {APIEmbed, RESTPostAPIChannelMessageJSONBody} from "discord.js";
-import React, {JSX, useEffect, useRef} from "react";
+import React, {JSX} from "react";
 import reactStringReplace from "react-string-replace";
 import {GuildObject} from "./guild";
 import {UserObject} from "./user";
 
 // Component to properly render HTMLCanvasElement
-function CanvasRenderer({canvas}: { canvas: HTMLCanvasElement }) {
-    const containerRef = useRef<HTMLDivElement>(null);
+function CanvasRenderer({canvas}: { canvas: RefObject<HTMLCanvasElement | undefined> }) {
+    const containerRef = React.useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (containerRef.current && canvas) {
-            // Clear previous canvas if any
-            containerRef.current.replaceChildren()
-
-            // Clone the canvas to avoid modifying props directly
-            const clonedCanvas = document.createElement("canvas");
-            clonedCanvas.width = canvas.width;
-            clonedCanvas.height = canvas.height;
-            const ctx = clonedCanvas.getContext("2d");
-            if (ctx) {
-                ctx.drawImage(canvas, 0, 0);
-            }
-
-            // Append the cloned canvas to the container
-            containerRef.current.appendChild(clonedCanvas);
+    React.useEffect(() => {
+        if (canvas.current && containerRef.current) {
+            // Clear any existing children
+            containerRef.current.innerHTML = '';
+            // Append the canvas element to the container
+            containerRef.current.appendChild(canvas.current);
         }
     }, [canvas]);
 
-    return <div ref={containerRef} role={'img'}/>;
+    if (!canvas.current) return null;
+
+    return <div ref={containerRef}/>;
 }
 
 export function parseText(
@@ -214,8 +206,8 @@ function renderEmbed(
                 authorName={embed.author?.name}
                 authorImage={embed.author?.icon_url}
                 title={parseText(embed.title, user, guild)}
+                customImageElement={true}
                 url={embed.url}
-
                 thumbnail={embed.thumbnail?.url}
             >
                 {embed.description && (
@@ -259,7 +251,7 @@ export function parseMessageToReactElement(
     user: UserObject,
     guild: GuildObject,
     options?: {
-        image?: HTMLCanvasElement;
+        image?: RefObject<HTMLCanvasElement | undefined>;
         imagePosition?: "outside" | "embed";
         imageEmbedIndex?: number;
         isLoadingImage?: boolean;
