@@ -71,8 +71,8 @@
     "prisma": "^7.0.1",
     "prisma-json-types-generator": "^3.6.2",
     "prisma-markdown": "^3.0.1",
-    "tailwind-variants": "1.0.0",
-    "tailwindcss": "4.1.11",
+    "tailwind-variants": "3.1.1",
+    "tailwindcss": "4.1.14",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
   },

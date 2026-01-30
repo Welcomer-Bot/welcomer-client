@@ -37,12 +37,14 @@ export default function Footer() {
             <p className="text-lg">Other Links</p>
             <div className="flex flex-col gap-1">
               <Link
+                prefetch={false}
                 href="https://top.gg/bot/1008260316192329749"
                 className="text-gray-400 hover:text-white"
               >
                 Vote
               </Link>
               <Link
+                prefetch={false}
                 href="https://github.com/Welcomer-Bot"
                 className="text-gray-400 hover:text-white"
               >
@@ -60,10 +62,18 @@ export default function Footer() {
           <div className="flex flex-col gap-2">
             <p className="text-lg">Legal</p>
             <div className="flex flex-col gap-1">
-              <Link href="/terms" className="text-gray-400 hover:text-white">
+              <Link
+                prefetch={false}
+                href="/terms"
+                className="text-gray-400 hover:text-white"
+              >
                 Terms of Service
               </Link>
-              <Link href="/privacy" className="text-gray-400 hover:text-white">
+              <Link
+                prefetch={false}
+                href="/privacy"
+                className="text-gray-400 hover:text-white"
+              >
                 Privacy Policy
               </Link>
             </div>
