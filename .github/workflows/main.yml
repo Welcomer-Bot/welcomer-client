@@ -1,4 +1,6 @@
 name: Deployment Workflow
+permissions:
+  contents: read
 
 on:
   push:
@@ -48,7 +50,7 @@ jobs:
           server: ${{ secrets.HOST }}
           password: ${{ secrets.PASSWORD }}
           local_path: '.next/*'
-          remote_path: '/var/www/welcomer-client/.next'
+          remote_path: '/var/www/welcomer-beta/client/.next'
           rsyncArgs: '--exclude=*.map'
           sftpArgs: '-o ConnectTimeout=5'
 
@@ -59,8 +61,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd /var/www/welcomer-client
+            cd /var/www/welcomer-beta/client
             git pull
             yarn
             yarn prisma generate
-            pm2 restart welcomer-client
+            pm2 restart beta_client
