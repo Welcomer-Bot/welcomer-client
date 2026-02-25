@@ -8,7 +8,7 @@ import {
 import { SourceStoreContext } from "@/providers/sourceStoreProvider";
 import { Tooltip } from "@heroui/react";
 import { Select, SelectItem, SelectSection } from "@heroui/select";
-import { DiscordMention } from "@skyra/discord-components-react";
+import { DiscordMention } from "@clementvt/discord-components-react";
 import { APIChannel } from "discord.js";
 import { useContext } from "react";
 import { useStore } from "zustand";

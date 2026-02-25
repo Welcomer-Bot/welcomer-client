@@ -8,7 +8,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@heroui/react";
-import { DiscordMention } from "@skyra/discord-components-react";
+import { DiscordMention } from "@clementvt/discord-components-react";
 import { usePlausible } from "next-plausible";
 import Image from "next/image";
 import { redirect } from "next/navigation";

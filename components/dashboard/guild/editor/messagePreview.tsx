@@ -12,7 +12,7 @@ import {
   DiscordImageAttachment,
   DiscordMessage,
   DiscordMessages,
-} from "@skyra/discord-components-react";
+} from "@clementvt/discord-components-react";
 import { BaseCardParams } from "@welcomer-bot/card-canvas";
 import { ReactNode, useEffect, useState } from "react";
 export default function MessagePreview({
@@ -148,58 +148,56 @@ export default function MessagePreview({
             (msg.activeCardToEmbedId == null &&
               msg.activeCard &&
               msg.activeCardId)) &&
-            image && <DiscordImageAttachment url={image} width={300} />}
-          <div>
-            {text.embeds &&
-              text.embeds.map((embed, index) => {
-                return (
-                  <DiscordEmbed
-                    slot="embeds"
-                    color={embed.color?.toString()}
-                    key={index}
-                    embedTitle={embed.title ?? undefined}
-                    authorName={embed.author?.name ?? ""}
-                    authorImage={embed.author?.iconUrl ?? undefined}
-                    authorUrl={embed.author?.url ?? undefined}
-                    url={embed.url ?? undefined}
-                    thumbnail={embed.thumbnail ?? undefined}
-                    image={
-                      msg.activeCardToEmbedId === index && image
-                        ? image
-                        : undefined
+            image && <DiscordImageAttachment slot="attachments" url={image} width={300} />}
+          {text.embeds &&
+            text.embeds.map((embed, index) => {
+              return (
+                <DiscordEmbed
+                  slot="embeds"
+                  color={embed.color?.toString()}
+                  key={index}
+                  embedTitle={embed.title ?? undefined}
+                  authorName={embed.author?.name ?? ""}
+                  authorImage={embed.author?.iconUrl ?? undefined}
+                  authorUrl={embed.author?.url ?? undefined}
+                  url={embed.url ?? undefined}
+                  thumbnail={embed.thumbnail ?? undefined}
+                  image={
+                    msg.activeCardToEmbedId === index && image
+                      ? image
+                      : undefined
+                  }
+                >
+                  <DiscordEmbedDescription slot="description">
+                    {embed.description}
+                  </DiscordEmbedDescription>
+                  {embed.fields && (
+                    <DiscordEmbedFields slot="fields">
+                      {embed.fields.map((field, index) => (
+                        <DiscordEmbedField
+                          key={index}
+                          inline={field.inline ?? undefined}
+                          fieldTitle={field.name}
+                        >
+                          {field.value}
+                        </DiscordEmbedField>
+                      ))}
+                    </DiscordEmbedFields>
+                  )}
+                  <DiscordEmbedFooter
+                    slot="footer"
+                    footerImage={embed.footer?.iconUrl ?? undefined}
+                    timestamp={
+                      embed.timestampNow
+                        ? new Date().toISOString()
+                        : embed.timestamp
                     }
                   >
-                    <DiscordEmbedDescription slot="description">
-                      {embed.description}
-                    </DiscordEmbedDescription>
-                    {embed.fields && (
-                      <DiscordEmbedFields slot="fields">
-                        {embed.fields.map((field, index) => (
-                          <DiscordEmbedField
-                            key={index}
-                            inline={field.inline ?? undefined}
-                            fieldTitle={field.name}
-                          >
-                            {field.value}
-                          </DiscordEmbedField>
-                        ))}
-                      </DiscordEmbedFields>
-                    )}
-                    <DiscordEmbedFooter
-                      slot="footer"
-                      footerImage={embed.footer?.iconUrl ?? undefined}
-                      timestamp={
-                        embed.timestampNow
-                          ? new Date().toISOString()
-                          : embed.timestamp
-                      }
-                    >
-                      {embed.footer?.text}
-                    </DiscordEmbedFooter>
-                  </DiscordEmbed>
-                );
-              })}
-          </div>
+                    {embed.footer?.text}
+                  </DiscordEmbedFooter>
+                </DiscordEmbed>
+              );
+            })}
         </DiscordMessage>
       </DiscordMessages>
   );

@@ -3,7 +3,7 @@ import {
   DiscordCode,
   DiscordItalic,
   DiscordMention,
-} from "@skyra/discord-components-react";
+} from "@clementvt/discord-components-react";
 import reactStringReplace from "react-string-replace";
 import { GuildObject } from "./guild";
 import { UserObject } from "./user";

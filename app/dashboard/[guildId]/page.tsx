@@ -6,7 +6,7 @@ import ManageButton from "@/components/dashboard/guild/manageButton";
 import StatsViewer from "@/components/dashboard/guild/stats/StatsViewer";
 import { getGuild, getSources } from "@/lib/dal";
 
-import { DiscordMention } from "@skyra/discord-components-react";
+import { DiscordMention } from "@clementvt/discord-components-react";
 
 export default async function Page({
   params,
