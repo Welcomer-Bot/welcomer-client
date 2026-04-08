@@ -21,7 +21,7 @@ import { ThemeSwitch } from "@/components/ui/buttons/theme-switch";
 import { DiscordIcon, GithubIcon } from "@/components/ui/icons/icons";
 import { siteConfig } from "@/config/site";
 
-export const Navbar = () => {
+const Navbar = () => {
   return (
     <NextUINavbar maxWidth="lg" className="fixed" isBlurred>
       <NavbarBrand as="li">
@@ -84,3 +84,7 @@ export const Navbar = () => {
     </NextUINavbar>
   );
 };
+
+export { Navbar };
+export default Navbar;
+

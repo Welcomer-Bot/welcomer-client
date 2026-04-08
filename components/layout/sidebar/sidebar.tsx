@@ -112,3 +112,7 @@ export function Sidebar({
     </SidebarWrapper>
   );
 }
+
+export { Sidebar };
+export default Sidebar;
+

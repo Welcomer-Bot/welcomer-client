@@ -1,5 +1,20 @@
 "use client";
 
+/**
+ * OAuth Callback Handler
+ *
+ * Traite le callback OAuth Discord avec le code d'autorisation et le state CSRF.
+ * Valide l'échange de token et établit la session utilisateur.
+ *
+ * Flow:
+ * 1. Récupère code + state depuis les query params
+ * 2. Appelle /api/auth/callback pour valider et créer la session
+ * 3. Redirige vers le dashboard ou une page d'erreur
+ *
+ * @see app/api/auth/callback/route.ts
+ * @see lib/session.ts
+ */
+
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
