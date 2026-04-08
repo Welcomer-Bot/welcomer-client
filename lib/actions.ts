@@ -1,18 +1,37 @@
+/**
+ * Server Actions for Source & ImageCard Mutations
+ *
+ * All mutations enforce permission checks via getUserGuild() and
+ * handle errors via centralized lib/error.ts patterns.
+ *
+ * Error handling:
+ * - getUserGuild() throws if user lacks permission
+ * - assertSnowflake() validates ID format
+ * - handleServerError() + reportError() wraps operational errors
+ * - Zod + MessageBuilder validate business logic
+ */
+
 "use server";
 
-import {redirect} from "next/navigation";
-
-import {revalidatePath} from "next/cache";
-
-import {ImageCard, Source} from "@/generated/prisma/client";
-import {SourceType} from "@/generated/prisma/enums";
-import {ImageCardState} from "@/state/imageCard";
-import {SourceState} from "@/state/source";
-import {MessageBuilder, ValidationError} from "@discordjs/builders";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { ImageCard, Source } from "@/generated/prisma/client";
+import { SourceType } from "@/generated/prisma/enums";
+import { ImageCardState } from "@/state/imageCard";
+import { SourceState } from "@/state/source";
+import { MessageBuilder, ValidationError } from "@discordjs/builders";
 import z from "zod";
-import {createSource as createSourceRequest, deleteSource, getUserGuild,} from "./dal";
+import { createSource as createSourceRequest, deleteSource, getUserGuild } from "./dal";
 import prisma from "./prisma";
-import {deleteSession} from "./session";
+import { deleteSession } from "./session";
+import {
+  AppError,
+  ErrorCode,
+  assertSnowflake,
+  handleServerError,
+  reportError,
+  logError,
+} from "./error";
 
 export async function signIn() {
   redirect("/api/auth/login");
