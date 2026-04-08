@@ -1,4 +1,3 @@
-
 type shardStatus = {
   shardId: number;
   guilds: number;
@@ -21,11 +20,11 @@ export type clusterStatus = {
 };
 
 class StatusManager {
+  public initialised: boolean;
   private clusterCount: number;
   private shardCount: number;
   private currentStatus: clusterStatus[];
   private intervalId: NodeJS.Timeout;
-  public initialised: boolean;
 
   constructor(clusterCount: number, shardCount: number) {
     this.clusterCount = clusterCount;
@@ -79,7 +78,24 @@ class StatusManager {
       this.clusterCount++;
       this.shardCount += status.shardIds.length;
     }
-    // console.log("Updated status for cluster", this.currentStatus);
+  }
+
+  public getStatus() {
+    // console.log("Getting status");
+    // console.log(this.currentStatus);
+
+    return this.currentStatus.map((cluster) => {
+      const clusterUptime = (Date.now() - cluster.uptime) / 1000 / 60;
+      return {
+        ...cluster,
+        uptime: clusterUptime,
+      };
+    });
+
+  }
+
+  public stop() {
+    clearInterval(this.intervalId);
   }
 
   private checkForStaleData() {
@@ -92,29 +108,11 @@ class StatusManager {
           // console.log(
           //   `Shard ${shard.shardId} in cluster ${cluster.clusterId} is stale`
           // );
-          return { ...shard, status: 5 };
+          return {...shard, status: 5};
         }
         return shard;
       });
     });
-  }
-
-  public getStatus() {
-    // console.log("Getting status");
-    // console.log(this.currentStatus);
-
-  return this.currentStatus.map((cluster) => {
-    const clusterUptime = (Date.now() - cluster.uptime) / 1000 /60;
-    return {
-      ...cluster,
-      uptime: clusterUptime,
-    };
-  });
-
-  }
-
-  public stop() {
-    clearInterval(this.intervalId);
   }
 }
 

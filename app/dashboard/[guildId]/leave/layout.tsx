@@ -1,17 +1,16 @@
-import { getSources } from "@/lib/dal";
-import { SourceStoreProvider } from "@/providers/sourceStoreProvider";
-import { Source } from "../../../../generated/prisma/client";
+import {getSources} from "@/lib/dal";
+import {SourceStoreProvider} from "@/providers/sourceStoreProvider";
+import {Source} from "../../../../generated/prisma/client";
 
 export default async function Layout({
-  children,
-  params,
-}: {
+                                       children,
+                                       params,
+                                     }: {
   children: React.ReactNode;
   params: Promise<{ guildId: string }>;
 }) {
-  const { guildId } = await params;
+  const {guildId} = await params;
   const source = await getSources(guildId, "Leaver");
-  console.log("sources", source);
 
   //TODO: handle multiple source and source selection
   return (
@@ -20,8 +19,8 @@ export default async function Layout({
         source && source[0]
           ? (source[0] as Source)
           : {
-              guildId: guildId,
-            }
+            guildId: guildId,
+          }
       }
     >
       {children}

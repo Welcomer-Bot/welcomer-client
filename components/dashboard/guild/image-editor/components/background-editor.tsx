@@ -1,7 +1,7 @@
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Input } from "@heroui/input";
-import { Tab, Tabs } from "@heroui/tabs";
+import {Button} from "@heroui/button";
+import {Card, CardBody, CardHeader} from "@heroui/card";
+import {Input} from "@heroui/input";
+import {Tab, Tabs} from "@heroui/tabs";
 
 interface BackgroundEditorProps {
   backgroundColor: string | null | undefined;
@@ -11,27 +11,25 @@ interface BackgroundEditorProps {
 }
 
 const GRADIENT_PRESETS = [
-  { name: "Discord Dark", value: "#2c2f33" },
-  { name: "Discord Darker", value: "#23272a" },
-  { name: "Blurple", value: "#5865f2" },
-  { name: "Ocean", value: "#1a5276" },
-  { name: "Forest", value: "#1e4d2b" },
-  { name: "Sunset", value: "#c0392b" },
-  { name: "Midnight", value: "#1a1a2e" },
-  { name: "Purple", value: "#4a235a" },
+  {name: "Discord Dark", value: "#2c2f33"},
+  {name: "Discord Darker", value: "#23272a"},
+  {name: "Blurple", value: "#5865f2"},
+  {name: "Ocean", value: "#1a5276"},
+  {name: "Forest", value: "#1e4d2b"},
+  {name: "Sunset", value: "#c0392b"},
+  {name: "Midnight", value: "#1a1a2e"},
+  {name: "Purple", value: "#4a235a"},
 ];
 
 export function BackgroundEditor({
-  backgroundColor,
-  backgroundImgURL,
-  onBackgroundColorChange,
-  onBackgroundImgURLChange,
-}: BackgroundEditorProps) {
+                                   backgroundColor,
+                                   backgroundImgURL,
+                                   onBackgroundColorChange,
+                                   onBackgroundImgURLChange,
+                                 }: BackgroundEditorProps) {
   const currentColor = backgroundColor || "#2c2f33";
   // Check if backgroundImgURL is not null (including empty string)
   const hasImage = backgroundImgURL !== null;
-  console.log("hasImage", hasImage);
-  console.log("backgroundImgURL", backgroundImgURL);
   return (
     <Card shadow="sm">
       <CardHeader className="pb-0 flex justify-between items-center">
@@ -76,7 +74,7 @@ export function BackgroundEditor({
                         ? "border-primary ring-2 ring-primary/50"
                         : "border-default-200"
                     }`}
-                    style={{ backgroundColor: preset.value }}
+                    style={{backgroundColor: preset.value}}
                     title={preset.name}
                   >
                     <span className="text-[10px] text-white/70 font-medium">

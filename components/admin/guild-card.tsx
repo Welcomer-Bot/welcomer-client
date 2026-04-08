@@ -1,20 +1,16 @@
 "use client";
 
-import {
-  enrollGuildToBetaProgram,
-  leaveGuild,
-  removeGuildFromBetaProgram,
-} from "@/lib/admin/actions";
-import { GuildObject } from "@/lib/discord/guild";
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import {enrollGuildToBetaProgram, leaveGuild, removeGuildFromBetaProgram,} from "@/lib/admin/actions";
+import {GuildObject} from "@/lib/discord/guild";
+import {Button} from "@heroui/button";
+import {Card, CardBody, CardHeader} from "@heroui/card";
 import Image from "next/image";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 
 export default function GuildCard({
-  guild,
-  userId,
-}: {
+                                    guild,
+                                    userId,
+                                  }: {
   guild: GuildObject;
   userId?: string;
 }) {
@@ -69,7 +65,6 @@ export default function GuildCard({
                 if (res) {
                   toast.success("Enrolled guild to beta program");
                 } else {
-                  console.log(res);
                   toast.error("Failed to enroll guild to beta program");
                 }
               }}

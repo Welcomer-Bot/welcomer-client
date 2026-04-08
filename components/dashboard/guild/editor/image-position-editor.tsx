@@ -33,7 +33,6 @@ export default function ImagePositionEditor() {
   }));
 
   const hasImage = activeCardId !== null && activeCardId !== undefined;
-  console.log("hasImage", hasImage);
   return (
     <Card shadow="sm">
       <CardHeader className="pb-0 flex justify-between items-center">

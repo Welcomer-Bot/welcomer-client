@@ -1,22 +1,18 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import {redirect} from "next/navigation";
 
-import { revalidatePath } from "next/cache";
+import {revalidatePath} from "next/cache";
 
-import { ImageCard, Source } from "@/generated/prisma/client";
-import { SourceType } from "@/generated/prisma/enums";
-import { ImageCardState } from "@/state/imageCard";
-import { SourceState } from "@/state/source";
-import { MessageBuilder, ValidationError } from "@discordjs/builders";
+import {ImageCard, Source} from "@/generated/prisma/client";
+import {SourceType} from "@/generated/prisma/enums";
+import {ImageCardState} from "@/state/imageCard";
+import {SourceState} from "@/state/source";
+import {MessageBuilder, ValidationError} from "@discordjs/builders";
 import z from "zod";
-import {
-  createSource as createSourceRequest,
-  deleteSource,
-  getUserGuild,
-} from "./dal";
+import {createSource as createSourceRequest, deleteSource, getUserGuild,} from "./dal";
 import prisma from "./prisma";
-import { deleteSession } from "./session";
+import {deleteSession} from "./session";
 
 export async function signIn() {
   redirect("/api/auth/login");
@@ -61,10 +57,8 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
   done: boolean;
   error: string | null;
 }> {
-  console.log("updateSource", store);
   const guildId = store.guildId;
   const sourceId = store.id;
-  console.log("store", store);
   if (!guildId) {
     return {
       data: null,
@@ -102,9 +96,6 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
     };
   }
 
-  console.log("Checking image card deletion");
-  console.log("store.imageEmbedIndex", store.imageEmbedIndex);
-  console.log("store.imagePosition", store.imagePosition);
 
   if (store.imageEmbedIndex == undefined && store.imagePosition === undefined) {
     await deleteActiveImageCardInternal(sourceId, guildId);
@@ -112,7 +103,6 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
   }
 
   try {
-    console.log("Validating message", store.message);
     let embedIndex: number | undefined = undefined;
     store.message.embeds?.map((embed, i: number) => {
       if (embed.image && embed.image.url === "imageCard") {
@@ -129,7 +119,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
         store.imagePosition === "embed"
       ) {
         // Restore image after validation
-        embed.image = { url: "attachment://card.png" };
+        embed.image = {url: "attachment://card.png"};
       }
     });
   } catch (e) {
@@ -176,11 +166,10 @@ export async function updateSource(store: Partial<SourceState>): Promise<{
         error: "Embed index for image is invalid",
       };
     }
-    console.log("Setting embed image");
     const embeds = [...(currentMessage.embeds ?? [])];
     const updatedEmbed = {
       ...embed,
-      image: { url: "imageCard" },
+      image: {url: "imageCard"},
     };
     embeds[store.imageEmbedIndex] = updatedEmbed;
     updatedMessage = {
@@ -542,14 +531,14 @@ export async function createImageCard(
 
     // Set as active card if none exists
     const source = await prisma.source.findUnique({
-      where: { id: sourceId },
-      select: { activeCardId: true },
+      where: {id: sourceId},
+      select: {activeCardId: true},
     });
 
     if (!source?.activeCardId) {
       await prisma.source.update({
-        where: { id: sourceId },
-        data: { activeCardId: card.id },
+        where: {id: sourceId},
+        data: {activeCardId: card.id},
       });
     }
 
@@ -617,7 +606,7 @@ export async function updateImageCard(
 
   try {
     const card = await prisma.imageCard.update({
-      where: { id: cardId },
+      where: {id: cardId},
       data: {
         data: store.data as object,
       },
@@ -660,7 +649,7 @@ async function deleteImageCardInternal(
 
   try {
     await prisma.imageCard.delete({
-      where: { id: cardId },
+      where: {id: cardId},
     });
 
     return {
@@ -697,8 +686,8 @@ async function deleteActiveImageCardInternal(
 
   try {
     const source = await prisma.source.findUnique({
-      where: { id: sourceId },
-      select: { activeCardId: true },
+      where: {id: sourceId},
+      select: {activeCardId: true},
     });
 
     if (!source?.activeCardId) {

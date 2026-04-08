@@ -1,19 +1,19 @@
-import { BaseCardConfig } from "@/components/dashboard/guild/image-editor/types";
-import { getSources } from "@/lib/dal";
+import {BaseCardConfig} from "@/components/dashboard/guild/image-editor/types";
+import {getSources} from "@/lib/dal";
 import prisma from "@/lib/prisma";
-import { ImageCardStoreProvider } from "@/providers/imageCardStoreProvider";
-import { redirect } from "next/navigation";
+import {ImageCardStoreProvider} from "@/providers/imageCardStoreProvider";
+import {redirect} from "next/navigation";
 
 export default async function Layout({
-  children,
-  params,
-}: {
+                                       children,
+                                       params,
+                                     }: {
   children: React.ReactNode;
   params: Promise<{
     guildId: string;
   }>;
 }) {
-  const { guildId } = await params;
+  const {guildId} = await params;
   const sources = await getSources(guildId, "Welcomer");
 
   // Get the first source and its active card
@@ -24,31 +24,24 @@ export default async function Layout({
   let imageCard = null;
   if (source?.activeCardId) {
     imageCard = await prisma.imageCard.findUnique({
-      where: { id: source.activeCardId },
+      where: {id: source.activeCardId},
     });
   }
-
-  console.log("ImageCardStoreProvider - Welcome Image Layout", {
-    hasSource: !!source,
-    sourceId: source?.id,
-    hasImageCard: !!imageCard,
-    imageCardId: imageCard?.id,
-  });
 
   return (
     <ImageCardStoreProvider
       initialState={
         imageCard
           ? {
-              id: imageCard.id,
-              sourceId: imageCard.sourceId,
-              data: imageCard.data as BaseCardConfig,
-              createdAt: imageCard.createdAt,
-              updatedAt: imageCard.updatedAt,
-            }
+            id: imageCard.id,
+            sourceId: imageCard.sourceId,
+            data: imageCard.data as BaseCardConfig,
+            createdAt: imageCard.createdAt,
+            updatedAt: imageCard.updatedAt,
+          }
           : {
-              sourceId: source?.id || 0,
-            }
+            sourceId: source?.id || 0,
+          }
       }
     >
       {children}

@@ -1,5 +1,5 @@
-import { statusManager } from "@/lib/discord/status";
-import { NextRequest } from "next/server";
+import {statusManager} from "@/lib/discord/status";
+import {NextRequest} from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
         }
       );
     }
-    //   console.log("headers", headers);
     if (headers.get("authorization") !== process.env.SERVER_TOKEN) {
       return new Response(
         JSON.stringify({
