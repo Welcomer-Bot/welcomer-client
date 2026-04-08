@@ -46,6 +46,8 @@
 ## Implementation Patterns to Preserve
 
 - Keep server-only logic in `lib/dal.ts` and `lib/actions.ts`; client code should call server actions, not Prisma.
+- Prefer Next.js Server Actions for first-party UI reads/writes; only use Route Handlers for external/webhook/public API use-cases.
+- Favor Next.js built-ins (`cache(...)`, `revalidatePath(...)`, `cookies()`, `headers()`, `redirect()`, `notFound()`) over custom transport layers when possible.
 - Preserve cache + revalidation behavior (`cache(...)` in reads, `revalidatePath(...)` in writes).
 - Keep permission checks before mutations (`getUserGuild(...)` pattern in `lib/actions.ts`).
 - Reuse singletons for infra clients (`lib/prisma.ts`, `lib/discord/rest.ts`, `lib/discord/status.ts`) to avoid
