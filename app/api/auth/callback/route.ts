@@ -2,216 +2,161 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { createDBSession } from "@/lib/dal";
 import { createSession } from "@/lib/session";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
+function requireEnv(
+  name:
+    | "NEXT_PUBLIC_DISCORD_CLIENT_ID"
+    | "DISCORD_CLIENT_SECRET"
+    | "REDIRECT_URI",
+) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
 
-const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!;
-const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET!;
-const REDIRECT_URI = process.env.REDIRECT_URI!;
+function authErrorRedirect(
+  request: NextRequest,
+  error: string,
+  errorDescription: string,
+) {
+  const errorUrl = new URL("/auth/error", request.nextUrl.origin);
+  errorUrl.searchParams.set("error", error);
+  errorUrl.searchParams.set("error_description", errorDescription);
+  return NextResponse.redirect(errorUrl);
+}
+
+function sanitizeRedirectPath(path: string | undefined) {
+  if (!path) return null;
+  if (!path.startsWith("/") || path.startsWith("//")) return null;
+  return path;
+}
+
 export async function GET(request: NextRequest) {
   const cookieStore = await cookies();
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
+  const state = searchParams.get("state");
   const error = searchParams.get("error");
-  const error_description =
+  const errorDescription =
     searchParams.get("error_description") ??
     "An error occurred during authentication";
 
   if (error) {
-    if (error == "access_denied") {
-      return redirect("/");
+    if (error === "access_denied") {
+      return NextResponse.redirect(new URL("/", request.nextUrl.origin));
     }
-
-    return redirect(`/auth/error?error=${error}&error_description=${error_description}`);
+    return authErrorRedirect(request, error, errorDescription);
   }
 
   if (!code) {
-    return redirect(
-
-      "/auth/error?error=codeMissing&error_description=The+authorization+code+is+missing",
-
+    return authErrorRedirect(
+      request,
+      "codeMissing",
+      "The authorization code is missing",
     );
   }
 
-  const redirectUrl = cookieStore.get("redirectAfterLogin")?.value;
-  // check if redirect url is a valid path and not an external url
-  if (redirectUrl && !redirectUrl.startsWith("/")) {
-    return redirect("/auth/error?error=invalidRedirectUrl&error_description=The+redirect+url+is+invalid");
+  if (!state) {
+    return authErrorRedirect(request, "stateMissing", "The state parameter is missing");
   }
-  if (redirectUrl)cookieStore.delete("redirectAfterLogin");
+
+  const expectedState = cookieStore.get("oauthState")?.value;
+  if (!expectedState || state !== expectedState) {
+    const response = authErrorRedirect(
+      request,
+      "invalidState",
+      "Invalid authentication state",
+    );
+    response.cookies.delete("oauthState");
+    return response;
+  }
+
+  const redirectAfterLoginCookie = cookieStore.get("redirectAfterLogin")?.value;
+  const redirectUrl = sanitizeRedirectPath(redirectAfterLoginCookie) ?? "/dashboard";
 
   try {
     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       body: new URLSearchParams({
-        client_id: DISCORD_CLIENT_ID!,
-        client_secret: DISCORD_CLIENT_SECRET!,
+        client_id: requireEnv("NEXT_PUBLIC_DISCORD_CLIENT_ID"),
+        client_secret: requireEnv("DISCORD_CLIENT_SECRET"),
         grant_type: "authorization_code",
         code,
-        redirect_uri: REDIRECT_URI!,
+        redirect_uri: requireEnv("REDIRECT_URI"),
       }),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-    }).then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return NextResponse.json(
-          {
-            error: "internalServerError",
-            error_description: "An internal server error occurred",
-          },
-          {
-            status: 500,
-          })
-      }
-      );
+      cache: "no-store",
+    });
 
-    if (!tokenResponse) {
+    if (!tokenResponse.ok) {
       return NextResponse.json(
         {
-          error: "internalServerError",
-          error_description: "An internal server error occurred",
+          error: "invalid_grant",
+          error_description: "The authorization code is invalid or expired",
         },
-        {
-          status: 500,
-        }
-      )
+        { status: 400 },
+      );
     }
 
-    const { access_token, expires_in } = tokenResponse;
-    const dbSession = await createDBSession(access_token, expires_in);
+    const tokenData = (await tokenResponse.json()) as {
+      access_token?: string;
+      expires_in?: number;
+    };
+
+    if (
+      typeof tokenData.access_token !== "string" ||
+      typeof tokenData.expires_in !== "number"
+    ) {
+      return NextResponse.json(
+        {
+          error: "invalid_token_response",
+          error_description: "Unexpected token response from OAuth provider",
+        },
+        { status: 502 },
+      );
+    }
+
+    const dbSession = await createDBSession(
+      tokenData.access_token,
+      tokenData.expires_in,
+    );
+
     if (!dbSession) {
       return NextResponse.json(
         {
           error: "internalServerError",
-          error_description: "An internal server error occurred",
+          error_description: "Unable to create session",
         },
-        {
-          status: 500,
-        }
-      )
-    }
-
-    const session = await createSession(dbSession);
-
-    if (!session) {
-
-      return new Response(
-        JSON.stringify({
-          error: "invalid_grant",
-          error_description: "The authorization code is invalid or expired",
-        }),
-        {
-          status: 400,
-          statusText: "Bad Request",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { status: 500 },
       );
     }
 
+    await createSession(dbSession);
 
-    // if (!userData.id) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error: "userDataMissing",
-    //       error_description: "An error occurred while fetching user data",
-    //     }),
-    //     {
-    //       status: 500,
-    //       statusText: "Internal Server Error",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
+    const response = NextResponse.json(
+      {
+        success: true,
+        redirectUrl,
+      },
+      { status: 200 },
+    );
 
-    //     }
-    //   );
-    // }
-
-    // const userGuilds = await fetch("https://discord.com/api/users/@me/guilds?with_counts=true", {
-    //   headers: {
-    //     authorization: `${tokenData.token_type} ${tokenData.access_token}`,
-    //   },
-    // });
-
-    // if (!userGuilds.ok) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error: "userGuildsDataMissing",
-    //       error_description: "An error occurred while fetching user guilds data",
-    //     }),
-    //     {
-    //       status: 500,
-    //       statusText: "Internal Server Error",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   );
-    // }
-    // const guilds: RESTGetAPICurrentUserGuildsResult = await userGuilds.json();
-    // const userGuildsData = guilds.filter((guild) => {
-    //   return guild.owner || (Number(guild.permissions) & 0x20) === 0x20;
-    // });
-
-    // for (let i = 0; i < userGuildsData.length; i++) {
-    //   // await createGuild(userGuildsData[i].id);
-    //   await prisma.guild.upsert({
-    //     where: { id: userGuildsData[i].id },
-    //     update: {
-    //       User: {
-    //         connect: {
-    //           id: user.id,
-    //         }
-    //       }
-    //     },
-    //     create: {
-    //       id: userGuildsData[i].id,
-    //       name: userGuildsData[i].name,
-    //       icon: userGuildsData[i].icon,
-    //       memberCount: userGuildsData[i].approximate_member_count,
-    //       User: {
-    //         connect: {
-    //           id: user.id,
-    //         }
-    //       },
-    //     },
-    //   });
-    // }
-
-
-  } catch (e) {
-    console.log(e);
-
-    return new Response(
-      JSON.stringify({
+    response.cookies.delete("oauthState");
+    response.cookies.delete("redirectAfterLogin");
+    return response;
+  } catch {
+    return NextResponse.json(
+      {
         error: "internalServerError",
         error_description: "An internal server error occurred",
-      }),
-      {
-        status: 500,
-        statusText: "Internal Server Error",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      },
+      { status: 500 },
     );
   }
-  return new Response(
-    JSON.stringify({
-      success: true,
-      redirectUrl: redirectUrl || "/dashboard",
-    }),
-    {
-      status: 200,
-      statusText: "OK",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
 
 }

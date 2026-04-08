@@ -10,7 +10,7 @@ export default function Page({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { code, error, error_description } = use(searchParams);
+  const { code, state, error, error_description } = use(searchParams);
   const router = useRouter();
 
   useEffect(() => {
@@ -24,7 +24,20 @@ export default function Page({
       );
       return;
     }
-    fetch(`/api/auth/callback?code=${code}`)
+    if (typeof code !== "string") {
+      router.push(
+        "/auth/error?error=codeMissing&error_description=The+authorization+code+is+missing",
+      );
+      return;
+    }
+
+    const callbackUrl = new URL("/api/auth/callback", window.location.origin);
+    callbackUrl.searchParams.set("code", code);
+    if (typeof state === "string") {
+      callbackUrl.searchParams.set("state", state);
+    }
+
+    fetch(callbackUrl.toString())
       .then((res) => res.json())
       .then(async (data) => {
         if (data.error) {
@@ -34,12 +47,11 @@ export default function Page({
         }
         const redirectUrl = data.redirectUrl;
         if (redirectUrl) {
-          console.log("Redirecting to:", redirectUrl);
           return router.push(redirectUrl);
         }
         return router.push("/dashboard");
       });
-  }, [code, error, error_description, router]);
+  }, [code, state, error, error_description, router]);
 
   return (
     <section className="flex flex-col h-full items-center justify-center gap-4 py-8 md:py-10">
