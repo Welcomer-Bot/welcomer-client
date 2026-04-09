@@ -1,14 +1,3 @@
-/**
- * Dashboard Guild Components
- *
- * Composants principaux pour la gestion des guilds:
- * - Sélection de guild
- * - Affichage des modules (Welcomer/Leaver)
- * - Éditeur de messages
- * - Éditeur d'images
- * - Statistiques d'utilisation
- */
-
 // Guild selection & display
 export { default as GuildCard } from "./guild-card";
 export { default as GuildSelectDropdown } from "./guild-select-dropdown";
@@ -25,12 +14,20 @@ export { default as LogoutIcon } from "./logout-icon";
 // Editor
 export { Editor } from "./editor/editor";
 
-// Image Editor
+// Image editor
 export { default as ImageEditor } from "./image-editor/editor";
+export type {
+  BaseCardConfig,
+  Color,
+  HEX,
+  RGB,
+  RGBA,
+  TextCard,
+} from "./image-editor/types";
+export { DEFAULT_CONFIG, FONT_OPTIONS, FONT_WEIGHT_OPTIONS } from "./image-editor/types";
 
 // Stats
 export { default as StatsViewer } from "./stats/stats-viewer";
 export { default as PeriodSelector } from "./stats/period-selector";
-
 
 

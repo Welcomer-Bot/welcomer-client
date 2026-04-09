@@ -1,6 +1,6 @@
 "use client";
 
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Input } from "@heroui/input";
 import { APIEmbedAuthor } from "discord.js";
 import { useContext } from "react";

@@ -1,6 +1,7 @@
 import "server-only";
 
-import { fetchUserFromSession } from "@/lib/dal";
+import { fetchUserFromSession } from "@/lib/dal/session";
+import { AppError, ErrorCode } from "@/lib/error";
 
 const FALLBACK_ADMIN_USER_IDS = ["479216487173980160"];
 
@@ -30,7 +31,9 @@ export async function requireAdminUser() {
 export async function assertAdminUser() {
   const user = await requireAdminUser();
   if (!user) {
-    throw new Error("Unauthorized");
+    throw new AppError("Unauthorized", ErrorCode.PERMISSION_DENIED, 403, {
+      action: "assertAdminUser",
+    });
   }
   return user;
 }

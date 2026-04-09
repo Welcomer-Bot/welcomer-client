@@ -1,6 +1,6 @@
 "use client";
-import { removeSource } from "@/lib/actions";
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { removeSource } from "@/features/dashboard/modules/actions";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Button } from "@heroui/button";
 import { usePlausible } from "next-plausible";
 import { useContext } from "react";

@@ -9,7 +9,9 @@
  */
 
 import { CompleteGuildCard } from "@/components/admin";
-import { getBetaTester, getBotGuilds, getSources } from "@/lib/dal";
+import { getBotGuilds } from "@/lib/dal/discord";
+import { getBetaTester } from "@/lib/dal/session";
+import { getSources } from "@/lib/dal/sources";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 
 export default async function Page() {

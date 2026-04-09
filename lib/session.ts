@@ -2,16 +2,28 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import "server-only";
 
+import { AppError, ErrorCode } from "@/lib/error";
 import { SessionPayload } from "@/types";
 import { Session } from "../generated/prisma/client";
 
 const SESSION_COOKIE_NAME = "session";
 const isProduction = process.env.NODE_ENV === "production";
 
+/**
+ * Require SESSION_SECRET environment variable
+ *
+ * @throws AppError with INTERNAL_SERVER_ERROR if SESSION_SECRET is not set
+ * @returns SESSION_SECRET value
+ */
 function requireSessionSecret() {
   const secretKey = process.env.SESSION_SECRET;
   if (!secretKey) {
-    throw new Error("Missing required environment variable: SESSION_SECRET");
+    throw new AppError(
+      "Missing required environment variable: SESSION_SECRET",
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      500,
+      { env: "SESSION_SECRET" }
+    );
   }
   return secretKey;
 }

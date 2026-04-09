@@ -1,9 +1,23 @@
 import { NextResponse } from "next/server";
 
+import { AppError, ErrorCode } from "@/lib/error";
+
+/**
+ * Require environment variable, throw structured AppError if missing
+ *
+ * @param name - Environment variable name
+ * @throws AppError with INTERNAL_SERVER_ERROR if variable not set
+ * @returns Environment variable value
+ */
 function requireEnv(name: "NEXT_PUBLIC_DISCORD_CLIENT_ID" | "REDIRECT_URI") {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    throw new AppError(
+      `Missing required environment variable: ${name}`,
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      500,
+      { env: name }
+    );
   }
   return value;
 }

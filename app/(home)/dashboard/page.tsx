@@ -1,12 +1,14 @@
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import { Image as UIImage } from "@heroui/image";
+import {Card, CardBody, CardFooter} from "@heroui/card";
+import {Image as UIImage} from "@heroui/image";
 import NextImage from "next/image";
 
-import InviteBotButton from "@/components/ui/buttons/invite-bot-button";
-import ManageGuildButton from "@/components/ui/buttons/manage-guild-button";
-import RequestBetaAccessButton from "@/components/ui/buttons/request-beta-access-button";
-import { getGuilds } from "@/lib/dal";
-import { getGuildBanner } from "@/lib/utils";
+import {
+  InviteBotButton,
+  ManageGuildButton,
+  RequestBetaAccessButton,
+} from "@/components";
+import {getGuilds} from "@/lib/dal/session";
+import {getGuildBanner} from "@/lib/utils";
 
 export default async function Page() {
   const guilds = await getGuilds();
@@ -21,7 +23,7 @@ export default async function Page() {
               minimum &quot;Manage Server&quot; permissions to start using it.
             </p>
           </div>
-          <InviteBotButton />
+          <InviteBotButton/>
         </div>
       </div>
     );
@@ -62,7 +64,8 @@ export default async function Page() {
                     width={64}
                   />
                 ) : (
-                  <div className="w-16 h-16 border-solid border-2 border-white shadow-2xl rounded-large flex justify-center items-center">
+                  <div
+                    className="w-16 h-16 border-solid border-2 border-white shadow-2xl rounded-large flex justify-center items-center">
                     {guild.name[0]}
                   </div>
                 )}
@@ -83,7 +86,8 @@ export default async function Page() {
                     src={guild.iconUrl}
                   />
                 ) : (
-                  <div className="w-12 h-12 shrink-0 border-solid border-2 border-white shadow-2xl rounded-large flex justify-center items-center mr-3">
+                  <div
+                    className="w-12 h-12 shrink-0 border-solid border-2 border-white shadow-2xl rounded-large flex justify-center items-center mr-3">
                     {guild.name[0]}
                   </div>
                 )}
@@ -91,11 +95,11 @@ export default async function Page() {
               </div>
               <div>
                 {guild.mutual ? (
-                  <ManageGuildButton guildId={guild.id} />
+                  <ManageGuildButton guildId={guild.id}/>
                 ) : guild.beta ? (
-                  <InviteBotButton guildId={guild.id} />
+                  <InviteBotButton guildId={guild.id}/>
                 ) : (
-                  <RequestBetaAccessButton />
+                  <RequestBetaAccessButton/>
                 )}
               </div>
             </CardFooter>

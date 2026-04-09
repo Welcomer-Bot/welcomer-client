@@ -1,14 +1,9 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import Footer from "@/components/layout/footer/footer";
-import { Sidebar } from "@/components/layout/sidebar/sidebar";
-import {
-  fetchUserFromSession,
-  getGuild,
-  getGuilds,
-  getUserGuild,
-} from "@/lib/dal";
+import { Footer, Sidebar } from "@/components/layout";
+import { getGuild } from "@/lib/dal/discord";
+import { fetchUserFromSession, getGuilds, getUserGuild } from "@/lib/dal/session";
 
 type Params = Promise<{ guildId: string }>;
 

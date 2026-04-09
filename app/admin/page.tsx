@@ -9,7 +9,7 @@
  */
 
 import { UserSearch } from "@/components/admin";
-import { getUsers } from "@/lib/dal";
+import { getUsers } from "@/lib/dal/session";
 import { cookies } from "next/headers";
 
 export default async function Page() {

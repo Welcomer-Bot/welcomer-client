@@ -7,6 +7,55 @@ const eslintConfig = defineConfig([
   prettier,
   ...nextVitals,
   ...nextTs,
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/providers/sourceStoreProvider",
+              message: "Use @/features/dashboard/modules/providers instead.",
+            },
+            {
+              name: "@/providers/imageCardStoreProvider",
+              message: "Use @/features/dashboard/modules/providers instead.",
+            },
+            {
+              name: "@/state/source",
+              message: "Use @/features/dashboard/modules/stores instead.",
+            },
+            {
+              name: "@/state/imageCard",
+              message: "Use @/features/dashboard/modules/stores instead.",
+            },
+            {
+              name: "@/state/guild",
+              message: "Guild store was removed during refactor; use feature-local state.",
+            },
+            {
+              name: "@/lib/dal",
+              message: "Import from @/lib/dal/session, @/lib/dal/sources, or @/lib/dal/discord.",
+            },
+            {
+              name: "@/lib/actions",
+              importNames: [
+                "createSource",
+                "removeSource",
+                "updateSource",
+                "createImageCard",
+                "updateImageCard",
+                "deleteImageCard",
+                "deleteActiveImageCard",
+              ],
+              message: "Use @/features/dashboard/modules/actions instead.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

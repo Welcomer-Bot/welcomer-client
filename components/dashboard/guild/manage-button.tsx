@@ -2,7 +2,8 @@
 
 import { Button } from "@heroui/button";
 import Link from "next/link";
-import { SourceType } from "../../../generated/prisma/browser";
+import { SourceType } from "@/generated/prisma/enums";
+import { getDashboardModuleBySourceType } from "@/features/dashboard/modules/config";
 
 export default function ManageButton({
   guildId,
@@ -11,7 +12,10 @@ export default function ManageButton({
   guildId: string;
   module: SourceType;
 }) {
-  const link = `/dashboard/${guildId}/${module.slice(0, -1).toLowerCase()}`;
+  const moduleConfig = getDashboardModuleBySourceType(module);
+  const link = moduleConfig
+    ? `/dashboard/${guildId}/${moduleConfig.slug}`
+    : `/dashboard/${guildId}`;
 
   return (
     <Button as={Link} href={link} color="primary">

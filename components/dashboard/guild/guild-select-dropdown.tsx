@@ -1,22 +1,17 @@
 "use client";
 
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@heroui/dropdown";
+import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger,} from "@heroui/dropdown";
 import NextLink from "next/link";
 
-import { GuildObject } from "@/lib/discord/guild";
-import { inviteBotToGuild } from "@/lib/discord/invite";
+import {GuildObject} from "@/lib/discord/guild";
+import {inviteBotToGuild} from "@/lib/discord/invite";
 import GuildCard from "./guild-card";
 
-export function GuildSelectDropdown({
-  guilds,
-  currentGuild,
-  isOpen,
-}: {
+export default function GuildSelectDropdown({
+                                              guilds,
+                                              currentGuild,
+                                              isOpen,
+                                            }: {
   guilds: GuildObject[];
   currentGuild: GuildObject;
   isOpen: boolean;
@@ -34,7 +29,7 @@ export function GuildSelectDropdown({
       >
         <DropdownTrigger>
           <button className="m-2">
-            <GuildCard guild={currentGuild} isOpen={isOpen} />
+            <GuildCard guild={currentGuild} isOpen={isOpen}/>
           </button>
         </DropdownTrigger>
         <DropdownMenu
@@ -47,7 +42,7 @@ export function GuildSelectDropdown({
               return (
                 <DropdownItem key={guild.id} textValue={guild.id}>
                   <NextLink href={`/dashboard/${guild.id}`}>
-                    <GuildCard guild={guild} />
+                    <GuildCard guild={guild}/>
                   </NextLink>
                 </DropdownItem>
               );
@@ -60,7 +55,7 @@ export function GuildSelectDropdown({
                       await inviteBotToGuild(guild.id);
                     }}
                   >
-                    <GuildCard guild={guild} />
+                    <GuildCard guild={guild}/>
                   </div>
                 </DropdownItem>
               );

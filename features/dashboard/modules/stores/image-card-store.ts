@@ -15,7 +15,6 @@ export type ImageCardState = {
 };
 
 export type ImageCardActions = {
-  // Main text actions
   setMainText: (text: TextCard) => void;
   setMainTextContent: (content: string) => void;
   setMainTextColor: (color: string) => void;
@@ -23,7 +22,6 @@ export type ImageCardActions = {
   setMainTextSize: (size: number) => void;
   setMainTextWeight: (weight: string) => void;
 
-  // Nickname text actions
   setNicknameText: (text: TextCard) => void;
   setNicknameTextContent: (content: string) => void;
   setNicknameTextColor: (color: string) => void;
@@ -31,7 +29,6 @@ export type ImageCardActions = {
   setNicknameTextSize: (size: number) => void;
   setNicknameTextWeight: (weight: string) => void;
 
-  // Second text actions
   setSecondText: (text: TextCard) => void;
   setSecondTextContent: (content: string) => void;
   setSecondTextColor: (color: string) => void;
@@ -39,17 +36,13 @@ export type ImageCardActions = {
   setSecondTextSize: (size: number) => void;
   setSecondTextWeight: (weight: string) => void;
 
-  // Background actions
   setBackgroundColor: (color: string | null) => void;
   setBackgroundImgURL: (url: string | null) => void;
 
-  // Avatar actions
   setAvatarBorderColor: (color: string | null) => void;
 
-  // Bulk update
   updateConfig: (config: Partial<BaseCardConfig>) => void;
 
-  // Reset
   reset: () => void;
 };
 
@@ -67,7 +60,6 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
         ...defaultState,
         ...initState,
 
-        // Main text actions
         setMainText: (text) =>
           set((state) => {
             state.data.mainText = text;
@@ -113,7 +105,6 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
             }
           }),
 
-        // Nickname text actions
         setNicknameText: (text) =>
           set((state) => {
             state.data.nicknameText = text;
@@ -159,7 +150,6 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
             }
           }),
 
-        // Second text actions
         setSecondText: (text) =>
           set((state) => {
             state.data.secondText = text;
@@ -205,7 +195,6 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
             }
           }),
 
-        // Background actions
         setBackgroundColor: (color) =>
           set((state) => {
             state.data.backgroundColor = color;
@@ -215,12 +204,10 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
             state.data.backgroundImgURL = url;
           }),
 
-        // Avatar actions
         setAvatarBorderColor: (color) =>
           set((state) => {
             state.data.avatarBorderColor = color;
           }),
-        // Bulk update
         updateConfig: (config) =>
           set((state) => {
             state.data = {
@@ -229,11 +216,11 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
             };
           }),
 
-        // Reset
         reset: () => {
           set(store.getInitialState());
         },
       };
-    })
+    }),
   );
 };
+

@@ -1,10 +1,10 @@
 "use client";
-import { createSource } from "@/lib/actions";
+import { createSource } from "@/features/dashboard/modules/actions";
+import { SourceType } from "@/generated/prisma/browser";
 import { Button } from "@heroui/button";
 import { usePlausible } from "next-plausible";
 import { useFormStatus } from "react-dom";
 import { toast } from "react-toastify";
-import { SourceType } from "../../../generated/prisma/browser";
 
 function SubmitButton({ sourceType }: { sourceType: SourceType }) {
   const { pending } = useFormStatus();
@@ -34,7 +34,6 @@ export default function EnableModuleButton({
     try {
       await createSource(guildId, sourceType);
     } catch (e) {
-      console.log("error", e);
       if (e instanceof Error) {
         toast.error(e.message || "An error occurred");
       } else {

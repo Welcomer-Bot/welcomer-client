@@ -1,4 +1,4 @@
-type shardStatus = {
+type ShardStatus = {
   shardId: number;
   guilds: number;
   members: number;
@@ -7,7 +7,7 @@ type shardStatus = {
   lastUpdated: number;
 };
 
-export type clusterStatus = {
+export type ClusterStatus = {
   clusterId: number;
   shardIds: number[];
   totalGuilds: number;
@@ -15,7 +15,7 @@ export type clusterStatus = {
   ping: number;
   uptime: number;
   memoryUsage: number;
-  perShardCluster: shardStatus[];
+  perShardCluster: ShardStatus[];
   lastUpdated: number;
 };
 
@@ -23,20 +23,19 @@ class StatusManager {
   public initialised: boolean;
   private clusterCount: number;
   private shardCount: number;
-  private currentStatus: clusterStatus[];
-  private intervalId: NodeJS.Timeout;
+  private currentStatus: ClusterStatus[];
 
   constructor(clusterCount: number, shardCount: number) {
     this.clusterCount = clusterCount;
     this.shardCount = shardCount;
     this.currentStatus = [];
     this.initialised = false;
-    this.intervalId = setInterval(() => {
+    setInterval(() => {
       this.checkForStaleData();
     }, 10000);
   }
 
-  public updateStatus(status: clusterStatus) {
+  public updateStatus(status: ClusterStatus) {
     const clusterIndex = this.currentStatus.findIndex(
       (cluster) => cluster.clusterId === status.clusterId
     );
@@ -81,9 +80,6 @@ class StatusManager {
   }
 
   public getStatus() {
-    // console.log("Getting status");
-    // console.log(this.currentStatus);
-
     return this.currentStatus.map((cluster) => {
       const clusterUptime = (Date.now() - cluster.uptime) / 1000 / 60;
       return {
@@ -91,24 +87,15 @@ class StatusManager {
         uptime: clusterUptime,
       };
     });
-
-  }
-
-  public stop() {
-    clearInterval(this.intervalId);
   }
 
   private checkForStaleData() {
-    // console.log("Checking for stale shards");
     const now = Date.now();
 
     this.currentStatus.forEach((cluster) => {
       cluster.perShardCluster = cluster.perShardCluster.map((shard) => {
         if (now - shard.lastUpdated >= 30000) {
-          // console.log(
-          //   `Shard ${shard.shardId} in cluster ${cluster.clusterId} is stale`
-          // );
-          return {...shard, status: 5};
+          return { ...shard, status: 5 };
         }
         return shard;
       });

@@ -3,8 +3,12 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useStore } from "zustand";
 
-import { createSourceStore, type SourceStore } from "@/state/source";
-import { Source } from "../generated/prisma/browser";
+import {
+  createSourceStore,
+  type SourceStore,
+} from "@/features/dashboard/modules/stores/source-store";
+import { Source } from "@/generated/prisma/browser";
+
 export type SourceStoreAPI = ReturnType<typeof createSourceStore>;
 
 export const SourceStoreContext = createContext<SourceStoreAPI | undefined>(
@@ -32,8 +36,9 @@ export const useSourceStore = <T,>(selector: (store: SourceStore) => T): T => {
   const sourceStoreContext = useContext(SourceStoreContext);
 
   if (!sourceStoreContext) {
-    throw new Error(`useSourceStore must be used within SourceStoreProvider`);
+    throw new Error("useSourceStore must be used within SourceStoreProvider");
   }
 
   return useStore(sourceStoreContext, selector);
 };
+

@@ -2,7 +2,7 @@
 
 import {GuildObject} from "@/lib/discord/guild";
 import {UserObject} from "@/lib/discord/user";
-import {SourceStoreContext} from "@/providers/sourceStoreProvider";
+import {SourceStoreContext} from "@/features/dashboard/modules/providers";
 import {lazy, Suspense, useContext} from "react";
 import {useStore} from "zustand";
 

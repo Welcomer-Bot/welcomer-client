@@ -1,6 +1,6 @@
 "use client";
 
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Textarea } from "@heroui/input";
 import { useContext } from "react";
 import { useStore } from "zustand";

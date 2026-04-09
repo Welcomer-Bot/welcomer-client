@@ -1,7 +1,7 @@
 "use client";
 
 import {hasPermission, hasRequiredPermissions, Permissions,} from "@/lib/discord/guild";
-import {SourceStoreContext} from "@/providers/sourceStoreProvider";
+import {SourceStoreContext} from "@/features/dashboard/modules/providers";
 import {Card, CardBody, CardHeader} from "@heroui/card";
 import {Chip} from "@heroui/chip";
 import {Select, SelectItem, SelectSection} from "@heroui/select";

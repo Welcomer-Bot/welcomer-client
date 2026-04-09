@@ -1,7 +1,6 @@
 "use client";
 
-import { GuildSelectDropdown } from "@/components/dashboard/guild/guild-select-dropdown";
-import { LogoutIcon } from "@/components/dashboard/guild/logout-icon";
+import { GuildSelectDropdown, LogoutIcon } from "@/components/dashboard/guild";
 import { Divider } from "@heroui/divider";
 import { User as UIUser } from "@heroui/user";
 import Link from "next/link";
@@ -10,7 +9,7 @@ import { ImEnter } from "react-icons/im";
 import { MdDashboard } from "react-icons/md";
 
 import { SidebarContext } from "@/app/providers";
-import { Logo } from "@/components/ui/icons/icons";
+import { Logo } from "@/components/shared";
 import { GuildObject } from "@/lib/discord/guild";
 import { UserObject } from "@/lib/discord/user";
 import { useSelectedLayoutSegment } from "next/navigation";

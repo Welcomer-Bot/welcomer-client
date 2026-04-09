@@ -1,7 +1,7 @@
 "use client";
 
-import { updateSource } from "@/lib/actions";
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { updateSource } from "@/features/dashboard/modules/actions";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -76,13 +76,12 @@ export default function SaveButton() {
                 reset();
                 // Reset to initial state
                 const initialState = store.getInitialState();
-                const resetStateStr = JSON.stringify({
+                lastSavedStateRef.current = JSON.stringify({
                   channelId: initialState.channelId,
                   message: initialState.message,
                   imagePosition: initialState.imagePosition,
                   imageEmbedIndex: initialState.imageEmbedIndex,
                 });
-                lastSavedStateRef.current = resetStateStr;
                 setHasChanges(false);
               }}
               disabled={isLoading}
@@ -104,7 +103,6 @@ export default function SaveButton() {
                   imageEmbedIndex: state.imageEmbedIndex,
                 });
                 if (error) {
-                  console.error(error);
                   toast.error(error);
                 } else if (done) {
                   toast.success("Settings updated successfully!");

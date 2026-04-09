@@ -1,10 +1,10 @@
 "use client";
 
-import { updateImageCard } from "@/lib/actions";
+import { updateImageCard } from "@/features/dashboard/modules/actions";
 import {
   ImageCardStoreContext,
   useImageCardStore,
-} from "@/providers/imageCardStoreProvider";
+} from "@/features/dashboard/modules/providers";
 import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
 import { useContext, useRef, useState } from "react";
@@ -83,7 +83,6 @@ export function SaveButton({ guildId }: SaveButtonProps) {
                   );
 
                   if (error) {
-                    console.error(error);
                     toast.error(error);
                   } else if (done && updatedData) {
                     toast.success("Settings updated successfully!");

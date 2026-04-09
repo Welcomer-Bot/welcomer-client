@@ -1,6 +1,6 @@
 "use client";
 
-import ManageGuildButton from "@/components/ui/buttons/manage-guild-button";
+import { ManageGuildButton } from "@/components/ui";
 import {
   enrollGuildToBetaProgram,
   leaveGuild,

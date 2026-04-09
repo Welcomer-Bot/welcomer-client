@@ -1,6 +1,6 @@
 "use client";
 
-import {GuildInput} from "@/components/shared/status/guild-input";
+import {GuildInput} from "@/components/shared";
 import {fetchClustersShardsSatus} from "@/lib/discord/shard";
 import {type clusterStatus} from "@/lib/discord/status";
 import {Button} from "@heroui/button";

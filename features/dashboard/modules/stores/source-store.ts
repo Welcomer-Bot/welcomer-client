@@ -40,6 +40,7 @@ export type SourceActions = {
   ) => void;
   reset(): void;
 };
+
 export type SourceStore = SourceState & SourceActions;
 
 const defaultEmbed: APIEmbed = {
@@ -66,7 +67,6 @@ const defaultState: SourceState = {
 export const createSourceStore = (initState?: Partial<Source>) => {
   return createStore<SourceStore>()(
     immer<SourceStore>((set, get, store) => {
-      // Determine initial image position from embeds
       let imagePosition: "outside" | "embed" | undefined = undefined;
       let imageEmbedIndex: number | undefined = undefined;
 
@@ -244,7 +244,6 @@ export const createSourceStore = (initState?: Partial<Source>) => {
               return;
             }
 
-            // Remove image from old position when moving
             if (state.imagePosition === "embed" && state.imageEmbedIndex !== undefined) {
               const oldEmbed = embeds?.[state.imageEmbedIndex];
               if (oldEmbed?.image && (position !== "embed" || state.imageEmbedIndex !== embedIndex)) {
@@ -263,36 +262,3 @@ export const createSourceStore = (initState?: Partial<Source>) => {
   );
 };
 
-// export const extractSourceState = (data: SourceStore): SourceState => {
-//   const {
-//     id,
-//     guildId,
-//     channelId,
-//     type,
-//     content,
-//     embeds,
-//     images,
-//     activeCardId,
-//     activeCardToEmbedId,
-//     deletedEmbeds,
-//     deletedFields,
-//     edited,
-//     initialState,
-//   } = data;
-
-//   return {
-//     id,
-//     guildId,
-//     channelId,
-//     type,
-//     content,
-//     embeds,
-//     images,
-//     activeCardId,
-//     activeCardToEmbedId,
-//     deletedEmbeds,
-//     deletedFields,
-//     edited,
-//     initialState,
-//   };
-// };

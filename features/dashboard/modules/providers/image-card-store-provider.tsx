@@ -7,7 +7,7 @@ import {
   createImageCardStore,
   type ImageCardState,
   type ImageCardStore,
-} from "@/state/imageCard";
+} from "@/features/dashboard/modules/stores/image-card-store";
 
 export type ImageCardStoreAPI = ReturnType<typeof createImageCardStore>;
 
@@ -27,7 +27,7 @@ export const ImageCardStoreProvider = ({
 }) => {
   const store = useMemo(
     () => createImageCardStore(initialState),
-    [initialState]
+    [initialState],
   );
 
   return (
@@ -38,15 +38,14 @@ export const ImageCardStoreProvider = ({
 };
 
 export const useImageCardStore = <T,>(
-  selector: (store: ImageCardStore) => T
+  selector: (store: ImageCardStore) => T,
 ): T => {
   const imageCardStoreContext = useContext(ImageCardStoreContext);
 
   if (!imageCardStoreContext) {
-    throw new Error(
-      `useImageCardStore must be used within ImageCardStoreProvider`
-    );
+    throw new Error("useImageCardStore must be used within ImageCardStoreProvider");
   }
 
   return useStore(imageCardStoreContext, selector);
 };
+

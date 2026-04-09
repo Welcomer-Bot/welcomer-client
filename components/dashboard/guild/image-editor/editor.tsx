@@ -1,7 +1,7 @@
 "use client";
 
-import {createImageCard, deleteImageCard} from "@/lib/actions";
-import {ImageCardStoreContext, useImageCardStore,} from "@/providers/imageCardStoreProvider";
+import {createImageCard, deleteImageCard} from "@/features/dashboard/modules/actions";
+import {ImageCardStoreContext, useImageCardStore,} from "@/features/dashboard/modules/providers";
 import {Button} from "@heroui/button";
 import {Divider} from "@heroui/divider";
 import {useRouter} from "next/navigation";

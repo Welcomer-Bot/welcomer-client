@@ -2,6 +2,11 @@
 
 import { Button } from "@heroui/button";
 import Link from "next/link";
+import {
+  getDashboardModuleBySlug,
+  getDashboardModuleBySourceType,
+} from "@/features/dashboard/modules/config";
+import { SourceType } from "@/generated/prisma/enums";
 
 interface EditorHeaderProps {
   module?: string;
@@ -9,13 +14,11 @@ interface EditorHeaderProps {
 }
 
 export function EditorHeader({ module, guildId }: EditorHeaderProps) {
-  // Déterminer l'URL de retour basée sur le module
-  const backUrl =
-    module?.toLowerCase() === "welcomer"
-      ? `/dashboard/${guildId}/welcome`
-      : module?.toLowerCase() === "leaver"
-        ? `/dashboard/${guildId}/leave`
-        : `/dashboard/${guildId}`;
+  const moduleConfig = module
+    ? getDashboardModuleBySourceType(module as SourceType) ??
+      getDashboardModuleBySlug(module)
+    : null;
+  const backUrl = moduleConfig ? `/dashboard/${guildId}/${moduleConfig.slug}` : `/dashboard/${guildId}`;
 
   return (
     <div className="flex items-center gap-4">
@@ -44,7 +47,7 @@ export function EditorHeader({ module, guildId }: EditorHeaderProps) {
       </Button>
       <div className="h-6 w-px bg-default-200" />
       <h2 className="text-xl font-semibold">
-        {module ? `${module} Image Editor` : "Image Card Editor"}
+        {moduleConfig ? `${moduleConfig.sourceType} Image Editor` : "Image Card Editor"}
       </h2>
     </div>
   );

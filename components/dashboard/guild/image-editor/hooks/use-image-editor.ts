@@ -1,6 +1,8 @@
-import {generateImage} from "@/lib/discord/image";
-import {useEffect, useMemo, useState} from "react";
-import {BaseCardConfig} from "../types";
+import { useEffect, useMemo, useState } from "react";
+
+import { generateImage } from "@/lib/discord/image";
+
+import { BaseCardConfig } from "../types";
 
 export function useImageEditor(guildId: string, config: BaseCardConfig) {
   const [error, setError] = useState<string | null>(null);
@@ -12,21 +14,16 @@ export function useImageEditor(guildId: string, config: BaseCardConfig) {
     const timeoutId = setTimeout(() => {
       const fetchCard = async () => {
         try {
-          console.log("Generating image...");
           setIsLoading(true);
           setError(null);
 
-          await generateImage(config, guildId).then(
-            () => {
-              setIsLoading(false);
-            }
-          )
-          console.log("Image generated successfully!");
+          await generateImage(config, guildId);
+          setIsLoading(false);
         } catch (error) {
-          console.error("Error generating image:", error);
           setError(
             error instanceof Error ? error.message : "Failed to generate image",
           );
+          setIsLoading(false);
         }
       };
 

@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createDBSession } from "@/lib/dal";
+import { AppError, ErrorCode } from "@/lib/error";
+import { createDBSession } from "@/lib/dal/session";
 import { createSession } from "@/lib/session";
 import { cookies } from "next/headers";
 
+/**
+ * Require environment variable, throw structured AppError if missing
+ *
+ * @param name - Environment variable name
+ * @throws AppError with INTERNAL_SERVER_ERROR if variable not set
+ * @returns Environment variable value
+ */
 function requireEnv(
   name:
     | "NEXT_PUBLIC_DISCORD_CLIENT_ID"
@@ -12,7 +20,12 @@ function requireEnv(
 ) {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    throw new AppError(
+      `Missing required environment variable: ${name}`,
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      500,
+      { env: name }
+    );
   }
   return value;
 }

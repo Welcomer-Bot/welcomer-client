@@ -1,6 +1,6 @@
 "use client";
 
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import React, { useContext } from "react";
 import { useStore } from "zustand";

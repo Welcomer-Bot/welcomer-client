@@ -2,7 +2,7 @@
 
 import { Button } from "@heroui/button";
 
-import { LogoutIcon as Icon } from "@/components/ui/icons/icons";
+import { LogoutIcon as Icon } from "@/components/ui";
 import { signOut } from "@/lib/actions";
 
 export function LogoutIcon() {

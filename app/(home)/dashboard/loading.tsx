@@ -1,4 +1,4 @@
-import GuildCardLoader from "@/components/ui/loaders/guild-card-loader";
+import { GuildCardLoader } from "@/components/ui";
 
 export default function Loading() {
   return (

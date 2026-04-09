@@ -3,7 +3,7 @@
 import { GuildObject } from "@/lib/discord/guild";
 import { parseMessageToReactElement } from "@/lib/discord/text";
 import { UserObject } from "@/lib/discord/user";
-import { SourceState } from "@/state/source";
+import { SourceState } from "@/features/dashboard/modules/stores";
 import { useCallback, useMemo, useState } from "react";
 import { useImageEditor } from "../image-editor/hooks/use-image-editor";
 

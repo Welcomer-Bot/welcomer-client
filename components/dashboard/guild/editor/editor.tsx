@@ -19,7 +19,7 @@
 import SendMenu from "@/components/dashboard/guild/editor/send-menu";
 import Guild from "@/lib/discord/guild";
 
-import { getUser } from "@/lib/dal";
+import { getUser } from "@/lib/dal/session";
 import { Divider } from "@heroui/divider";
 import ContentEditor from "./content-editor";
 import EditorMessagePreview from "./editor-message-preview";

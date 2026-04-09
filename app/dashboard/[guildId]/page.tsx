@@ -20,10 +20,9 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import GuildCard from "@/components/dashboard/guild/guild-card";
-import ManageButton from "@/components/dashboard/guild/manage-button";
-import StatsViewer from "@/components/dashboard/guild/stats/stats-viewer";
-import { getGuild, getSources } from "@/lib/dal";
+import { GuildCard, ManageButton, StatsViewer } from "@/components/dashboard/guild";
+import { getGuild } from "@/lib/dal/discord";
+import { getSources } from "@/lib/dal/sources";
 import { Period } from "@/generated/prisma/enums";
 
 import { Skeleton } from "@heroui/skeleton";

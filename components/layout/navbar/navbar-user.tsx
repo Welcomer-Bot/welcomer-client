@@ -1,9 +1,9 @@
-import { SignIn } from "@/components/auth/signin-button";
+import { SignIn } from "@/components/auth";
 import { Avatar } from "@heroui/avatar";
 import NavbarUserDropdown from "./navbar-user-dropdown";
 
-import { LogoutButton } from "@/components/dashboard/guild/logout-button";
-import { fetchUserFromSession } from "@/lib/dal";
+import { LogoutButton } from "@/components/dashboard/guild";
+import { fetchUserFromSession } from "@/lib/dal/session";
 import React from "react";
 
 export default async function NavbarUser(): Promise<React.ReactElement> {
