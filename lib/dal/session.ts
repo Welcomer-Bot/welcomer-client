@@ -108,20 +108,15 @@ export const getUserGuilds = cache(async () => {
  * @returns Array of Guild instances or null
  */
 export const getGuilds = cache(async () => {
-  try {
-    const guilds = await getUserGuilds();
-    if (!guilds) return null;
-    await Promise.all(
-      guilds.map(async (guild) => {
-        const botGuild = await getGuild(guild.id);
-        await guild.setMutual(!!botGuild);
-      }),
-    );
-    return guilds;
-  } catch (error) {
-    logDalError("getGuilds", ErrorCode.EXTERNAL_API_ERROR, error);
-    return null;
-  }
+  const guilds = await getUserGuilds();
+  if (!guilds) return null;
+  await Promise.all(
+    guilds.map(async (guild) => {
+      const botGuild = await getGuild(guild.id);
+      await guild.setMutual(!!botGuild);
+    }),
+  );
+  return guilds;
 });
 
 /**
