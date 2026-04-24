@@ -3,70 +3,41 @@
 /**
  * OAuth Callback Handler
  *
- * Traite le callback OAuth Discord avec le code d'autorisation et le state CSRF.
- * Valide l'échange de token et établit la session utilisateur.
- *
- * Flow:
- * 1. Récupère code + state depuis les query params
- * 2. Appelle /api/auth/callback pour valider et créer la session
- * 3. Redirige vers le dashboard ou une page d'erreur
- *
- * @see app/api/auth/callback/route.ts
- * @see lib/session.ts
+ * Discord redirect target. Forwards query params to handleOAuthCallback
+ * server action which validates state, exchanges the token, creates the
+ * session, and redirects via next/navigation.
  */
 
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { useRouter } from "next/navigation";
-import { use, useEffect } from "react";
+import { use, useEffect, useRef } from "react";
+
+import { handleOAuthCallback } from "@/lib/actions";
 
 export default function Page({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { code, state, error, error_description } = use(searchParams);
-  const router = useRouter();
+  const params = use(searchParams);
+  const startedRef = useRef(false);
 
   useEffect(() => {
-    if (error) {
-      if (error == "access_denied") {
-        router.push("/");
-        return;
-      }
-      router.push(
-        `/auth/error?error=${error}&error_description=${error_description}`
-      );
-      return;
-    }
-    if (typeof code !== "string") {
-      router.push(
-        "/auth/error?error=codeMissing&error_description=The+authorization+code+is+missing",
-      );
-      return;
-    }
+    if (startedRef.current) return;
+    startedRef.current = true;
 
-    const callbackUrl = new URL("/api/auth/callback", window.location.origin);
-    callbackUrl.searchParams.set("code", code);
-    if (typeof state === "string") {
-      callbackUrl.searchParams.set("state", state);
-    }
+    const pick = (key: string) => {
+      const v = params[key];
+      return typeof v === "string" ? v : undefined;
+    };
 
-    fetch(callbackUrl.toString())
-      .then((res) => res.json())
-      .then(async (data) => {
-        if (data.error) {
-          return router.push(
-            `/auth/error?error=${data.error}&error_description=${data.error_description}`
-          );
-        }
-        const redirectUrl = data.redirectUrl;
-        if (redirectUrl) {
-          return router.push(redirectUrl);
-        }
-        return router.push("/dashboard");
-      });
-  }, [code, state, error, error_description, router]);
+    handleOAuthCallback({
+      code: pick("code"),
+      state: pick("state"),
+      error: pick("error"),
+      errorDescription: pick("error_description"),
+    });
+  }, [params]);
 
   return (
     <section className="flex flex-col h-full items-center justify-center gap-4 py-8 md:py-10">
