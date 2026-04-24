@@ -5,6 +5,14 @@ import { revalidatePath } from "next/cache";
 import { ImageCard } from "@/generated/prisma/client";
 import { ImageCardState } from "@/features/dashboard/modules/stores";
 import {
+  ActionResult,
+  VoidActionResult,
+  actionError,
+  actionSuccess,
+  voidActionError,
+  voidActionSuccess,
+} from "@/features/dashboard/modules/actions/result";
+import {
   assertSnowflake,
   reportServerError,
 } from "@/lib/error";
@@ -17,33 +25,6 @@ import {
   updateImageCardQuery,
   updateSourceQuery,
 } from "@/lib/dal/sources";
-
-type ImageCardMutationResult = {
-  data: ImageCard | null;
-  done: boolean;
-  error: string | null;
-};
-
-type ImageCardDeleteResult = {
-  done: boolean;
-  error: string | null;
-};
-
-function imageCardError(message: string): ImageCardMutationResult {
-  return { data: null, done: false, error: message };
-}
-
-function imageCardSuccess(data: ImageCard): ImageCardMutationResult {
-  return { data, done: true, error: null };
-}
-
-function imageCardDeleteError(message: string): ImageCardDeleteResult {
-  return { done: false, error: message };
-}
-
-function imageCardDeleteSuccess(): ImageCardDeleteResult {
-  return { done: true, error: null };
-}
 
 /**
  * Create a new image card for a source in a guild.
@@ -62,18 +43,18 @@ function imageCardDeleteSuccess(): ImageCardDeleteResult {
 export async function createImageCard(
   sourceId: number,
   guildId: string,
-): Promise<ImageCardMutationResult> {
+): Promise<ActionResult<ImageCard>> {
   assertSnowflake(guildId, "guildId");
 
   const guild = await getUserGuild(guildId);
   if (!guild) {
-    return imageCardError("You do not have permission to manage this guild");
+    return actionError("You do not have permission to manage this guild");
   }
 
   try {
     const source = await getSource(guildId, sourceId);
     if (!source) {
-      return imageCardError("Source not found for this guild");
+      return actionError("Source not found for this guild");
     }
 
     const card = await createImageCardQuery({
@@ -85,7 +66,7 @@ export async function createImageCard(
       await updateSourceQuery(source, { activeCardId: card.id });
     }
 
-    return imageCardSuccess(card);
+    return actionSuccess(card);
   } catch (error) {
     const appError = reportServerError(error, {
       action: "createImageCard",
@@ -93,7 +74,7 @@ export async function createImageCard(
       sourceId,
     });
 
-    return imageCardError(appError.message);
+    return actionError(appError.message);
   }
 }
 
@@ -110,33 +91,33 @@ export async function createImageCard(
 export async function updateImageCard(
   store: Partial<ImageCardState>,
   guildId: string,
-): Promise<ImageCardMutationResult> {
+): Promise<ActionResult<ImageCard>> {
   assertSnowflake(guildId, "guildId");
 
   const cardId = store.id;
   const sourceId = store.sourceId;
 
   if (!cardId) {
-    return imageCardError("You need to select a card");
+    return actionError("You need to select a card");
   }
 
   if (!sourceId) {
-    return imageCardError("You need to select a source");
+    return actionError("You need to select a source");
   }
 
   const guild = await getUserGuild(guildId);
   if (!guild) {
-    return imageCardError("You do not have permission to manage this guild");
+    return actionError("You do not have permission to manage this guild");
   }
 
   if (!store.data) {
-    return imageCardError("Card data cannot be null");
+    return actionError("Card data cannot be null");
   }
 
   try {
     const card = await getImageCardForGuild(guildId, cardId);
     if (!card) {
-      return imageCardError("Card not found for this guild");
+      return actionError("Card not found for this guild");
     }
 
     const updatedCard = await updateImageCardQuery(card, {
@@ -144,7 +125,7 @@ export async function updateImageCard(
     });
 
     revalidatePath(`/dashboard/${guildId}`);
-    return imageCardSuccess(updatedCard);
+    return actionSuccess(updatedCard);
   } catch (error) {
     const appError = reportServerError(error, {
       action: "updateImageCard",
@@ -153,7 +134,7 @@ export async function updateImageCard(
       cardId,
     });
 
-    return imageCardError(appError.message);
+    return actionError(appError.message);
   }
 }
 
@@ -163,21 +144,21 @@ export async function updateImageCard(
 async function deleteImageCardInternal(
   cardId: number,
   guildId: string,
-): Promise<ImageCardDeleteResult> {
+): Promise<VoidActionResult> {
   const guild = await getUserGuild(guildId);
   if (!guild) {
-    return imageCardDeleteError("You do not have permission to manage this guild");
+    return voidActionError("You do not have permission to manage this guild");
   }
 
   try {
     const card = await getImageCardForGuild(guildId, cardId);
     if (!card) {
-      return imageCardDeleteError("Card not found for this guild");
+      return voidActionError("Card not found for this guild");
     }
 
     await deleteCardQuery(card);
 
-    return imageCardDeleteSuccess();
+    return voidActionSuccess();
   } catch (error) {
     const appError = reportServerError(error, {
       action: "deleteImageCardInternal",
@@ -185,7 +166,7 @@ async function deleteImageCardInternal(
       cardId,
     });
 
-    return imageCardDeleteError(appError.message);
+    return voidActionError(appError.message);
   }
 }
 
@@ -193,17 +174,17 @@ async function deleteImageCardInternal(
 export async function deleteActiveImageCardInternal(
   sourceId: number,
   guildId: string,
-): Promise<ImageCardDeleteResult> {
+): Promise<VoidActionResult> {
   const guild = await getUserGuild(guildId);
   if (!guild) {
-    return imageCardDeleteError("You do not have permission to manage this guild");
+    return voidActionError("You do not have permission to manage this guild");
   }
 
   try {
     const source = await getSource(guildId, sourceId);
 
     if (!source?.activeCardId) {
-      return imageCardDeleteError("No active card to delete");
+      return voidActionError("No active card to delete");
     }
 
     return await deleteImageCardInternal(source.activeCardId, guildId);
@@ -214,7 +195,7 @@ export async function deleteActiveImageCardInternal(
       sourceId,
     });
 
-    return imageCardDeleteError(appError.message);
+    return voidActionError(appError.message);
   }
 }
 
@@ -224,7 +205,7 @@ export async function deleteActiveImageCardInternal(
 export async function deleteActiveImageCard(
   sourceId: number,
   guildId: string,
-): Promise<ImageCardDeleteResult> {
+): Promise<VoidActionResult> {
   assertSnowflake(guildId, "guildId");
 
   const result = await deleteActiveImageCardInternal(sourceId, guildId);
@@ -240,7 +221,7 @@ export async function deleteActiveImageCard(
 export async function deleteImageCard(
   cardId: number,
   guildId: string,
-): Promise<ImageCardDeleteResult> {
+): Promise<VoidActionResult> {
   assertSnowflake(guildId, "guildId");
 
   const result = await deleteImageCardInternal(cardId, guildId);

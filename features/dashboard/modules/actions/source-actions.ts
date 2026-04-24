@@ -9,6 +9,11 @@ import { SourceType } from "@/generated/prisma/enums";
 import { SourceState } from "@/features/dashboard/modules/stores";
 import { deleteActiveImageCardInternal } from "@/features/dashboard/modules/actions/image-card-actions";
 import {
+  ActionResult,
+  actionError,
+  actionSuccess,
+} from "@/features/dashboard/modules/actions/result";
+import {
   AppError,
   ErrorCode,
   assertSnowflake,
@@ -22,20 +27,6 @@ import {
   updateSourceQuery,
 } from "@/lib/dal/sources";
 import { getUserGuild } from "@/lib/dal/session";
-
-type UpdateSourceResult = {
-  data: Source | null;
-  done: boolean;
-  error: string | null;
-};
-
-function sourceUpdateError(message: string): UpdateSourceResult {
-  return { data: null, done: false, error: message };
-}
-
-function sourceUpdateSuccess(data: Source): UpdateSourceResult {
-  return { data, done: true, error: null };
-}
 
 /**
  * Create a new source module for a guild.
@@ -140,32 +131,32 @@ export async function removeSource(guildId: string, sourceId: number): Promise<v
  *
  * @returns Mutation result with `{ data, done, error }` contract.
  */
-export async function updateSource(store: Partial<SourceState>): Promise<UpdateSourceResult> {
+export async function updateSource(store: Partial<SourceState>): Promise<ActionResult<Source>> {
   const guildId = store.guildId;
   const sourceId = store.id;
 
   if (!guildId) {
-    return sourceUpdateError("You need to select a guild");
+    return actionError("You need to select a guild");
   }
   if (!sourceId) {
-    return sourceUpdateError("You need to select a source");
+    return actionError("You need to select a source");
   }
 
   const guild = await getUserGuild(guildId);
   if (!guild) {
-    return sourceUpdateError("You do not have permission to manage this guild");
+    return actionError("You do not have permission to manage this guild");
   }
 
   if (!store.channelId) {
-    return sourceUpdateError("You need to select a channel");
+    return actionError("You need to select a channel");
   }
   if (!store.message) {
-    return sourceUpdateError("Message cannot be null");
+    return actionError("Message cannot be null");
   }
 
   const source = await getSource(guildId, sourceId);
   if (!source) {
-    return sourceUpdateError("Source not found for this guild");
+    return actionError("Source not found for this guild");
   }
 
   try {
@@ -204,7 +195,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<UpdateS
         },
       });
 
-      return sourceUpdateError(z.prettifyError(error.cause));
+      return actionError(z.prettifyError(error.cause));
     }
 
     reportServerError(error, {
@@ -213,7 +204,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<UpdateS
       sourceId,
     });
 
-    return sourceUpdateError("Message is not valid");
+    return actionError("Message is not valid");
   }
 
   let updatedMessage = store.message;
@@ -221,7 +212,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<UpdateS
     const currentMessage = store.message;
     const embed = currentMessage?.embeds?.[store.imageEmbedIndex];
     if (!embed) {
-      return sourceUpdateError("Embed index for image is invalid");
+      return actionError("Embed index for image is invalid");
     }
 
     const embeds = [...(currentMessage.embeds ?? [])];
@@ -241,7 +232,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<UpdateS
     });
 
     revalidatePath(`/dashboard/${guildId}`);
-    return sourceUpdateSuccess(updatedSource);
+    return actionSuccess(updatedSource);
   } catch (error) {
     const appError = reportServerError(error, {
       action: "updateSource",
@@ -249,7 +240,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<UpdateS
       sourceId,
     });
 
-    return sourceUpdateError(
+    return actionError(
       appError.message || "An error occurred while updating the source",
     );
   }
