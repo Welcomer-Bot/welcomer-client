@@ -4,6 +4,7 @@ import { cache } from "react";
 
 import prisma from "@/lib/prisma";
 import { decrypt, getSession } from "@/lib/session";
+import { isAdminUserId } from "@/lib/admin/guards";
 import { ErrorCode } from "@/lib/error";
 import { logDalError } from "./logging";
 import {
@@ -128,7 +129,7 @@ export const getGuilds = cache(async () => {
 export const getUserGuild = cache(async (guildId: string) => {
   const user = await getUser();
   if (!user) return null;
-  if (user.id === "479216487173980160") return await getGuild(guildId);
+  if (isAdminUserId(user.id)) return await getGuild(guildId);
 
   const userGuilds = await getUserGuilds();
   if (!userGuilds) return null;

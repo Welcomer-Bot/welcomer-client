@@ -3,16 +3,12 @@ import "server-only";
 import { fetchUserFromSession } from "@/lib/dal/session";
 import { AppError, ErrorCode } from "@/lib/error";
 
-const FALLBACK_ADMIN_USER_IDS = ["479216487173980160"];
-
 function getAdminUserIds() {
-  const configured = process.env.ADMIN_USER_IDS?.split(",")
-    .map((id) => id.trim())
-    .filter(Boolean);
-
-  return configured && configured.length > 0
-    ? configured
-    : FALLBACK_ADMIN_USER_IDS;
+  return (
+    process.env.ADMIN_USER_IDS?.split(",")
+      .map((id) => id.trim())
+      .filter(Boolean) ?? []
+  );
 }
 
 export function isAdminUserId(userId: string) {
