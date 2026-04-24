@@ -1,4 +1,3 @@
-"use server";
 import "server-only";
 
 import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
