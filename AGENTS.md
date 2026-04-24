@@ -54,7 +54,7 @@
   duplicate dev connections.
 - Use `@/*` path aliases from `tsconfig.json` and existing lint/format stack (`eslint.config.mjs`, Prettier).
 - **Error handling:** Use `lib/error.ts` utilities (`AppError`, `handleServerError`, `reportError`) for structured error handling + logging. Never use bare `console.log()` for errors.
-- **Validation:** Use `assertSnowflake()` and `validateRequired()` helpers from `lib/error.ts` for IDs and required fields. Discord message payloads are validated via `MessageBuilder` from `@discordjs/builders` in server actions.
+- **Validation:** Use `assertSnowflake()` from `lib/error.ts` for Discord snowflake IDs. Discord message payloads are validated via `MessageBuilder` from `@discordjs/builders` in server actions.
 - **Logging:** Use `logError()` from `lib/error.ts` for all error logging. Never log tokens, passwords, or API keys. Use `reportError()` for errors that should be monitored (Sentry integration).
 - **Permission checks pattern:** Always call `getUserGuild(guildId)` or `requireAdminUser()` before mutations; throw `AppError` with `PERMISSION_DENIED` if check fails.
 

@@ -226,26 +226,6 @@ export function reportServerError(
 }
 
 /**
- * Validate required fields in object
- *
- * Throws VALIDATION_ERROR if any required field is missing or invalid.
- */
-export function validateRequired<T extends Record<string, unknown>>(
-  obj: T,
-  ...fields: (keyof T)[]
-): void {
-  for (const field of fields) {
-    if (!obj[field]) {
-      throw new AppError(
-        `Missing required field: ${String(field)}`,
-        ErrorCode.VALIDATION_ERROR,
-        400,
-      );
-    }
-  }
-}
-
-/**
  * Validate snowflake ID format (Discord IDs)
  *
  * Discord IDs are 18-19 digit numbers.
