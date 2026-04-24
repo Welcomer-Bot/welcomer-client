@@ -9,6 +9,7 @@ import { AppError, ErrorCode } from "@/lib/error";
 import { canManageGuild } from "@/lib/discord/permissions";
 import { logDalError } from "./logging";
 import {
+  getBotGuilds,
   getGuild,
   getUserByAccessToken,
   getUserGuildsByAccessToken,
@@ -112,11 +113,10 @@ export const getUserGuilds = cache(async () => {
 export const getGuilds = cache(async () => {
   const guilds = await getUserGuilds();
   if (!guilds) return null;
+  const botGuilds = await getBotGuilds();
+  const botGuildIds = new Set(botGuilds?.map((g) => g.id) ?? []);
   await Promise.all(
-    guilds.map(async (guild) => {
-      const botGuild = await getGuild(guild.id);
-      await guild.setMutual(!!botGuild);
-    }),
+    guilds.map((guild) => guild.setMutual(botGuildIds.has(guild.id))),
   );
   return guilds;
 });
@@ -220,11 +220,10 @@ export async function getGuildsByUserId(userId: string) {
 
     guilds = guilds.filter(canManageGuild);
 
+    const botGuilds = await getBotGuilds();
+    const botGuildIds = new Set(botGuilds?.map((g) => g.id) ?? []);
     await Promise.all(
-      guilds.map(async (guild) => {
-        const botGuild = await getGuild(guild.id);
-        await guild.setMutual(!!botGuild);
-      }),
+      guilds.map((guild) => guild.setMutual(botGuildIds.has(guild.id))),
     );
     return guilds.map((guild) => guild.toObject());
   } catch (error) {
