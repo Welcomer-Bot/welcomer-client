@@ -1,37 +1,29 @@
 "use client";
 
 import { BaseCardConfig, DefaultCard } from "@welcomer-bot/card-canvas";
-import { cache } from "react";
 
-import { getGuildData, getUserData } from "@/lib/dal/session";
+import type { GuildObject } from "./guild-types";
+import type { UserObject } from "./user";
 import { parseText } from "./text";
 
-export const generateImage = cache(
-  async (
-    msg: BaseCardConfig,
-    guildId: string,
-  ): Promise<void> => {
-    const user = await getUserData();
-    const guild = await getGuildData(guildId);
-    if (!user || !guild) {
-      throw new Error("User or Guild data not found");
-    }
+export async function generateImage(
+  msg: BaseCardConfig,
+  user: UserObject,
+  guild: GuildObject,
+): Promise<void> {
+  const canvas = document.getElementById(
+    "preview-canvas",
+  ) as HTMLCanvasElement | null;
 
-    const canvas = document.getElementById(
-      "preview-canvas",
-    ) as HTMLCanvasElement | null;
+  const cardConfig: BaseCardConfig = {
+    ...msg,
+    avatarImgURL: user.avatarUrl,
+    renderer: "browser",
+  };
 
-    const cardConfig: BaseCardConfig = {
-      ...msg,
-      avatarImgURL: user.avatarUrl,
-      renderer: "browser",
-    };
-
-    const card = DefaultCard.fromJSON(cardConfig);
-    await card.build({
-      canvasElement: canvas || undefined,
-      replacer: (text: string) => parseText(text, user, guild, true) || "",
-    });
-
-  },
-);
+  const card = DefaultCard.fromJSON(cardConfig);
+  await card.build({
+    canvasElement: canvas || undefined,
+    replacer: (text: string) => parseText(text, user, guild, true) || "",
+  });
+}

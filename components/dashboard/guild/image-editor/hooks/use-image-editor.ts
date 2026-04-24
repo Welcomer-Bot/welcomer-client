@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { getImageRenderContext } from "@/features/dashboard/modules/actions";
 import { generateImage } from "@/lib/discord/image";
 
 import { BaseCardConfig } from "../types";
@@ -17,7 +18,11 @@ export function useImageEditor(guildId: string, config: BaseCardConfig) {
           setIsLoading(true);
           setError(null);
 
-          await generateImage(config, guildId);
+          const { user, guild } = await getImageRenderContext(guildId);
+          if (!user || !guild) {
+            throw new Error("User or Guild data not found");
+          }
+          await generateImage(config, user, guild);
           setIsLoading(false);
         } catch (error) {
           setError(
