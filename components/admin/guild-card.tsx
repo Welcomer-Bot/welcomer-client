@@ -1,7 +1,7 @@
 "use client";
 
 import {enrollGuildToBetaProgram, leaveGuild, removeGuildFromBetaProgram,} from "@/lib/admin/actions";
-import {GuildObject} from "@/lib/discord/guild";
+import {GuildObject} from "@/lib/discord/guild-types";
 import {Button} from "@heroui/button";
 import {Card, CardBody, CardHeader} from "@heroui/card";
 import Image from "next/image";

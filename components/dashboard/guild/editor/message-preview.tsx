@@ -1,6 +1,6 @@
 "use client";
 
-import { GuildObject } from "@/lib/discord/guild";
+import { GuildObject } from "@/lib/discord/guild-types";
 import { parseMessageToReactElement } from "@/lib/discord/text";
 import { UserObject } from "@/lib/discord/user";
 import { SourceState } from "@/features/dashboard/modules/stores";

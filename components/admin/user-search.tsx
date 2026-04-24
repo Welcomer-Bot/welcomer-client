@@ -1,7 +1,7 @@
 "use client";
 
 import { getUserGuildsForAdmin } from "@/lib/admin/actions";
-import { GuildObject } from "@/lib/discord/guild";
+import { GuildObject } from "@/lib/discord/guild-types";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Card } from "@heroui/card";
 import { User } from "@/generated/prisma/browser";

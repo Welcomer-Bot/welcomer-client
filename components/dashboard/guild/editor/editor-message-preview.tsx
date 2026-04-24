@@ -1,6 +1,6 @@
 "use client";
 
-import {GuildObject} from "@/lib/discord/guild";
+import {GuildObject} from "@/lib/discord/guild-types";
 import {UserObject} from "@/lib/discord/user";
 import {SourceStoreContext} from "@/features/dashboard/modules/providers";
 import {lazy, Suspense, useContext} from "react";

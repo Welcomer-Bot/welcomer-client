@@ -3,7 +3,7 @@
 import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger,} from "@heroui/dropdown";
 import NextLink from "next/link";
 
-import {GuildObject} from "@/lib/discord/guild";
+import {GuildObject} from "@/lib/discord/guild-types";
 import {inviteBotToGuild} from "@/lib/discord/invite";
 import GuildCard from "./guild-card";
 
