@@ -17,6 +17,7 @@ import {
 import { ErrorCode } from "@/lib/error";
 import { logDalError } from "./logging";
 import Guild from "@/lib/discord/guild";
+import { canManageGuild } from "@/lib/discord/permissions";
 import rest from "@/lib/discord/rest";
 import User from "@/lib/discord/user";
 
@@ -189,12 +190,7 @@ export const getUserGuildsByAccessToken = cache(
         },
       )) as RESTGetAPICurrentUserGuildsResult | RESTError;
       if (!data || "message" in data) return null;
-      const guilds = data.filter((guild) => {
-        return (
-          guild.owner ||
-          (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
-        );
-      });
+      const guilds = data.filter(canManageGuild);
       return guilds.map((guild) => new Guild(guild));
     } catch (error) {
       logDalError(

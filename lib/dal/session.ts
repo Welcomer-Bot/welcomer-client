@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { decrypt, getSession } from "@/lib/session";
 import { isAdminUserId } from "@/lib/admin/guards";
 import { AppError, ErrorCode } from "@/lib/error";
+import { canManageGuild } from "@/lib/discord/permissions";
 import { logDalError } from "./logging";
 import {
   getGuild,
@@ -217,12 +218,7 @@ export async function getGuildsByUserId(userId: string) {
     let guilds = await getUserGuildsByAccessToken(data.accessToken);
     if (!guilds) return null;
 
-    guilds = guilds.filter((guild) => {
-      return (
-        guild.owner ||
-        (guild.permissions && (Number(guild.permissions) & 0x20) === 0x20)
-      );
-    });
+    guilds = guilds.filter(canManageGuild);
 
     await Promise.all(
       guilds.map(async (guild) => {
