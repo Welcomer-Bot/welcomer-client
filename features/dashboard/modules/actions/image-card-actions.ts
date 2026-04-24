@@ -16,7 +16,7 @@ import {
   assertSnowflake,
   reportServerError,
 } from "@/lib/error";
-import { getUserGuild } from "@/lib/dal/session";
+import { requireGuild } from "@/lib/dal/session";
 import {
   createImageCardQuery,
   deleteCardQuery,
@@ -46,12 +46,9 @@ export async function createImageCard(
 ): Promise<ActionResult<ImageCard>> {
   assertSnowflake(guildId, "guildId");
 
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    return actionError("You do not have permission to manage this guild");
-  }
-
   try {
+    await requireGuild(guildId);
+
     const source = await getSource(guildId, sourceId);
     if (!source) {
       return actionError("Source not found for this guild");
@@ -105,16 +102,13 @@ export async function updateImageCard(
     return actionError("You need to select a source");
   }
 
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    return actionError("You do not have permission to manage this guild");
-  }
-
   if (!store.data) {
     return actionError("Card data cannot be null");
   }
 
   try {
+    await requireGuild(guildId);
+
     const card = await getImageCardForGuild(guildId, cardId);
     if (!card) {
       return actionError("Card not found for this guild");
@@ -145,12 +139,9 @@ async function deleteImageCardInternal(
   cardId: number,
   guildId: string,
 ): Promise<VoidActionResult> {
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    return voidActionError("You do not have permission to manage this guild");
-  }
-
   try {
+    await requireGuild(guildId);
+
     const card = await getImageCardForGuild(guildId, cardId);
     if (!card) {
       return voidActionError("Card not found for this guild");

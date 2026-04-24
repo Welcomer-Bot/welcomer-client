@@ -3,8 +3,7 @@
 import { GuildStats, Period, SourceType } from "../generated/prisma/client";
 import { getFonts } from "font-list";
 import { getAllGuildStatsSinceTime, getLatestGuildStats } from "@/lib/dal/sources";
-import { getUserGuild } from "@/lib/dal/session";
-import { AppError, ErrorCode } from "@/lib/error";
+import { requireGuild } from "@/lib/dal/session";
 
 type StatsDictionary = {
   [key in Period]: GuildStats | null;
@@ -14,7 +13,7 @@ type StatsDictionary = {
  * Fetch all guild statistics for a source type
  *
  * Permissions:
- * - Verifies user access to guild via getUserGuild()
+ * - Verifies user access to guild via requireGuild()
  *
  * @param guildId - Discord guild ID
  * @param type - Source type (e.g., "Welcomer", "Leaver")
@@ -25,15 +24,7 @@ export async function fetchGuildStats(
   guildId: string,
   type: SourceType
 ): Promise<StatsDictionary> {
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    throw new AppError(
-      "You do not have permission to access this guild",
-      ErrorCode.PERMISSION_DENIED,
-      403,
-      { guildId }
-    );
-  }
+  await requireGuild(guildId);
 
   const res: StatsDictionary = {} as StatsDictionary;
 
@@ -50,7 +41,7 @@ export async function fetchGuildStats(
  * Fetch a single guild statistic record
  *
  * Permissions:
- * - Verifies user access to guild via getUserGuild()
+ * - Verifies user access to guild via requireGuild()
  *
  * @param guildId - Discord guild ID
  * @param period - Stat period (e.g., "DAILY", "WEEKLY")
@@ -63,15 +54,7 @@ export async function fetchGuildStat(
   period: Period,
   type: SourceType
 ) {
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    throw new AppError(
-      "You do not have permission to access this guild",
-      ErrorCode.PERMISSION_DENIED,
-      403,
-      { guildId }
-    );
-  }
+  await requireGuild(guildId);
 
   return await getLatestGuildStats(guildId, period, type);
 }

@@ -26,13 +26,13 @@ import {
   getSource,
   updateSourceQuery,
 } from "@/lib/dal/sources";
-import { getUserGuild } from "@/lib/dal/session";
+import { getUserGuild, requireGuild } from "@/lib/dal/session";
 
 /**
  * Create a new source module for a guild.
  *
  * Permissions:
- * - Requires user access to the target guild via `getUserGuild(guildId)`.
+ * - Requires user access to the target guild via `requireGuild(guildId)`.
  *
  * Validation:
  * - `guildId` must be a valid Discord snowflake.
@@ -46,15 +46,7 @@ import { getUserGuild } from "@/lib/dal/session";
 export async function createSource(guildId: string, source: SourceType): Promise<void> {
   assertSnowflake(guildId, "guildId");
 
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    throw new AppError(
-      "You do not have permission to manage this guild",
-      ErrorCode.PERMISSION_DENIED,
-      403,
-      { guildId, source },
-    );
-  }
+  const guild = await requireGuild(guildId);
 
   try {
     await createSourceRequest(guild.id, source);
@@ -78,7 +70,7 @@ export async function createSource(guildId: string, source: SourceType): Promise
  * Remove a source module from a guild.
  *
  * Permissions:
- * - Requires user access to the target guild via `getUserGuild(guildId)`.
+ * - Requires user access to the target guild via `requireGuild(guildId)`.
  *
  * Validation:
  * - `guildId` must be a valid Discord snowflake.
@@ -92,15 +84,7 @@ export async function createSource(guildId: string, source: SourceType): Promise
 export async function removeSource(guildId: string, sourceId: number): Promise<void> {
   assertSnowflake(guildId, "guildId");
 
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    throw new AppError(
-      "You do not have permission to manage this guild",
-      ErrorCode.PERMISSION_DENIED,
-      403,
-      { guildId, sourceId },
-    );
-  }
+  await requireGuild(guildId);
 
   try {
     await deleteSource(guildId, sourceId);

@@ -5,7 +5,7 @@ import { cache } from "react";
 import prisma from "@/lib/prisma";
 import { decrypt, getSession } from "@/lib/session";
 import { isAdminUserId } from "@/lib/admin/guards";
-import { ErrorCode } from "@/lib/error";
+import { AppError, ErrorCode } from "@/lib/error";
 import { logDalError } from "./logging";
 import {
   getGuild,
@@ -136,6 +136,23 @@ export const getUserGuild = cache(async (guildId: string) => {
 
   return userGuilds.find((guild) => guild.id === guildId) || null;
 });
+
+/**
+ * Assert the current user has access to the guild, otherwise throw
+ * a PERMISSION_DENIED AppError. Returns the guild on success.
+ */
+export async function requireGuild(guildId: string) {
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    throw new AppError(
+      "You do not have access to this guild",
+      ErrorCode.PERMISSION_DENIED,
+      403,
+      { guildId },
+    );
+  }
+  return guild;
+}
 
 /**
  * Fetch all users from database
