@@ -1,44 +1,16 @@
 "use client";
 
-import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { useStore } from "zustand";
-
 import {
   createSourceStore,
   type SourceStore,
 } from "@/features/dashboard/modules/stores/source-store";
 import { Source } from "@/generated/prisma/browser";
+import { createStoreProvider } from "./create-store-provider";
 
-export type SourceStoreAPI = ReturnType<typeof createSourceStore>;
+const {
+  Context: SourceStoreContext,
+  Provider: SourceStoreProvider,
+  useBoundStore: useSourceStore,
+} = createStoreProvider<Source, SourceStore>(createSourceStore, "SourceStore");
 
-export const SourceStoreContext = createContext<SourceStoreAPI | undefined>(
-  undefined,
-);
-
-export interface SourceStoreProviderProps {
-  children: ReactNode;
-}
-
-export const SourceStoreProvider = ({
-  children,
-  initialState,
-}: SourceStoreProviderProps & { initialState?: Partial<Source> }) => {
-  const store = useMemo(() => createSourceStore(initialState), [initialState]);
-
-  return (
-    <SourceStoreContext.Provider value={store}>
-      {children}
-    </SourceStoreContext.Provider>
-  );
-};
-
-export const useSourceStore = <T,>(selector: (store: SourceStore) => T): T => {
-  const sourceStoreContext = useContext(SourceStoreContext);
-
-  if (!sourceStoreContext) {
-    throw new Error("useSourceStore must be used within SourceStoreProvider");
-  }
-
-  return useStore(sourceStoreContext, selector);
-};
-
+export { SourceStoreContext, SourceStoreProvider, useSourceStore };
