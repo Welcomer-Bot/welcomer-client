@@ -36,7 +36,6 @@ export {
   getGuilds,
   getUserGuild,
   getUsers,
-  getUserBaseData,
   getUserDataById,
   getUserData,
   getGuildData,

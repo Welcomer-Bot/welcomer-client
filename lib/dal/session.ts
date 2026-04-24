@@ -164,20 +164,6 @@ export async function getUsers() {
 }
 
 /**
- * Get basic user record by ID
- *
- * @param id - User ID
- * @returns User record or null
- */
-export async function getUserBaseData(id: string) {
-  return await prisma.user.findUnique({
-    where: {
-      id,
-    },
-  });
-}
-
-/**
  * Get full user data by user ID
  *
  * @param id - User ID
