@@ -3,11 +3,14 @@
 import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Textarea } from "@heroui/input";
-import { Tooltip } from "@heroui/tooltip";
 import { useContext } from "react";
 import { useStore } from "zustand";
+import {
+  VariableHintsRow,
+  type VariableHint,
+} from "@/components/dashboard/guild/variable-hints-row";
 
-const VARIABLE_HINTS = [
+const VARIABLE_HINTS: VariableHint[] = [
   { variable: "{user}", description: "User mention" },
   { variable: "{username}", description: "Username" },
   { variable: "{displayName}", description: "Display name" },
@@ -61,23 +64,11 @@ export default function ContentEditor() {
           maxRows={8}
         />
 
-        {/* Variable hints */}
-        <div className="flex flex-wrap gap-1.5">
-          <span className="text-xs text-default-400 mr-2">Variables:</span>
-          {VARIABLE_HINTS.map((hint) => (
-            <Tooltip key={hint.variable} content={hint.description}>
-              <button
-                type="button"
-                onClick={() => {
-                  setValue((value ?? "") + hint.variable);
-                }}
-                className="text-xs px-2 py-1 rounded-full bg-default-100 hover:bg-primary/20 hover:text-primary transition-colors font-mono"
-              >
-                {hint.variable}
-              </button>
-            </Tooltip>
-          ))}
-        </div>
+        <VariableHintsRow
+          hints={VARIABLE_HINTS}
+          label="Variables:"
+          onAppend={(variable) => setValue((value ?? "") + variable)}
+        />
       </CardBody>
     </Card>
   );

@@ -1,7 +1,10 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
-import { Tooltip } from "@heroui/tooltip";
+import {
+  VariableHintsRow,
+  type VariableHint,
+} from "@/components/dashboard/guild/variable-hints-row";
 import { FONT_OPTIONS, FONT_WEIGHT_OPTIONS, TextCard } from "../types";
 
 interface TextEditorProps {
@@ -11,7 +14,7 @@ interface TextEditorProps {
   placeholder?: string;
 }
 
-const VARIABLE_HINTS = [
+const VARIABLE_HINTS: VariableHint[] = [
   { variable: "{username}", description: "Username" },
   { variable: "{displayName}", description: "Display name" },
   { variable: "{userId}", description: "User ID" },
@@ -67,25 +70,12 @@ export function TextEditor({
             variant="bordered"
             labelPlacement="outside"
           />
-          {/* Variable hints */}
-          <div className="flex flex-wrap gap-1.5">
-            {VARIABLE_HINTS.map((hint) => (
-              <Tooltip key={hint.variable} content={hint.description}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleChange(
-                      "content",
-                      currentText.content + hint.variable,
-                    );
-                  }}
-                  className="text-xs px-2 py-1 rounded-full bg-default-100 hover:bg-primary/20 hover:text-primary transition-colors font-mono"
-                >
-                  {hint.variable}
-                </button>
-              </Tooltip>
-            ))}
-          </div>
+          <VariableHintsRow
+            hints={VARIABLE_HINTS}
+            onAppend={(variable) =>
+              handleChange("content", currentText.content + variable)
+            }
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
