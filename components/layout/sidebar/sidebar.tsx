@@ -1,6 +1,7 @@
 "use client";
 
-import { GuildSelectDropdown, LogoutIcon } from "@/components/dashboard/guild";
+import GuildSelectDropdown from "@/components/dashboard/guild/guild-select-dropdown";
+import { LogoutIcon } from "@/components/dashboard/guild/logout-icon";
 import { Divider } from "@heroui/divider";
 import { User as UIUser } from "@heroui/user";
 import Link from "next/link";
