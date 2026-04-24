@@ -1,7 +1,7 @@
 "use client";
 import {Button} from "@heroui/button";
 import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure,} from "@heroui/modal";
-import {DiscordMention} from "@clementvt/discord-components-react";
+import {DiscordMention} from "@skyra/discord-components-react";
 import {usePlausible} from "next-plausible";
 import Image from "next/image";
 import {redirect} from "next/navigation";

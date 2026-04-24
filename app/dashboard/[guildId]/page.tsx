@@ -16,33 +16,33 @@
  * @see app/dashboard/[guildId]/leave/page.tsx - Éditeur Leaver
  */
 
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { redirect } from "next/navigation";
-import { Suspense } from "react";
+import {Card, CardBody, CardHeader} from "@heroui/card";
+import {redirect} from "next/navigation";
+import {Suspense} from "react";
 
-import { GuildCard, ManageButton, StatsViewer } from "@/components/dashboard/guild";
-import { getGuild } from "@/lib/dal/discord";
-import { getSources } from "@/lib/dal/sources";
-import { Period } from "@/generated/prisma/enums";
+import {GuildCard, ManageButton, StatsViewer} from "@/components/dashboard/guild";
+import {getGuild} from "@/lib/dal/discord";
+import {getSources} from "@/lib/dal/sources";
+import {Period} from "@/generated/prisma/enums";
 
-import { Skeleton } from "@heroui/skeleton";
-import { DiscordMention } from "@clementvt/discord-components-react";
+import {Skeleton} from "@heroui/skeleton";
+import {DiscordMention} from "@skyra/discord-components-react";
 
 function StatsViewerSkeleton() {
   return (
     <Card className="grid gap-5 px-5 pb-5">
       <CardHeader className="flex justify-between">
-        <Skeleton className="h-6 w-32 rounded-lg" />
-        <Skeleton className="h-10 w-40 rounded-lg" />
+        <Skeleton className="h-6 w-32 rounded-lg"/>
+        <Skeleton className="h-10 w-40 rounded-lg"/>
       </CardHeader>
       <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i}>
             <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="h-4 w-32 rounded-lg" />
+              <Skeleton className="h-4 w-32 rounded-lg"/>
             </CardHeader>
             <CardBody>
-              <Skeleton className="h-6 w-16 rounded-lg" />
+              <Skeleton className="h-6 w-16 rounded-lg"/>
             </CardBody>
           </Card>
         ))}
@@ -52,13 +52,13 @@ function StatsViewerSkeleton() {
 }
 
 export default async function Page({
-  params,
-  searchParams,
-}: {
+                                     params,
+                                     searchParams,
+                                   }: {
   params: Promise<{ guildId: string }>;
   searchParams: Promise<{ welcomerPeriod?: string; leaverPeriod?: string }>;
 }) {
-  const { guildId } = await params;
+  const {guildId} = await params;
   const search = await searchParams;
 
   const welcomerPeriod = (search.welcomerPeriod as Period) || Period.DAILY;
@@ -88,7 +88,7 @@ export default async function Page({
         }}
       >
         <CardHeader>
-          <GuildCard guild={guild} />
+          <GuildCard guild={guild}/>
         </CardHeader>
         <>
           <CardBody className="space-y-5">
@@ -119,7 +119,7 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"Welcomer"} />
+                  <ManageButton guildId={guild.id} module={"Welcomer"}/>
                 </CardBody>
               </Card>
               <Card>
@@ -147,18 +147,18 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"Leaver"} />
+                  <ManageButton guildId={guild.id} module={"Leaver"}/>
                 </CardBody>
               </Card>
             </div>
-            <Suspense fallback={<StatsViewerSkeleton />}>
+            <Suspense fallback={<StatsViewerSkeleton/>}>
               <StatsViewer
                 guildId={guild.id}
                 module={"Welcomer"}
                 period={welcomerPeriod}
               />
             </Suspense>
-            <Suspense fallback={<StatsViewerSkeleton />}>
+            <Suspense fallback={<StatsViewerSkeleton/>}>
               <StatsViewer
                 guildId={guild.id}
                 module={"Leaver"}
