@@ -3,7 +3,6 @@
 import { Button } from "@heroui/button";
 import { useState } from "react";
 
-import { signIn } from "@/lib/actions";
 import { usePlausible } from "next-plausible";
 
 export function SignIn({
@@ -15,13 +14,13 @@ export function SignIn({
   const plausible = usePlausible();
   return (
     <Button
+      as="a"
+      href="/api/auth/login"
       color="primary"
       isLoading={isRedirecting}
-      type="submit"
       onPress={() => {
         plausible("click-sign-in");
         setIsRedirecting(true);
-        signIn();
       }}
     >
       {text}
