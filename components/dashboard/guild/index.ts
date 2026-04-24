@@ -8,14 +8,14 @@ export { default as RemoveModuleButton } from "./remove-module-button";
 export { default as ManageButton } from "./manage-button";
 
 // Auth
-export { default as LogoutButton } from "./logout-button";
-export { default as LogoutIcon } from "./logout-icon";
+export { LogoutButton } from "./logout-button";
+export { LogoutIcon } from "./logout-icon";
 
 // Editor
 export { Editor } from "./editor/editor";
 
 // Image editor
-export { default as ImageEditor } from "./image-editor/editor";
+export { Editor as ImageEditor } from "./image-editor/editor";
 export type {
   BaseCardConfig,
   Color,
