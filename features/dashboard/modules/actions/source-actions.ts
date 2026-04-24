@@ -12,9 +12,8 @@ import {
   AppError,
   ErrorCode,
   assertSnowflake,
-  handleServerError,
   logError,
-  reportError,
+  reportServerError,
 } from "@/lib/error";
 import {
   createSource as createSourceRequest,
@@ -70,12 +69,11 @@ export async function createSource(guildId: string, source: SourceType): Promise
     await createSourceRequest(guild.id, source);
     revalidatePath(`/dashboard/${guildId}`);
   } catch (error) {
-    const appError = handleServerError(error, {
+    const appError = reportServerError(error, {
       action: "createSource",
       guildId,
       source,
     });
-    reportError(appError);
     throw new AppError(
       "An error occurred while creating the source",
       appError.code,
@@ -117,13 +115,11 @@ export async function removeSource(guildId: string, sourceId: number): Promise<v
     await deleteSource(guildId, sourceId);
     revalidatePath(`/dashboard/${guildId}`);
   } catch (error) {
-    const appError = handleServerError(error, {
+    throw reportServerError(error, {
       action: "removeSource",
       guildId,
       sourceId,
     });
-    reportError(appError);
-    throw appError;
   }
 }
 
@@ -211,12 +207,11 @@ export async function updateSource(store: Partial<SourceState>): Promise<UpdateS
       return sourceUpdateError(z.prettifyError(error.cause));
     }
 
-    const appError = handleServerError(error, {
+    reportServerError(error, {
       action: "updateSource.validateMessage",
       guildId,
       sourceId,
     });
-    reportError(appError);
 
     return sourceUpdateError("Message is not valid");
   }
@@ -248,12 +243,11 @@ export async function updateSource(store: Partial<SourceState>): Promise<UpdateS
     revalidatePath(`/dashboard/${guildId}`);
     return sourceUpdateSuccess(updatedSource);
   } catch (error) {
-    const appError = handleServerError(error, {
+    const appError = reportServerError(error, {
       action: "updateSource",
       guildId,
       sourceId,
     });
-    reportError(appError);
 
     return sourceUpdateError(
       appError.message || "An error occurred while updating the source",

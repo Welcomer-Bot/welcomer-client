@@ -211,6 +211,21 @@ export function reportError(
 }
 
 /**
+ * Convert a thrown error into an AppError, report it, and return it.
+ *
+ * Shorthand for the `handleServerError` + `reportError` pair used across
+ * server actions.
+ */
+export function reportServerError(
+  error: unknown,
+  context: ErrorContext,
+): AppError {
+  const appError = handleServerError(error, context);
+  reportError(appError);
+  return appError;
+}
+
+/**
  * Validate required fields in object
  *
  * Throws VALIDATION_ERROR if any required field is missing or invalid.

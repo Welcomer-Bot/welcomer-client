@@ -6,8 +6,7 @@ import { ImageCard } from "@/generated/prisma/client";
 import { ImageCardState } from "@/features/dashboard/modules/stores";
 import {
   assertSnowflake,
-  handleServerError,
-  reportError,
+  reportServerError,
 } from "@/lib/error";
 import { getUserGuild } from "@/lib/dal/session";
 import {
@@ -88,12 +87,11 @@ export async function createImageCard(
 
     return imageCardSuccess(card);
   } catch (error) {
-    const appError = handleServerError(error, {
+    const appError = reportServerError(error, {
       action: "createImageCard",
       guildId,
       sourceId,
     });
-    reportError(appError);
 
     return imageCardError(appError.message);
   }
@@ -148,13 +146,12 @@ export async function updateImageCard(
     revalidatePath(`/dashboard/${guildId}`);
     return imageCardSuccess(updatedCard);
   } catch (error) {
-    const appError = handleServerError(error, {
+    const appError = reportServerError(error, {
       action: "updateImageCard",
       guildId,
       sourceId,
       cardId,
     });
-    reportError(appError);
 
     return imageCardError(appError.message);
   }
@@ -182,12 +179,11 @@ async function deleteImageCardInternal(
 
     return imageCardDeleteSuccess();
   } catch (error) {
-    const appError = handleServerError(error, {
+    const appError = reportServerError(error, {
       action: "deleteImageCardInternal",
       guildId,
       cardId,
     });
-    reportError(appError);
 
     return imageCardDeleteError(appError.message);
   }
@@ -212,12 +208,11 @@ export async function deleteActiveImageCardInternal(
 
     return await deleteImageCardInternal(source.activeCardId, guildId);
   } catch (error) {
-    const appError = handleServerError(error, {
+    const appError = reportServerError(error, {
       action: "deleteActiveImageCardInternal",
       guildId,
       sourceId,
     });
-    reportError(appError);
 
     return imageCardDeleteError(appError.message);
   }
