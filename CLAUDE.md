@@ -158,6 +158,26 @@ Before writing auth/redirect/cookie code, decide which boundary it belongs in. G
 - **Single-writer discipline for CSRF/state cookies.** A token stored in a cookie and validated on callback assumes exactly one writer between issue and check. If two requests can hit the issuing endpoint concurrently (prefetch, double-submit, action-redirect fan-out), the second silently overwrites the first and validation fails with a mismatch. The fix is upstream: ensure one request reaches the issuer per flow — not a resilience hack on the validator.
 - **When debugging a "StrictMode bug," first ask whether the code should be on the client at all.** StrictMode exposes effects that aren't idempotent. The usual correct answer for auth/OAuth/session code isn't "make the effect idempotent" — it's "this isn't client code."
 
+### Web Components: shadow DOM order beats JSX order
+
+Web-component libs (skyra / welcomer-bot `discord-components-*`) project children into named slots. JSX child order ignored. Only `slot="..."` attribute matters. Visual order = template order of `<slot name="...">` in shadow DOM. Wrong position? Read lib `render()`, pick different slot. Don't reorder JSX.
+
+### Web Components: one registry, one package
+
+`customElements.define(name, class)` global. Two packages defining same tag (skyra + welcomer-bot fork both ship `discord-embed`) → `NotSupportedError: 'xxx' has already been defined` on second import. Migrating to fork → `yarn remove` old package, grep source + `node_modules` for leftover imports. No "just in case."
+
+### Canvas CORS & tainting
+
+`<img>` drawn without `crossOrigin="anonymous"` → canvas tainted → `toDataURL()` / `getImageData()` throw `SecurityError`. Fix goes **before** `img.src`, never after. Third-party lib (e.g. `card-canvas` `BrowserRenderStrategy`) omits `crossOrigin` → override its `loadImage` on renderer instance. Don't patch globals. Exports not exposed → skip data-URL entirely. Use canvas element direct (e.g. `customImageElement` slot).
+
+### Prefer library features over custom re-implementation
+
+Stock prop too narrow (e.g. skyra's URL-only `image` on `DiscordEmbed`) → check forks/siblings first. Forks often add exactly the feature needed (welcomer-bot fork adds `customImageElement` default slot). 5-minute dep swap beats 100 lines of tailwind mimicking shadow-DOM CSS.
+
+### React child reparenting remounts DOM
+
+Memoized React element (even stable `useMemo` ref) moved between different parents → React unmounts/remounts DOM node. Stateful DOM (`<canvas>` pixels, `<video>` playback, `<iframe>` state) → don't rely on element identity. `document.createElement` in `useRef`, `appendChild` into host `<div>` via ref callback. Node detaches/reattaches, never destroyed. Hook deps on it stay stable.
+
 ## Commits
 
 Split refactors into multiple commits along logical boundaries, not per file. Use `git add -p` to stage partial hunks (non-interactive: `printf 'y\nn\n' | git add -p <file>`). Stage explicitly — never `git add -A`: the working tree often has unrelated in-progress changes.
