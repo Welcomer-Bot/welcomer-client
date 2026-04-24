@@ -14,30 +14,11 @@ import {
   DiscordMessage,
   DiscordMessages,
 } from "@welcomer-bot/discord-components-react";
-import {Skeleton} from "@heroui/skeleton";
 import {APIEmbed, RESTPostAPIChannelMessageJSONBody} from "discord.js";
-import React, {JSX, RefObject} from "react";
+import React, {ReactNode} from "react";
 import reactStringReplace from "react-string-replace";
 import {GuildObject} from "./guild-types";
 import {UserObject} from "./user";
-
-// Component to properly render HTMLCanvasElement
-function CanvasRenderer({canvas}: { canvas: RefObject<HTMLCanvasElement | undefined> }) {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (canvas.current && containerRef.current) {
-      // Clear any existing children
-      containerRef.current.innerHTML = '';
-      // Append the canvas element to the container
-      containerRef.current.appendChild(canvas.current);
-    }
-  }, [canvas]);
-
-  if (!canvas.current) return null;
-
-  return <div ref={containerRef}/>;
-}
 
 export function parseText(
   text: string | undefined,
@@ -163,7 +144,6 @@ export function parseMessageText(
   return replacedText;
 }
 
-// Helper to render embed fields using DiscordEmbedFields/DiscordEmbedField
 function renderEmbedFields(fields: APIEmbed["fields"]) {
   return (
     <DiscordEmbedFields slot="fields">
@@ -180,68 +160,56 @@ function renderEmbedFields(fields: APIEmbed["fields"]) {
   );
 }
 
-// Helper to render a single embed using DiscordEmbed and related components
 function renderEmbed(
   embed: APIEmbed,
   user: UserObject,
   guild: GuildObject,
   idx: number,
-  imageUrl?: JSX.Element,
-  isLoadingImage?: boolean,
+  imageNode?: ReactNode,
 ) {
-  const embedImage = isLoadingImage ? undefined : imageUrl;
-
   return (
-    <div key={idx}>
-      <DiscordEmbed
-        key={idx}
-        slot="embeds"
-        color={
-          embed.color
-            ? `#${embed.color.toString(16).padStart(6, "0")}`
-            : undefined
-        }
-        className="w-full"
-        embedTitle={parseText(embed.title, user, guild)}
-        authorName={embed.author?.name}
-        authorImage={embed.author?.icon_url}
-        title={parseText(embed.title, user, guild)}
-        url={embed.url}
-        thumbnail={embed.thumbnail?.url}
-      >
-        {embed.description && (
-          <DiscordEmbedDescription slot="description">
-            {parseText(embed.description, user, guild)}
-          </DiscordEmbedDescription>
-        )}
-        {embed.fields &&
-          Array.isArray(embed.fields) &&
-          renderEmbedFields(
-            embed.fields.map((field) => ({
-              name: parseText(field.name, user, guild),
-              value: parseText(field.value, user, guild),
-              inline: field.inline,
-            })),
-          )}
-        {embed.footer && (
-          <DiscordEmbedFooter
-            footerImage={embed.footer.icon_url}
-            timestamp={embed.timestamp}
-            slot="footer"
-          >
-            {parseText(embed.footer.text, user, guild)}
-          </DiscordEmbedFooter>
-        )}
-        {imageUrl && (
-          <div slot={"image"}>
-            {embedImage}
-          </div>
-        )}
-      </DiscordEmbed>
-      {isLoadingImage && (
-        <Skeleton className="rounded-lg w-[400px] aspect-[16/9] mt-2"/>
+    <DiscordEmbed
+      key={idx}
+      slot="embeds"
+      color={
+        embed.color
+          ? `#${embed.color.toString(16).padStart(6, "0")}`
+          : undefined
+      }
+      className="w-full"
+      embedTitle={parseText(embed.title, user, guild)}
+      authorName={embed.author?.name}
+      authorImage={embed.author?.icon_url}
+      title={parseText(embed.title, user, guild)}
+      url={embed.url}
+      thumbnail={embed.thumbnail?.url}
+      customImageElement={!!imageNode}
+    >
+      {embed.description && (
+        <DiscordEmbedDescription slot="description">
+          {parseText(embed.description, user, guild)}
+        </DiscordEmbedDescription>
       )}
-    </div>
+      {embed.fields &&
+        Array.isArray(embed.fields) &&
+        renderEmbedFields(
+          embed.fields.map((field) => ({
+            name: parseText(field.name, user, guild),
+            value: parseText(field.value, user, guild),
+            inline: field.inline,
+          })),
+        )}
+      {embed.footer && (
+        <DiscordEmbedFooter
+          footerImage={embed.footer.icon_url}
+          timestamp={embed.timestamp}
+          slot="footer"
+        >
+          {parseText(embed.footer.text, user, guild)}
+        </DiscordEmbedFooter>
+      )}
+      {imageNode}
+    </DiscordEmbed>
   );
 }
 
@@ -250,10 +218,9 @@ export function parseMessageToReactElement(
   user: UserObject,
   guild: GuildObject,
   options?: {
-    image?: RefObject<HTMLCanvasElement | undefined>;
+    canvas?: ReactNode;
     imagePosition?: "outside" | "embed";
     imageEmbedIndex?: number;
-    isLoadingImage?: boolean;
   },
 ) {
   // Render the main message content using parseMessageText
@@ -268,27 +235,22 @@ export function parseMessageToReactElement(
       const shouldIncludeImage =
         options?.imagePosition === "embed" && options.imageEmbedIndex === idx;
 
-      const isLoading =
-        shouldIncludeImage && options?.isLoadingImage
-          ? options.isLoadingImage
-          : undefined;
-      const imageUrl =
-        shouldIncludeImage && options.image ? <CanvasRenderer canvas={options.image}/> : undefined;
+      const imageNode =
+        shouldIncludeImage && options?.canvas ? options.canvas : undefined;
 
-      return renderEmbed(embed, user, guild, idx, imageUrl, isLoading);
+      return renderEmbed(embed, user, guild, idx, imageNode);
     });
   }
 
-  // Render outside image if specified
+  // Render outside image if specified.
+  // Note: DiscordMessage shadow DOM renders the `attachments` slot before `embeds`,
+  // so we project into `components` (which renders after embeds) to get the
+  // expected "image below embed" visual order.
   const outsideImage =
-    options?.imagePosition === "outside" ? (
-      options?.isLoadingImage ? (
-        <Skeleton className="rounded-lg w-[400px] aspect-[16/9]"/>
-      ) : options?.image ? (
-        <DiscordImageAttachment slot="attachments" customImageElement={true}>
-          <CanvasRenderer canvas={options.image}/>
-        </DiscordImageAttachment>
-      ) : undefined
+    options?.imagePosition === "outside" && options?.canvas ? (
+      <DiscordImageAttachment slot="components" customImageElement={true}>
+        {options.canvas}
+      </DiscordImageAttachment>
     ) : null;
 
   return (

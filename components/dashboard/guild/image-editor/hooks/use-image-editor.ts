@@ -5,13 +5,19 @@ import { generateImage } from "@/lib/discord/image";
 
 import { BaseCardConfig } from "../types";
 
-export function useImageEditor(guildId: string, config: BaseCardConfig) {
+export function useImageEditor(
+  canvas: HTMLCanvasElement | null,
+  guildId: string,
+  config: BaseCardConfig | null,
+) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const configStr = useMemo(() => JSON.stringify(config), [config]);
 
   useEffect(() => {
+    if (!canvas || !config) return;
+
     const timeoutId = setTimeout(() => {
       const fetchCard = async () => {
         try {
@@ -22,7 +28,7 @@ export function useImageEditor(guildId: string, config: BaseCardConfig) {
           if (!user || !guild) {
             throw new Error("User or Guild data not found");
           }
-          await generateImage(config, user, guild);
+          await generateImage(canvas, config, user, guild);
           setIsLoading(false);
         } catch (error) {
           setError(
@@ -33,11 +39,11 @@ export function useImageEditor(guildId: string, config: BaseCardConfig) {
       };
 
       fetchCard();
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configStr, guildId]);
+  }, [canvas, configStr, guildId]);
 
   return {
     error,

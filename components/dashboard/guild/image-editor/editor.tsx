@@ -13,7 +13,6 @@ import {EditorHeader} from "./components/editor-header";
 import {Preview} from "./components/preview";
 import {SaveButton} from "./components/save-button";
 import {TextEditor} from "./components/text-editor";
-import {useImageEditor} from "./hooks/use-image-editor";
 import {BaseCardConfig} from "./types";
 
 interface EditorProps {
@@ -36,8 +35,6 @@ export function Editor({module, guildId}: EditorProps) {
   const sourceId = useImageCardStore((state) => state.sourceId);
 
   const hasCard = cardId !== null && cardId !== undefined;
-
-  const {error: previewError, isLoading} = useImageEditor(guildId, data);
 
   const handleCreate = async () => {
     if (!sourceId || !store) return;
@@ -252,8 +249,8 @@ export function Editor({module, guildId}: EditorProps) {
           </div>
           <div className="p-5">
             <Preview
-              isLoading={hasCard ? isLoading : false}
-              error={previewError}
+              guildId={guildId}
+              config={hasCard ? data : null}
             />
           </div>
         </div>

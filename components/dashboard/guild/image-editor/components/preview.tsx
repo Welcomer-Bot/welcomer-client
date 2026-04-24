@@ -1,43 +1,47 @@
 "use client";
 
-import {Card, CardBody, CardHeader} from "@heroui/card";
-import {Skeleton} from "@heroui/skeleton";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { useState } from "react";
+
+import { useImageEditor } from "../hooks/use-image-editor";
+import { BaseCardConfig } from "../types";
 
 interface PreviewProps {
-    isLoading: boolean;
-    error: string | null;
+  guildId: string;
+  config: BaseCardConfig | null;
 }
 
-export function Preview({isLoading, error}: Readonly<PreviewProps>) {
+export function Preview({ guildId, config }: Readonly<PreviewProps>) {
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const { isLoading, error } = useImageEditor(canvas, guildId, config);
 
-    return (
-        <Card className="sticky top-4" shadow="md">
-            <CardHeader className="pb-2 border-b border-default-200">
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-success animate-pulse"/>
-                    <h3 className="font-semibold text-lg text-foreground">
-                        Live Preview
-                    </h3>
-                </div>
-            </CardHeader>
-            <CardBody className="p-4">
-
-                {
-                    isLoading ?? (
-                        <Skeleton>
-                            <div className="flex justify-center items-center" style={{width: "800px", height: "300px"}}>
-                                Loading
-                            </div>
-                        </Skeleton>
-                    )
-                }
-                <canvas
-                    id="preview-canvas"
-                    className={`w-full h-auto ${(isLoading || error != null) ? "hidden" : "block"}`}
-                    width={800}
-                    height={350}
-                ></canvas>
-            </CardBody>
-        </Card>
-    );
+  return (
+    <Card className="sticky top-4" shadow="md">
+      <CardHeader className="pb-2 border-b border-default-200">
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isLoading ? "bg-warning animate-pulse" : "bg-success"
+            }`}
+          />
+          <h3 className="font-semibold text-lg text-foreground">
+            Live Preview
+          </h3>
+        </div>
+      </CardHeader>
+      <CardBody className="p-4">
+        <canvas
+          ref={setCanvas}
+          className={`w-full h-auto transition-opacity ${
+            isLoading || error ? "opacity-50" : "opacity-100"
+          }`}
+          width={800}
+          height={350}
+        />
+        {error && (
+          <p className="text-danger text-sm mt-2">{error}</p>
+        )}
+      </CardBody>
+    </Card>
+  );
 }

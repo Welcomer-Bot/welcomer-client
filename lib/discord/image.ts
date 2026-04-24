@@ -7,14 +7,11 @@ import type { UserObject } from "./user";
 import { parseText } from "./text";
 
 export async function generateImage(
+  canvas: HTMLCanvasElement,
   msg: BaseCardConfig,
   user: UserObject,
   guild: GuildObject,
 ): Promise<void> {
-  const canvas = document.getElementById(
-    "preview-canvas",
-  ) as HTMLCanvasElement | null;
-
   const cardConfig: BaseCardConfig = {
     ...msg,
     avatarImgURL: user.avatarUrl,
@@ -23,7 +20,7 @@ export async function generateImage(
 
   const card = DefaultCard.fromJSON(cardConfig);
   await card.build({
-    canvasElement: canvas || undefined,
+    canvasElement: canvas,
     replacer: (text: string) => parseText(text, user, guild, true) || "",
   });
 }
