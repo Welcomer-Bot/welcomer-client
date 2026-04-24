@@ -63,7 +63,7 @@ export {
   executeQueries,
   getGuildBeta,
   addGuildToBeta,
-  removeGuildToBeta,
+  removeGuildFromBeta,
   getAllGuildStatsSinceTime,
 } from "@/lib/dal/sources";
 

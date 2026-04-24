@@ -8,7 +8,7 @@ import {
     getRolesPermissions,
     isPremiumGuild,
     leaveGuild,
-    removeGuildToBeta,
+    removeGuildFromBeta,
 } from "../dal";
 import {getGuildBanner, getGuildIcon} from "../utils";
 import {fetchWidget} from "./widget";
@@ -163,7 +163,7 @@ export default class Guild implements GuildObject {
 
     public async removeFromBetaProgram() {
         this.beta = false;
-        return await removeGuildToBeta(this.id);
+        return await removeGuildFromBeta(this.id);
     }
 
     public async leave() {

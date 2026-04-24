@@ -395,7 +395,7 @@ export async function addGuildToBeta(guildId: string, userId?: string) {
  * @param guildId - Discord guild ID
  * @returns true if successful, false on error
  */
-export async function removeGuildToBeta(guildId: string) {
+export async function removeGuildFromBeta(guildId: string) {
   try {
     return !!(await prisma.betaGuild.delete({
       where: {
@@ -403,7 +403,7 @@ export async function removeGuildToBeta(guildId: string) {
       },
     }));
   } catch (error) {
-    logDalError("removeGuildToBeta", ErrorCode.DATABASE_ERROR, error, {
+    logDalError("removeGuildFromBeta", ErrorCode.DATABASE_ERROR, error, {
       guildId,
     });
     return false;

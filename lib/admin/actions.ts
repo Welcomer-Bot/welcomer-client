@@ -20,7 +20,7 @@ import {
   addGuildToBeta,
   getGuild,
   getGuildsByUserId,
-  removeGuildToBeta,
+  removeGuildFromBeta,
 } from "../dal";
 import {
   AppError,
@@ -51,7 +51,7 @@ export async function removeGuildFromBetaProgram(guildId: string) {
   assertSnowflake(guildId, "guildId");
 
   try {
-    const res = await removeGuildToBeta(guildId);
+    const res = await removeGuildFromBeta(guildId);
     revalidatePath("/admin");
     return res;
   } catch (error) {
