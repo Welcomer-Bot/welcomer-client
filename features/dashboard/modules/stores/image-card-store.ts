@@ -48,6 +48,8 @@ export type ImageCardActions = {
 
 export type ImageCardStore = ImageCardState & ImageCardActions;
 
+type TextField = "mainText" | "nicknameText" | "secondText";
+
 const defaultState: ImageCardState = {
   sourceId: 0,
   data: DEFAULT_CONFIG,
@@ -56,144 +58,59 @@ const defaultState: ImageCardState = {
 export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
   return createStore<ImageCardStore>()(
     immer<ImageCardStore>((set, get, store) => {
+      const setTextField = <K extends keyof TextCard>(
+        field: TextField,
+        key: K,
+        value: TextCard[K],
+      ) =>
+        set((state) => {
+          const existing = state.data[field];
+          if (!existing) {
+            state.data[field] = { content: "", [key]: value } as TextCard;
+          } else {
+            existing[key] = value;
+          }
+        });
+
+      const replaceTextField = (field: TextField, text: TextCard) =>
+        set((state) => {
+          state.data[field] = text;
+        });
+
       return {
         ...defaultState,
         ...initState,
 
-        setMainText: (text) =>
-          set((state) => {
-            state.data.mainText = text;
-          }),
+        setMainText: (text) => replaceTextField("mainText", text),
         setMainTextContent: (content) =>
-          set((state) => {
-            if (!state.data.mainText) {
-              state.data.mainText = { content };
-            } else {
-              state.data.mainText.content = content;
-            }
-          }),
-        setMainTextColor: (color) =>
-          set((state) => {
-            if (!state.data.mainText) {
-              state.data.mainText = { content: "", color };
-            } else {
-              state.data.mainText.color = color;
-            }
-          }),
-        setMainTextFont: (font) =>
-          set((state) => {
-            if (!state.data.mainText) {
-              state.data.mainText = { content: "", font };
-            } else {
-              state.data.mainText.font = font;
-            }
-          }),
-        setMainTextSize: (size) =>
-          set((state) => {
-            if (!state.data.mainText) {
-              state.data.mainText = { content: "", size };
-            } else {
-              state.data.mainText.size = size;
-            }
-          }),
+          setTextField("mainText", "content", content),
+        setMainTextColor: (color) => setTextField("mainText", "color", color),
+        setMainTextFont: (font) => setTextField("mainText", "font", font),
+        setMainTextSize: (size) => setTextField("mainText", "size", size),
         setMainTextWeight: (weight) =>
-          set((state) => {
-            if (!state.data.mainText) {
-              state.data.mainText = { content: "", weight };
-            } else {
-              state.data.mainText.weight = weight;
-            }
-          }),
+          setTextField("mainText", "weight", weight),
 
-        setNicknameText: (text) =>
-          set((state) => {
-            state.data.nicknameText = text;
-          }),
+        setNicknameText: (text) => replaceTextField("nicknameText", text),
         setNicknameTextContent: (content) =>
-          set((state) => {
-            if (!state.data.nicknameText) {
-              state.data.nicknameText = { content };
-            } else {
-              state.data.nicknameText.content = content;
-            }
-          }),
+          setTextField("nicknameText", "content", content),
         setNicknameTextColor: (color) =>
-          set((state) => {
-            if (!state.data.nicknameText) {
-              state.data.nicknameText = { content: "", color };
-            } else {
-              state.data.nicknameText.color = color;
-            }
-          }),
+          setTextField("nicknameText", "color", color),
         setNicknameTextFont: (font) =>
-          set((state) => {
-            if (!state.data.nicknameText) {
-              state.data.nicknameText = { content: "", font };
-            } else {
-              state.data.nicknameText.font = font;
-            }
-          }),
+          setTextField("nicknameText", "font", font),
         setNicknameTextSize: (size) =>
-          set((state) => {
-            if (!state.data.nicknameText) {
-              state.data.nicknameText = { content: "", size };
-            } else {
-              state.data.nicknameText.size = size;
-            }
-          }),
+          setTextField("nicknameText", "size", size),
         setNicknameTextWeight: (weight) =>
-          set((state) => {
-            if (!state.data.nicknameText) {
-              state.data.nicknameText = { content: "", weight };
-            } else {
-              state.data.nicknameText.weight = weight;
-            }
-          }),
+          setTextField("nicknameText", "weight", weight),
 
-        setSecondText: (text) =>
-          set((state) => {
-            state.data.secondText = text;
-          }),
+        setSecondText: (text) => replaceTextField("secondText", text),
         setSecondTextContent: (content) =>
-          set((state) => {
-            if (!state.data.secondText) {
-              state.data.secondText = { content };
-            } else {
-              state.data.secondText.content = content;
-            }
-          }),
+          setTextField("secondText", "content", content),
         setSecondTextColor: (color) =>
-          set((state) => {
-            if (!state.data.secondText) {
-              state.data.secondText = { content: "", color };
-            } else {
-              state.data.secondText.color = color;
-            }
-          }),
-        setSecondTextFont: (font) =>
-          set((state) => {
-            if (!state.data.secondText) {
-              state.data.secondText = { content: "", font };
-            } else {
-              state.data.secondText.font = font;
-            }
-          }),
-        setSecondTextSize: (size) =>
-          set((state) => {
-            if (!state.data.secondText) {
-              state.data.secondText = { content: "", size };
-            } else {
-              state.data.secondText.size = size;
-            }
-          }),
+          setTextField("secondText", "color", color),
+        setSecondTextFont: (font) => setTextField("secondText", "font", font),
+        setSecondTextSize: (size) => setTextField("secondText", "size", size),
         setSecondTextWeight: (weight) =>
-          set((state) => {
-            if (!state.data.secondText) {
-              state.data.secondText = { content: "", weight };
-            } else {
-              state.data.secondText.weight = weight;
-            }
-          }),
+          setTextField("secondText", "weight", weight),
 
         setBackgroundColor: (color) =>
           set((state) => {
@@ -223,4 +140,3 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
     }),
   );
 };
-
