@@ -171,15 +171,11 @@ async function deleteImageCardInternal(
 }
 
 // Internal helper reused by source update flow.
+// Delegates to deleteImageCardInternal which enforces the guild permission check.
 export async function deleteActiveImageCardInternal(
   sourceId: number,
   guildId: string,
 ): Promise<VoidActionResult> {
-  const guild = await getUserGuild(guildId);
-  if (!guild) {
-    return voidActionError("You do not have permission to manage this guild");
-  }
-
   try {
     const source = await getSource(guildId, sourceId);
 
