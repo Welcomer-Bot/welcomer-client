@@ -6,7 +6,7 @@ import {Card, CardBody, CardHeader} from "@heroui/card";
 import {Chip} from "@heroui/chip";
 import {Select, SelectItem, SelectSection} from "@heroui/select";
 import {Tooltip} from "@heroui/tooltip";
-import {DiscordMention} from "@skyra/discord-components-react";
+import {DiscordMention} from "@welcomer-bot/discord-components-react";
 import {APIChannel} from "discord.js";
 import {useContext} from "react";
 import {useStore} from "zustand";

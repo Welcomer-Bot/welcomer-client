@@ -13,7 +13,7 @@ import {
   DiscordMention,
   DiscordMessage,
   DiscordMessages,
-} from "@skyra/discord-components-react";
+} from "@welcomer-bot/discord-components-react";
 import {Skeleton} from "@heroui/skeleton";
 import {APIEmbed, RESTPostAPIChannelMessageJSONBody} from "discord.js";
 import React, {JSX, RefObject} from "react";

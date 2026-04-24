@@ -26,7 +26,7 @@ import {getSources} from "@/lib/dal/sources";
 import {Period} from "@/generated/prisma/enums";
 
 import {Skeleton} from "@heroui/skeleton";
-import {DiscordMention} from "@skyra/discord-components-react";
+import {DiscordMention} from "@welcomer-bot/discord-components-react";
 
 function StatsViewerSkeleton() {
   return (

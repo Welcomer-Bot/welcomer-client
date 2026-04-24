@@ -2386,7 +2386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/context@npm:^1.1.5":
+"@lit/context@npm:^1.1.6":
   version: 1.1.6
   resolution: "@lit/context@npm:1.1.6"
   dependencies:
@@ -2395,7 +2395,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/react@npm:^1.0.7":
+"@lit/react@npm:^1.0.8":
   version: 1.0.8
   resolution: "@lit/react@npm:1.0.8"
   peerDependencies:
@@ -6769,30 +6769,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skyra/discord-components-core@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@skyra/discord-components-core@npm:4.0.2"
-  dependencies:
-    "@lit/context": "npm:^1.1.5"
-    lit: "npm:^3.3.0"
-  checksum: 10c0/6b07708474390e5f5a4e3e3151fccfcc90ac7c45ba20a73c715437fc9a07e39b42191de55006d94f3749a388949a325644c51733eaab6a8c03954b68d2082aed
-  languageName: node
-  linkType: hard
-
-"@skyra/discord-components-react@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@skyra/discord-components-react@npm:4.0.2"
-  dependencies:
-    "@lit/react": "npm:^1.0.7"
-    "@skyra/discord-components-core": "npm:^4.0.2"
-    react: "npm:^19.1.0"
-  peerDependencies:
-    react: 16.8.x || 17.x || 18.x || 19.x
-    react-dom: 16.8.x || 17.x || 18.x || 19.x
-  checksum: 10c0/daae5b3d5ca179d6e2a09549e8f04fab0b938c90c14a8e9a914dea54a2138fdf1a424ce0b3480876c26b607575a9d7be5c5d31e7bcc6991a70cfc3841c56359b
-  languageName: node
-  linkType: hard
-
 "@spectrum-icons/ui@npm:^3.7.0":
   version: 3.7.0
   resolution: "@spectrum-icons/ui@npm:3.7.0"
@@ -7678,6 +7654,30 @@ __metadata:
   dependencies:
     canvas: "npm:^3.0.1"
   checksum: 10c0/f511c4a90c30dd5152f4199e8c0131f6fde4456f8b815bb782f2120f3fb015765de8e2c3d9e22274ebe4500f5dc9a1ce12844394f2533eb70e158f2b0639cfe8
+  languageName: node
+  linkType: hard
+
+"@welcomer-bot/discord-components-core@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@welcomer-bot/discord-components-core@npm:4.0.2::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Fdiscord-components-core%2F4.0.2%2F883d417b8e6275298933ca46916a08b7c236d113"
+  dependencies:
+    "@lit/context": "npm:^1.1.6"
+    lit: "npm:^3.3.1"
+  checksum: 10c0/1a73fdd9cd1c1b8b4b2be0b09dba4728a6695e67ad7366ca7dde613ed066787dad4bc6d9b3f553568ec13a2ba10bff4af12869aa1f31232cf956b1b8071c632a
+  languageName: node
+  linkType: hard
+
+"@welcomer-bot/discord-components-react@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@welcomer-bot/discord-components-react@npm:4.0.2::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Fdiscord-components-react%2F4.0.2%2F4551cd9f44e2f31e0a29de0f6e108ce5b3796874"
+  dependencies:
+    "@lit/react": "npm:^1.0.8"
+    "@welcomer-bot/discord-components-core": "npm:^4.0.2"
+    react: "npm:^19.2.0"
+  peerDependencies:
+    react: 16.8.x || 17.x || 18.x || 19.x
+    react-dom: 16.8.x || 17.x || 18.x || 19.x
+  checksum: 10c0/4c47129a6509a49056ae63ef43deec718c292457f6e792dda94c4336ad4217c1991a38fa988068550c300ce4168ed6fb5006a42e3b22838fbd0faf8910e57b12
   languageName: node
   linkType: hard
 
@@ -10457,7 +10457,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:^3.3.0":
+"lit@npm:^3.3.1":
   version: 3.3.2
   resolution: "lit@npm:3.3.2"
   dependencies:
@@ -10757,8 +10757,6 @@ __metadata:
     "@prisma/client": "npm:^7.0.1"
     "@sentry/nextjs": "npm:^10"
     "@sentry/profiling-node": "npm:^9.42.0"
-    "@skyra/discord-components-core": "npm:^4.0.2"
-    "@skyra/discord-components-react": "npm:^4.0.2"
     "@tailwindcss/postcss": "npm:^4.1.11"
     "@tanstack/eslint-plugin-query": "npm:^5.81.2"
     "@types/node": "npm:^24.10.1"
@@ -10767,6 +10765,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.38.0"
     "@typescript-eslint/parser": "npm:8.38.0"
     "@welcomer-bot/card-canvas": "npm:^1.0.2"
+    "@welcomer-bot/discord-components-react": "npm:^4.0.2"
     "@welcomer-bot/utils": "npm:^0.1.0"
     autoprefixer: "npm:^10.4.21"
     clsx: "npm:2.1.1"
@@ -11793,7 +11792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^19.1.0":
+"react@npm:^19.2.0":
   version: 19.2.5
   resolution: "react@npm:19.2.5"
   checksum: 10c0/4b5f231dbef92886f602533c9ce3bde04d99f0e71dfb5d794c43e02726efaad0421c08688f75fc98a6d6e1dc017372e1af7abbfecdc86a79968f461675931a7a
