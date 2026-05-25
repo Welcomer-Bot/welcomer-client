@@ -8,10 +8,10 @@ import { useCallback, useMemo, useRef } from "react";
 import { useImageEditor } from "../image-editor/hooks/use-image-editor";
 
 export default function MessagePreview({
-  msg,
-  guild,
-  user,
-}: Readonly<{
+                                         msg,
+                                         guild,
+                                         user,
+                                       }: Readonly<{
   msg: SourceState;
   guild: GuildObject;
   user: UserObject;
@@ -41,7 +41,7 @@ export default function MessagePreview({
   }, []);
 
   const canvasNode = useMemo(
-    () => <div ref={hostRef} className="contents" />,
+    () => <div ref={hostRef} className="contents"/>,
     [hostRef],
   );
 
@@ -53,7 +53,7 @@ export default function MessagePreview({
       imagePosition: msg.imagePosition,
       imageEmbedIndex: msg.imageEmbedIndex,
     });
-  }, [msg, user, guild, canvasNode]);
+  }, [user, guild, canvasNode, msg.message, msg.imagePosition, msg.imageEmbedIndex]);
 
   return (
     <div className="rounded-lg min-h-1/2 h-fit w-full min-w-fit">{text}</div>

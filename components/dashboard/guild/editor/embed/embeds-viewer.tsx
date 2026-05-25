@@ -22,7 +22,7 @@ export default function EmbedsViewer() {
   return (
     <>
       {embeds.map((embed, index) => (
-        <Accordion variant="splitted" key={index}>
+        <Accordion variant="splitted" className="px-0" key={index}>
           <AccordionItem
             aria-label={`Embed ${index + 1}`}
             title={`Embed ${index + 1}`}
@@ -61,6 +61,7 @@ export default function EmbedsViewer() {
               defaultSelectedKeys={"all"}
               selectionMode="multiple"
               variant="bordered"
+              className="px-0"
             >
               <AccordionItem key={1} aria-label="Author" title="Author">
                 <EmbedAuthorFields embedIndex={index} />

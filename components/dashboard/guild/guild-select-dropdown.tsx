@@ -1,10 +1,10 @@
 "use client";
 
-import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger,} from "@heroui/dropdown";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, } from "@heroui/dropdown";
 import NextLink from "next/link";
 
-import {GuildObject} from "@/lib/discord/guild-types";
-import {inviteBotToGuild} from "@/lib/discord/invite";
+import { GuildObject } from "@/lib/discord/guild-types";
+import { inviteBotToGuild } from "@/lib/discord/invite";
 import GuildCard from "./guild-card";
 
 export default function GuildSelectDropdown({
@@ -36,6 +36,7 @@ export default function GuildSelectDropdown({
           aria-label="other guilds"
           className="max-h-52 overflow-y-auto no-scrollbar"
           variant="flat"
+          title="Naviguate to an other guild"
         >
           {guilds.map((guild) => {
             if (guild.mutual) {

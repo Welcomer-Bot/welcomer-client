@@ -6,13 +6,7 @@ import { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import prisma from "@/lib/prisma";
 import { ErrorCode } from "@/lib/error";
 import { logDalError } from "./logging";
-import {
-  ImageCard,
-  Period,
-  Prisma,
-  Source,
-  SourceType,
-} from "@/generated/prisma/client";
+import { ImageCard, Period, Prisma, Source, SourceType, } from "@/generated/prisma/client";
 
 /**
  * Fetch all sources of a specific type for a guild
@@ -123,8 +117,8 @@ export async function createGuildStats(
       data: {
         Guild: {
           connectOrCreate: {
-            where: { id: guildId },
-            create: { id: guildId },
+            where: {id: guildId},
+            create: {id: guildId},
           },
         },
         period,
@@ -174,8 +168,8 @@ export async function createSource(guildId: string, type: SourceType) {
     data: {
       Guild: {
         connectOrCreate: {
-          where: { id: guildId },
-          create: { id: guildId },
+          where: {id: guildId},
+          create: {id: guildId},
         },
       },
       type,
@@ -184,13 +178,13 @@ export async function createSource(guildId: string, type: SourceType) {
   });
 
   const updatedSource = await prisma.source.update({
-    where: { id: source.id },
+    where: {id: source.id},
     data: {
       activeCard: {
         create: {
           data: {},
           Source: {
-            connect: { id: source.id },
+            connect: {id: source.id},
           },
         },
       },
@@ -353,8 +347,8 @@ export async function executeQueries(
  * @returns Beta record or null
  */
 export async function getGuildBeta(guildId: string) {
-  return await prisma.betaGuild.findFirst({
-    where: { id: guildId },
+  return prisma.betaGuild.findFirst({
+    where: {id: guildId},
   });
 }
 
@@ -371,12 +365,12 @@ export async function addGuildToBeta(guildId: string, userId?: string) {
       data: {
         guild: {
           connectOrCreate: {
-            where: { id: guildId },
-            create: { id: guildId },
+            where: {id: guildId},
+            create: {id: guildId},
           },
         },
         user: {
-          connect: { id: userId || "" },
+          connect: {id: userId || ""},
         },
       },
     }));

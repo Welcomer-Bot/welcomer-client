@@ -144,16 +144,20 @@ export function parseMessageText(
   return replacedText;
 }
 
-function renderEmbedFields(fields: APIEmbed["fields"]) {
+function renderEmbedFields(
+  fields: APIEmbed["fields"],
+  user: UserObject,
+  guild: GuildObject,
+) {
   return (
     <DiscordEmbedFields slot="fields">
       {fields?.map((field, i) => (
         <DiscordEmbedField
           key={i}
-          fieldTitle={field.name}
+          fieldTitle={parseText(field.name, user, guild)}
           inline={!!field.inline}
         >
-          {field.value}
+          {parseMessageText(field.value, user, guild)}
         </DiscordEmbedField>
       ))}
     </DiscordEmbedFields>
@@ -187,25 +191,19 @@ function renderEmbed(
     >
       {embed.description && (
         <DiscordEmbedDescription slot="description">
-          {parseText(embed.description, user, guild)}
+          {parseMessageText(embed.description, user, guild)}
         </DiscordEmbedDescription>
       )}
       {embed.fields &&
         Array.isArray(embed.fields) &&
-        renderEmbedFields(
-          embed.fields.map((field) => ({
-            name: parseText(field.name, user, guild),
-            value: parseText(field.value, user, guild),
-            inline: field.inline,
-          })),
-        )}
+        renderEmbedFields(embed.fields, user, guild)}
       {embed.footer && (
         <DiscordEmbedFooter
           footerImage={embed.footer.icon_url}
           timestamp={embed.timestamp}
           slot="footer"
         >
-          {parseText(embed.footer.text, user, guild)}
+          {parseMessageText(embed.footer.text, user, guild)}
         </DiscordEmbedFooter>
       )}
       {imageNode}

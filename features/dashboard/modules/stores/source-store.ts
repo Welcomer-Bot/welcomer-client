@@ -1,3 +1,4 @@
+import { ImageCard, Source } from "@/generated/prisma/client";
 import {
   defaultEmbedField,
   defaultLeaverEmbed,
@@ -6,7 +7,6 @@ import {
 import { APIEmbed } from "discord.js";
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { ImageCard, Source } from "@/generated/prisma/client";
 
 export type SourceState = Source & {
   guildId: string;
@@ -249,6 +249,14 @@ export const createSourceStore = (initState?: Partial<Source>) => {
               if (oldEmbed?.image && (position !== "embed" || state.imageEmbedIndex !== embedIndex)) {
                 delete oldEmbed.image;
               }
+            }
+
+            if (position === "embed" && embedIndex == undefined) {
+              embedIndex = 0;
+            }
+
+            if (position === "outside") {
+              embedIndex = undefined;
             }
 
             state.imagePosition = position;
