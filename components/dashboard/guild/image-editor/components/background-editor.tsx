@@ -2,6 +2,7 @@ import {Button} from "@heroui/button";
 import {Card, CardBody, CardHeader} from "@heroui/card";
 import {Input} from "@heroui/input";
 import {Tab, Tabs} from "@heroui/tabs";
+import { BACKGROUND_PRESETS, DEFAULTS } from "../types";
 
 interface BackgroundEditorProps {
   backgroundColor: string | null | undefined;
@@ -10,24 +11,13 @@ interface BackgroundEditorProps {
   onBackgroundImgURLChange: (url: string | null) => void;
 }
 
-const GRADIENT_PRESETS = [
-  {name: "Discord Dark", value: "#2c2f33"},
-  {name: "Discord Darker", value: "#23272a"},
-  {name: "Blurple", value: "#5865f2"},
-  {name: "Ocean", value: "#1a5276"},
-  {name: "Forest", value: "#1e4d2b"},
-  {name: "Sunset", value: "#c0392b"},
-  {name: "Midnight", value: "#1a1a2e"},
-  {name: "Purple", value: "#4a235a"},
-];
-
 export function BackgroundEditor({
                                    backgroundColor,
                                    backgroundImgURL,
                                    onBackgroundColorChange,
                                    onBackgroundImgURLChange,
                                  }: BackgroundEditorProps) {
-  const currentColor = backgroundColor || "#2c2f33";
+  const currentColor = backgroundColor || DEFAULTS.BACKGROUND_COLOR;
   // Check if backgroundImgURL is not null (including empty string)
   const hasImage = backgroundImgURL !== null;
   return (
@@ -56,7 +46,7 @@ export function BackgroundEditor({
             } else {
               onBackgroundImgURLChange(null);
               if (!backgroundColor) {
-                onBackgroundColorChange("#2c2f33");
+                onBackgroundColorChange(DEFAULTS.BACKGROUND_COLOR);
               }
             }
           }}
@@ -65,7 +55,7 @@ export function BackgroundEditor({
             <div className="space-y-4 pt-4">
               {/* Preset colors */}
               <div className="grid grid-cols-4 gap-2">
-                {GRADIENT_PRESETS.map((preset) => (
+                {BACKGROUND_PRESETS.map((preset) => (
                   <button
                     key={preset.value}
                     onClick={() => onBackgroundColorChange(preset.value)}
@@ -99,7 +89,7 @@ export function BackgroundEditor({
                   size="sm"
                   variant="flat"
                   color="default"
-                  onPress={() => onBackgroundColorChange("#2c2f33")}
+                  onPress={() => onBackgroundColorChange(DEFAULTS.BACKGROUND_COLOR)}
                 >
                   Reset
                 </Button>
