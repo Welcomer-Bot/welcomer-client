@@ -1,9 +1,9 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
+import { variableHints } from "@welcomer-bot/utils";
 import {
   VariableHintsRow,
-  type VariableHint,
 } from "@/components/dashboard/guild/variable-hints-row";
 import { FONT_OPTIONS, FONT_WEIGHT_OPTIONS, TextCard } from "../types";
 
@@ -13,17 +13,6 @@ interface TextEditorProps {
   onChange: (text: TextCard | null) => void;
   placeholder?: string;
 }
-
-const VARIABLE_HINTS: VariableHint[] = [
-  { variable: "{username}", description: "Username" },
-  { variable: "{displayName}", description: "Display name" },
-  { variable: "{userId}", description: "User ID" },
-  { variable: "{guild}", description: "Server name" },
-  { variable: "{guildId}", description: "Guild ID" },
-  { variable: "{memberCount}", description: "Member count" },
-  { variable: "{memberCountFormatted}", description: "Formatted member count" },
-  { variable: "{discriminator}", description: "User discriminator" },
-];
 
 export function TextEditor({
   label,
@@ -71,7 +60,7 @@ export function TextEditor({
             labelPlacement="outside"
           />
           <VariableHintsRow
-            hints={VARIABLE_HINTS}
+            hints={variableHints.filter((h) => h.variable !== "{user}")}
             onAppend={(variable) =>
               handleChange("content", currentText.content + variable)
             }

@@ -3,24 +3,10 @@
 import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Textarea } from "@heroui/input";
+import { variableHints } from "@welcomer-bot/utils";
 import { useContext } from "react";
 import { useStore } from "zustand";
-import {
-  VariableHintsRow,
-  type VariableHint,
-} from "@/components/dashboard/guild/variable-hints-row";
-
-const VARIABLE_HINTS: VariableHint[] = [
-  { variable: "{user}", description: "User mention" },
-  { variable: "{username}", description: "Username" },
-  { variable: "{displayName}", description: "Display name" },
-  { variable: "{guild}", description: "Server name" },
-  { variable: "{memberCount}", description: "Member count" },
-  { variable: "{memberCountFormatted}", description: "Formatted member count" },
-  { variable: "{guildId}", description: "Guild ID" },
-  { variable: "{userId}", description: "User ID" },
-  { variable: "{discriminator}", description: "User discriminator" },
-];
+import { VariableHintsRow } from "@/components/dashboard/guild/variable-hints-row";
 
 export default function ContentEditor() {
   const store = useContext(SourceStoreContext);
@@ -65,7 +51,7 @@ export default function ContentEditor() {
         />
 
         <VariableHintsRow
-          hints={VARIABLE_HINTS}
+          hints={variableHints}
           label="Variables:"
           onAppend={(variable) => setValue((value ?? "") + variable)}
         />

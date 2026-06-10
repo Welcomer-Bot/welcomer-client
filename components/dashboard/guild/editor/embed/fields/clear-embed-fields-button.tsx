@@ -25,7 +25,7 @@ export default function ClearEmbedFieldsButton({
       variant="ghost"
       onPress={() => clearFields(embedIndex)}
     >
-      Clear Embeds
+      Clear Fields
     </Button>
   );
 }

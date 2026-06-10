@@ -200,7 +200,7 @@ export function Editor({module, guildId}: EditorProps) {
                   label="Main Text"
                   text={data.mainText}
                   onChange={(text) => updateConfig({mainText: text})}
-                  placeholder="Welcome {user.username}!"
+                  placeholder="Welcome {username}!"
                 />
 
                 <TextEditor
