@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useState } from "react";
 
 import { useImageEditor } from "../hooks/use-image-editor";
-import { BaseCardConfig } from "../types";
+import { BaseCardConfig, CANVAS_HEIGHT, CANVAS_WIDTH } from "../types";
 
 interface PreviewProps {
   guildId: string;
@@ -35,8 +35,8 @@ export function Preview({ guildId, config }: Readonly<PreviewProps>) {
           className={`w-full h-auto transition-opacity ${
             isLoading || error ? "opacity-50" : "opacity-100"
           }`}
-          width={800}
-          height={350}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
         />
         {error && (
           <p className="text-danger text-sm mt-2">{error}</p>
