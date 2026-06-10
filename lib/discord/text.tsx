@@ -17,8 +17,31 @@ import {
 import {APIEmbed, RESTPostAPIChannelMessageJSONBody} from "discord.js";
 import React, {ReactNode} from "react";
 import reactStringReplace from "react-string-replace";
+import {
+  replacePlaceholders,
+  type Guild,
+  type Member,
+} from "@welcomer-bot/utils";
 import {GuildObject} from "./guild-types";
 import {UserObject} from "./user";
+
+// Adapt dashboard camelCase objects to the Discord-API snake_case shapes the
+// canonical replacer expects.
+const toMember = (user: UserObject): Member => ({
+  user: {
+    id: user.id,
+    username: user.username,
+    discriminator: user.discriminator,
+    global_name: user.globalName,
+    avatar: user.avatar,
+  },
+});
+
+const toGuild = (guild: GuildObject): Guild => ({
+  id: guild.id,
+  name: guild.name,
+  approximate_member_count: guild.memberCount,
+});
 
 export function parseText(
   text: string | undefined,
@@ -26,22 +49,13 @@ export function parseText(
   guild: GuildObject,
   image: boolean = false,
 ) {
-  //TODO: add all the other variables
   if (!text) return "";
-  let replacedText = text
-    .replaceAll(/{id}/g, user.id)
-    .replaceAll(/{userid}/g, user.id)
-    .replaceAll(/{displayname}/g, user.username)
-    .replaceAll(/{discriminator}/g, user.discriminator)
-    .replaceAll(/{guild}/g, guild.name)
-    .replaceAll(/{memberCount}/g, guild.memberCount.toString())
-    .replaceAll(/{guildid}/g, guild.id)
-    .replaceAll(/{username}/g, user.username);
+  const member = toMember(user);
+  const canonicalGuild = toGuild(guild);
   if (image) {
-    replacedText = replacedText.replaceAll(/{user}/g, user.username);
+    return replacePlaceholders(text, member, canonicalGuild, false);
   }
-  return replacedText;
-  // Note: {user} is NOT replaced here, it's handled by parseMessageText for mentions
+  return replacePlaceholders(text, member, canonicalGuild);
 }
 
 export function parseMessageText(
