@@ -5,7 +5,14 @@ import { variableHints } from "@welcomer-bot/utils";
 import {
   VariableHintsRow,
 } from "@/components/dashboard/guild/variable-hints-row";
-import { FONT_OPTIONS, FONT_WEIGHT_OPTIONS, TextCard } from "../types";
+import {
+  FONT_OPTIONS,
+  FONT_WEIGHT_OPTIONS,
+  TEXT_DEFAULTS,
+  TEXT_SIZE_MAX,
+  TEXT_SIZE_MIN,
+  TextCard,
+} from "../types";
 
 interface TextEditorProps {
   label: string;
@@ -20,13 +27,7 @@ export function TextEditor({
   onChange,
   placeholder,
 }: TextEditorProps) {
-  const currentText = text || {
-    content: "",
-    color: "#ffffff",
-    font: "Arial",
-    size: 24,
-    weight: "normal",
-  };
+  const currentText = text || TEXT_DEFAULTS;
 
   const handleChange = (field: keyof TextCard, value: string | number) => {
     onChange({
@@ -92,8 +93,8 @@ export function TextEditor({
             }
             variant="bordered"
             labelPlacement="outside"
-            min={8}
-            max={200}
+            min={TEXT_SIZE_MIN}
+            max={TEXT_SIZE_MAX}
             endContent={<span className="text-sm text-default-400">px</span>}
           />
         </div>
