@@ -24,7 +24,19 @@ export type {
   RGBA,
   TextCard,
 } from "./image-editor/types";
-export { DEFAULT_CONFIG, FONT_OPTIONS, FONT_WEIGHT_OPTIONS } from "./image-editor/types";
+export {
+  DEFAULTS,
+  DEFAULT_CONFIG,
+  FONT_OPTIONS,
+  FONT_WEIGHT_OPTIONS,
+  CANVAS_WIDTH,
+  CANVAS_HEIGHT,
+  COLOR_PRESETS,
+  BACKGROUND_PRESETS,
+  TEXT_SIZE_MIN,
+  TEXT_SIZE_MAX,
+  TEXT_DEFAULTS,
+} from "./image-editor/types";
 
 // Stats
 export { default as StatsViewer } from "./stats/stats-viewer";

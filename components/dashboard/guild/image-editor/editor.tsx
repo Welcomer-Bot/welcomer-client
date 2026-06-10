@@ -13,7 +13,7 @@ import {EditorHeader} from "./components/editor-header";
 import {Preview} from "./components/preview";
 import {SaveButton} from "./components/save-button";
 import {TextEditor} from "./components/text-editor";
-import {BaseCardConfig} from "./types";
+import {BaseCardConfig, DEFAULT_CONFIG} from "./types";
 
 interface EditorProps {
   module?: string;
@@ -200,21 +200,21 @@ export function Editor({module, guildId}: EditorProps) {
                   label="Main Text"
                   text={data.mainText}
                   onChange={(text) => updateConfig({mainText: text})}
-                  placeholder="Welcome {username}!"
+                  placeholder={DEFAULT_CONFIG.mainText?.content}
                 />
 
                 <TextEditor
                   label="Nickname Text"
                   text={data.nicknameText}
                   onChange={(text) => updateConfig({nicknameText: text})}
-                  placeholder="@{user.username}"
+                  placeholder={DEFAULT_CONFIG.nicknameText?.content}
                 />
 
                 <TextEditor
                   label="Secondary Text"
                   text={data.secondText}
                   onChange={(text) => updateConfig({secondText: text})}
-                  placeholder="Member #{guild.memberCount}"
+                  placeholder={DEFAULT_CONFIG.secondText?.content}
                 />
 
                 <Divider className="my-4"/>
