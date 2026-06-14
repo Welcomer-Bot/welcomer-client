@@ -1,6 +1,7 @@
 name: Deployment Workflow
 permissions:
   contents: read
+  packages: write
 
 on:
   push:
