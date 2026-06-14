@@ -14,16 +14,16 @@ import {
   DiscordMessage,
   DiscordMessages,
 } from "@welcomer-bot/discord-components-react";
-import {APIEmbed, RESTPostAPIChannelMessageJSONBody} from "discord.js";
-import React, {ReactNode} from "react";
-import reactStringReplace from "react-string-replace";
 import {
   replacePlaceholders,
   type Guild,
   type Member,
 } from "@welcomer-bot/utils";
-import {GuildObject} from "./guild-types";
-import {UserObject} from "./user";
+import { APIEmbed, RESTPostAPIChannelMessageJSONBody } from "discord.js";
+import React, { ReactNode } from "react";
+import reactStringReplace from "react-string-replace";
+import { GuildObject } from "./guild-types";
+import { UserObject } from "./user";
 
 // Adapt dashboard camelCase objects to the Discord-API snake_case shapes the
 // canonical replacer expects.
@@ -70,7 +70,7 @@ export function parseMessageText(
   // Use a capturing group to ensure the pattern works correctly
   let replacedText: React.ReactNode[] | string = reactStringReplace(
     processedText,
-    /(\{user\})/g,
+    /(<@[0-9]*>)/g,
     (match, i) => (
       <DiscordMention highlight key={`user-${i}`}>
         {user.username}
