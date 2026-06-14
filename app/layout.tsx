@@ -47,7 +47,7 @@ export default function RootLayout({
           <main className="min-h-screen w-full grid content-center">
             {children}
           </main>
-          <ToastContainer />
+          <ToastContainer position="bottom-right"/>
         </Providers>
       </body>
     </html>

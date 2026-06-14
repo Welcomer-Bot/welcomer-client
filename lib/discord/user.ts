@@ -1,5 +1,3 @@
-"server-only";
-
 import { type APIUser } from "discord-api-types/v10";
 import { getUserAvatar } from "../utils";
 

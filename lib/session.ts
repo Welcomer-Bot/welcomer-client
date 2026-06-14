@@ -2,10 +2,40 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import "server-only";
 
-import { Session } from "@/prisma/generated/client";
+import { AppError, ErrorCode } from "@/lib/error";
 import { SessionPayload } from "@/types";
-const secretKey = process.env.SESSION_SECRET;
-const encodedKey = new TextEncoder().encode(secretKey);
+import { Session } from "../generated/prisma/client";
+
+const SESSION_COOKIE_NAME = "session";
+const isProduction = process.env.NODE_ENV === "production";
+
+/**
+ * Require SESSION_SECRET environment variable
+ *
+ * @throws AppError with INTERNAL_SERVER_ERROR if SESSION_SECRET is not set
+ * @returns SESSION_SECRET value
+ */
+function requireSessionSecret() {
+  const secretKey = process.env.SESSION_SECRET;
+  if (!secretKey) {
+    throw new AppError(
+      "Missing required environment variable: SESSION_SECRET",
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      500,
+      { env: "SESSION_SECRET" }
+    );
+  }
+  return secretKey;
+}
+
+const encodedKey = new TextEncoder().encode(requireSessionSecret());
+
+const sessionCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "lax" as const,
+  path: "/",
+};
 
 export async function encrypt(payload: SessionPayload) {
   return new SignJWT(payload)
@@ -16,14 +46,26 @@ export async function encrypt(payload: SessionPayload) {
 }
 
 export async function decrypt(
-  session: string | undefined = ""
+  session: string | undefined = "",
 ): Promise<SessionPayload | null> {
   try {
     const { payload } = (await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
     })) as unknown as { payload: SessionPayload };
 
-    return payload;
+    if (!payload?.id || !payload.expiresAt) {
+      return null;
+    }
+
+    const expiresAt = new Date(payload.expiresAt);
+    if (Number.isNaN(expiresAt.getTime()) || expiresAt <= new Date()) {
+      return null;
+    }
+
+    return {
+      ...payload,
+      expiresAt,
+    };
   } catch {
     return null;
   }
@@ -34,12 +76,9 @@ export async function createSession(dbSession: Session) {
     id: dbSession.id,
     expiresAt: dbSession.expiresAt,
   });
-  (await cookies()).set("session", session, {
-    httpOnly: true,
-    secure: true,
+  (await cookies()).set(SESSION_COOKIE_NAME, session, {
+    ...sessionCookieOptions,
     expires: dbSession.expiresAt,
-    sameSite: "lax",
-    path: "/",
   });
   return session;
 }
@@ -55,20 +94,23 @@ export async function updateSession() {
   // TODO: implement refresh token logic
 
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-  (await cookies()).set("session", session, {
-    httpOnly: true,
-    secure: true,
-    expires: expires,
-    sameSite: "lax",
-    path: "/",
+  const refreshedSession = await encrypt({
+    ...payload,
+    expiresAt: expires,
   });
+
+  (await cookies()).set(SESSION_COOKIE_NAME, refreshedSession, {
+    ...sessionCookieOptions,
+    expires: expires,
+  });
+
+  return refreshedSession;
 }
 
 export async function getSession() {
-  return (await cookies()).get("session")?.value;
+  return (await cookies()).get(SESSION_COOKIE_NAME)?.value;
 }
 
 export async function deleteSession() {
-  (await cookies()).delete("session");
+  (await cookies()).delete(SESSION_COOKIE_NAME);
 }

@@ -1,80 +1,83 @@
-import { statusManager } from "@/lib/discord/status";
 import { NextRequest } from "next/server";
+
+import { statusManager } from "@/lib/discord/status";
+import { ErrorCode, handleServerError, logError, reportError } from "@/lib/error";
+
+function jsonResponse(payload: Record<string, unknown>, status: number): Response {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const headers = request.headers;
+
     if (!body) {
-      return new Response(
-        JSON.stringify({
+      return jsonResponse(
+        {
           success: false,
           message: "No body provided",
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        },
+        400,
       );
     }
-    //   console.log("headers", headers);
+
     if (headers.get("authorization") !== process.env.SERVER_TOKEN) {
-      return new Response(
-        JSON.stringify({
+      return jsonResponse(
+        {
           success: false,
           message: "Invalid authorization token",
-        }),
-        {
-          status: 401,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        },
+        401,
       );
     }
+
     if (!body.data) {
-      return new Response(
-        JSON.stringify({
+      return jsonResponse(
+        {
           success: false,
           message: "No data provided",
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        },
+        400,
       );
     }
+
     statusManager.updateStatus(body.data);
 
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      {
         success: true,
         message: "Shard status updated",
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      },
+      200,
     );
   } catch (error) {
-    console.error("Error in POST request:", error);
-    return new Response(
-      JSON.stringify({
+    const appError = handleServerError(error, {
+      action: "api.status.shard.POST",
+    });
+    reportError(appError);
+    logError({
+      timestamp: new Date().toISOString(),
+      level: "error",
+      message: "Failed to process shard status update",
+      code: ErrorCode.INTERNAL_SERVER_ERROR,
+      context: {
+        action: "api.status.shard.POST",
+      },
+      stack: appError.stack,
+    });
+
+    return jsonResponse(
+      {
         success: false,
         message: "Internal server error",
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      },
+      500,
     );
   }
 }

@@ -1,14 +1,9 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { Sidebar } from "@/components/dashboard/guild/sideBar";
-import Footer from "@/components/Footer";
-import {
-  fetchUserFromSession,
-  getGuild,
-  getGuilds,
-  getUserGuild,
-} from "@/lib/dal";
+import { Footer, Sidebar } from "@/components/layout";
+import { getGuild } from "@/lib/dal/discord";
+import { fetchUserFromSession, getGuilds, getUserGuild } from "@/lib/dal/session";
 
 type Params = Promise<{ guildId: string }>;
 
@@ -22,14 +17,18 @@ export default async function Layout({
   const user = await fetchUserFromSession();
   if (!user) redirect("/dashboard");
   const { guildId } = await params;
-  const userGuild = await getUserGuild(guildId);
-  if (!userGuild) redirect("/dashboard");
 
-  const guild = await getGuild(guildId);
-  if (!guild) redirect("/dashboard");
+  // Parallel data fetching for better performance
+  const [userGuild, guild, allGuilds] = await Promise.all([
+    getUserGuild(guildId),
+    getGuild(guildId),
+    getGuilds(),
+  ]);
 
-  const otherGuilds =
-    (await getGuilds())?.filter((g) => g.id !== userGuild.id) ?? [];
+  if (!userGuild || !guild) redirect("/dashboard");
+
+  const otherGuilds = allGuilds?.filter((g) => g.id !== userGuild.id) ?? [];
+
   return (
     <div className="flex h-screen w-full sm:flex-row flex-col-reverse overflow-hidden">
       <Sidebar

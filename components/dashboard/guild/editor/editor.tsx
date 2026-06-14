@@ -1,15 +1,34 @@
-import SendMenu from "@/components/dashboard/guild/editor/sendMenu";
+/**
+ * Dashboard Editor - Main Orchestrator
+ *
+ * Composant racine pour l'éditeur de messages welcome/leave.
+ * Orchestre l'édition du contenu (text, embeds) et de l'image.
+ *
+ * Features:
+ * - Message content editor (texte, embeds)
+ * - Image card editor (position, design)
+ * - Message preview (Discord embed simulation)
+ * - Save button (server action + validation)
+ *
+ * @see components/dashboard/guild/editor/content-editor.tsx
+ * @see components/dashboard/guild/editor/embed/embed-editor.tsx
+ * @see components/dashboard/guild/editor/image-position-editor.tsx
+ * @see components/dashboard/guild/editor/save-button.tsx
+ */
+
+import SendMenu from "@/components/dashboard/guild/editor/send-menu";
 import Guild from "@/lib/discord/guild";
-import User from "@/lib/discord/user";
 
+import { getUser } from "@/lib/dal/session";
 import { Divider } from "@heroui/divider";
-import { CardPositionEditor } from "./card/editor";
-import ContentEditor from "./contentEditor";
-import { EmbedEditor } from "./embed/embedEditor";
-import EditorMessagePreview from "./editorMessagePreview";
-import SaveButton from "./saveButton";
+import ContentEditor from "./content-editor";
+import EditorMessagePreview from "./editor-message-preview";
+import { EmbedEditor } from "./embed/embed-editor";
+import ImagePositionEditor from "./image-position-editor";
+import SaveButton from "./save-button";
 
-export async function Editor({ guild, user }: { guild: Guild; user: User }) {
+export async function Editor({ guild }: { guild: Guild }) {
+  const user = await getUser();
   const channels = await guild.getChannels();
   return (
     <div className="flex h-full w-full editor relative">
@@ -21,9 +40,8 @@ export async function Editor({ guild, user }: { guild: Guild; user: User }) {
             <ContentEditor />
             <EmbedEditor />
             <Divider className="my-4" />
-            <CardPositionEditor />
+            <ImagePositionEditor />
           </form>
-          
         </div>
         <div className="block pb-20 w-full lg:w-1/2 lg:h-full bg-dark-4 lg:overflow-y-auto no-scrollbar">
           <div className="px-5 pt-5 lg:hidden block">
@@ -32,7 +50,7 @@ export async function Editor({ guild, user }: { guild: Guild; user: User }) {
           </div>
           <EditorMessagePreview
             guild={guild.toObject()}
-            user={user.toObject()}
+            user={user!.toObject()}
           />
         </div>
       </div>
@@ -40,4 +58,3 @@ export async function Editor({ guild, user }: { guild: Guild; user: User }) {
     </div>
   );
 }
-

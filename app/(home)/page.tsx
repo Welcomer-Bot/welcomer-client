@@ -1,7 +1,8 @@
 "use client";
-import { Button, Card, CardBody } from "@heroui/react";
+import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
 import { usePlausible } from "next-plausible";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import {
   FaCheckCircle,
   FaClock,
@@ -25,11 +26,10 @@ export default function WelcomerBetaLanding() {
           <strong>Welcomer Premium for life</strong>!
         </p>
         <Button
+          as={Link}
+          href="/support"
           className="mt-6 px-10 py-8 text-lg bg-blue-600 hover:bg-blue-700"
-          onPress={() => {
-            plausible("click-join-beta");
-            redirect("/support");
-          }}
+          onPress={() => plausible("click-join-beta")}
         >
           <h1 className="text-2xl font-bold">Join the Beta</h1>
         </Button>
@@ -84,10 +84,9 @@ export default function WelcomerBetaLanding() {
           <li>✅ Get access and start testing!</li>
         </ol>
         <Button
+          as={Link}
+          href="/support"
           className="mt-6 px-6 py-3 text-lg bg-green-600 hover:bg-green-700"
-          onPress={() => {
-            redirect("/support");
-          }}
         >
           Sign Up Now
         </Button>

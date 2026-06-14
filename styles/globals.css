@@ -1,15 +1,45 @@
- @import "tailwindcss";
- @plugin '../hero.ts';
+@import "tailwindcss";
+
+@plugin '../hero.ts';
 /* Note: You may need to change the path to fit your project structure */
- @source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
- @custom-variant dark (&:is(.dark *));
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
 
 
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 * {
     font-family: Poppins, sans-serif;
+}
+
+/* Fix canvas image sizing to match Discord behavior */
+discord-message canvas,
+discord-embed canvas {
+    max-width: 100%;
+    height: auto !important;
+    width: auto !important;
+    object-fit: contain;
+    border-radius: 4px;
+    display: block;
+}
+
+/* Image outside embed - attachment style */
+discord-image-attachment canvas {
+    max-width: 400px;
+    max-height: 300px;
+}
+
+/* Image inside embed */
+discord-embed .discord-embed-image canvas {
+    max-width: 400px;
+    max-height: 300px;
+}
+
+/* Thumbnail in embed */
+discord-embed .discord-embed-thumbnail canvas {
+    max-width: 80px;
+    max-height: 80px;
 }

@@ -1,0 +1,31 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { decrypt, getSession } from "@/lib/session";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+export default async function proxy(req: NextRequest) {
+  const path = req.nextUrl.pathname;
+  const isProtectedRoute = path.startsWith("/dashboard");
+
+  const session = await getSession();
+  const sessionData = await decrypt(session);
+  if (isProtectedRoute && !sessionData?.id) {
+    const response = NextResponse.redirect(new URL(`/api/auth/login`, req.nextUrl));
+    response.cookies.set("redirectAfterLogin", path + req.nextUrl.search, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 10 * 60,
+    });
+    return response;
+  }
+
+  return NextResponse.next();
+}
+
+// Routes Middleware should not run on
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+};

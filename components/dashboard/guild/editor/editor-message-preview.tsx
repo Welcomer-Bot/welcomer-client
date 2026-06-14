@@ -1,0 +1,30 @@
+"use client";
+
+import {GuildObject} from "@/lib/discord/guild-types";
+import {UserObject} from "@/lib/discord/user";
+import {SourceStoreContext} from "@/features/dashboard/modules/providers";
+import {lazy, Suspense, useContext} from "react";
+import {useStore} from "zustand";
+
+const LazyMessagePreview = lazy(() => import("./message-preview"));
+
+export default function EditorMessagePreview({
+                                               guild,
+                                               user,
+                                             }: {
+  guild: GuildObject;
+  user: UserObject;
+}) {
+  const store = useContext(SourceStoreContext);
+  if (!store) throw new Error("Missing SourceStore.Provider in the tree");
+  const msg = useStore(store, (state) => state);
+
+  if (!msg) return null;
+  return (
+    <div className="h-full rounded-lg">
+      <Suspense fallback={<div>Loading...</div>}>
+        <LazyMessagePreview msg={msg} guild={guild} user={user}/>
+      </Suspense>
+    </div>
+  );
+}

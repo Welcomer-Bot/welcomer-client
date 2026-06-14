@@ -1,4 +1,4 @@
-import { SignIn } from "@/components/signinButton";
+import { SignIn } from "@/components/auth";
 
 export default async function Error({
   searchParams,
