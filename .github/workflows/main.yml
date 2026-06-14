@@ -42,6 +42,7 @@ jobs:
       - name: Build Next.js app
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
         run: yarn prisma generate && yarn build
 
       - name: SFTP Deploy
