@@ -7655,12 +7655,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@welcomer-bot/card-canvas@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@welcomer-bot/card-canvas@npm:1.1.0::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Fcard-canvas%2F1.1.0%2Fe2536e8c5bb3c01394bb20d3fd7775a5c60de796"
+"@welcomer-bot/card-canvas@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@welcomer-bot/card-canvas@npm:1.1.1::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Fcard-canvas%2F1.1.1%2Fe11ec68ea6061f238700f98da7af3f871aeecb25"
   dependencies:
     canvas: "npm:^3.0.1"
-  checksum: 10c0/b5143e1afa84727feee80af2bbb2282b9ed4aaf198783cfacbd0b17f79563d2ef8201f370562506c558a7284fa197722a336238f8adaabc0e7c853dffe73d72a
+  checksum: 10c0/9f354f3c14d50d93e1b012203fcba153975b95078dd0d8f657dcf77a905afd0b87d10b84d2ac27e4ea7692e34628b97d109c8b7c76db4b6fa4ac333e3d2d38ff
   languageName: node
   linkType: hard
 
@@ -7688,7 +7688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@welcomer-bot/utils@npm:^0.1.0":
+"@welcomer-bot/utils@npm:^0.1.1":
   version: 0.1.1
   resolution: "@welcomer-bot/utils@npm:0.1.1::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Futils%2F0.1.1%2F025ba353a8ba9fe061a84a3812424745f6b466c3"
   dependencies:
@@ -10750,9 +10750,9 @@ __metadata:
     "@types/react-dom": "npm:19.2.3"
     "@typescript-eslint/eslint-plugin": "npm:8.38.0"
     "@typescript-eslint/parser": "npm:8.38.0"
-    "@welcomer-bot/card-canvas": "npm:^1.1.0"
+    "@welcomer-bot/card-canvas": "npm:^1.1.1"
     "@welcomer-bot/discord-components-react": "npm:^4.0.2"
-    "@welcomer-bot/utils": "npm:^0.1.0"
+    "@welcomer-bot/utils": "npm:^0.1.1"
     autoprefixer: "npm:^10.4.21"
     clsx: "npm:2.1.1"
     debounce: "npm:^3.0.0"
