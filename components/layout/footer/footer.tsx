@@ -1,8 +1,8 @@
-import { Logo } from "@/components/shared/logo";
+import { Logo } from "@/components/shared";
 import { Divider } from "@heroui/divider";
 import Link from "next/link";
 
-export default function Footer() {
+function Footer() {
   return (
     <footer className="bg-background w-full text-white mt-16 mb-5 max-w-7xl mx-auto px-4">
       <div className="flex md:flex-row flex-col gap-4 justify-between w-full">
@@ -89,3 +89,7 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default Footer;
+export { Footer };
+

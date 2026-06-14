@@ -1,7 +1,25 @@
+/**
+ * Dashboard Editor - Main Orchestrator
+ *
+ * Composant racine pour l'éditeur de messages welcome/leave.
+ * Orchestre l'édition du contenu (text, embeds) et de l'image.
+ *
+ * Features:
+ * - Message content editor (texte, embeds)
+ * - Image card editor (position, design)
+ * - Message preview (Discord embed simulation)
+ * - Save button (server action + validation)
+ *
+ * @see components/dashboard/guild/editor/content-editor.tsx
+ * @see components/dashboard/guild/editor/embed/embed-editor.tsx
+ * @see components/dashboard/guild/editor/image-position-editor.tsx
+ * @see components/dashboard/guild/editor/save-button.tsx
+ */
+
 import SendMenu from "@/components/dashboard/guild/editor/send-menu";
 import Guild from "@/lib/discord/guild";
 
-import { getUser } from "@/lib/dal";
+import { getUser } from "@/lib/dal/session";
 import { Divider } from "@heroui/divider";
 import ContentEditor from "./content-editor";
 import EditorMessagePreview from "./editor-message-preview";

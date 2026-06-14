@@ -1,7 +1,7 @@
 "use client";
 
-import {createImageCard, deleteImageCard} from "@/lib/actions";
-import {ImageCardStoreContext, useImageCardStore,} from "@/providers/imageCardStoreProvider";
+import {createImageCard, deleteImageCard} from "@/features/dashboard/modules/actions";
+import {ImageCardStoreContext, useImageCardStore,} from "@/features/dashboard/modules/providers";
 import {Button} from "@heroui/button";
 import {Divider} from "@heroui/divider";
 import {useRouter} from "next/navigation";
@@ -13,8 +13,7 @@ import {EditorHeader} from "./components/editor-header";
 import {Preview} from "./components/preview";
 import {SaveButton} from "./components/save-button";
 import {TextEditor} from "./components/text-editor";
-import {useImageEditor} from "./hooks/use-image-editor";
-import {BaseCardConfig} from "./types";
+import {BaseCardConfig, DEFAULT_CONFIG} from "./types";
 
 interface EditorProps {
   module?: string;
@@ -36,8 +35,6 @@ export function Editor({module, guildId}: EditorProps) {
   const sourceId = useImageCardStore((state) => state.sourceId);
 
   const hasCard = cardId !== null && cardId !== undefined;
-
-  const {error: previewError, isLoading} = useImageEditor(guildId, data);
 
   const handleCreate = async () => {
     if (!sourceId || !store) return;
@@ -203,21 +200,21 @@ export function Editor({module, guildId}: EditorProps) {
                   label="Main Text"
                   text={data.mainText}
                   onChange={(text) => updateConfig({mainText: text})}
-                  placeholder="Welcome {user.username}!"
+                  placeholder={DEFAULT_CONFIG.mainText?.content}
                 />
 
                 <TextEditor
                   label="Nickname Text"
                   text={data.nicknameText}
                   onChange={(text) => updateConfig({nicknameText: text})}
-                  placeholder="@{user.username}"
+                  placeholder={DEFAULT_CONFIG.nicknameText?.content}
                 />
 
                 <TextEditor
                   label="Secondary Text"
                   text={data.secondText}
                   onChange={(text) => updateConfig({secondText: text})}
-                  placeholder="Member #{guild.memberCount}"
+                  placeholder={DEFAULT_CONFIG.secondText?.content}
                 />
 
                 <Divider className="my-4"/>
@@ -252,8 +249,8 @@ export function Editor({module, guildId}: EditorProps) {
           </div>
           <div className="p-5">
             <Preview
-              isLoading={hasCard ? isLoading : false}
-              error={previewError}
+              guildId={guildId}
+              config={hasCard ? data : null}
             />
           </div>
         </div>

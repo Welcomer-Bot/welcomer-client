@@ -8,28 +8,14 @@ import {
     getRolesPermissions,
     isPremiumGuild,
     leaveGuild,
-    removeGuildToBeta,
+    removeGuildFromBeta,
 } from "../dal";
 import {getGuildBanner, getGuildIcon} from "../utils";
 import {fetchWidget} from "./widget";
+import {GuildObject, Permissions, hasPermission} from "./guild-types";
 
-export type GuildObject = {
-    id: string;
-    name: string;
-    icon: string | null;
-    iconUrl: string | null;
-    memberCount: number;
-    banner: string | null;
-    bannerUrl: string;
-    mutual: boolean;
-    permissions?: string;
-    owner?: boolean;
-    channels: (APIChannel & {
-        permissions: bigint;
-    })[];
-    beta?: boolean;
-    premium?: boolean;
-};
+export type {GuildObject} from "./guild-types";
+export {Permissions, RequiredPermissions, hasPermission, hasRequiredPermissions} from "./guild-types";
 
 export default class Guild implements GuildObject {
     public id: string;
@@ -177,7 +163,7 @@ export default class Guild implements GuildObject {
 
     public async removeFromBetaProgram() {
         this.beta = false;
-        return await removeGuildToBeta(this.id);
+        return await removeGuildFromBeta(this.id);
     }
 
     public async leave() {
@@ -185,39 +171,3 @@ export default class Guild implements GuildObject {
     }
 }
 
-export const Permissions = {
-    ADMINISTRATOR: 1n << 3n,
-    SEND_MESSAGES: 1n << 11n,
-    VIEW_CHANNEL: 1n << 10n,
-    ATTACH_FILES: 1n << 15n,
-};
-
-export const RequiredPermissions = [
-    Permissions.SEND_MESSAGES,
-    Permissions.VIEW_CHANNEL,
-    Permissions.ATTACH_FILES,
-].reduce((acc, perm) => acc | perm, 0n);
-
-export function hasRequiredPermissions(
-    permissions: bigint | number | undefined | null,
-) {
-    if (permissions === undefined || permissions === null) permissions = 0n;
-    permissions =
-        typeof permissions === "bigint" ? permissions : BigInt(permissions);
-    // ADMINISTRATOR bypasses all permission checks
-    if (hasPermission(permissions, Permissions.ADMINISTRATOR)) return true;
-    // Check if all required permissions are present
-    return (permissions & RequiredPermissions) === RequiredPermissions;
-}
-
-export function hasPermission(
-    permissions: bigint | number | undefined | null,
-    flag: bigint | number | undefined | null,
-) {
-    if (permissions === undefined || permissions === null) permissions = 0n;
-    if (flag === undefined || flag === null) flag = 0n;
-    permissions =
-        typeof permissions === "bigint" ? permissions : BigInt(permissions);
-    flag = typeof flag === "bigint" ? flag : BigInt(flag);
-    return (permissions & flag) === flag;
-}

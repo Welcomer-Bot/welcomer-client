@@ -1,8 +1,18 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
-import { Tooltip } from "@heroui/tooltip";
-import { FONT_OPTIONS, FONT_WEIGHT_OPTIONS, TextCard } from "../types";
+import { variableHints } from "@welcomer-bot/utils";
+import {
+  VariableHintsRow,
+} from "@/components/dashboard/guild/variable-hints-row";
+import {
+  FONT_OPTIONS,
+  FONT_WEIGHT_OPTIONS,
+  TEXT_DEFAULTS,
+  TEXT_SIZE_MAX,
+  TEXT_SIZE_MIN,
+  TextCard,
+} from "../types";
 
 interface TextEditorProps {
   label: string;
@@ -11,30 +21,13 @@ interface TextEditorProps {
   placeholder?: string;
 }
 
-const VARIABLE_HINTS = [
-  { variable: "{username}", description: "Username" },
-  { variable: "{displayName}", description: "Display name" },
-  { variable: "{userId}", description: "User ID" },
-  { variable: "{guild}", description: "Server name" },
-  { variable: "{guildId}", description: "Guild ID" },
-  { variable: "{memberCount}", description: "Member count" },
-  { variable: "{memberCountFormatted}", description: "Formatted member count" },
-  { variable: "{discriminator}", description: "User discriminator" },
-];
-
 export function TextEditor({
   label,
   text,
   onChange,
   placeholder,
 }: TextEditorProps) {
-  const currentText = text || {
-    content: "",
-    color: "#ffffff",
-    font: "Arial",
-    size: 24,
-    weight: "normal",
-  };
+  const currentText = text || TEXT_DEFAULTS;
 
   const handleChange = (field: keyof TextCard, value: string | number) => {
     onChange({
@@ -67,25 +60,12 @@ export function TextEditor({
             variant="bordered"
             labelPlacement="outside"
           />
-          {/* Variable hints */}
-          <div className="flex flex-wrap gap-1.5">
-            {VARIABLE_HINTS.map((hint) => (
-              <Tooltip key={hint.variable} content={hint.description}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleChange(
-                      "content",
-                      currentText.content + hint.variable,
-                    );
-                  }}
-                  className="text-xs px-2 py-1 rounded-full bg-default-100 hover:bg-primary/20 hover:text-primary transition-colors font-mono"
-                >
-                  {hint.variable}
-                </button>
-              </Tooltip>
-            ))}
-          </div>
+          <VariableHintsRow
+            hints={variableHints.filter((h) => h.variable !== "{user}")}
+            onAppend={(variable) =>
+              handleChange("content", currentText.content + variable)
+            }
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -113,8 +93,8 @@ export function TextEditor({
             }
             variant="bordered"
             labelPlacement="outside"
-            min={8}
-            max={200}
+            min={TEXT_SIZE_MIN}
+            max={TEXT_SIZE_MAX}
             endContent={<span className="text-sm text-default-400">px</span>}
           />
         </div>

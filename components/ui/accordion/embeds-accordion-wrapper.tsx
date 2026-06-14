@@ -1,6 +1,6 @@
 "use client";
 
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import React, { useContext } from "react";
 import { useStore } from "zustand";
@@ -14,7 +14,7 @@ export default function EmbedsAccordionWrapper({
   if (!store) throw new Error("Missing SourceStore.Provider in the tree");
   const embedsLength = useStore(store, (state) => (state.message?.embeds?.length) || 0);
   return (
-    <Accordion variant="splitted">
+    <Accordion variant="splitted" className="px-0">
       <AccordionItem aria-label="Embeds" title={`Embeds (${embedsLength}/10)`}>
         {children}
       </AccordionItem>

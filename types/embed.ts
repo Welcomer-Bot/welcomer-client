@@ -2,7 +2,7 @@ import { APIEmbed, APIEmbedField } from "discord-api-types/v10";
 
 export const defaultEmbedField: APIEmbedField = {
   name: "Member count",
-  value: "{membercount}",
+  value: "{memberCount}",
 };
 
 export const defaultWelcomeEmbed: APIEmbed = {

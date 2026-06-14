@@ -16,12 +16,11 @@ import { Suspense } from "react";
 
 import NavbarUser from "./navbar-user";
 
-import { Logo } from "@/components/shared/logo";
-import { ThemeSwitch } from "@/components/ui/buttons/theme-switch";
-import { DiscordIcon, GithubIcon } from "@/components/ui/icons/icons";
+import { Logo } from "@/components/shared";
+import { DiscordIcon, GithubIcon, ThemeSwitch } from "@/components/ui";
 import { siteConfig } from "@/config/site";
 
-export const Navbar = () => {
+const Navbar = () => {
   return (
     <NextUINavbar maxWidth="lg" className="fixed" isBlurred>
       <NavbarBrand as="li">
@@ -84,3 +83,7 @@ export const Navbar = () => {
     </NextUINavbar>
   );
 };
+
+export { Navbar };
+export default Navbar;
+

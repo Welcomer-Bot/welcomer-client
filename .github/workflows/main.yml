@@ -1,6 +1,7 @@
 name: Deployment Workflow
 permissions:
   contents: read
+  packages: write
 
 on:
   push:
@@ -13,34 +14,35 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v4
+      
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Restore cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Enable Corepack
+        run: corepack enable
 
-      - name: Authenticate with GitHub Packages
+      - name: Prepare Yarn 4
+        run: corepack prepare yarn@4.12.0 --activate
+      
+      - name: Configure Yarn for GitHub Packages
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
-          echo "@welcomer-bot:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          corepack enable
+          yarn config set npmScopes.welcomer-bot.npmRegistryServer "https://npm.pkg.github.com"
+          yarn config set npmScopes.welcomer-bot.npmAlwaysAuth true
+          yarn config set npmScopes.welcomer-bot.npmAuthToken "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Install dependencies
-        run: yarn
+        run: yarn install --immutable
 
       - name: Build Next.js app
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
         run: yarn prisma generate && yarn build
 
       - name: SFTP Deploy

@@ -1,10 +1,21 @@
-import CompleteGuildCard from "@/components/admin/complete-guild-card";
-import { getBetaTester, getBotGuilds, getSources } from "@/lib/dal";
+/**
+ * Admin Guilds Management
+ *
+ * Affiche toutes les guilds du bot avec leurs sources (Welcomer, Leaver) activées.
+ * Permet de gérer les guilds et les paramètres beta.
+ *
+ * @see components/admin/complete-guild-card.tsx
+ * @see lib/dal.ts - getBotGuilds(), getSources(), getBetaTester()
+ */
+
+import { CompleteGuildCard } from "@/components/admin";
+import { getBotGuilds } from "@/lib/dal/discord";
+import { getBetaTester } from "@/lib/dal/session";
+import { getSources } from "@/lib/dal/sources";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 
 export default async function Page() {
   const guilds = await getBotGuilds();
-  // console.log(guilds);
   if (!guilds) {
     return <p>No guilds found</p>;
   }
@@ -12,7 +23,7 @@ export default async function Page() {
     <div>
       <Card>
         <CardHeader className="flex flex-col space-y-2">
-          <h1 className="text-2xl font-bold py-5">Admin Guilds Page</h1>
+          <h1 className="text-2xl font-bold py-5">Bot Guilds</h1>
         </CardHeader>
         <CardBody>
           <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

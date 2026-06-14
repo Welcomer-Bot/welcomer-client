@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "heroui-react": {
+      "command": "npx",
+      "args": ["-y", "@heroui/react-mcp@latest"]
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+  "heroui-migration": {
+      "type": "http",
+      "url": "https://migration-mcp.heroui.com"
+    }
+  }
+}

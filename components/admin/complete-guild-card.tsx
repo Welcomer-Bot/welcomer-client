@@ -1,12 +1,12 @@
 "use client";
 
-import ManageGuildButton from "@/components/ui/buttons/manage-guild-button";
+import { ManageGuildButton } from "@/components/ui";
 import {
   enrollGuildToBetaProgram,
   leaveGuild,
   removeGuildFromBetaProgram,
 } from "@/lib/admin/actions";
-import { GuildObject } from "@/lib/discord/guild";
+import { GuildObject } from "@/lib/discord/guild-types";
 import { UserObject } from "@/lib/discord/user";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";

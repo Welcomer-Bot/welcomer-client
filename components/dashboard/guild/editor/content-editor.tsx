@@ -1,23 +1,12 @@
 "use client";
 
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Textarea } from "@heroui/input";
-import { Tooltip } from "@heroui/tooltip";
+import { variableHints } from "@welcomer-bot/utils";
 import { useContext } from "react";
 import { useStore } from "zustand";
-
-const VARIABLE_HINTS = [
-  { variable: "{user}", description: "User mention" },
-  { variable: "{username}", description: "Username" },
-  { variable: "{displayName}", description: "Display name" },
-  { variable: "{guild}", description: "Server name" },
-  { variable: "{memberCount}", description: "Member count" },
-  { variable: "{memberCountFormatted}", description: "Formatted member count" },
-  { variable: "{guildId}", description: "Guild ID" },
-  { variable: "{userId}", description: "User ID" },
-  { variable: "{discriminator}", description: "User discriminator" },
-];
+import { VariableHintsRow } from "@/components/dashboard/guild/variable-hints-row";
 
 export default function ContentEditor() {
   const store = useContext(SourceStoreContext);
@@ -61,23 +50,11 @@ export default function ContentEditor() {
           maxRows={8}
         />
 
-        {/* Variable hints */}
-        <div className="flex flex-wrap gap-1.5">
-          <span className="text-xs text-default-400 mr-2">Variables:</span>
-          {VARIABLE_HINTS.map((hint) => (
-            <Tooltip key={hint.variable} content={hint.description}>
-              <button
-                type="button"
-                onClick={() => {
-                  setValue((value ?? "") + hint.variable);
-                }}
-                className="text-xs px-2 py-1 rounded-full bg-default-100 hover:bg-primary/20 hover:text-primary transition-colors font-mono"
-              >
-                {hint.variable}
-              </button>
-            </Tooltip>
-          ))}
-        </div>
+        <VariableHintsRow
+          hints={variableHints}
+          label="Variables:"
+          onAppend={(variable) => setValue((value ?? "") + variable)}
+        />
       </CardBody>
     </Card>
   );

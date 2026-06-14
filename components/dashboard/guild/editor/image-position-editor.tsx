@@ -1,6 +1,6 @@
 "use client";
 
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
@@ -33,7 +33,6 @@ export default function ImagePositionEditor() {
   }));
 
   const hasImage = activeCardId !== null && activeCardId !== undefined;
-  console.log("hasImage", hasImage);
   return (
     <Card shadow="sm">
       <CardHeader className="pb-0 flex justify-between items-center">

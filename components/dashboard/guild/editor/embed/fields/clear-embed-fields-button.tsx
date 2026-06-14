@@ -1,6 +1,6 @@
 "use client";
 
-import { SourceStoreContext } from "@/providers/sourceStoreProvider";
+import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Button } from "@heroui/button";
 import { useContext } from "react";
 import { useStore } from "zustand";
@@ -25,7 +25,7 @@ export default function ClearEmbedFieldsButton({
       variant="ghost"
       onPress={() => clearFields(embedIndex)}
     >
-      Clear Embeds
+      Clear Fields
     </Button>
   );
 }

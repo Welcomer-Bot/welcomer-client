@@ -8,7 +8,7 @@ export function SidebarWrapper({ children }: { children: React.ReactNode }) {
     <aside
       className={`sm:h-screen h-fit z-30 sm:sticky sm:w-auto w-full bottom-0`}
     >
-      <nav className="sm:h-full flex flex-row sm:flex-col bg-slate-800 border-r border-slate-700 shadow-sm sm:py-0 py-2 rounded-t-md sm:rounded-t-none">
+      <nav className="sm:h-full flex flex-row sm:flex-col bg-content1 border-r border-divider shadow-sm sm:py-0 py-2 rounded-t-md sm:rounded-t-none">
         {children}
       </nav>
     </aside>

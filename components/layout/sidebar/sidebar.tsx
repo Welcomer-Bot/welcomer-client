@@ -1,6 +1,6 @@
 "use client";
 
-import { GuildSelectDropdown } from "@/components/dashboard/guild/guild-select-dropdown";
+import GuildSelectDropdown from "@/components/dashboard/guild/guild-select-dropdown";
 import { LogoutIcon } from "@/components/dashboard/guild/logout-icon";
 import { Divider } from "@heroui/divider";
 import { User as UIUser } from "@heroui/user";
@@ -10,8 +10,8 @@ import { ImEnter } from "react-icons/im";
 import { MdDashboard } from "react-icons/md";
 
 import { SidebarContext } from "@/app/providers";
-import { Logo } from "@/components/ui/icons/icons";
-import { GuildObject } from "@/lib/discord/guild";
+import { Logo } from "@/components/ui";
+import { GuildObject } from "@/lib/discord/guild-types";
 import { UserObject } from "@/lib/discord/user";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { useContext } from "react";
@@ -53,7 +53,7 @@ export function Sidebar({
             <Link href="/dashboard">
               <div className="flex flex-col leading-3 text-center">
                 <h1>Welcomer</h1>
-                <span className="text-small text-gray-500">Dashboard</span>
+                <span className="text-small text-default-500">Dashboard</span>
               </div>
             </Link>
           </SidebarContent>
@@ -112,3 +112,6 @@ export function Sidebar({
     </SidebarWrapper>
   );
 }
+
+export default Sidebar;
+

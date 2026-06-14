@@ -1,27 +1,17 @@
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
+import { COLOR_PRESETS, DEFAULTS } from "../types";
 
 interface AvatarEditorProps {
   avatarBorderColor: string | null | undefined;
   onAvatarBorderColorChange: (color: string | null) => void;
 }
 
-const PRESET_COLORS = [
-  "#7289da", // Discord Blurple
-  "#ffffff", // White
-  "#43b581", // Discord Green
-  "#f04747", // Discord Red
-  "#faa61a", // Discord Yellow
-  "#9b59b6", // Purple
-  "#3498db", // Blue
-  "#2c2f33", // Dark
-];
-
 export function AvatarEditor({
   avatarBorderColor,
   onAvatarBorderColorChange,
 }: AvatarEditorProps) {
-  const currentColor = avatarBorderColor || "#7289da";
+  const currentColor = avatarBorderColor || DEFAULTS.AVATAR_BORDER_COLOR;
 
   return (
     <Card shadow="sm">
@@ -40,7 +30,7 @@ export function AvatarEditor({
 
           {/* Preset colors */}
           <div className="flex flex-wrap gap-2">
-            {PRESET_COLORS.map((color) => (
+            {COLOR_PRESETS.map((color) => (
               <button
                 key={color}
                 onClick={() => onAvatarBorderColorChange(color)}
@@ -70,7 +60,7 @@ export function AvatarEditor({
               size="sm"
               variant="flat"
               color="default"
-              onPress={() => onAvatarBorderColorChange("#7289da")}
+              onPress={() => onAvatarBorderColorChange(DEFAULTS.AVATAR_BORDER_COLOR)}
             >
               Reset
             </Button>

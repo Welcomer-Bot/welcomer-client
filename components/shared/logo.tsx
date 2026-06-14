@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 
-export const Logo = () => {
+const Logo = () => {
     return (
       <Link
         prefetch={false}
@@ -12,4 +12,7 @@ export const Logo = () => {
         <p className="font-bold text-lg text-inherit">Welcomer</p>
       </Link>
     );
-}
+};
+
+export default Logo;
+export { Logo };

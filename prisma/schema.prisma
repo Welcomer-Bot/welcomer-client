@@ -24,6 +24,7 @@ model GuildStats {
   Guild             Guild?     @relation(fields: [guildId], references: [id])
 
   @@id([id, period, source, createdAt])
+  @@index([guildId])
 }
 
 model Guild {
@@ -51,6 +52,8 @@ model Source {
   activeCard   ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id])
   Guild        Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey", onDelete: Cascade)
   ActiveGuild  Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey")
+
+  @@index([guildId])
 }
 
 model ImageCard {
@@ -62,6 +65,8 @@ model ImageCard {
   Source       Source    @relation("SourceCard", fields: [sourceId], references: [id], onDelete: Cascade)
   sourceId     Int
   SourceActive Source?   @relation("SourceActiveCard")
+
+  @@index([sourceId])
 }
 
 model Session {
@@ -72,6 +77,8 @@ model Session {
   updatedAt   DateTime? @updatedAt
   userId      String
   user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model User {

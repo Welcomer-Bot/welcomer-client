@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { decrypt, getSession } from "@/lib/session";
-import { cookies } from "next/headers";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -10,8 +11,15 @@ export default async function proxy(req: NextRequest) {
   const session = await getSession();
   const sessionData = await decrypt(session);
   if (isProtectedRoute && !sessionData?.id) {
-    (await cookies()).set("redirectAfterLogin", path + req.nextUrl.search);
-    return NextResponse.redirect(new URL(`/api/auth/login`, req.nextUrl));
+    const response = NextResponse.redirect(new URL(`/api/auth/login`, req.nextUrl));
+    response.cookies.set("redirectAfterLogin", path + req.nextUrl.search, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 10 * 60,
+    });
+    return response;
   }
 
   return NextResponse.next();

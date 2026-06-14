@@ -1,8 +1,8 @@
 "use client";
 
-import {GuildInput} from "@/components/shared/status/guild-input";
+import {GuildInput} from "@/components/shared";
 import {fetchClustersShardsSatus} from "@/lib/discord/shard";
-import {type clusterStatus} from "@/lib/discord/status";
+import {type ClusterStatus} from "@/lib/discord/status";
 import {Button} from "@heroui/button";
 import {Card, CardBody, CardFooter, CardHeader} from "@heroui/card";
 import {Divider} from "@heroui/divider";
@@ -10,7 +10,7 @@ import {Tooltip} from "@heroui/tooltip";
 import {useEffect, useState} from "react";
 
 export default function Page() {
-    const [status, setStatus] = useState<clusterStatus[]>([]);
+    const [status, setStatus] = useState<ClusterStatus[]>([]);
     const [selectedShard, setSelectedShard] = useState<number | null>(null);
     const [updateTime, setUpdateTime] = useState<number>(0);
     useEffect(() => {
