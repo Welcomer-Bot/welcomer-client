@@ -7688,12 +7688,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@welcomer-bot/utils@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@welcomer-bot/utils@npm:0.1.1::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Futils%2F0.1.1%2F025ba353a8ba9fe061a84a3812424745f6b466c3"
+"@welcomer-bot/utils@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@welcomer-bot/utils@npm:0.1.2::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40welcomer-bot%2Futils%2F0.1.2%2F5904a6889a350badca1b5f240bd0b9f0616002ad"
   dependencies:
     discord-api-types: "npm:^0.38.38"
-  checksum: 10c0/0abe451684cfeaca645b44d9c3e75b37134256818cc4b207f01811851fdf2655ca44df0edfccbb4e7105b8a0fbdb433fd409daf360e62a4588ec2cbce2682fee
+  checksum: 10c0/61dc9b59511f71598a4ea31566ccd7b8df356a1972e4eb32611e276168d7136e54cbc45d55318edc313d543d389c71703330b2394e5f6de2723cb3afdc22def2
   languageName: node
   linkType: hard
 
@@ -10752,7 +10752,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:8.38.0"
     "@welcomer-bot/card-canvas": "npm:^1.1.1"
     "@welcomer-bot/discord-components-react": "npm:^4.0.2"
-    "@welcomer-bot/utils": "npm:^0.1.1"
+    "@welcomer-bot/utils": "npm:^0.1.2"
     autoprefixer: "npm:^10.4.21"
     clsx: "npm:2.1.1"
     debounce: "npm:^3.0.0"

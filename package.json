@@ -24,7 +24,7 @@
     "@sentry/profiling-node": "^9.42.0",
     "@welcomer-bot/card-canvas": "^1.1.1",
     "@welcomer-bot/discord-components-react": "^4.0.2",
-    "@welcomer-bot/utils": "^0.1.1",
+    "@welcomer-bot/utils": "^0.1.2",
     "clsx": "2.1.1",
     "debounce": "^3.0.0",
     "discord-api-types": "^0.38.47",
