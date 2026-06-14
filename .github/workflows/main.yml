@@ -14,30 +14,25 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v4
+      
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Restore cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-
-      - name: Authenticate with GitHub Packages
+          cache: 'yarn'
+      
+      - name: Configure Yarn for GitHub Packages
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
-          echo "@welcomer-bot:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          corepack enable
+          yarn config set npmScopes.welcomer-bot.npmRegistryServer "https://npm.pkg.github.com"
+          yarn config set npmScopes.welcomer-bot.npmAlwaysAuth true
+          yarn config set npmScopes.welcomer-bot.npmAuthToken "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Install dependencies
-        run: corepack enable && yarn
+        run: yarn install --immutable
 
       - name: Build Next.js app
         env:
