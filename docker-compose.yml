@@ -1,6 +1,6 @@
 services:
   client:
-    image: ghcr.io/clementvt/welcomer-client:${IMAGE_TAG:-latest}
+    image: ghcr.io/welcomer-bot/welcomer-client:${IMAGE_TAG:-latest}
     container_name: welcomer-beta-client
     restart: unless-stopped
     pull_policy: always
