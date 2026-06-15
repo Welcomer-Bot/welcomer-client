@@ -17,9 +17,11 @@ RUN --mount=type=secret,id=gh_token \
 FROM base AS builder
 ARG NEXT_PUBLIC_DISCORD_CLIENT_ID
 ARG DIRECT_URL
+ARG SESSION_SECRET
 ENV NEXT_PUBLIC_DISCORD_CLIENT_ID=$NEXT_PUBLIC_DISCORD_CLIENT_ID \
-    DIRECT_URL=$DIRECT_URL
-COPY --from=deps /app/node_modules ./node_modules
+    DIRECT_URL=$DIRECT_URL \
+    SESSION_SECRET=$SESSION_SECRET
+    COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN yarn prisma generate && yarn build
 
