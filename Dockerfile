@@ -16,7 +16,9 @@ RUN --mount=type=secret,id=gh_token \
 # ---- builder: generate Prisma client + build standalone ----
 FROM base AS builder
 ARG NEXT_PUBLIC_DISCORD_CLIENT_ID
-ENV NEXT_PUBLIC_DISCORD_CLIENT_ID=$NEXT_PUBLIC_DISCORD_CLIENT_ID
+ARG DIRECT_URL
+ENV NEXT_PUBLIC_DISCORD_CLIENT_ID=$NEXT_PUBLIC_DISCORD_CLIENT_ID \
+    DIRECT_URL=$DIRECT_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN yarn prisma generate && yarn build
