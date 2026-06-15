@@ -49,6 +49,7 @@ jobs:
             NEXT_PUBLIC_DISCORD_CLIENT_ID=${{ secrets.NEXT_PUBLIC_DISCORD_CLIENT_ID }}
           secrets: |
             gh_token=${{ secrets.GITHUB_TOKEN }}
+            DIRECT_URL=${{ secrets.DATABASE_DIRECT_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
