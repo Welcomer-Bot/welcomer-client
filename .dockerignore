@@ -1,0 +1,31 @@
+# VCS / CI
+.git
+.github
+
+# deps & build artifacts (regenerated in image)
+node_modules
+.yarn
+.next
+out
+build
+generated
+
+# secrets / local env
+.env
+.env.*
+.env.sentry-build-plugin
+
+# tooling / editor / docs cruft
+.idea
+.vscode
+docs
+_bmad*
+_bmad-output
+.claude
+*.tsbuildinfo
+*.log
+
+# docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
