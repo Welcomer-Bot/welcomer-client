@@ -48,6 +48,7 @@ jobs:
           build-args: |
             NEXT_PUBLIC_DISCORD_CLIENT_ID=${{ secrets.NEXT_PUBLIC_DISCORD_CLIENT_ID }}
             DIRECT_URL=${{ secrets.DIRECT_URL }}
+            SESSION_SECRET=${{ secrets.SESSION_SECRET }}
           secrets: |
             gh_token=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
