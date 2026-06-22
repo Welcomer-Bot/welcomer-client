@@ -1,3 +1,4 @@
+name: welcomer-beta-client
 services:
   client:
     image: ghcr.io/welcomer-bot/welcomer-client:${IMAGE_TAG:-latest}
