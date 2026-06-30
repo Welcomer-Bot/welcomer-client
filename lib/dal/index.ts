@@ -50,9 +50,6 @@ export {
 export {
   getSources,
   getSource,
-  getLatestGuildStats,
-  createGuildStats,
-  createModuleStats,
   createSource,
   deleteSource,
   updateSourceQuery,
@@ -64,7 +61,7 @@ export {
   getGuildBeta,
   addGuildToBeta,
   removeGuildFromBeta,
-  getAllGuildStatsSinceTime,
+  getGuildDailyStatsSince,
 } from "@/lib/dal/sources";
 
 // Error logging

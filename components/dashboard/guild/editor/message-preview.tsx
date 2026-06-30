@@ -4,7 +4,7 @@ import { GuildObject } from "@/lib/discord/guild-types";
 import { parseMessageToReactElement } from "@/lib/discord/text";
 import { UserObject } from "@/lib/discord/user";
 import { SourceState } from "@/features/dashboard/modules/stores";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useImageEditor } from "../image-editor/hooks/use-image-editor";
 
 export default function MessagePreview({
@@ -19,26 +19,22 @@ export default function MessagePreview({
   // Persistent canvas DOM node — created once, reparented via appendChild
   // to survive position switches without remounting (which would clear it
   // and re-trigger the hook's debounce).
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  if (!canvasRef.current && typeof document !== "undefined") {
+  const [canvas] = useState<HTMLCanvasElement | null>(() => {
+    if (typeof document === "undefined") return null;
     const c = document.createElement("canvas");
     c.width = 800;
     c.height = 350;
     c.className = "w-full h-auto rounded";
-    canvasRef.current = c;
-  }
+    return c;
+  });
 
-  useImageEditor(
-    canvasRef.current,
-    msg.guildId,
-    msg.activeCard?.data ?? null,
-  );
+  useImageEditor(canvas, msg.guildId, msg.activeCard?.data ?? null);
 
   const hostRef = useCallback((el: HTMLDivElement | null) => {
-    if (el && canvasRef.current) {
-      el.appendChild(canvasRef.current);
+    if (el && canvas) {
+      el.appendChild(canvas);
     }
-  }, []);
+  }, [canvas]);
 
   const canvasNode = useMemo(
     () => <div ref={hostRef} className="contents"/>,

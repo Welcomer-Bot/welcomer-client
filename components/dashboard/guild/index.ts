@@ -40,6 +40,5 @@ export {
 
 // Stats
 export { default as StatsViewer } from "./stats/stats-viewer";
-export { default as PeriodSelector } from "./stats/period-selector";
 
 

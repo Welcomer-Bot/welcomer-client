@@ -53,15 +53,17 @@ const defaultState: SourceState = {
   id: 0,
   activeCard: undefined,
   guildId: "",
-  type: "Welcomer",
+  type: "WELCOMER",
   channelId: "",
   message: {
     content: "test",
     embeds: [defaultEmbed],
   },
   activeCardId: null,
-  createdAt: null,
-  updatedAt: null,
+  deleteAfter: 0,
+  isActive: true,
+  createdAt: new Date(0),
+  updatedAt: new Date(0),
 };
 
 export const createSourceStore = (initState?: Partial<Source>) => {
@@ -100,9 +102,9 @@ export const createSourceStore = (initState?: Partial<Source>) => {
             state.message = state.message ?? { embeds: [] };
             state.message.embeds = state.message.embeds ?? [];
 
-            if (state.type === "Welcomer" && !embed) {
+            if (state.type === "WELCOMER" && !embed) {
               embed = defaultWelcomeEmbed;
-            } else if (state.type === "Leaver" && !embed) {
+            } else if (state.type === "LEAVER" && !embed) {
               embed = defaultLeaverEmbed;
             }
             state.message.embeds.push(embed ?? defaultEmbed);

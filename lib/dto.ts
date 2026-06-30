@@ -1,83 +1,61 @@
 "use server";
 
-import { GuildStats, Period, SourceType } from "../generated/prisma/client";
 import { getFonts } from "font-list";
-import { getAllGuildStatsSinceTime, getLatestGuildStats } from "@/lib/dal/sources";
+import { getGuildDailyStatsSince } from "@/lib/dal/sources";
 import { requireGuild } from "@/lib/dal/session";
 
-type StatsDictionary = {
-  [key in Period]: GuildStats | null;
+export type StatsRange = "7d" | "30d" | "all";
+
+export type GuildStatsSummary = {
+  joins: number;
+  leaves: number;
+  messages: number;
+  embeds: number;
+  images: number;
+};
+
+const RANGE_DAYS: Record<StatsRange, number | null> = {
+  "7d": 7,
+  "30d": 30,
+  all: null,
 };
 
 /**
- * Fetch all guild statistics for a source type
+ * Aggregate a guild's daily stat rollups over a time range.
  *
  * Permissions:
  * - Verifies user access to guild via requireGuild()
  *
  * @param guildId - Discord guild ID
- * @param type - Source type (e.g., "Welcomer", "Leaver")
- * @returns Dictionary of stats per period or null if error
+ * @param range - Time window (7d, 30d, or all-time)
+ * @returns Summed counts across the range (zeroes when no data)
  * @throws AppError if guild access is denied
  */
 export async function fetchGuildStats(
   guildId: string,
-  type: SourceType
-): Promise<StatsDictionary> {
+  range: StatsRange
+): Promise<GuildStatsSummary> {
   await requireGuild(guildId);
 
-  const res: StatsDictionary = {} as StatsDictionary;
+  const days = RANGE_DAYS[range];
+  let since: Date | undefined;
+  if (days !== null) {
+    since = new Date();
+    since.setUTCDate(since.getUTCDate() - days);
+  }
 
-  await Promise.all(
-    Object.values(Period).map(async (period) => {
-      res[period] = await getLatestGuildStats(guildId, period, type);
-    })
+  const rows = await getGuildDailyStatsSince(guildId, since);
+
+  return rows.reduce<GuildStatsSummary>(
+    (acc, r) => ({
+      joins: acc.joins + r.joinsCount,
+      leaves: acc.leaves + r.leavesCount,
+      messages: acc.messages + r.messageCount,
+      embeds: acc.embeds + r.embedCount,
+      images: acc.images + r.imageCount,
+    }),
+    { joins: 0, leaves: 0, messages: 0, embeds: 0, images: 0 }
   );
-
-  return res;
-}
-
-/**
- * Fetch a single guild statistic record
- *
- * Permissions:
- * - Verifies user access to guild via requireGuild()
- *
- * @param guildId - Discord guild ID
- * @param period - Stat period (e.g., "DAILY", "WEEKLY")
- * @param type - Source type
- * @returns Latest stat record for period or null
- * @throws AppError if guild access is denied
- */
-export async function fetchGuildStat(
-  guildId: string,
-  period: Period,
-  type: SourceType
-) {
-  await requireGuild(guildId);
-
-  return await getLatestGuildStats(guildId, period, type);
-}
-
-/**
- * Fetch all guild statistics since a given time
- *
- * Permissions:
- * - Assumes caller has verified guild access
- *
- * @param guildId - Discord guild ID
- * @param period - Stat period
- * @param type - Source type
- * @param since - Fetch stats after this date
- * @returns Array of stat records or null
- */
-export async function fetchAllGuildStatsSinceTime(
-  guildId: string,
-  period: Period,
-  type: SourceType,
-  since: Date
-) {
-  return await getAllGuildStatsSinceTime(guildId, period, type, since);
 }
 
 /**

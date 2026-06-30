@@ -16,17 +16,18 @@
  * @see app/dashboard/[guildId]/leave/page.tsx - Éditeur Leaver
  */
 
-import {Card, CardBody, CardHeader} from "@heroui/card";
-import {redirect} from "next/navigation";
-import {Suspense} from "react";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-import {GuildCard, ManageButton, StatsViewer} from "@/components/dashboard/guild";
-import {getGuild} from "@/lib/dal/discord";
-import {getSources} from "@/lib/dal/sources";
-import {Period} from "@/generated/prisma/enums";
+import { GuildCard, ManageButton, StatsViewer } from "@/components/dashboard/guild";
+import { getGuild } from "@/lib/dal/discord";
+import { getSources } from "@/lib/dal/sources";
+import type { StatsRange } from "@/lib/dto";
 
-import {Skeleton} from "@heroui/skeleton";
-import {DiscordMention} from "@welcomer-bot/discord-components-react";
+import { SourceType } from "@/generated/prisma/enums";
+import { Skeleton } from "@heroui/skeleton";
+import { DiscordMention } from "@welcomer-bot/discord-components-react";
 
 function StatsViewerSkeleton() {
   return (
@@ -35,8 +36,8 @@ function StatsViewerSkeleton() {
         <Skeleton className="h-6 w-32 rounded-lg"/>
         <Skeleton className="h-10 w-40 rounded-lg"/>
       </CardHeader>
-      <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-4">
-        {[1, 2, 3, 4].map((i) => (
+      <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-4">
+        {[1, 2, 3, 4, 5].map((i) => (
           <Card key={i}>
             <CardHeader className="text-gray-400 text-sm">
               <Skeleton className="h-4 w-32 rounded-lg"/>
@@ -56,17 +57,16 @@ export default async function Page({
                                      searchParams,
                                    }: {
   params: Promise<{ guildId: string }>;
-  searchParams: Promise<{ welcomerPeriod?: string; leaverPeriod?: string }>;
+  searchParams: Promise<{ statsRange?: string }>;
 }) {
   const {guildId} = await params;
   const search = await searchParams;
 
-  const welcomerPeriod = (search.welcomerPeriod as Period) || Period.DAILY;
-  const leaverPeriod = (search.leaverPeriod as Period) || Period.DAILY;
+  const statsRange = (search.statsRange as StatsRange) || "7d";
   const guild = await getGuild(guildId);
   if (!guild) redirect("/dashboard");
-  const welcomer = await getSources(guildId, "Welcomer");
-  const leaver = await getSources(guildId, "Leaver");
+  const welcomer = await getSources(guildId, SourceType.WELCOMER);
+  const leaver = await getSources(guildId, SourceType.LEAVER);
 
   const welcomerEnabled = welcomer && welcomer.length > 0;
   const leaverEnabled = leaver && leaver.length > 0;
@@ -119,7 +119,7 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"Welcomer"}/>
+                  <ManageButton guildId={guild.id} module={SourceType.WELCOMER}/>
                 </CardBody>
               </Card>
               <Card>
@@ -147,23 +147,12 @@ export default async function Page({
                       )}
                     </p>
                   </div>
-                  <ManageButton guildId={guild.id} module={"Leaver"}/>
+                  <ManageButton guildId={guild.id} module={SourceType.LEAVER}/>
                 </CardBody>
               </Card>
             </div>
             <Suspense fallback={<StatsViewerSkeleton/>}>
-              <StatsViewer
-                guildId={guild.id}
-                module={"Welcomer"}
-                period={welcomerPeriod}
-              />
-            </Suspense>
-            <Suspense fallback={<StatsViewerSkeleton/>}>
-              <StatsViewer
-                guildId={guild.id}
-                module={"Leaver"}
-                period={leaverPeriod}
-              />
+              <StatsViewer guildId={guild.id} range={statsRange}/>
             </Suspense>
           </CardBody>
         </>

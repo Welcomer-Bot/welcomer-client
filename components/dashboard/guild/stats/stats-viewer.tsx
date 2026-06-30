@@ -1,61 +1,41 @@
-import { fetchGuildStat } from "@/lib/dto";
+import { fetchGuildStats, StatsRange } from "@/lib/dto";
 
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Period, SourceType } from "../../../../generated/prisma/browser";
-import PeriodSelector from "./period-selector";
+import RangeSelector from "./range-selector";
+
+const METRICS = [
+  { key: "joins", label: "Members joined" },
+  { key: "leaves", label: "Members left" },
+  { key: "messages", label: "Generated messages" },
+  { key: "embeds", label: "Generated embeds" },
+  { key: "images", label: "Generated images" },
+] as const;
 
 export default async function StatsViewer({
   guildId,
-  module,
-  period = Period.DAILY,
+  range = "7d",
 }: {
   guildId: string;
-  module: SourceType;
-  period?: Period;
+  range?: StatsRange;
 }) {
-  const data = await fetchGuildStat(guildId, period, module);
-
-  const formattedModule = `${module[0].toUpperCase() + module.slice(1)} stats`;
-  const countableModule = module.slice(0, module.length - 1) + "d";
+  const data = await fetchGuildStats(guildId, range);
 
   return (
     <Card className="grid gap-5 px-5 pb-5">
       <CardHeader className="flex justify-between">
-        <h2>{formattedModule}</h2>
-        <PeriodSelector module={module} currentPeriod={period} />
+        <h2>Server stats</h2>
+        <RangeSelector currentRange={range} />
       </CardHeader>
-      {data ? (
-        <div className="grid  md:grid-cols-4 sm:grid-cols-2 gap-4">
-          <Card>
+      <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-4">
+        {METRICS.map((metric) => (
+          <Card key={metric.key}>
             <CardHeader className="text-gray-400 text-sm">
-              Members {countableModule}
+              {metric.label}
             </CardHeader>
-            <CardBody>{data.membersEvent}</CardBody>
+            <CardBody>{data[metric.key]}</CardBody>
           </Card>
-          <Card>
-            <CardHeader className="text-gray-400 text-sm">
-              Generated Messages
-            </CardHeader>
-            <CardBody>{data.generatedMessages}</CardBody>
-          </Card>
-          <Card>
-            <CardHeader className="text-gray-400 text-sm">
-              Generated Images
-            </CardHeader>
-            <CardBody>{data.generatedImages}</CardBody>
-          </Card>
-          <Card>
-            <CardHeader className="text-gray-400 text-sm">
-              Generated Embeds
-            </CardHeader>
-            <CardBody>{data.generatedEmbeds}</CardBody>
-          </Card>
-        </div>
-      ) : (
-        <p className="flex justify-center align-middle">
-          No data for this module{" "}
-        </p>
-      )}
+        ))}
+      </div>
     </Card>
   );
 }

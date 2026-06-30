@@ -14,12 +14,12 @@ const MODULES: DashboardModuleConfig[] = [
   {
     slug: "welcome",
     label: "Welcome",
-    sourceType: SourceType.Welcomer,
+    sourceType: SourceType.WELCOMER,
   },
   {
     slug: "leave",
     label: "Leaver",
-    sourceType: SourceType.Leaver,
+    sourceType: SourceType.LEAVER,
   },
 ];
 
@@ -29,8 +29,8 @@ const MODULES_BY_SLUG: Record<DashboardModuleSlug, DashboardModuleConfig> = {
 };
 
 const MODULES_BY_SOURCE_TYPE: Partial<Record<SourceType, DashboardModuleConfig>> = {
-  [SourceType.Welcomer]: MODULES[0],
-  [SourceType.Leaver]: MODULES[1],
+  [SourceType.WELCOMER]: MODULES[0],
+  [SourceType.LEAVER]: MODULES[1],
 };
 
 export function getDashboardModuleBySlug(slug: string): DashboardModuleConfig | null {

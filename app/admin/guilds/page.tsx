@@ -9,6 +9,7 @@
  */
 
 import { CompleteGuildCard } from "@/components/admin";
+import { SourceType } from "@/generated/prisma/enums";
 import { getBotGuilds } from "@/lib/dal/discord";
 import { getBetaTester } from "@/lib/dal/session";
 import { getSources } from "@/lib/dal/sources";
@@ -28,8 +29,8 @@ export default async function Page() {
         <CardBody>
           <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {guilds.map(async (guild) => {
-              const welcomer = (await getSources(guild.id, "Welcomer"))?.[0];
-              const leaver = (await getSources(guild.id, "Leaver"))?.[0];
+              const welcomer = (await getSources(guild.id, SourceType.WELCOMER))?.[0];
+              const leaver = (await getSources(guild.id, SourceType.LEAVER))?.[0];
               const betaTester = await getBetaTester(guild.id);
               return (
                 <CompleteGuildCard

@@ -6,13 +6,13 @@ import { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import prisma from "@/lib/prisma";
 import { ErrorCode } from "@/lib/error";
 import { logDalError } from "./logging";
-import { ImageCard, Period, Prisma, Source, SourceType, } from "@/generated/prisma/client";
+import { ImageCard, Prisma, Source, SourceType, } from "@/generated/prisma/client";
 
 /**
  * Fetch all sources of a specific type for a guild
  *
  * @param guildId - Discord guild ID
- * @param source - Source type (e.g., "Welcomer", "Leaver")
+ * @param source - Source type (e.g., "WELCOMER", "LEAVER")
  * @returns Array of sources with relationships or null on error
  */
 export async function getSources(
@@ -70,79 +70,6 @@ export async function getSource(
   }
 }
 
-/**
- * Get the latest stats record for a guild/source/period
- *
- * @param guildId - Discord guild ID
- * @param period - Stat period (e.g., "DAILY", "WEEKLY")
- * @param source - Source type
- * @returns Latest stats record or null
- */
-export async function getLatestGuildStats(
-  guildId: string,
-  period: Period,
-  source: SourceType,
-) {
-  return await prisma.guildStats.findFirst({
-    where: {
-      Guild: {
-        id: guildId,
-      },
-      period,
-      source,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-}
-
-/**
- * Create a new stats record (if not already existing)
- *
- * @param guildId - Discord guild ID
- * @param period - Stat period
- * @param source - Source type
- * @returns Created or existing stats record
- */
-export async function createGuildStats(
-  guildId: string,
-  period: Period,
-  source: SourceType,
-) {
-  const latestStats = await getLatestGuildStats(guildId, period, source);
-
-  if (!latestStats) {
-    return await prisma.guildStats.create({
-      data: {
-        Guild: {
-          connectOrCreate: {
-            where: {id: guildId},
-            create: {id: guildId},
-          },
-        },
-        period,
-        source,
-        createdAt: new Date(),
-      },
-    });
-  }
-}
-
-/**
- * Create stats records for all periods of a module
- *
- * @param guildId - Discord guild ID
- * @param source - Source type
- */
-export async function createModuleStats(guildId: string, source: SourceType) {
-  await Promise.all(
-    Object.values(Period).map((period) =>
-      createGuildStats(guildId, period, source),
-    ),
-  );
-}
-
 const defaultWelcomerMessage: RESTPostAPIChannelMessageJSONBody = {
   content: "Welcome {user} to {guild}",
   embeds: [defaultWelcomeEmbed],
@@ -162,7 +89,7 @@ const defaultLeaverMessage: RESTPostAPIChannelMessageJSONBody = {
  */
 export async function createSource(guildId: string, type: SourceType) {
   const message: object =
-    type === "Welcomer" ? defaultWelcomerMessage : defaultLeaverMessage;
+    type === SourceType.WELCOMER ? defaultWelcomerMessage : defaultLeaverMessage;
 
   const source = await prisma.source.create({
     data: {
@@ -191,7 +118,6 @@ export async function createSource(guildId: string, type: SourceType) {
     },
   });
 
-  await createModuleStats(guildId, type);
   return updatedSource;
 }
 
@@ -363,15 +289,16 @@ export async function addGuildToBeta(guildId: string, userId?: string) {
   try {
     return !!(await prisma.betaGuild.create({
       data: {
-        guild: {
+        Guild: {
           connectOrCreate: {
             where: {id: guildId},
             create: {id: guildId},
           },
         },
-        user: {
+        User: {
           connect: {id: userId || ""},
         },
+        updatedAt: new Date(),
       },
     }));
   } catch (error) {
@@ -405,28 +332,17 @@ export async function removeGuildFromBeta(guildId: string) {
 }
 
 /**
- * Fetch all guild stats since a given time
+ * Fetch daily stat rollups for a guild since a given date.
  *
  * @param guildId - Discord guild ID
- * @param period - Stat period
- * @param source - Source type
- * @param since - Start date
- * @returns Array of stats records
+ * @param since - Lower bound (inclusive); omit for all-time
+ * @returns Array of daily stat rows
  */
-export async function getAllGuildStatsSinceTime(
-  guildId: string,
-  period: Period,
-  source: SourceType,
-  since: Date,
-) {
-  return await prisma.guildStats.findMany({
+export async function getGuildDailyStatsSince(guildId: string, since?: Date) {
+  return await prisma.guildDailyStat.findMany({
     where: {
       guildId,
-      period,
-      source,
-      createdAt: {
-        gte: since,
-      },
+      ...(since && { date: { gte: since } }),
     },
   });
 }

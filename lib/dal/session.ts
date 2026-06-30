@@ -283,12 +283,13 @@ export const isPremiumGuild = cache(async (guildId: string) => {
 export const setPremiumGuild = cache(async (guildId: string) => {
   return await prisma.premiumGuild.create({
     data: {
-      guild: {
+      Guild: {
         connectOrCreate: {
           where: { id: guildId },
           create: { id: guildId },
         },
       },
+      updatedAt: new Date(),
     },
   });
 });
@@ -302,7 +303,7 @@ export const setPremiumGuild = cache(async (guildId: string) => {
 export const getBetaTester = cache(async (guildId: string) => {
   const user = await prisma.user.findFirst({
     where: {
-      betaGuilds: {
+      BetaGuild: {
         some: {
           id: guildId,
         },

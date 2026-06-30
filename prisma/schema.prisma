@@ -3,118 +3,140 @@ generator client {
   output   = "../generated/prisma"
 }
 
-datasource db {
-  provider = "postgresql"
-}
-
 generator json {
   provider = "prisma-json-types-generator"
 }
 
-model GuildStats {
-  id                Int        @default(autoincrement())
-  period            Period
-  source            SourceType
-  generatedImages   Int        @default(0)
-  generatedEmbeds   Int        @default(0)
-  generatedMessages Int        @default(0)
-  membersEvent      Int        @default(0)
-  guildId           String?
-  createdAt         DateTime   @default(now())
-  Guild             Guild?     @relation(fields: [guildId], references: [id])
-
-  @@id([id, period, source, createdAt])
-  @@index([guildId])
+datasource db {
+  provider = "postgresql"
 }
 
 model Guild {
-  id            String        @id
-  createdAt     DateTime?     @default(now())
-  updatedAt     DateTime?     @updatedAt
-  sources       Source[]      @relation("AllSources")
-  activeSources Source[]      @relation("ActiveSources")
-  guildStats    GuildStats[]
-  betaGuild     betaGuild?
-  premiumGuild  premiumGuild?
+  id             String           @id
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  BetaGuild      BetaGuild?
+  GuildDailyStat GuildDailyStat[]
+  GuildEvent     GuildEvent[]
+  PremiumGuild   PremiumGuild?
+  sources        Source[]         @relation("AllSources")
 }
 
 model Source {
-  id           Int         @id @unique @default(autoincrement()) /// @zod.optional()
+  /// @zod.optional()
+  id           Int          @id @default(autoincrement())
   guildId      String
   type         SourceType
   channelId    String?
   /// [DiscordMessage]
   message      Json
-  createdAt    DateTime?   @default(now())
-  updatedAt    DateTime?   @updatedAt
-  activeCardId Int?        @unique
-  images       ImageCard[] @relation("SourceCard")
-  activeCard   ImageCard?  @relation("SourceActiveCard", fields: [activeCardId], references: [id])
-  Guild        Guild?      @relation("AllSources", fields: [guildId], references: [id], map: "Source_AllSources_guildId_fkey", onDelete: Cascade)
-  ActiveGuild  Guild?      @relation("ActiveSources", fields: [guildId], references: [id], map: "Source_ActiveSources_guildId_fkey")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  activeCardId Int?         @unique
+  deleteAfter  Int          @default(0)
+  isActive     Boolean      @default(true)
+  GuildEvent   GuildEvent[]
+  images       ImageCard[]  @relation("SourceCard")
+  activeCard   ImageCard?   @relation("SourceActiveCard", fields: [activeCardId], references: [id])
+  Guild        Guild        @relation("AllSources", fields: [guildId], references: [id], onDelete: Cascade, map: "Source_AllSources_guildId_fkey")
 
   @@index([guildId])
+  @@index([guildId, isActive])
+  @@index([guildId, type])
 }
 
 model ImageCard {
   /// @zod.optional()
-  id           Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   data         Json
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime? @updatedAt
-  Source       Source    @relation("SourceCard", fields: [sourceId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   sourceId     Int
-  SourceActive Source?   @relation("SourceActiveCard")
+  Source       Source   @relation("SourceCard", fields: [sourceId], references: [id], onDelete: Cascade)
+  SourceActive Source?  @relation("SourceActiveCard")
 
   @@index([sourceId])
 }
 
 model Session {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   accessToken String
   expiresAt   DateTime
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   userId      String
-  user        User      @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model User {
+  id        String      @id
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  username  String?
+  BetaGuild BetaGuild[]
+  sessions  Session[]
+}
+
+model BetaGuild {
+  id        String   @id
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Guild     Guild    @relation(fields: [id], references: [id], onDelete: Cascade)
+  User      User?    @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
-model User {
-  id         String      @id
-  createdAt  DateTime?   @default(now())
-  updatedAt  DateTime?   @updatedAt
-  sessions   Session[]
-  username   String?
-  betaGuilds betaGuild[]
+model GuildDailyStat {
+  guildId      String
+  date         DateTime @db.Date
+  joinsCount   Int      @default(0)
+  leavesCount  Int      @default(0)
+  messageCount Int      @default(0)
+  embedCount   Int      @default(0)
+  imageCount   Int      @default(0)
+  computedAt   DateTime @default(now())
+  Guild        Guild    @relation(fields: [guildId], references: [id], onDelete: NoAction)
+
+  @@id([guildId, date])
+  @@index([date])
 }
 
-model betaGuild {
-  id        String    @id
-  guild     Guild     @relation(fields: [id], references: [id])
-  user      User?     @relation(fields: [userId], references: [id])
-  userId    String?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+model GuildEvent {
+  id         BigInt         @id @default(autoincrement())
+  guildId    String
+  type       GuildEventType
+  occurredAt DateTime
+  value      Int            @default(1)
+  sourceId   Int?
+  Guild      Guild          @relation(fields: [guildId], references: [id], onDelete: NoAction)
+  Source     Source?        @relation(fields: [sourceId], references: [id])
+
+  @@index([guildId, occurredAt])
+  @@index([type, occurredAt])
 }
 
-model premiumGuild {
-  id        String    @id
-  guild     Guild     @relation(fields: [id], references: [id])
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+model PremiumGuild {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Guild     Guild    @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
 enum SourceType {
-  Welcomer
-  Leaver
+  WELCOMER
+  LEAVER
   DM
 }
 
-enum Period {
-  DAILY
-  WEEKLY
-  MONTHLY
-  TOTAL
+enum GuildEventType {
+  MEMBER_JOINED
+  MEMBER_LEFT
+  MESSAGE_GENERATED
+  EMBED_GENERATED
+  IMAGE_GENERATED
 }
