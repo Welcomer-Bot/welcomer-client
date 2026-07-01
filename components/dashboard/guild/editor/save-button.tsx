@@ -15,17 +15,20 @@ export default function SaveButton() {
   const reset = useStore(store, (state) => state.reset);
 
   const lastSavedStateRef = useRef<string | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    if (lastSavedStateRef.current === null) {
-      const initialState = store.getInitialState();
-      lastSavedStateRef.current = JSON.stringify({
-        channelId: initialState.channelId,
-        message: initialState.message,
-        imagePosition: initialState.imagePosition,
-        imageEmbedIndex: initialState.imageEmbedIndex,
-      });
-    }
+    // Store is recreated from freshly-revalidated server data after each save
+    // (provider useMemo keyed on initialState). Re-sync the baseline to the
+    // server-normalized initial state so a save-then-reload doesn't re-trigger
+    // the unsaved-changes bar from server-injected fields (e.g. card image URL).
+    const initialState = store.getInitialState();
+    lastSavedStateRef.current = JSON.stringify({
+      channelId: initialState.channelId,
+      message: initialState.message,
+      imagePosition: initialState.imagePosition,
+      imageEmbedIndex: initialState.imageEmbedIndex,
+    });
   }, [store]);
 
   const currentStateStr = useMemo(
@@ -38,8 +41,6 @@ export default function SaveButton() {
       }),
     [state.channelId, state.message, state.imagePosition, state.imageEmbedIndex],
   );
-
-  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     if (lastSavedStateRef.current !== null) {
