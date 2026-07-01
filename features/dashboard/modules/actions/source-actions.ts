@@ -147,7 +147,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<ActionR
     let embedIndex: number | undefined;
 
     store.message.embeds?.forEach((embed, i) => {
-      if (embed.image && embed.image.url === "imageCard") {
+      if (embed.image && embed.image.url === "card.png") {
         embed.image = undefined;
         embedIndex = i;
       }
@@ -200,7 +200,7 @@ export async function updateSource(store: Partial<SourceState>): Promise<ActionR
     }
 
     const embeds = [...(currentMessage.embeds ?? [])];
-    embeds[store.imageEmbedIndex] = { ...embed, image: { url: "imageCard" } };
+    embeds[store.imageEmbedIndex] = { ...embed, image: { url: "card.png" } };
     updatedMessage = { ...currentMessage, embeds };
   }
 
