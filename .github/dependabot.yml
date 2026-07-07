@@ -3,6 +3,13 @@
 # minimum configuration for two package managers
 
 version: 2
+
+registries:
+  github-packages:
+    type: npm-registry
+    url: https://npm.pkg.github.com
+    token: ${{secrets.GITHUB_TOKEN}}
+
 updates:
   # Enable version updates for npm
   - package-ecosystem: "npm"
@@ -11,6 +18,8 @@ updates:
     # Check the npm registry for updates every day (weekdays)
     schedule:
       interval: "daily"
+    registries:
+      - github-packages
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
