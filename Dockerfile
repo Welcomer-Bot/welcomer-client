@@ -23,7 +23,7 @@ ENV NEXT_PUBLIC_DISCORD_CLIENT_ID=$NEXT_PUBLIC_DISCORD_CLIENT_ID \
     SESSION_SECRET=$SESSION_SECRET
     COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN yarn prisma generate && yarn build
+RUN yarn prisma db pull --force && yarn prisma generate && yarn build
 
 # ---- runner: minimal standalone runtime, non-root ----
 FROM base AS runner
