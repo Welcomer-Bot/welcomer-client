@@ -3,7 +3,7 @@
 FROM node:26-slim AS base
 ENV HUSKY=0 \
     NEXT_TELEMETRY_DISABLED=1
-RUN corepack enable
+RUN npm install -g corepack && corepack enable
 WORKDIR /app
 
 # ---- deps: install with private GH Packages auth via BuildKit secret ----
