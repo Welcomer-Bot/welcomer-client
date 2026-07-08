@@ -2,11 +2,10 @@ import "server-only";
 
 import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
 import { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
-
-import prisma from "@/lib/prisma";
-import { ErrorCode } from "@/lib/error";
-import { logDalError } from "./logging";
 import { ImageCard, Prisma, Source, SourceType, } from "@/generated/prisma/client";
+import { ErrorCode } from "@/lib/error";
+import prisma from "@/lib/prisma";
+import { logDalError } from "./logging";
 
 /**
  * Fetch all sources of a specific type for a guild
@@ -88,15 +87,15 @@ const defaultLeaverMessage: RESTPostAPIChannelMessageJSONBody = {
  * @returns Created source with activeCard
  */
 export async function createSource(guildId: string, type: SourceType) {
-  const message: object =
+  const message =
     type === SourceType.WELCOMER ? defaultWelcomerMessage : defaultLeaverMessage;
 
   const source = await prisma.source.create({
     data: {
-      Guild: {
+      guild: {
         connectOrCreate: {
-          where: {id: guildId},
-          create: {id: guildId},
+          where: { id: guildId },
+          create: { id: guildId },
         },
       },
       type,
@@ -105,13 +104,13 @@ export async function createSource(guildId: string, type: SourceType) {
   });
 
   const updatedSource = await prisma.source.update({
-    where: {id: source.id},
+    where: { id: source.id },
     data: {
       activeCard: {
         create: {
           data: {},
-          Source: {
-            connect: {id: source.id},
+          source: {
+            connect: { id: source.id },
           },
         },
       },
@@ -201,7 +200,7 @@ export async function getImageCardForGuild(
     return await prisma.imageCard.findFirst({
       where: {
         id: cardId,
-        Source: {
+        source: {
           guildId,
         },
       },
@@ -274,7 +273,7 @@ export async function executeQueries(
  */
 export async function getGuildBeta(guildId: string) {
   return prisma.betaGuild.findFirst({
-    where: {id: guildId},
+    where: { id: guildId },
   });
 }
 
@@ -289,16 +288,15 @@ export async function addGuildToBeta(guildId: string, userId?: string) {
   try {
     return !!(await prisma.betaGuild.create({
       data: {
-        Guild: {
+        guild: {
           connectOrCreate: {
-            where: {id: guildId},
-            create: {id: guildId},
+            where: { id: guildId },
+            create: { id: guildId },
           },
         },
-        User: {
-          connect: {id: userId || ""},
+        user: {
+          connect: { id: userId || "" },
         },
-        updatedAt: new Date(),
       },
     }));
   } catch (error) {
