@@ -18,7 +18,7 @@ export default function ImagePositionEditor() {
 
   const imagePosition = useStore(store, (state) => state.imagePosition);
   const imageEmbedIndex = useStore(store, (state) => state.imageEmbedIndex);
-  const embeds = useStore(store, (state) => state.message?.embeds || []);
+  const embeds = useStore(store, (state) => state.message?.embeds) || [];
   const setImagePosition = useStore(store, (state) => state.setImagePosition);
   const activeCardId = useStore(store, (state) => state.activeCardId);
 
