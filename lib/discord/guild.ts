@@ -3,10 +3,8 @@ import {
     addGuildToBeta,
     getBot,
     getChannels,
-    getGuildBeta,
     getMemberPermissions,
     getRolesPermissions,
-    isPremiumGuild,
     leaveGuild,
     removeGuildFromBeta,
 } from "../dal";
@@ -33,6 +31,11 @@ export default class Guild implements GuildObject {
     })[];
     public beta?: boolean | undefined;
     public premium?: boolean;
+    private channelsPromise?: Promise<
+        (APIChannel & {
+            permissions: bigint;
+        })[]
+    >;
 
     constructor(data: APIGuild | RESTAPIPartialCurrentUserGuild) {
         this.id = data.id;
@@ -46,8 +49,6 @@ export default class Guild implements GuildObject {
         this.owner = data.owner || false;
         this.channels = [];
         this.mutual = false;
-        isPremiumGuild(this.id).then((premium) => (this.premium = premium));
-        getGuildBeta(this.id).then((beta) => (this.beta = !!beta));
     }
 
     fetchWidget() {
@@ -77,6 +78,13 @@ export default class Guild implements GuildObject {
     }
 
     public async getChannels() {
+        if (!this.channelsPromise) {
+            this.channelsPromise = this.computeChannels();
+        }
+        return this.channelsPromise;
+    }
+
+    private async computeChannels() {
         const channels = (await getChannels(this.id)) as (APIChannel & {
             permissions: bigint;
         })[];
@@ -93,8 +101,8 @@ export default class Guild implements GuildObject {
     }
 
     public async getChannel(channelId: string) {
-        await this.getChannels();
-        return this.channels?.find((channel) => channel.id === channelId) || null;
+        const channels = await this.getChannels();
+        return channels.find((channel) => channel.id === channelId) || null;
     }
 
     public async getPermissions() {
