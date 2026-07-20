@@ -1,162 +1,237 @@
 /**
  * Dashboard Guild Overview
  *
- * Page principale pour la gestion d'une guild spécifique.
- * Affiche:
- * - Infos de la guild (nom, icon, membre count)
- * - Statut des modules Welcomer et Leaver (enabled/disabled)
- * - Canaux de destination configurés
- * - Statistiques d'utilisation par période
+ * Landing screen for a guild:
+ * - Guild identity (icon, name, beta/premium flags) and live member count
+ * - One card per dashboard module, each linking to its editor
+ * - Member-count trend and usage stats over a selectable range
  *
  * Auth:
  * - ✅ Middleware proxy protège /dashboard/* avec session
- * - ✅ getUserGuild() vérifie que l'user a accès à cette guild
+ * - ✅ getUserGuild() vérifie que l'user a accès à cette guild (layout)
  *
- * @see app/dashboard/[guildId]/welcome/page.tsx - Éditeur Welcomer
- * @see app/dashboard/[guildId]/leave/page.tsx - Éditeur Leaver
+ * @see features/dashboard/modules/config.ts - Source of truth for the modules
  */
 
 import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Chip } from "@heroui/chip";
+import { Skeleton } from "@heroui/skeleton";
+import { DiscordMention } from "@welcomer-bot/discord-components-react";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import { GuildCard, ManageButton, StatsViewer } from "@/components/dashboard/guild";
+import { ManageButton, StatsViewer } from "@/components/dashboard/guild";
+import { MODULES } from "@/features/dashboard/modules/config";
 import { getGuild } from "@/lib/dal/discord";
-import { getSources } from "@/lib/dal/sources";
-import type { StatsRange } from "@/lib/dto";
+import {
+  getGuildFlags,
+  getLastEventAtBySource,
+  getSources,
+} from "@/lib/dal/sources";
+import type { StatsRange } from "@/lib/utils";
 
-import { SourceType } from "@/generated/prisma/enums";
-import { Skeleton } from "@heroui/skeleton";
-import { DiscordMention } from "@welcomer-bot/discord-components-react";
+/** "today" / "yesterday" / "3 days ago" — Intl does this without a date lib. */
+function formatRelativeDay(date: Date) {
+  const days = Math.round((date.getTime() - Date.now()) / 86_400_000);
+
+  return new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
+    days,
+    "day",
+  );
+}
 
 function StatsViewerSkeleton() {
   return (
-    <Card className="grid gap-5 px-5 pb-5">
-      <CardHeader className="flex justify-between">
-        <Skeleton className="h-6 w-32 rounded-lg"/>
-        <Skeleton className="h-10 w-40 rounded-lg"/>
-      </CardHeader>
-      <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-4">
+    <section className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <Skeleton className="h-6 w-32 rounded-lg" />
+        <Skeleton className="h-10 w-40 rounded-lg" />
+      </div>
+      <Card>
+        <CardBody>
+          <Skeleton className="h-[180px] w-full rounded-lg" />
+        </CardBody>
+      </Card>
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-5">
         {[1, 2, 3, 4, 5].map((i) => (
           <Card key={i}>
-            <CardHeader className="text-gray-400 text-sm">
-              <Skeleton className="h-4 w-32 rounded-lg"/>
+            <CardHeader className="pb-0">
+              <Skeleton className="h-4 w-28 rounded-lg" />
             </CardHeader>
             <CardBody>
-              <Skeleton className="h-6 w-16 rounded-lg"/>
+              <Skeleton className="h-8 w-16 rounded-lg" />
             </CardBody>
           </Card>
         ))}
       </div>
-    </Card>
+    </section>
   );
 }
 
 export default async function Page({
-                                     params,
-                                     searchParams,
-                                   }: {
+  params,
+  searchParams,
+}: {
   params: Promise<{ guildId: string }>;
   searchParams: Promise<{ statsRange?: string }>;
 }) {
-  const {guildId} = await params;
+  const { guildId } = await params;
   const search = await searchParams;
 
   const statsRange = (search.statsRange as StatsRange) || "7d";
+
+  // getChannel() hangs off the guild, so this one await has to come first.
   const guild = await getGuild(guildId);
   if (!guild) redirect("/dashboard");
-  const welcomer = await getSources(guildId, SourceType.WELCOMER);
-  const leaver = await getSources(guildId, SourceType.LEAVER);
 
-  const welcomerEnabled = welcomer && welcomer.length > 0;
-  const leaverEnabled = leaver && leaver.length > 0;
+  const [flags, moduleStates] = await Promise.all([
+    getGuildFlags(guildId),
+    Promise.all(
+      MODULES.map(async (module) => {
+        const sources = await getSources(guildId, module.sourceType);
+        const source = sources?.[0] ?? null;
+        const channel = source?.channelId
+          ? await guild.getChannel(source.channelId)
+          : null;
 
-  const welcomerChannel =
-    welcomer && welcomerEnabled && welcomer[0]?.channelId
-      ? await guild.getChannel(welcomer[0].channelId)
-      : null;
-  const leaverChannel =
-    leaver && leaverEnabled && leaver[0]?.channelId
-      ? await guild.getChannel(leaver[0].channelId)
-      : null;
+        return { module, source, channel };
+      }),
+    ),
+  ]);
+
+  const lastEvents = await getLastEventAtBySource(
+    guildId,
+    moduleStates.flatMap(({ source }) => (source ? [source.id] : [])),
+  );
 
   return (
-    <div className="w-full h-full no-scrollbar sm:px-4 sm:py-3">
-      <Card
-        classNames={{
-          base: "w-full",
-        }}
-      >
-        <CardHeader>
-          <GuildCard guild={guild}/>
-        </CardHeader>
-        <>
-          <CardBody className="space-y-5">
-            <p>Member Count: {guild.memberCount}</p>
-            <div className=" grid sm:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader>Welcomer status</CardHeader>
-                <CardBody className="flex flex-row justify-between">
-                  <div>
-                    <p>
-                      Status:{" "}
-                      <span
-                        className={
-                          welcomerEnabled ? "text-green-500" : "text-red-500"
-                        }
-                      >
-                        {welcomer && welcomerEnabled ? "Enabled" : "Disabled"}
-                      </span>
-                    </p>
-                    <p>
-                      Channel:{" "}
-                      {welcomerChannel ? (
-                        <DiscordMention type="channel">
-                          {welcomerChannel.name}
-                        </DiscordMention>
-                      ) : (
-                        "Not set"
-                      )}
-                    </p>
-                  </div>
-                  <ManageButton guildId={guild.id} module={SourceType.WELCOMER}/>
-                </CardBody>
-              </Card>
-              <Card>
-                <CardHeader>Leaver status</CardHeader>
-                <CardBody className="flex flex-row justify-between">
-                  <div>
-                    <p>
-                      Status:{" "}
-                      <span
-                        className={
-                          leaverEnabled ? "text-green-500" : "text-red-500"
-                        }
-                      >
-                        {leaver && leaverEnabled ? "Enabled" : "Disabled"}
-                      </span>
-                    </p>
-                    <p>
-                      Channel:{" "}
-                      {leaverChannel ? (
-                        <DiscordMention type="channel">
-                          {leaverChannel.name}
-                        </DiscordMention>
-                      ) : (
-                        "Not set"
-                      )}
-                    </p>
-                  </div>
-                  <ManageButton guildId={guild.id} module={SourceType.LEAVER}/>
-                </CardBody>
-              </Card>
+    <div className="no-scrollbar w-full space-y-6 p-4 sm:px-6 sm:py-5">
+      <header className="overflow-hidden rounded-large bg-content1">
+        <div className="relative h-36 overflow-hidden sm:h-48">
+          {/* `bannerUrl` already falls back to the Welcomer logo, but that
+              fallback is a square SVG — Next/Image rejects SVGs anyway. Gate on
+              `banner` so a real banner gets optimised, and blur the logo into a
+              texture like the guild list on /dashboard does. */}
+          {guild.banner ? (
+            <Image
+              alt=""
+              className="object-cover"
+              fill
+              priority
+              sizes="100vw"
+              src={guild.bannerUrl}
+            />
+          ) : (
+            <div
+              className="h-full w-full scale-110 bg-cover bg-center opacity-70 blur-md"
+              style={{ backgroundImage: `url(${guild.bannerUrl})` }}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-content1 via-content1/50 to-transparent" />
+        </div>
+
+        <div className="relative -mt-14 flex flex-wrap items-end justify-between gap-6 px-6 pb-6 sm:-mt-16">
+          <div className="flex min-w-0 items-end gap-4">
+            {guild.iconUrl ? (
+              <Image
+                alt=""
+                className="h-24 w-24 shrink-0 rounded-full ring-4 ring-content1"
+                height={96}
+                src={guild.iconUrl}
+                width={96}
+              />
+            ) : (
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-default-100 text-3xl ring-4 ring-content1">
+                {guild.name[0]}
+              </div>
+            )}
+            <div className="min-w-0 pb-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="truncate text-3xl font-semibold">{guild.name}</h1>
+                {flags.premium && (
+                  <Chip color="warning" size="sm" variant="flat">
+                    Premium
+                  </Chip>
+                )}
+                {flags.beta && (
+                  <Chip color="secondary" size="sm" variant="flat">
+                    Beta
+                  </Chip>
+                )}
+              </div>
+              <p className="truncate text-small text-default-400">{guild.id}</p>
             </div>
-            <Suspense fallback={<StatsViewerSkeleton/>}>
-              <StatsViewer guildId={guild.id} range={statsRange}/>
-            </Suspense>
-          </CardBody>
-        </>
-      </Card>
+          </div>
+
+          <div className="pb-1 sm:text-right">
+            <p className="text-small text-default-500">Members</p>
+            <p className="text-5xl font-semibold leading-tight tabular-nums">
+              {guild.memberCount?.toLocaleString() ?? "—"}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <section className="space-y-4">
+        <h2 className="text-large font-semibold">Modules</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {moduleStates.map(({ module, source, channel }) => {
+            const lastEvent = source ? lastEvents.get(source.id) : undefined;
+
+            return (
+              <Card key={module.slug} className="w-full">
+                <CardHeader className="flex items-center justify-between gap-3">
+                  <span className="flex items-center gap-2 font-medium">
+                    <module.icon aria-hidden className="text-default-500" />
+                    {module.label}
+                  </span>
+                  <Chip
+                    color={source ? "success" : "default"}
+                    size="sm"
+                    variant="dot"
+                  >
+                    {source ? "Active" : "Inactive"}
+                  </Chip>
+                </CardHeader>
+                <CardBody className="flex-row items-end justify-between gap-3 pt-0">
+                  <div className="min-w-0 space-y-1 text-small text-default-500">
+                    <p>
+                      {channel ? (
+                        <>
+                          Posts to{" "}
+                          <DiscordMention type="channel">
+                            {channel.name}
+                          </DiscordMention>
+                        </>
+                      ) : source ? (
+                        "No channel set"
+                      ) : (
+                        "Not configured yet"
+                      )}
+                    </p>
+                    <p className="text-default-400">
+                      {lastEvent
+                        ? `Last used ${formatRelativeDay(lastEvent)}`
+                        : source
+                          ? "Never used yet"
+                          : " "}
+                    </p>
+                  </div>
+                  <ManageButton
+                    href={`/dashboard/${guild.id}/${module.slug}`}
+                    label={source ? "Manage" : "Set up"}
+                  />
+                </CardBody>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
+      <Suspense fallback={<StatsViewerSkeleton />}>
+        <StatsViewer guildId={guild.id} range={statsRange} />
+      </Suspense>
     </div>
   );
 }

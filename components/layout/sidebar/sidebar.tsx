@@ -5,12 +5,12 @@ import { LogoutIcon } from "@/components/dashboard/guild/logout-icon";
 import { Divider } from "@heroui/divider";
 import { User as UIUser } from "@heroui/user";
 import Link from "next/link";
-import { FaDoorOpen, FaHome } from "react-icons/fa";
-import { ImEnter } from "react-icons/im";
+import { FaHome } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 
 import { SidebarContext } from "@/app/providers";
 import { Logo } from "@/components/ui";
+import { MODULES } from "@/features/dashboard/modules/config";
 import { GuildObject } from "@/lib/discord/guild-types";
 import { UserObject } from "@/lib/discord/user";
 import { useSelectedLayoutSegment } from "next/navigation";
@@ -81,18 +81,15 @@ export function Sidebar({
           link={`/dashboard/${currentGuild.id}`}
           text="Dashboard"
         />
-        <SidebarItem
-          active={active === "welcome"}
-          icon={<ImEnter />}
-          link={`/dashboard/${currentGuild.id}/welcome`}
-          text="Welcomer"
-        />
-        <SidebarItem
-          active={active === "leave"}
-          icon={<FaDoorOpen />}
-          link={`/dashboard/${currentGuild.id}/leave`}
-          text="Leaver"
-        />
+        {MODULES.map(({ slug, label, icon: Icon }) => (
+          <SidebarItem
+            key={slug}
+            active={active === slug}
+            icon={<Icon />}
+            link={`/dashboard/${currentGuild.id}/${slug}`}
+            text={label}
+          />
+        ))}
       </ul>
 
       <Divider className="sm:block hidden" />

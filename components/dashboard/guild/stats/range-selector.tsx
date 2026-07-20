@@ -1,9 +1,9 @@
 "use client";
 
+import type { StatsRange } from "@/lib/utils";
 import { Select, SelectItem } from "@heroui/select";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
-import type { StatsRange } from "@/lib/dto";
 
 const RANGES: { label: string; value: StatsRange }[] = [
   { label: "7 days", value: "7d" },

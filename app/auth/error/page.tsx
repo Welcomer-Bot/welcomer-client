@@ -16,7 +16,7 @@ export default async function Error({
   }
 
   return (
-    <section className="flex flex-col h-full items-center justify-center gap-4 py-8 md:py-10">
+    <section className="flex flex-col min-h-screen items-center justify-center gap-4 py-8 md:py-10">
       <div className="inline-block max-w-xl text-center justify-center">
         <h1 className="font-bold mb-7">There was an error :(</h1>
         <p className="mb-5">{error_description}</p>

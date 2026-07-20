@@ -345,3 +345,66 @@ export async function getGuildDailyStatsSince(guildId: string, since?: Date) {
   });
 }
 
+/**
+ * Fetch the most recent event timestamp for each of a guild's sources.
+ *
+ * One grouped query for every source rather than one findFirst per module.
+ *
+ * @param guildId - Discord guild ID
+ * @param sourceIds - Sources to look up
+ * @returns Map of source ID to its latest event date; absent when never used
+ */
+export async function getLastEventAtBySource(
+  guildId: string,
+  sourceIds: number[],
+): Promise<Map<number, Date>> {
+  if (sourceIds.length === 0) return new Map();
+
+  try {
+    const rows = await prisma.guildEvent.groupBy({
+      by: ["sourceId"],
+      where: { guildId, sourceId: { in: sourceIds } },
+      _max: { occurredAt: true },
+    });
+
+    return new Map(
+      rows.flatMap((row) =>
+        row.sourceId !== null && row._max.occurredAt
+          ? ([[row.sourceId, row._max.occurredAt]] as [number, Date][])
+          : [],
+      ),
+    );
+  } catch (error) {
+    logDalError("getLastEventAtBySource", ErrorCode.DATABASE_ERROR, error, {
+      guildId,
+    });
+
+    return new Map();
+  }
+}
+
+/**
+ * Fetch a guild's beta/premium flags in a single query.
+ *
+ * @param guildId - Discord guild ID
+ * @returns Flags; both false when the guild is unknown or on error
+ */
+export async function getGuildFlags(
+  guildId: string,
+): Promise<{ beta: boolean; premium: boolean }> {
+  try {
+    const guild = await prisma.guild.findUnique({
+      where: { id: guildId },
+      select: { betaAccess: true, premiumPlan: true },
+    });
+
+    return {
+      beta: Boolean(guild?.betaAccess),
+      premium: Boolean(guild?.premiumPlan),
+    };
+  } catch (error) {
+    logDalError("getGuildFlags", ErrorCode.DATABASE_ERROR, error, { guildId });
+    return { beta: false, premium: false };
+  }
+}
+

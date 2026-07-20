@@ -2,24 +2,21 @@
 
 import { Button } from "@heroui/button";
 import Link from "next/link";
-import { SourceType } from "@/generated/prisma/enums";
-import { getDashboardModuleBySourceType } from "@/features/dashboard/modules/config";
 
+/**
+ * Exists only to keep `as={Link}` on the client: a server component cannot
+ * hand a function prop to HeroUI's Button.
+ */
 export default function ManageButton({
-  guildId,
-  module,
+  href,
+  label = "Manage",
 }: {
-  guildId: string;
-  module: SourceType;
+  href: string;
+  label?: string;
 }) {
-  const moduleConfig = getDashboardModuleBySourceType(module);
-  const link = moduleConfig
-    ? `/dashboard/${guildId}/${moduleConfig.slug}`
-    : `/dashboard/${guildId}`;
-
   return (
-    <Button as={Link} href={link} color="primary">
-      Manage
+    <Button as={Link} color="primary" href={href} size="sm" variant="flat">
+      {label}
     </Button>
   );
 }
