@@ -20,6 +20,7 @@
  */
 
 import "server-only";
+import * as Sentry from "@sentry/nextjs";
 
 export enum ErrorCode {
   // Auth errors
@@ -199,14 +200,13 @@ export function reportError(
 
   logError(entry);
 
-  // Hook for Sentry integration
-  if (
-    typeof window === "undefined" &&
-    process.env.SENTRY_DSN &&
-    error.statusCode >= 500
-  ) {
-    // TODO: Send to Sentry
-    // Sentry.captureException(error, { tags: { code: error.code } });
+  // Report to Sentry (initialized with a hardcoded DSN in sentry.server.config.ts /
+  // sentry.edge.config.ts — not gated by an env var, so the SDK is active whenever
+  // this module runs; no need to re-check for a DSN here).
+  // ponytail: dropped the dead `process.env.SENTRY_DSN` check, which was never set
+  // anywhere in the repo and silently disabled all reporting.
+  if (typeof window === "undefined" && error.statusCode >= 500) {
+    Sentry.captureException(error, { tags: { code: error.code } });
   }
 }
 
