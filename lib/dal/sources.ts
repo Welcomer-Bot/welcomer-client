@@ -2,11 +2,11 @@ import "server-only";
 
 import { cache } from "react";
 
-import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
-import { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import { ImageCard, Prisma, Source, SourceType, } from "@/generated/prisma/client";
 import { ErrorCode } from "@/lib/error";
 import prisma from "@/lib/prisma";
+import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
+import { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import { logDalError } from "./logging";
 
 /**
@@ -403,11 +403,7 @@ export async function getGuildFlags(
  *
  * Batched counterpart to getGuildFlags, for callers rendering a list of
  * guilds (avoids one findUnique per guild).
- *
- * ponytail: not wrapped in React's cache() — cache() keys on argument
- * identity, and an array literal is a new reference on every call, so a
- * cached wrapper here would never hit and would only add overhead.
- *
+ * 
  * @param guildIds - Discord guild IDs to look up
  * @returns Map of guild ID to flags; guilds absent from the map (unknown
  *   or not in the DB yet) should be treated as { beta: false, premium: false }

@@ -40,9 +40,6 @@ export function SidebarItem({
         </span>
 
         {!isOpen && (
-          // ponytail: tooltip needs an opaque, contrasted background since it overlays
-          // page content on hover - reuse the same solid (non-translucent) scale tokens
-          // as the active state instead of a translucent `primary/10`.
           <div
             className={`hidden sm:absolute left-full rounded-md px-2 py-1 ml-6 bg-primary-100 text-primary-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
           >

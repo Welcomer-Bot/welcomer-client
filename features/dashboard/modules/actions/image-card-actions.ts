@@ -2,9 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 
-import { ImageCard } from "@/generated/prisma/client";
-import { ImageCardState } from "@/features/dashboard/modules/stores";
-import { getDashboardModuleBySourceType } from "@/features/dashboard/modules/config";
 import {
   ActionResult,
   VoidActionResult,
@@ -13,10 +10,9 @@ import {
   voidActionError,
   voidActionSuccess,
 } from "@/features/dashboard/modules/actions/result";
-import {
-  assertSnowflake,
-  reportServerError,
-} from "@/lib/error";
+import { getDashboardModuleBySourceType } from "@/features/dashboard/modules/config";
+import { ImageCardState } from "@/features/dashboard/modules/stores";
+import { ImageCard } from "@/generated/prisma/client";
 import { getUserGuild } from "@/lib/dal/session";
 import {
   createImageCardQuery,
@@ -26,6 +22,10 @@ import {
   updateImageCardQuery,
   updateSourceQuery,
 } from "@/lib/dal/sources";
+import {
+  assertSnowflake,
+  reportServerError,
+} from "@/lib/error";
 
 /**
  * Create a new image card for a source in a guild.
@@ -145,9 +145,6 @@ export async function updateImageCard(
       data: store.data as object,
     });
 
-    // Card data isn't exposed on the source row itself, so the source is
-    // looked back up (ponytail: one extra cheap read, simpler than plumbing
-    // sourceType through the store) purely to derive the module slug.
     const source = await getSource(guildId, sourceId);
     const moduleConfig = source && getDashboardModuleBySourceType(source.type);
     if (moduleConfig) {
@@ -244,8 +241,6 @@ export async function deleteActiveImageCard(
 
   const result = await deleteActiveImageCardInternal(sourceId, guildId);
   if (result.done) {
-    // ponytail: cheap extra lookup (after the delete, since the card row
-    // itself is gone) purely to derive the module slug for revalidation.
     const source = await getSource(guildId, sourceId);
     const moduleConfig = source && getDashboardModuleBySourceType(source.type);
     if (moduleConfig) {
@@ -269,10 +264,6 @@ export async function deleteImageCard(
 ): Promise<VoidActionResult> {
   assertSnowflake(guildId, "guildId");
 
-  // ponytail: looked up before the delete (the card row won't exist
-  // afterwards) purely to learn its sourceId for revalidation.
-  // deleteImageCardInternal repeats this lookup internally — duplicating a
-  // cheap scoped read is simpler than changing its shared return contract.
   const cardBeforeDelete = await getImageCardForGuild(guildId, cardId);
 
   const result = await deleteImageCardInternal(cardId, guildId);

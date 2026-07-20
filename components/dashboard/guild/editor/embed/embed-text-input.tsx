@@ -16,12 +16,6 @@ type EmbedTextInputProps = {
   className?: string;
 };
 
-// ponytail: shared presentational wrapper for the embed's plain-text Inputs
-// (label with a live character counter + a max-length `validate`). It only
-// renders HeroUI's Input from the `value`/`onValueChange` it is given -
-// reading the embed's current value and writing it back (including any
-// field-specific side effect) stays in each caller, so this component never
-// needs to know the shape of the embed or which store action to call.
 export function EmbedTextInput({
   label,
   ariaLabel,

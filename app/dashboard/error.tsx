@@ -37,8 +37,6 @@ export default function Error({
             <h2 className="text-large font-semibold text-foreground">
               Something went wrong
             </h2>
-            {/* ponytail: generic message only — the raw error can leak infra
-                details. The digest is what's safe to show for log lookup. */}
             <p className="text-small text-default-500">
               We couldn&apos;t load this guild&apos;s dashboard. This is
               usually temporary — try again in a moment.

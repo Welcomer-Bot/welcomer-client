@@ -44,9 +44,6 @@ export function useUnsavedChanges(
     setHasChanges(false);
   }, [currentSnapshot]);
 
-  // ponytail: reset reuses the already-memoized baseline snapshot instead of
-  // asking the caller to recompute `store.getInitialState()` a second time —
-  // `reset()` restores the store to that same initial state anyway.
   const markReset = useCallback(() => {
     lastSavedSnapshotRef.current = baselineSnapshot;
     setHasChanges(false);
