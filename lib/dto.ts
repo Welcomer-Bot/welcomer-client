@@ -2,7 +2,6 @@
 
 import { requireGuild } from "@/lib/dal/session";
 import { getGuildDailyStatsSince } from "@/lib/dal/sources";
-import { getFonts } from "font-list";
 import {
   GuildStats,
   GuildStatsSummary,
@@ -78,14 +77,5 @@ export async function fetchGuildStats(
           .map(([date, memberCount]) => ({ date, memberCount }));
 
   return { ...summary, series };
-}
-
-/**
- * Fetch all available fonts for server
- *
- * @returns Array of font names
- */
-export async function fetchFontList() {
-  return await getFonts({ disableQuoting: true });
 }
 

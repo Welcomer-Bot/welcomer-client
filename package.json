@@ -20,6 +20,7 @@
     "@internationalized/date": "3.8.2",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.1",
+    "@react-aria/ssr": "^3.10.0",
     "@sentry/nextjs": "^10",
     "@sentry/profiling-node": "^9.42.0",
     "@welcomer-bot/card-canvas": "^1.1.1",
@@ -30,7 +31,6 @@
     "debounce": "^3.0.0",
     "discord-api-types": "^0.38.47",
     "dotenv": "^17.4.2",
-    "font-list": "^1.5.1",
     "framer-motion": "^12.23.26",
     "immer": "^10.1.1",
     "jose": "^6.0.12",
@@ -43,7 +43,6 @@
     "react-string-replace": "^1.1.1",
     "react-toastify": "^11.0.5",
     "zod": "^4.0.10",
-    "zod-prisma": "^0.5.4",
     "zustand": "^5.0.13"
   },
   "devDependencies": {

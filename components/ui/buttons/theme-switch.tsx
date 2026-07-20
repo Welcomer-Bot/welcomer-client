@@ -1,8 +1,8 @@
 "use client";
 
+import { VisuallyHidden } from "@heroui/react";
 import { type SwitchProps, useSwitch } from "@heroui/switch";
 import { useIsSSR } from "@react-aria/ssr";
-import { VisuallyHidden } from "@react-aria/visually-hidden";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
 import { type FC } from "react";
