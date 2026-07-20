@@ -41,7 +41,6 @@ export {
   getGuildData,
   getGuildsByUserId,
   createDBSession,
-  isPremiumGuild,
   setPremiumGuild,
   getBetaTester,
 } from "@/lib/dal/session";
@@ -58,7 +57,6 @@ export {
   updateImageCardQuery,
   createImageCardQuery,
   executeQueries,
-  getGuildBeta,
   addGuildToBeta,
   removeGuildFromBeta,
   getGuildDailyStatsSince,
