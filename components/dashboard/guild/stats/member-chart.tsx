@@ -48,13 +48,6 @@ export default function MemberChart({ series }: { series: MemberPoint[] }) {
     const canvas = canvasRef.current;
 
     if (!canvas) return;
-
-    // ponytail: `text-primary` (on the canvas below) resolves to HeroUI's
-    // current accent color; reading it back via getComputedStyle gives a
-    // theme-consistent borderColor without hardcoding a hex or importing the
-    // theme config. Falls back to a plain blue if the style isn't resolvable
-    // yet (e.g. computed before first paint) rather than passing `undefined`
-    // to chart.js.
     const accentColor = getComputedStyle(canvas).color || "#3b82f6";
 
     const chart = new Chart(canvas, {
