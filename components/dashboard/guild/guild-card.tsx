@@ -33,7 +33,7 @@ export default function GuildCard({
             className={`truncate transition-all ${isOpen ? "w-48 ml-2" : "w-0 ml-0"}`}
           >
             <h3 className="text-lg truncate">{guild.name}</h3>
-            <p className="text-gray-500 truncate">{guild.id}</p>
+            <p className="text-default-400 truncate">{guild.id}</p>
           </div>
         </div>
       </CardBody>

@@ -29,6 +29,7 @@ export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
             <div className="flex flex-row-reverse space-x-reverse space-x-2 mb-2">
               <Button
                 isIconOnly
+                aria-label={`Delete field ${index + 1}`}
                 color="danger"
                 variant="ghost"
                 size="sm"
@@ -38,6 +39,7 @@ export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
               </Button>
               <Button
                 isIconOnly
+                aria-label={`Move field ${index + 1} down`}
                 color="default"
                 size="sm"
                 isDisabled={index === fields.length - 1}
@@ -47,6 +49,7 @@ export function EmbedFieldsFields({ embedIndex }: { embedIndex: number }) {
               </Button>
               <Button
                 isIconOnly
+                aria-label={`Move field ${index + 1} up`}
                 color="default"
                 size="sm"
                 isDisabled={index === 0}

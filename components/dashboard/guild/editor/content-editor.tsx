@@ -21,9 +21,9 @@ export default function ContentEditor() {
   return (
     <Card shadow="sm">
       <CardHeader className="pb-0 flex justify-between items-center">
-        <h3 className="font-semibold text-lg text-foreground">
+        <h2 className="font-semibold text-lg text-foreground">
           Message Content
-        </h3>
+        </h2>
         <span
           className={`text-sm font-mono ${
             isOverLimit

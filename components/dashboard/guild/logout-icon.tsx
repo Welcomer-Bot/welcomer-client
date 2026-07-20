@@ -8,7 +8,13 @@ import { signOut } from "@/lib/actions";
 export function LogoutIcon() {
   return (
     <form action={signOut}>
-      <Button isIconOnly color="danger" type="submit" variant="ghost">
+      <Button
+        isIconOnly
+        aria-label="Log out"
+        color="danger"
+        type="submit"
+        variant="ghost"
+      >
         <Icon />
       </Button>
     </form>

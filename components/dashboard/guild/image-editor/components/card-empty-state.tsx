@@ -17,7 +17,7 @@ export function CardEmptyState({
         <FiImage aria-hidden className="h-8 w-8 text-default-400" />
       </div>
       <div className="space-y-2 text-center">
-        <h3 className="text-lg font-medium">No image card</h3>
+        <h3 className="font-semibold text-lg text-foreground">No image card</h3>
         <p className="max-w-sm text-default-500">
           Create an image card to display a custom welcome or leave image for
           your members.
