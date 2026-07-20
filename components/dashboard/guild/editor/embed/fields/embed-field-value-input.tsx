@@ -1,9 +1,9 @@
 "use client";
 
 import { SourceStoreContext } from "@/features/dashboard/modules/providers";
-import { Input } from "@heroui/input";
 import { useContext } from "react";
 import { useStore } from "zustand";
+import { EmbedTextInput } from "../embed-text-input";
 
 export function EmbedFieldValueInput({
   embedIndex,
@@ -21,14 +21,10 @@ export function EmbedFieldValueInput({
   const fieldValue = embed?.fields?.[fieldIndex]?.value;
 
   return (
-    <Input
-      type="text"
-      label={`Footer text ( ${fieldValue?.length ?? 0}/1024 )`}
-      aria-label="Text"
-      validate={(value) => {
-        if (value.length > 1024)
-          return "Footer must not exceed 1024 characters!";
-      }}
+    <EmbedTextInput
+      label="Field value"
+      ariaLabel={`Field value ${fieldIndex + 1}`}
+      maxLength={1024}
       value={fieldValue ?? ""}
       onValueChange={(value) => editField(embedIndex, fieldIndex, { value })}
       placeholder="Field Value"

@@ -1,9 +1,9 @@
 "use client";
 
 import { SourceStoreContext } from "@/features/dashboard/modules/providers";
-import { Input } from "@heroui/input";
 import { useContext } from "react";
 import { useStore } from "zustand";
+import { EmbedTextInput } from "../embed-text-input";
 
 export function EmbedFieldNameInput({
   embedIndex,
@@ -21,13 +21,10 @@ export function EmbedFieldNameInput({
   const fieldName = embed?.fields?.[fieldIndex]?.name;
 
   return (
-    <Input
-      type="text"
-      label={`Footer text ( ${fieldName?.length ?? 0}/256 )`}
-      aria-label="Text"
-      validate={(value) => {
-        if (value.length > 256) return "Footer must not exceed 256 characters!";
-      }}
+    <EmbedTextInput
+      label="Field name"
+      ariaLabel={`Field name ${fieldIndex + 1}`}
+      maxLength={256}
       value={fieldName ?? ""}
       onValueChange={(value) =>
         editField(embedIndex, fieldIndex, { name: value })
