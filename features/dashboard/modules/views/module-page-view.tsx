@@ -1,44 +1,14 @@
-import { Card, CardHeader } from "@heroui/card";
-import { Divider } from "@heroui/divider";
 import { redirect } from "next/navigation";
 
+import { Editor } from "@/components/dashboard/guild";
 import {
-  Editor,
-  EnableModuleButton,
-  RemoveModuleButton,
-} from "@/components/dashboard/guild";
-import {
-  DashboardModuleConfig,
   DashboardModuleSlug,
   getDashboardModuleBySlug,
 } from "@/features/dashboard/modules/config";
-import { getSources } from "@/lib/dal/sources";
 import { getUserGuild } from "@/lib/dal/session";
+import { getSources } from "@/lib/dal/sources";
 
-function ModuleCardHeader({
-  moduleConfig,
-  sourceId,
-  guildId,
-}: {
-  moduleConfig: DashboardModuleConfig;
-  sourceId?: number;
-  guildId: string;
-}) {
-  return (
-    <CardHeader className="flex justify-between space-x-3">
-      <p>{moduleConfig.label} module status</p>
-      {sourceId ? (
-        <RemoveModuleButton
-          guildId={guildId}
-          sourceId={sourceId}
-          sourceType={moduleConfig.sourceType}
-        />
-      ) : (
-        <EnableModuleButton guildId={guildId} sourceType={moduleConfig.sourceType} />
-      )}
-    </CardHeader>
-  );
-}
+import { ModuleHeader } from "./module-header";
 
 export async function ModulePageView({
   guildId,
@@ -52,27 +22,27 @@ export async function ModulePageView({
     redirect(`/dashboard/${guildId}`);
   }
 
-  const sources = await getSources(guildId, moduleConfig.sourceType);
+  const [sources, guild] = await Promise.all([
+    getSources(guildId, moduleConfig.sourceType),
+    getUserGuild(guildId),
+  ]);
   const source = sources?.[0];
-  const guild = await getUserGuild(guildId);
+
   if (!guild) {
     redirect("/dashboard");
   }
 
   return (
-    <Card radius="none" className="w-full min-h-full">
-      <ModuleCardHeader
+    // The page scrolls with the document — the guild layout owns no scroll
+    // container, so nothing here declares its own height or overflow.
+    <div className="w-full">
+      <ModuleHeader
+        channelId={source?.channelId}
+        guild={guild}
         moduleConfig={moduleConfig}
         sourceId={source?.id}
-        guildId={guildId}
       />
-      {source ? (
-        <div className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll overflow-x-hidden w-full ">
-          <Divider className="mb-2" />
-          <Editor guild={guild} />
-        </div>
-      ) : null}
-    </Card>
+      {source ? <Editor guild={guild} /> : null}
+    </div>
   );
 }
-
