@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { ImageCard } from "@/generated/prisma/client";
 import { ImageCardState } from "@/features/dashboard/modules/stores";
+import { getDashboardModuleBySourceType } from "@/features/dashboard/modules/config";
 import {
   ActionResult,
   VoidActionResult,
@@ -16,7 +17,7 @@ import {
   assertSnowflake,
   reportServerError,
 } from "@/lib/error";
-import { requireGuild } from "@/lib/dal/session";
+import { getUserGuild } from "@/lib/dal/session";
 import {
   createImageCardQuery,
   deleteCardQuery,
@@ -30,7 +31,10 @@ import {
  * Create a new image card for a source in a guild.
  *
  * Permissions:
- * - Requires user access to the target guild.
+ * - Requires user access to the target guild via `getUserGuild(guildId)`,
+ *   checked before the try block so a permission failure returns its own
+ *   distinct message instead of being folded into the generic technical
+ *   error path below.
  *
  * Validation:
  * - `guildId` must be a valid Discord snowflake.
@@ -39,6 +43,8 @@ import {
  * Side effects:
  * - Creates a new image card with empty data payload.
  * - Sets source active card if none exists.
+ * - Revalidates, as a 'layout' revalidation, the source's module editor and
+ *   nested image editor routes (both read the active card).
  */
 export async function createImageCard(
   sourceId: number,
@@ -46,9 +52,12 @@ export async function createImageCard(
 ): Promise<ActionResult<ImageCard>> {
   assertSnowflake(guildId, "guildId");
 
-  try {
-    await requireGuild(guildId);
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return actionError("You do not have permission to manage this guild");
+  }
 
+  try {
     const source = await getSource(guildId, sourceId);
     if (!source) {
       return actionError("Source not found for this guild");
@@ -61,6 +70,14 @@ export async function createImageCard(
 
     if (!source.activeCardId) {
       await updateSourceQuery(source, { activeCardId: card.id });
+    }
+
+    // 'layout' cascades to the nested `.../image` route since both share
+    // `[module]/layout.tsx` — the module editor's message preview also
+    // renders the active card's data.
+    const moduleConfig = getDashboardModuleBySourceType(source.type);
+    if (moduleConfig) {
+      revalidatePath(`/dashboard/${guildId}/${moduleConfig.slug}`, "layout");
     }
 
     return actionSuccess(card);
@@ -79,11 +96,18 @@ export async function createImageCard(
  * Update an existing image card for a guild-scoped source.
  *
  * Permissions:
- * - Requires user access to the target guild.
+ * - Requires user access to the target guild via `getUserGuild(guildId)`,
+ *   checked before the try block so a permission failure returns its own
+ *   distinct message instead of being folded into the generic technical
+ *   error path below.
  *
  * Validation:
  * - `guildId` must be a valid Discord snowflake.
  * - `cardId`, `sourceId`, and `store.data` are required.
+ *
+ * Side effects:
+ * - Revalidates, as a 'layout' revalidation, the source's module editor and
+ *   nested image editor routes (both read the active card's data).
  */
 export async function updateImageCard(
   store: Partial<ImageCardState>,
@@ -106,9 +130,12 @@ export async function updateImageCard(
     return actionError("Card data cannot be null");
   }
 
-  try {
-    await requireGuild(guildId);
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return actionError("You do not have permission to manage this guild");
+  }
 
+  try {
     const card = await getImageCardForGuild(guildId, cardId);
     if (!card) {
       return actionError("Card not found for this guild");
@@ -118,7 +145,15 @@ export async function updateImageCard(
       data: store.data as object,
     });
 
-    revalidatePath(`/dashboard/${guildId}`);
+    // Card data isn't exposed on the source row itself, so the source is
+    // looked back up (ponytail: one extra cheap read, simpler than plumbing
+    // sourceType through the store) purely to derive the module slug.
+    const source = await getSource(guildId, sourceId);
+    const moduleConfig = source && getDashboardModuleBySourceType(source.type);
+    if (moduleConfig) {
+      revalidatePath(`/dashboard/${guildId}/${moduleConfig.slug}`, "layout");
+    }
+
     return actionSuccess(updatedCard);
   } catch (error) {
     const appError = reportServerError(error, {
@@ -134,14 +169,21 @@ export async function updateImageCard(
 
 /**
  * Internal helper to delete a card after guild permission checks.
+ *
+ * Permissions checked via `getUserGuild(guildId)` before the try block, so a
+ * permission failure returns its own distinct message instead of being
+ * folded into the generic technical error path below.
  */
 async function deleteImageCardInternal(
   cardId: number,
   guildId: string,
 ): Promise<VoidActionResult> {
-  try {
-    await requireGuild(guildId);
+  const guild = await getUserGuild(guildId);
+  if (!guild) {
+    return voidActionError("You do not have permission to manage this guild");
+  }
 
+  try {
     const card = await getImageCardForGuild(guildId, cardId);
     if (!card) {
       return voidActionError("Card not found for this guild");
@@ -187,7 +229,12 @@ export async function deleteActiveImageCardInternal(
 }
 
 /**
- * Delete a source active image card and revalidate dashboard on success.
+ * Delete a source's active image card and revalidate the affected routes on success.
+ *
+ * Side effects:
+ * - Revalidates, as a 'layout' revalidation, the source's module editor and
+ *   nested image editor routes (both read the active card). The guild
+ *   overview doesn't render card data, so it is deliberately left alone.
  */
 export async function deleteActiveImageCard(
   sourceId: number,
@@ -197,13 +244,24 @@ export async function deleteActiveImageCard(
 
   const result = await deleteActiveImageCardInternal(sourceId, guildId);
   if (result.done) {
-    revalidatePath(`/dashboard/${guildId}`);
+    // ponytail: cheap extra lookup (after the delete, since the card row
+    // itself is gone) purely to derive the module slug for revalidation.
+    const source = await getSource(guildId, sourceId);
+    const moduleConfig = source && getDashboardModuleBySourceType(source.type);
+    if (moduleConfig) {
+      revalidatePath(`/dashboard/${guildId}/${moduleConfig.slug}`, "layout");
+    }
   }
   return result;
 }
 
 /**
- * Delete a specific image card and revalidate dashboard on success.
+ * Delete a specific image card and revalidate the affected routes on success.
+ *
+ * Side effects:
+ * - Revalidates, as a 'layout' revalidation, the owning source's module
+ *   editor and nested image editor routes. The guild overview doesn't render
+ *   card data, so it is deliberately left alone.
  */
 export async function deleteImageCard(
   cardId: number,
@@ -211,9 +269,19 @@ export async function deleteImageCard(
 ): Promise<VoidActionResult> {
   assertSnowflake(guildId, "guildId");
 
+  // ponytail: looked up before the delete (the card row won't exist
+  // afterwards) purely to learn its sourceId for revalidation.
+  // deleteImageCardInternal repeats this lookup internally — duplicating a
+  // cheap scoped read is simpler than changing its shared return contract.
+  const cardBeforeDelete = await getImageCardForGuild(guildId, cardId);
+
   const result = await deleteImageCardInternal(cardId, guildId);
-  if (result.done) {
-    revalidatePath(`/dashboard/${guildId}`);
+  if (result.done && cardBeforeDelete) {
+    const source = await getSource(guildId, cardBeforeDelete.sourceId);
+    const moduleConfig = source && getDashboardModuleBySourceType(source.type);
+    if (moduleConfig) {
+      revalidatePath(`/dashboard/${guildId}/${moduleConfig.slug}`, "layout");
+    }
   }
   return result;
 }

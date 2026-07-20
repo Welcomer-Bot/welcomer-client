@@ -7,6 +7,7 @@ import z from "zod";
 import { Source } from "@/generated/prisma/client";
 import { SourceType } from "@/generated/prisma/enums";
 import { SourceState } from "@/features/dashboard/modules/stores";
+import { getDashboardModuleBySourceType } from "@/features/dashboard/modules/config";
 import { deleteActiveImageCardInternal } from "@/features/dashboard/modules/actions/image-card-actions";
 import {
   ActionResult,
@@ -38,8 +39,10 @@ import { getUserGuild, requireGuild } from "@/lib/dal/session";
  * - `guildId` must be a valid Discord snowflake.
  *
  * Side effects:
- * - Persists a new source (with DAL defaults).
- * - Revalidates `/dashboard/:guildId` cache path.
+ * - Persists a new source (with DAL defaults, including a seeded active image card).
+ * - Revalidates the guild overview (`/dashboard/:guildId`, Active/Inactive status)
+ *   and, as a 'layout' revalidation, the new module's editor and nested image
+ *   editor routes (`/dashboard/:guildId/:module` cascades to `.../image`).
  *
  * @throws AppError When permission is denied or creation fails.
  */
@@ -50,7 +53,15 @@ export async function createSource(guildId: string, source: SourceType): Promise
 
   try {
     await createSourceRequest(guild.id, source);
+
     revalidatePath(`/dashboard/${guildId}`);
+
+    // 'layout' cascades to the nested `.../image` route since both share
+    // `[module]/layout.tsx` — a new source also seeds an active image card.
+    const moduleConfig = getDashboardModuleBySourceType(source);
+    if (moduleConfig) {
+      revalidatePath(`/dashboard/${guildId}/${moduleConfig.slug}`, "layout");
+    }
   } catch (error) {
     const appError = reportServerError(error, {
       action: "createSource",
@@ -77,7 +88,9 @@ export async function createSource(guildId: string, source: SourceType): Promise
  *
  * Side effects:
  * - Deletes source from persistence layer.
- * - Revalidates `/dashboard/:guildId` cache path.
+ * - Revalidates the guild overview (`/dashboard/:guildId`, Active/Inactive status)
+ *   and, as a 'layout' revalidation, the removed module's editor and nested
+ *   image editor routes.
  *
  * @throws AppError When permission is denied or deletion fails.
  */
@@ -87,8 +100,14 @@ export async function removeSource(guildId: string, sourceId: number): Promise<v
   await requireGuild(guildId);
 
   try {
-    await deleteSource(guildId, sourceId);
+    const deleted = await deleteSource(guildId, sourceId);
+
     revalidatePath(`/dashboard/${guildId}`);
+
+    const moduleConfig = getDashboardModuleBySourceType(deleted.type);
+    if (moduleConfig) {
+      revalidatePath(`/dashboard/${guildId}/${moduleConfig.slug}`, "layout");
+    }
   } catch (error) {
     throw reportServerError(error, {
       action: "removeSource",
@@ -111,7 +130,9 @@ export async function removeSource(guildId: string, sourceId: number): Promise<v
  * Side effects:
  * - May clear active image card when image placement is unset.
  * - Persists updated source message/channel in database.
- * - Revalidates `/dashboard/:guildId` cache path.
+ * - Revalidates the guild overview (`/dashboard/:guildId`, channel status) and,
+ *   as a 'layout' revalidation, the module's editor and nested image editor
+ *   routes (the latter matters because this can clear the active image card).
  *
  * @returns Mutation result with `{ data, done, error }` contract.
  */
@@ -216,6 +237,14 @@ export async function updateSource(store: Partial<SourceState>): Promise<ActionR
     });
 
     revalidatePath(`/dashboard/${guildId}`);
+
+    // 'layout' cascades to the nested `.../image` route since both share
+    // `[module]/layout.tsx` — this action can clear the active image card.
+    const moduleConfig = getDashboardModuleBySourceType(source.type);
+    if (moduleConfig) {
+      revalidatePath(`/dashboard/${guildId}/${moduleConfig.slug}`, "layout");
+    }
+
     return actionSuccess(updatedSource);
   } catch (error) {
     const appError = reportServerError(error, {
