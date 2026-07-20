@@ -10,6 +10,8 @@ export function SidebarToggle() {
   return (
     <Button
       isIconOnly
+      aria-expanded={isOpen}
+      aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
       className="p-1.5 rounded-lg hidden sm:grid"
       onPress={() => setIsOpen(!isOpen)}
     >

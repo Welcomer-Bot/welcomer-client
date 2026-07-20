@@ -52,7 +52,10 @@ export function Sidebar({
           <SidebarContent>
             <Link href="/dashboard">
               <div className="flex flex-col leading-3 text-center">
-                <h1>Welcomer</h1>
+                {/* This is the sidebar logo, not the page title: the page's real
+                    <h1> lives in the module/guild header. Same visual rendering
+                    (no classes existed here to preserve), tag only. */}
+                <p>Welcomer</p>
                 <span className="text-small text-default-500">Dashboard</span>
               </div>
             </Link>
@@ -68,7 +71,7 @@ export function Sidebar({
       />
       <Divider className="mb-2 sm:block hidden" />
 
-      <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3">
+      <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3 overflow-x-auto">
         <SidebarItem
           active={active === "home"}
           icon={<FaHome />}
