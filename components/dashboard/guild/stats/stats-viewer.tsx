@@ -1,6 +1,8 @@
-import { fetchGuildStats, StatsRange } from "@/lib/dto";
+import { fetchGuildStats } from "@/lib/dto";
+import { StatsRange } from "@/lib/utils";
 
 import { Card, CardBody, CardHeader } from "@heroui/card";
+import MemberChart from "./member-chart";
 import RangeSelector from "./range-selector";
 
 const METRICS = [
@@ -20,22 +22,58 @@ export default async function StatsViewer({
 }) {
   const data = await fetchGuildStats(guildId, range);
 
+  const { series } = data;
+
+  // The series spans the whole window, so days without a snapshot are null —
+  // compare the first and last days actually measured.
+  const known = series.filter((p) => p.memberCount !== null);
+  const delta =
+    known.length >= 2
+      ? known[known.length - 1].memberCount! - known[0].memberCount!
+      : null;
+
   return (
-    <Card className="grid gap-5 px-5 pb-5">
-      <CardHeader className="flex justify-between">
-        <h2>Server stats</h2>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-large font-semibold">Server stats</h2>
         <RangeSelector currentRange={range} />
-      </CardHeader>
-      <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-4">
+      </div>
+
+      <Card>
+        <CardHeader className="flex items-center justify-between gap-3 pb-0">
+          <span className="text-small text-default-500">Member count</span>
+          {delta !== null && (
+            <span
+              className={`text-small tabular-nums ${
+                delta > 0
+                  ? "text-success"
+                  : delta < 0
+                    ? "text-danger"
+                    : "text-default-400"
+              }`}
+            >
+              {delta > 0 ? "▲" : delta < 0 ? "▼" : "="}{" "}
+              {delta === 0 ? "no change" : Math.abs(delta).toLocaleString()}
+            </span>
+          )}
+        </CardHeader>
+        <CardBody>
+          <MemberChart series={series} />
+        </CardBody>
+      </Card>
+
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-5">
         {METRICS.map((metric) => (
           <Card key={metric.key}>
-            <CardHeader className="text-gray-400 text-sm">
+            <CardHeader className="pb-0 text-small text-default-500">
               {metric.label}
             </CardHeader>
-            <CardBody>{data[metric.key]}</CardBody>
+            <CardBody className="text-2xl font-semibold tabular-nums">
+              {data[metric.key].toLocaleString()}
+            </CardBody>
           </Card>
         ))}
       </div>
-    </Card>
+    </section>
   );
 }

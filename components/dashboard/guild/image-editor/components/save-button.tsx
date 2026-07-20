@@ -6,7 +6,8 @@ import {
   useImageCardStore,
 } from "@/features/dashboard/modules/providers";
 import { UnsavedChangesBar } from "@/components/dashboard/guild/unsaved-changes-bar";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useUnsavedChanges } from "@/components/dashboard/guild/hooks/use-unsaved-changes";
+import { useContext, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore } from "zustand";
 
@@ -22,26 +23,21 @@ export function SaveButton({ guildId }: SaveButtonProps) {
   const state = useStore(store, (state) => state);
   const reset = useImageCardStore((state) => state.reset);
 
-  const lastSavedDataRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (lastSavedDataRef.current === null) {
-      lastSavedDataRef.current = JSON.stringify(store.getInitialState().data);
-    }
-  }, [store]);
-
-  const currentDataStr = useMemo(
+  // Baseline recomputed whenever the store instance changes (see
+  // use-unsaved-changes.ts for why that resync matters).
+  const baselineSnapshot = useMemo(
+    () => JSON.stringify(store.getInitialState().data),
+    [store],
+  );
+  const currentSnapshot = useMemo(
     () => JSON.stringify(state.data),
     [state.data],
   );
 
-  const [hasChanges, setHasChanges] = useState(false);
-
-  useEffect(() => {
-    if (lastSavedDataRef.current !== null) {
-      setHasChanges(currentDataStr !== lastSavedDataRef.current);
-    }
-  }, [currentDataStr]);
+  const { hasChanges, markSaved, markReset } = useUnsavedChanges(
+    currentSnapshot,
+    baselineSnapshot,
+  );
 
   if (!hasChanges || !state.id) return null;
 
@@ -50,10 +46,7 @@ export function SaveButton({ guildId }: SaveButtonProps) {
       isLoading={isLoading}
       onReset={() => {
         reset();
-        lastSavedDataRef.current = JSON.stringify(
-          store.getInitialState().data,
-        );
-        setHasChanges(false);
+        markReset();
       }}
       onSave={async () => {
         if (!state.id || !state.sourceId) return;
@@ -77,8 +70,7 @@ export function SaveButton({ guildId }: SaveButtonProps) {
             toast.error(error);
           } else if (done && updatedData) {
             toast.success("Settings updated successfully!");
-            lastSavedDataRef.current = currentDataStr;
-            setHasChanges(false);
+            markSaved();
           }
         } catch (err) {
           toast.error(

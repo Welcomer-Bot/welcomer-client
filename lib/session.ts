@@ -83,30 +83,6 @@ export async function createSession(dbSession: Session) {
   return session;
 }
 
-export async function updateSession() {
-  const session = await getSession();
-  const payload = await decrypt(session);
-
-  if (!session || !payload) {
-    return null;
-  }
-  // refresh the user session with refresh token
-  // TODO: implement refresh token logic
-
-  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const refreshedSession = await encrypt({
-    ...payload,
-    expiresAt: expires,
-  });
-
-  (await cookies()).set(SESSION_COOKIE_NAME, refreshedSession, {
-    ...sessionCookieOptions,
-    expires: expires,
-  });
-
-  return refreshedSession;
-}
-
 export async function getSession() {
   return (await cookies()).get(SESSION_COOKIE_NAME)?.value;
 }

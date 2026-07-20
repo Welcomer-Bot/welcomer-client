@@ -9,11 +9,12 @@ import { AppError, ErrorCode } from "@/lib/error";
 import { canManageGuild } from "@/lib/discord/permissions";
 import { logDalError } from "./logging";
 import {
-  getBotGuilds,
+  getBotGuildIds,
   getGuild,
   getUserByAccessToken,
   getUserGuildsByAccessToken,
 } from "./discord";
+import { getGuildsFlags } from "./sources";
 import { SessionPayload } from "@/types";
 
 /**
@@ -37,7 +38,7 @@ export const verifySession = cache(async (): Promise<SessionPayload | null> => {
  *
  * @returns DB session object or null
  */
-export async function getSessionData() {
+export const getSessionData = cache(async () => {
   const session = await verifySession();
   if (!session) return null;
   return await prisma.session.findFirst({
@@ -48,7 +49,7 @@ export async function getSessionData() {
       createdAt: "desc",
     },
   });
-}
+});
 
 /**
  * Fetch session by user ID
@@ -113,11 +114,17 @@ export const getUserGuilds = cache(async () => {
 export const getGuilds = cache(async () => {
   const guilds = await getUserGuilds();
   if (!guilds) return null;
-  const botGuilds = await getBotGuilds();
-  const botGuildIds = new Set(botGuilds?.map((g) => g.id) ?? []);
+  const [botGuilds, flags] = await Promise.all([
+    getBotGuildIds(),
+    getGuildsFlags(guilds.map((guild) => guild.id)),
+  ]);
+  const botGuildIds = new Set(botGuilds ?? []);
   await Promise.all(
     guilds.map((guild) => guild.setMutual(botGuildIds.has(guild.id))),
   );
+  guilds.forEach((guild) => {
+    guild.beta = flags.get(guild.id)?.beta ?? false;
+  });
   return guilds;
 });
 
@@ -220,11 +227,17 @@ export async function getGuildsByUserId(userId: string) {
 
     guilds = guilds.filter(canManageGuild);
 
-    const botGuilds = await getBotGuilds();
-    const botGuildIds = new Set(botGuilds?.map((g) => g.id) ?? []);
+    const [botGuilds, flags] = await Promise.all([
+      getBotGuildIds(),
+      getGuildsFlags(guilds.map((guild) => guild.id)),
+    ]);
+    const botGuildIds = new Set(botGuilds ?? []);
     await Promise.all(
       guilds.map((guild) => guild.setMutual(botGuildIds.has(guild.id))),
     );
+    guilds.forEach((guild) => {
+      guild.beta = flags.get(guild.id)?.beta ?? false;
+    });
     return guilds.map((guild) => guild.toObject());
   } catch (error) {
     logDalError("getGuildsByUserId", ErrorCode.EXTERNAL_API_ERROR, error, {
@@ -259,20 +272,6 @@ export async function createDBSession(access_token: string, expires: number) {
     },
   });
 }
-
-/**
- * Check if guild is in premium program
- *
- * @param guildId - Discord guild ID
- * @returns true if premium, false otherwise
- */
-export const isPremiumGuild = cache(async (guildId: string) => {
-  return !!(await prisma.premiumGuild.findUnique({
-    where: {
-      id: guildId,
-    },
-  }));
-});
 
 /**
  * Add guild to premium program

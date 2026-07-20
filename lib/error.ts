@@ -19,6 +19,7 @@
  * }
  */
 
+import * as Sentry from "@sentry/nextjs";
 import "server-only";
 
 export enum ErrorCode {
@@ -199,14 +200,8 @@ export function reportError(
 
   logError(entry);
 
-  // Hook for Sentry integration
-  if (
-    typeof window === "undefined" &&
-    process.env.SENTRY_DSN &&
-    error.statusCode >= 500
-  ) {
-    // TODO: Send to Sentry
-    // Sentry.captureException(error, { tags: { code: error.code } });
+  if (typeof window === "undefined" && error.statusCode >= 500) {
+    Sentry.captureException(error, { tags: { code: error.code } });
   }
 }
 

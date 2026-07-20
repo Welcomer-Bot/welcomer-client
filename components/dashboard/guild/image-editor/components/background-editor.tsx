@@ -1,7 +1,7 @@
-import {Button} from "@heroui/button";
-import {Card, CardBody, CardHeader} from "@heroui/card";
-import {Input} from "@heroui/input";
-import {Tab, Tabs} from "@heroui/tabs";
+import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Input } from "@heroui/input";
+import { Tab, Tabs } from "@heroui/tabs";
 import { BACKGROUND_PRESETS, DEFAULTS } from "../types";
 
 interface BackgroundEditorProps {
@@ -67,7 +67,7 @@ export function BackgroundEditor({
                     style={{backgroundColor: preset.value}}
                     title={preset.name}
                   >
-                    <span className="text-[10px] text-white/70 font-medium">
+                    <span className="text-[10px] text-white font-medium bg-black/40 px-1 rounded">
                       {preset.name}
                     </span>
                   </button>

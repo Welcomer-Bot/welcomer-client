@@ -31,9 +31,9 @@ export default function SendMenu({
   return (
     <Card shadow="sm">
       <CardHeader className="pb-0 flex justify-between items-center">
-        <h3 className="font-semibold text-lg text-foreground">
+        <h2 className="font-semibold text-lg text-foreground">
           Destination Channel
-        </h3>
+        </h2>
         {currentChannel && (
           <Chip
             size="sm"
@@ -148,7 +148,7 @@ export default function SendMenu({
                                   </span>
                                 </Tooltip>
                               ) : (
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-default-500">
                                   {c.type === 5 ? "Thread" : "Channel"}
                                 </span>
                               )
@@ -224,7 +224,7 @@ export default function SendMenu({
                               </span>
                             </Tooltip>
                           ) : (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-default-500">
                               {c.type === 5 ? "Thread" : "Channel"}
                             </span>
                           )

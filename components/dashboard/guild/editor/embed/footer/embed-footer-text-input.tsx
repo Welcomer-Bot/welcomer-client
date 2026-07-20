@@ -1,9 +1,9 @@
 "use client";
 
 import { SourceStoreContext } from "@/features/dashboard/modules/providers";
-import { Input } from "@heroui/input";
 import { useContext } from "react";
 import { useStore } from "zustand";
+import { EmbedTextInput } from "../embed-text-input";
 
 export function EmbedFooterNameInput({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
@@ -12,14 +12,11 @@ export function EmbedFooterNameInput({ embedIndex }: { embedIndex: number }) {
   const editEmbed = useStore(store, (state) => state.editEmbed);
 
   return (
-    <Input
-      type="text"
-      label={`Footer text ( ${embed?.footer?.text?.length ?? 0}/2048 )`}
-      aria-label="Text"
-      validate={(value) => {
-        if (value.length > 2048)
-          return "Footer must not exceed 2048 characters!";
-      }}
+    <EmbedTextInput
+      label="Footer text"
+      ariaLabel="Text"
+      errorSubject="Footer"
+      maxLength={2048}
       value={embed?.footer?.text ?? ""}
       onValueChange={(value) =>
         editEmbed(embedIndex, {

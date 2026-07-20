@@ -2,6 +2,11 @@ import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { COLOR_PRESETS, DEFAULTS } from "../types";
 
+// Discord's own background color for the default/placeholder avatar. Fixed on
+// purpose: this preview mimics Discord's rendering, so it must not follow the
+// app's light/dark theme.
+const DISCORD_AVATAR_PLACEHOLDER_BACKGROUND = "#2c2f33";
+
 interface AvatarEditorProps {
   avatarBorderColor: string | null | undefined;
   onAvatarBorderColorChange: (color: string | null) => void;
@@ -70,10 +75,13 @@ export function AvatarEditor({
         {/* Preview */}
         <div className="flex items-center gap-4 p-4 bg-default-100 rounded-lg">
           <div
+            // text-white is intentional: the background above is a fixed dark
+            // color (not a theme token), so white text stays legible in both
+            // light and dark mode. Do not replace with a semantic token.
             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-sm font-medium"
             style={{
               border: `4px solid ${currentColor}`,
-              backgroundColor: "#2c2f33",
+              backgroundColor: DISCORD_AVATAR_PLACEHOLDER_BACKGROUND,
             }}
           >
             <svg

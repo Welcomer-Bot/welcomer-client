@@ -1,10 +1,12 @@
 import "server-only";
 
-import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
-import { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
+import { cache } from "react";
+
 import { ImageCard, Prisma, Source, SourceType, } from "@/generated/prisma/client";
 import { ErrorCode } from "@/lib/error";
 import prisma from "@/lib/prisma";
+import { defaultLeaverEmbed, defaultWelcomeEmbed } from "@/types/embed";
+import { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import { logDalError } from "./logging";
 
 /**
@@ -14,10 +16,10 @@ import { logDalError } from "./logging";
  * @param source - Source type (e.g., "WELCOMER", "LEAVER")
  * @returns Array of sources with relationships or null on error
  */
-export async function getSources(
+export const getSources = cache(async (
   guildId: string,
   source: SourceType,
-): Promise<Source[] | null> {
+): Promise<Source[] | null> => {
   try {
     return await prisma.source.findMany({
       where: {
@@ -36,7 +38,7 @@ export async function getSources(
     });
     return null;
   }
-}
+});
 
 /**
  * Fetch a single source by ID with relationships
@@ -45,10 +47,10 @@ export async function getSources(
  * @param sourceId - Source record ID
  * @returns Source with activeCard and images or null
  */
-export async function getSource(
+export const getSource = cache(async (
   guildId: string,
   sourceId: number,
-): Promise<Source | null> {
+): Promise<Source | null> => {
   try {
     return await prisma.source.findFirst({
       where: {
@@ -67,7 +69,7 @@ export async function getSource(
     });
     return null;
   }
-}
+});
 
 const defaultWelcomerMessage: RESTPostAPIChannelMessageJSONBody = {
   content: "Welcome {user} to {guild}",
@@ -266,18 +268,6 @@ export async function executeQueries(
 }
 
 /**
- * Check if a guild is in beta program
- *
- * @param guildId - Discord guild ID
- * @returns Beta record or null
- */
-export async function getGuildBeta(guildId: string) {
-  return prisma.betaGuild.findFirst({
-    where: { id: guildId },
-  });
-}
-
-/**
  * Add a guild to beta program
  *
  * @param guildId - Discord guild ID
@@ -343,5 +333,103 @@ export async function getGuildDailyStatsSince(guildId: string, since?: Date) {
       ...(since && { date: { gte: since } }),
     },
   });
+}
+
+/**
+ * Fetch the most recent event timestamp for each of a guild's sources.
+ *
+ * One grouped query for every source rather than one findFirst per module.
+ *
+ * @param guildId - Discord guild ID
+ * @param sourceIds - Sources to look up
+ * @returns Map of source ID to its latest event date; absent when never used
+ */
+export async function getLastEventAtBySource(
+  guildId: string,
+  sourceIds: number[],
+): Promise<Map<number, Date>> {
+  if (sourceIds.length === 0) return new Map();
+
+  try {
+    const rows = await prisma.guildEvent.groupBy({
+      by: ["sourceId"],
+      where: { guildId, sourceId: { in: sourceIds } },
+      _max: { occurredAt: true },
+    });
+
+    return new Map(
+      rows.flatMap((row) =>
+        row.sourceId !== null && row._max.occurredAt
+          ? ([[row.sourceId, row._max.occurredAt]] as [number, Date][])
+          : [],
+      ),
+    );
+  } catch (error) {
+    logDalError("getLastEventAtBySource", ErrorCode.DATABASE_ERROR, error, {
+      guildId,
+    });
+
+    return new Map();
+  }
+}
+
+/**
+ * Fetch a guild's beta/premium flags in a single query.
+ *
+ * @param guildId - Discord guild ID
+ * @returns Flags; both false when the guild is unknown or on error
+ */
+export async function getGuildFlags(
+  guildId: string,
+): Promise<{ beta: boolean; premium: boolean }> {
+  try {
+    const guild = await prisma.guild.findUnique({
+      where: { id: guildId },
+      select: { betaAccess: true, premiumPlan: true },
+    });
+
+    return {
+      beta: Boolean(guild?.betaAccess),
+      premium: Boolean(guild?.premiumPlan),
+    };
+  } catch (error) {
+    logDalError("getGuildFlags", ErrorCode.DATABASE_ERROR, error, { guildId });
+    return { beta: false, premium: false };
+  }
+}
+
+/**
+ * Fetch beta/premium flags for multiple guilds in a single query.
+ *
+ * Batched counterpart to getGuildFlags, for callers rendering a list of
+ * guilds (avoids one findUnique per guild).
+ * 
+ * @param guildIds - Discord guild IDs to look up
+ * @returns Map of guild ID to flags; guilds absent from the map (unknown
+ *   or not in the DB yet) should be treated as { beta: false, premium: false }
+ */
+export async function getGuildsFlags(
+  guildIds: string[],
+): Promise<Map<string, { beta: boolean; premium: boolean }>> {
+  if (guildIds.length === 0) return new Map();
+
+  try {
+    const guilds = await prisma.guild.findMany({
+      where: { id: { in: guildIds } },
+      select: { id: true, betaAccess: true, premiumPlan: true },
+    });
+
+    return new Map(
+      guilds.map((guild) => [
+        guild.id,
+        { beta: Boolean(guild.betaAccess), premium: Boolean(guild.premiumPlan) },
+      ]),
+    );
+  } catch (error) {
+    logDalError("getGuildsFlags", ErrorCode.DATABASE_ERROR, error, {
+      guildCount: guildIds.length,
+    });
+    return new Map();
+  }
 }
 

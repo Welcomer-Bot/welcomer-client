@@ -248,3 +248,22 @@ export const getBotGuilds = cache(async () => {
   }
 });
 
+/**
+ * Fetch only the IDs of the bot's mutual guilds, without constructing
+ * full Guild instances.
+ * 
+ * @returns Array of guild IDs or null
+ */
+export const getBotGuildIds = cache(async () => {
+  try {
+    const data = (await rest.get(
+      `${Routes.userGuilds()}?with_counts=true`,
+    )) as RESTGetAPICurrentUserGuildsResult | RESTError;
+    if (!data || "message" in data) return null;
+    return data.map((guild) => guild.id);
+  } catch (error) {
+    logDalError("getBotGuildIds", ErrorCode.EXTERNAL_API_ERROR, error);
+    return null;
+  }
+});
+

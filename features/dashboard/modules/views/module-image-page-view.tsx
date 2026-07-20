@@ -1,10 +1,16 @@
-import { Card } from "@heroui/card";
-
-import { ImageEditor as Editor } from "@/components/dashboard/guild";
-import { DashboardModuleSlug, getDashboardModuleBySlug } from "@/features/dashboard/modules/config";
 import { redirect } from "next/navigation";
 
-export function ModuleImagePageView({
+import { ImageEditor as Editor } from "@/components/dashboard/guild";
+import {
+  DashboardModuleSlug,
+  getDashboardModuleBySlug,
+} from "@/features/dashboard/modules/config";
+import { getUserGuild } from "@/lib/dal/session";
+import { getSources } from "@/lib/dal/sources";
+
+import { ModuleHeader } from "./module-header";
+
+export async function ModuleImagePageView({
   guildId,
   moduleSlug,
 }: {
@@ -16,13 +22,25 @@ export function ModuleImagePageView({
     redirect(`/dashboard/${guildId}`);
   }
 
+  const [sources, guild] = await Promise.all([
+    getSources(guildId, moduleConfig.sourceType),
+    getUserGuild(guildId),
+  ]);
+  const source = sources?.[0];
+
+  if (!guild) {
+    redirect("/dashboard");
+  }
+
   return (
-    <Card
-      radius="none"
-      className="h-fit md:h-full lg:overflow-y-clip overflow-y-scroll w-full"
-    >
-      <Editor module={moduleConfig.sourceType} guildId={guildId} />
-    </Card>
+    <div className="w-full">
+      <ModuleHeader
+        channelId={source?.channelId}
+        guild={guild}
+        moduleConfig={moduleConfig}
+        sourceId={source?.id}
+      />
+      <Editor guildId={guildId} />
+    </div>
   );
 }
-

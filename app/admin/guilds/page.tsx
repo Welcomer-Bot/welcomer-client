@@ -12,7 +12,7 @@ import { CompleteGuildCard } from "@/components/admin";
 import { SourceType } from "@/generated/prisma/enums";
 import { getBotGuilds } from "@/lib/dal/discord";
 import { getBetaTester } from "@/lib/dal/session";
-import { getSources } from "@/lib/dal/sources";
+import { getGuildsFlags, getSources } from "@/lib/dal/sources";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 
 export default async function Page() {
@@ -20,6 +20,15 @@ export default async function Page() {
   if (!guilds) {
     return <p>No guilds found</p>;
   }
+
+  // Batch-fetch beta flags for every guild in one query and stamp them onto
+  // the Guild instances before toObject() serializes them for the client
+  // component (same pattern as lib/dal/session.ts#getGuilds()).
+  const flags = await getGuildsFlags(guilds.map((guild) => guild.id));
+  guilds.forEach((guild) => {
+    guild.beta = flags.get(guild.id)?.beta ?? false;
+  });
+
   return (
     <div>
       <Card>

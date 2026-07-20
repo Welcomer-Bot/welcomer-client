@@ -26,8 +26,7 @@ import {
   AppError,
   ErrorCode,
   assertSnowflake,
-  handleServerError,
-  reportError,
+  reportServerError,
 } from "../error";
 
 export async function getUserGuildsForAdmin(userId: string): Promise<GuildObject[]> {
@@ -37,12 +36,10 @@ export async function getUserGuildsForAdmin(userId: string): Promise<GuildObject
   try {
     return (await getGuildsByUserId(userId)) ?? [];
   } catch (error) {
-    const appError = handleServerError(error, {
+    throw reportServerError(error, {
       action: "getUserGuildsForAdmin",
       userId,
     });
-    reportError(appError);
-    throw appError;
   }
 }
 
@@ -55,12 +52,10 @@ export async function removeGuildFromBetaProgram(guildId: string) {
     revalidatePath("/admin");
     return res;
   } catch (error) {
-    const appError = handleServerError(error, {
+    throw reportServerError(error, {
       action: "removeGuildFromBetaProgram",
       guildId,
     });
-    reportError(appError);
-    throw appError;
   }
 }
 
@@ -76,13 +71,11 @@ export async function enrollGuildToBetaProgram(guildId: string, userId?: string)
     revalidatePath("/admin");
     return res;
   } catch (error) {
-    const appError = handleServerError(error, {
+    throw reportServerError(error, {
       action: "enrollGuildToBetaProgram",
       guildId,
       userId,
     });
-    reportError(appError);
-    throw appError;
   }
 }
 
@@ -110,11 +103,9 @@ export async function leaveGuild(guildId: string) {
     }
     return guild.toObject();
   } catch (error) {
-    const appError = handleServerError(error, {
+    throw reportServerError(error, {
       action: "leaveGuild",
       guildId,
     });
-    reportError(appError);
-    throw appError;
   }
 }

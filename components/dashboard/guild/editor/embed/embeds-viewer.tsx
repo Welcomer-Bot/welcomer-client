@@ -31,6 +31,7 @@ export default function EmbedsViewer() {
             <div className="flex flex-row-reverse space-x-reverse space-x-2 mb-2">
               <Button
                 isIconOnly
+                aria-label={`Delete embed ${index + 1}`}
                 color="danger"
                 variant="ghost"
                 size="sm"
@@ -40,6 +41,7 @@ export default function EmbedsViewer() {
               </Button>
               <Button
                 isIconOnly
+                aria-label={`Move embed ${index + 1} down`}
                 color="default"
                 size="sm"
                 isDisabled={index === embeds.length - 1}
@@ -49,6 +51,7 @@ export default function EmbedsViewer() {
               </Button>
               <Button
                 isIconOnly
+                aria-label={`Move embed ${index + 1} up`}
                 color="default"
                 size="sm"
                 isDisabled={index === 0}

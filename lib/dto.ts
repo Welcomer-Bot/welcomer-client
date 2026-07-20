@@ -1,24 +1,14 @@
 "use server";
 
-import { getFonts } from "font-list";
-import { getGuildDailyStatsSince } from "@/lib/dal/sources";
 import { requireGuild } from "@/lib/dal/session";
-
-export type StatsRange = "7d" | "30d" | "all";
-
-export type GuildStatsSummary = {
-  joins: number;
-  leaves: number;
-  messages: number;
-  embeds: number;
-  images: number;
-};
-
-const RANGE_DAYS: Record<StatsRange, number | null> = {
-  "7d": 7,
-  "30d": 30,
-  all: null,
-};
+import { getGuildDailyStatsSince } from "@/lib/dal/sources";
+import {
+  GuildStats,
+  GuildStatsSummary,
+  MemberPoint,
+  RANGE_DAYS,
+  StatsRange,
+} from "./utils";
 
 /**
  * Aggregate a guild's daily stat rollups over a time range.
@@ -28,13 +18,14 @@ const RANGE_DAYS: Record<StatsRange, number | null> = {
  *
  * @param guildId - Discord guild ID
  * @param range - Time window (7d, 30d, or all-time)
- * @returns Summed counts across the range (zeroes when no data)
+ * @returns Summed counts across the range (zeroes when no data), plus the
+ *          member-count series for the same window
  * @throws AppError if guild access is denied
  */
 export async function fetchGuildStats(
   guildId: string,
   range: StatsRange
-): Promise<GuildStatsSummary> {
+): Promise<GuildStats> {
   await requireGuild(guildId);
 
   const days = RANGE_DAYS[range];
@@ -46,7 +37,7 @@ export async function fetchGuildStats(
 
   const rows = await getGuildDailyStatsSince(guildId, since);
 
-  return rows.reduce<GuildStatsSummary>(
+  const summary = rows.reduce<GuildStatsSummary>(
     (acc, r) => ({
       joins: acc.joins + r.joinsCount,
       leaves: acc.leaves + r.leavesCount,
@@ -56,14 +47,35 @@ export async function fetchGuildStats(
     }),
     { joins: 0, leaves: 0, messages: 0, embeds: 0, images: 0 }
   );
-}
 
-/**
- * Fetch all available fonts for server
- *
- * @returns Array of font names
- */
-export async function fetchFontList() {
-  return await getFonts({ disableQuoting: true });
+  const byDate = new Map(
+    rows
+      .filter((r) => r.memberCount !== null)
+      .map((r) => [r.date.toISOString().slice(0, 10), r.memberCount as number]),
+  );
+
+  // Emit one point per day of the window, so the axis shows the whole selected
+  // period rather than only the days that happen to have a snapshot. Days
+  // without one carry null — a gap, never a zero. Building it here (not in the
+  // chart) keeps labels and values aligned by construction: pairing a full list
+  // of dates with a shorter list of values would slide each value onto the
+  // wrong day.
+  const series: MemberPoint[] =
+    days !== null
+      ? Array.from({ length: days }, (_, i) => {
+          const day = new Date();
+
+          day.setUTCHours(0, 0, 0, 0);
+          day.setUTCDate(day.getUTCDate() - (days - 1 - i));
+
+          const date = day.toISOString().slice(0, 10);
+
+          return { date, memberCount: byDate.get(date) ?? null };
+        })
+      : [...byDate.entries()]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([date, memberCount]) => ({ date, memberCount }));
+
+  return { ...summary, series };
 }
 

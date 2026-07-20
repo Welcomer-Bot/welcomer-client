@@ -41,7 +41,7 @@ export const GuildInput = ({
             </div>
             {shardId !== undefined && (
                 <div className="mt-2">
-                    <p className="text-sm text-gray-500">Selected Shard ID: {shardId}</p>
+                    <p className="text-sm text-default-500">Selected Shard ID: {shardId}</p>
                 </div>
             )}
         </div>

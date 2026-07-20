@@ -6,7 +6,7 @@ import { useContext } from "react";
 export function SidebarWrapper({ children }: { children: React.ReactNode }) {
   return (
     <aside
-      className={`sm:h-screen h-fit z-30 sm:sticky sm:w-auto w-full bottom-0`}
+      className={`sm:h-screen h-fit z-30 sm:sticky sm:top-0 sm:w-auto w-full`}
     >
       <nav className="sm:h-full flex flex-row sm:flex-col bg-content1 border-r border-divider shadow-sm sm:py-0 py-2 rounded-t-md sm:rounded-t-none">
         {children}

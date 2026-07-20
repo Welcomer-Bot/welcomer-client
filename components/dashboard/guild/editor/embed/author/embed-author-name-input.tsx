@@ -1,9 +1,9 @@
 "use client";
 
 import { SourceStoreContext } from "@/features/dashboard/modules/providers";
-import { Input } from "@heroui/input";
 import { useContext } from "react";
 import { useStore } from "zustand";
+import { EmbedTextInput } from "../embed-text-input";
 
 export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
@@ -14,13 +14,11 @@ export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
   const editEmbed = useStore(store, (state) => state.editEmbed);
 
   return (
-    <Input
-      type="text"
-      label={`Name ( ${author?.length ?? 0}/256 )`}
-      aria-label="Author"
-      validate={(value) => {
-        if (value.length > 256) return "Author must not exceed 256 characters!";
-      }}
+    <EmbedTextInput
+      label="Name"
+      ariaLabel="Author"
+      errorSubject="Author"
+      maxLength={256}
       value={author ?? ""}
       onValueChange={(value) =>
         editEmbed(embedIndex, {

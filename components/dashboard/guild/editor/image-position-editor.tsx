@@ -36,7 +36,7 @@ export default function ImagePositionEditor() {
   return (
     <Card shadow="sm">
       <CardHeader className="pb-0 flex justify-between items-center">
-        <h3 className="font-semibold text-lg text-foreground">Image Card</h3>
+        <h2 className="font-semibold text-lg text-foreground">Image Card</h2>
         <Chip
           size="sm"
           variant="flat"

@@ -5,12 +5,12 @@ import { LogoutIcon } from "@/components/dashboard/guild/logout-icon";
 import { Divider } from "@heroui/divider";
 import { User as UIUser } from "@heroui/user";
 import Link from "next/link";
-import { FaDoorOpen, FaHome } from "react-icons/fa";
-import { ImEnter } from "react-icons/im";
+import { FaHome } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 
 import { SidebarContext } from "@/app/providers";
 import { Logo } from "@/components/ui";
+import { MODULES } from "@/features/dashboard/modules/config";
 import { GuildObject } from "@/lib/discord/guild-types";
 import { UserObject } from "@/lib/discord/user";
 import { useSelectedLayoutSegment } from "next/navigation";
@@ -52,7 +52,10 @@ export function Sidebar({
           <SidebarContent>
             <Link href="/dashboard">
               <div className="flex flex-col leading-3 text-center">
-                <h1>Welcomer</h1>
+                {/* This is the sidebar logo, not the page title: the page's real
+                    <h1> lives in the module/guild header. Same visual rendering
+                    (no classes existed here to preserve), tag only. */}
+                <p>Welcomer</p>
                 <span className="text-small text-default-500">Dashboard</span>
               </div>
             </Link>
@@ -68,7 +71,7 @@ export function Sidebar({
       />
       <Divider className="mb-2 sm:block hidden" />
 
-      <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3">
+      <ul className="sm:flex-1 sm:block flex flex-row justify-evenly w-full px-3 overflow-x-auto">
         <SidebarItem
           active={active === "home"}
           icon={<FaHome />}
@@ -81,18 +84,15 @@ export function Sidebar({
           link={`/dashboard/${currentGuild.id}`}
           text="Dashboard"
         />
-        <SidebarItem
-          active={active === "welcome"}
-          icon={<ImEnter />}
-          link={`/dashboard/${currentGuild.id}/welcome`}
-          text="Welcomer"
-        />
-        <SidebarItem
-          active={active === "leave"}
-          icon={<FaDoorOpen />}
-          link={`/dashboard/${currentGuild.id}/leave`}
-          text="Leaver"
-        />
+        {MODULES.map(({ slug, label, icon: Icon }) => (
+          <SidebarItem
+            key={slug}
+            active={active === slug}
+            icon={<Icon />}
+            link={`/dashboard/${currentGuild.id}/${slug}`}
+            text={label}
+          />
+        ))}
       </ul>
 
       <Divider className="sm:block hidden" />
