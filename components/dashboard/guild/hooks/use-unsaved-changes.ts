@@ -19,8 +19,7 @@ export function useUnsavedChanges(
   currentSnapshot: string,
   baselineSnapshot: string,
 ) {
-  const lastSavedSnapshotRef = useRef<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [lastSaved, setLastSaved] = useState(baselineSnapshot);
 
   // Resync the baseline whenever the caller recomputes it. This happens when
   // the store instance is recreated — e.g. a server action revalidates this
@@ -30,23 +29,17 @@ export function useUnsavedChanges(
   // submitted (or any store recreation unrelated to this button's own save)
   // could make `hasChanges` re-trigger against a stale baseline.
   useEffect(() => {
-    lastSavedSnapshotRef.current = baselineSnapshot;
+    setLastSaved(baselineSnapshot);
   }, [baselineSnapshot]);
 
-  useEffect(() => {
-    if (lastSavedSnapshotRef.current !== null) {
-      setHasChanges(currentSnapshot !== lastSavedSnapshotRef.current);
-    }
-  }, [currentSnapshot]);
+  const hasChanges = currentSnapshot !== lastSaved;
 
   const markSaved = useCallback(() => {
-    lastSavedSnapshotRef.current = currentSnapshot;
-    setHasChanges(false);
+    setLastSaved(currentSnapshot);
   }, [currentSnapshot]);
 
   const markReset = useCallback(() => {
-    lastSavedSnapshotRef.current = baselineSnapshot;
-    setHasChanges(false);
+    setLastSaved(baselineSnapshot);
   }, [baselineSnapshot]);
 
   return { hasChanges, markSaved, markReset };
