@@ -1,7 +1,7 @@
-import { Suspense } from "react";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Image as UIImage } from "@heroui/image";
 import NextImage from "next/image";
+import { Suspense } from "react";
 
 import {
   InviteBotButton,

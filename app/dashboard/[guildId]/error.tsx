@@ -5,6 +5,7 @@ import { Card, CardBody } from "@heroui/card";
 import Link from "next/link";
 import { useEffect } from "react";
 import { FiAlertTriangle } from "react-icons/fi";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Catches errors thrown by this segment's page (and the `[module]` routes
@@ -25,7 +26,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
+    Sentry.captureException(error, { tags: { segment: "dashboard/[guildId]" } });
     console.error(error);
   }, [error]);
 

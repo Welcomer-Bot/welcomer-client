@@ -5,6 +5,7 @@ import { Card, CardBody } from "@heroui/card";
 import Link from "next/link";
 import { useEffect } from "react";
 import { FiAlertTriangle } from "react-icons/fi";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Backstop for errors thrown by `[guildId]/layout.tsx` itself — e.g.
@@ -24,7 +25,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
+    Sentry.captureException(error, { tags: { segment: "dashboard/[guildId]" } });
     console.error(error);
   }, [error]);
 
