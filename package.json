@@ -55,7 +55,7 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.38.0",
-    "@typescript-eslint/parser": "8.38.0",
+    "@typescript-eslint/parser": "8.67.0",
     "autoprefixer": "^10.4.21",
     "discord.js": "^14.26.4",
     "eslint": "^9.39.1",
