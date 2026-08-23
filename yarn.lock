@@ -10832,7 +10832,7 @@ __metadata:
     react-string-replace: "npm:^1.1.1"
     react-toastify: "npm:^11.0.5"
     tailwind-variants: "npm:3.1.1"
-    tailwindcss: "npm:4.1.14"
+    tailwindcss: "npm:4.3.3"
     typescript: "npm:^5.8.3"
     typescript-eslint: "npm:^8.38.0"
     zod: "npm:^4.0.10"
@@ -12667,13 +12667,6 @@ __metadata:
     tailwind-merge:
       optional: true
   checksum: 10c0/715a35b66c374f3bb234cd1e6737588cb7c0213c80a69bd62239d752d20c44377bec1d028c3ea7c28882d81384507fbae407813d348c142cb991c5a0ad063d48
-  languageName: node
-  linkType: hard
-
-"tailwindcss@npm:4.1.14":
-  version: 4.1.14
-  resolution: "tailwindcss@npm:4.1.14"
-  checksum: 10c0/c7e9ebfb241707b2a3eb7d465fd326cc8fcfa22e7215e01f67cccec32db8a49a19e17d1f694fc5d0435d55350ea3f863521c52c9bbe6bd790c2009dc8ff516a1
   languageName: node
   linkType: hard
 
