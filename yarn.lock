@@ -9786,10 +9786,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:^10.1.1":
-  version: 10.2.0
-  resolution: "immer@npm:10.2.0"
-  checksum: 10c0/35e66b0585b2aec4e85ae7a993f049405f170799ba89d79205bc3fdae2c5bdaa2b1d35f62803d8beee42b7e85c7f7315a6e93b6a5a510c5a46f03dbe63619e87
+"immer@npm:^11.1.18":
+  version: 11.1.18
+  resolution: "immer@npm:11.1.18"
+  checksum: 10c0/afe02fcd154134eb2b3bea5a06051ef2e220677dbbc9c0b17ea2ce1c22bfc3690ac16f916922c12ad9c074617a02148ac5d94cbf0886d76e7ebac726806679d0
   languageName: node
   linkType: hard
 
@@ -10799,7 +10799,7 @@ __metadata:
     framer-motion: "npm:^12.23.26"
     globals: "npm:^16.3.0"
     husky: "npm:^9.1.7"
-    immer: "npm:^10.1.1"
+    immer: "npm:^11.1.18"
     jose: "npm:^6.0.12"
     next: "npm:^16.2.10"
     next-plausible: "npm:^3.12.5"
