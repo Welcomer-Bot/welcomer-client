@@ -2,7 +2,10 @@
 
 import { updateImageCard } from "@/features/dashboard/modules/actions";
 import { ImageCardStoreContext } from "@/features/dashboard/modules/providers";
-import { selectImageCardHasChanges } from "@/features/dashboard/modules/stores";
+import {
+  selectImageCardError,
+  selectImageCardHasChanges,
+} from "@/features/dashboard/modules/stores";
 import { UnsavedChangesBar } from "@/components/dashboard/guild/unsaved-changes-bar";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
@@ -21,11 +24,13 @@ export function SaveButton({ guildId }: SaveButtonProps) {
   // flips or the card changes, not on every config tweak.
   const hasChanges = useStore(store, selectImageCardHasChanges);
   const cardId = useStore(store, (state) => state.id);
+  const error = useStore(store, selectImageCardError);
 
   if (!hasChanges || !cardId) return null;
 
   return (
     <UnsavedChangesBar
+      error={error}
       isLoading={isLoading}
       onReset={() => store.getState().reset()}
       onSave={async () => {

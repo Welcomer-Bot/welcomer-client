@@ -3,8 +3,10 @@ import {
   DEFAULT_CONFIG,
   TextCard,
 } from "@/components/dashboard/guild/image-editor/types";
+import { imageCardConfigSchema } from "@/features/dashboard/modules/types";
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import z from "zod";
 
 export type ImageCardState = {
   id?: number;
@@ -26,6 +28,16 @@ const imageCardSnapshot = (state: Pick<ImageCardState, "data">) =>
 
 export const selectImageCardHasChanges = (state: ImageCardStore) =>
   imageCardSnapshot(state) !== state.savedSnapshot;
+
+/**
+ * The same schema `updateImageCard` parses, run locally so the bar can refuse
+ * the save instead of spending a round-trip on it. Returns a string or `null`,
+ * both compared by value, so subscribing to it is stable.
+ */
+export const selectImageCardError = (state: ImageCardStore) => {
+  const result = imageCardConfigSchema.safeParse(state.data);
+  return result.success ? null : z.prettifyError(result.error);
+};
 
 export type ImageCardActions = {
   setMainText: (text: TextCard) => void;
