@@ -4,6 +4,7 @@ import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { Textarea } from "@heroui/input";
 import { useContext } from "react";
 import { useStore } from "zustand";
+import { EMBED_LIMITS } from "@/lib/discord/limits";
 
 export function EmbedBodyDescriptionInput({
   embedIndex,
@@ -30,7 +31,7 @@ export function EmbedBodyDescriptionInput({
           return "Description must not exceed 4096 characters!";
       }}
       aria-label="Description"
-      maxLength={4096}
+      maxLength={EMBED_LIMITS.description}
       minRows={3}
       maxRows={10}
       placeholder="Description"

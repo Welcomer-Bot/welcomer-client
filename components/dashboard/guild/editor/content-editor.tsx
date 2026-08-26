@@ -7,6 +7,7 @@ import { variableHints } from "@welcomer-bot/utils";
 import { useContext } from "react";
 import { useStore } from "zustand";
 import { VariableHintsRow } from "@/components/dashboard/guild/variable-hints-row";
+import { MESSAGE_LIMITS } from "@/lib/discord/limits";
 
 export default function ContentEditor() {
   const store = useContext(SourceStoreContext);
@@ -15,8 +16,9 @@ export default function ContentEditor() {
   const setValue = useStore(store, (state) => state.setContent);
 
   const charCount = value?.length ?? 0;
-  const isNearLimit = charCount > 1800;
-  const isOverLimit = charCount > 2000;
+  // 90 % of the limit: the counter turns amber before it turns red.
+  const isNearLimit = charCount > MESSAGE_LIMITS.content * 0.9;
+  const isOverLimit = charCount > MESSAGE_LIMITS.content;
 
   return (
     <Card shadow="sm">
@@ -33,7 +35,7 @@ export default function ContentEditor() {
                 : "text-default-400"
           }`}
         >
-          {charCount}/2000
+          {charCount}/{MESSAGE_LIMITS.content}
         </span>
       </CardHeader>
       <CardBody className="space-y-3 pt-4">
@@ -41,8 +43,8 @@ export default function ContentEditor() {
           placeholder="Welcome {user} to {guild}!"
           variant="bordered"
           validate={(value) => {
-            if (value.length > 2000)
-              return "Content must not exceed 2000 characters!";
+            if (value.length > MESSAGE_LIMITS.content)
+              return `Content must not exceed ${MESSAGE_LIMITS.content} characters!`;
           }}
           value={value ?? ""}
           onChange={(e) => setValue(e.target.value)}

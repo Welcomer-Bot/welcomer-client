@@ -4,6 +4,7 @@ import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { useContext } from "react";
 import { useStore } from "zustand";
 import { EmbedTextInput } from "../embed-text-input";
+import { EMBED_LIMITS } from "@/lib/discord/limits";
 
 export function EmbedFooterNameInput({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
@@ -16,7 +17,7 @@ export function EmbedFooterNameInput({ embedIndex }: { embedIndex: number }) {
       label="Footer text"
       ariaLabel="Text"
       errorSubject="Footer"
-      maxLength={2048}
+      maxLength={EMBED_LIMITS.footerText}
       value={embed?.footer?.text ?? ""}
       onValueChange={(value) =>
         editEmbed(embedIndex, {
