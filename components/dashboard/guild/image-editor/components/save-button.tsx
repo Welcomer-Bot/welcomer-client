@@ -1,13 +1,10 @@
 "use client";
 
 import { updateImageCard } from "@/features/dashboard/modules/actions";
-import {
-  ImageCardStoreContext,
-  useImageCardStore,
-} from "@/features/dashboard/modules/providers";
+import { ImageCardStoreContext } from "@/features/dashboard/modules/providers";
+import { selectImageCardHasChanges } from "@/features/dashboard/modules/stores";
 import { UnsavedChangesBar } from "@/components/dashboard/guild/unsaved-changes-bar";
-import { useUnsavedChanges } from "@/components/dashboard/guild/hooks/use-unsaved-changes";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore } from "zustand";
 
@@ -20,35 +17,19 @@ export function SaveButton({ guildId }: SaveButtonProps) {
   const store = useContext(ImageCardStoreContext);
   if (!store) throw new Error("Missing ImageCardStoreProvider in the tree");
 
-  const state = useStore(store, (state) => state);
-  const reset = useImageCardStore((state) => state.reset);
+  // Scalar subscriptions only: this button re-renders when the dirty flag
+  // flips or the card changes, not on every config tweak.
+  const hasChanges = useStore(store, selectImageCardHasChanges);
+  const cardId = useStore(store, (state) => state.id);
 
-  // Baseline recomputed whenever the store instance changes (see
-  // use-unsaved-changes.ts for why that resync matters).
-  const baselineSnapshot = useMemo(
-    () => JSON.stringify(store.getInitialState().data),
-    [store],
-  );
-  const currentSnapshot = useMemo(
-    () => JSON.stringify(state.data),
-    [state.data],
-  );
-
-  const { hasChanges, markSaved, markReset } = useUnsavedChanges(
-    currentSnapshot,
-    baselineSnapshot,
-  );
-
-  if (!hasChanges || !state.id) return null;
+  if (!hasChanges || !cardId) return null;
 
   return (
     <UnsavedChangesBar
       isLoading={isLoading}
-      onReset={() => {
-        reset();
-        markReset();
-      }}
+      onReset={() => store.getState().reset()}
       onSave={async () => {
+        const state = store.getState();
         if (!state.id || !state.sourceId) return;
 
         setIsLoading(true);
@@ -70,7 +51,7 @@ export function SaveButton({ guildId }: SaveButtonProps) {
             toast.error(error);
           } else if (done && updatedData) {
             toast.success("Settings updated successfully!");
-            markSaved();
+            state.markSaved();
           }
         } catch (err) {
           toast.error(

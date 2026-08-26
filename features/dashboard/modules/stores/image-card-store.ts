@@ -12,7 +12,20 @@ export type ImageCardState = {
   data: BaseCardConfig;
   createdAt?: Date;
   updatedAt?: Date | null;
+  /**
+   * Snapshot of the persisted config as of the last save — or of store
+   * creation, which is the last save from the server's point of view.
+   * `markSaved` re-adopts it after a successful write; nothing else moves it.
+   */
+  savedSnapshot: string;
 };
+
+/** Only `data` is persisted by `updateImageCard`. */
+const imageCardSnapshot = (state: Pick<ImageCardState, "data">) =>
+  JSON.stringify(state.data);
+
+export const selectImageCardHasChanges = (state: ImageCardStore) =>
+  imageCardSnapshot(state) !== state.savedSnapshot;
 
 export type ImageCardActions = {
   setMainText: (text: TextCard) => void;
@@ -43,6 +56,8 @@ export type ImageCardActions = {
 
   updateConfig: (config: Partial<BaseCardConfig>) => void;
 
+  /** Adopt the current state as the new baseline for `selectImageCardHasChanges`. */
+  markSaved: () => void;
   reset: () => void;
 };
 
@@ -50,7 +65,7 @@ export type ImageCardStore = ImageCardState & ImageCardActions;
 
 type TextField = "mainText" | "nicknameText" | "secondText";
 
-const defaultState: ImageCardState = {
+const defaultState: Omit<ImageCardState, "savedSnapshot"> = {
   sourceId: 0,
   data: DEFAULT_CONFIG,
 };
@@ -77,9 +92,11 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
           state.data[field] = text;
         });
 
+      const initial = { ...defaultState, ...initState };
+
       return {
-        ...defaultState,
-        ...initState,
+        ...initial,
+        savedSnapshot: imageCardSnapshot(initial),
 
         setMainText: (text) => replaceTextField("mainText", text),
         setMainTextContent: (content) =>
@@ -133,6 +150,10 @@ export const createImageCardStore = (initState?: Partial<ImageCardState>) => {
             };
           }),
 
+        markSaved: () =>
+          set({ savedSnapshot: imageCardSnapshot(get()) }),
+        // `getInitialState()` carries `savedSnapshot` too, so a reset restores
+        // the baseline along with the config — no separate bookkeeping.
         reset: () => {
           set(store.getInitialState());
         },
