@@ -4,39 +4,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createDBSession } from "@/lib/dal/session";
-import { AppError, ErrorCode } from "@/lib/error";
+import { requireEnv } from "@/lib/env";
 import { createSession } from "@/lib/session";
-
-function requireOAuthEnv(
-  name:
-    | "NEXT_PUBLIC_DISCORD_CLIENT_ID"
-    | "DISCORD_CLIENT_SECRET"
-    | "REDIRECT_URI",
-) {
-  const value = process.env[name];
-  if (!value) {
-    throw new AppError(
-      `Missing required environment variable: ${name}`,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-      500,
-      { env: name },
-    );
-  }
-  return value;
-}
+import { timingSafeEqualString } from "@/lib/security";
 
 function sanitizeRedirectPath(path: string | undefined) {
   if (!path) return null;
   if (!path.startsWith("/") || path.startsWith("//")) return null;
   return path;
-}
-
-function errorRedirect(error: string, errorDescription: string): never {
-  const params = new URLSearchParams({
-    error,
-    error_description: errorDescription,
-  });
-  redirect(`/auth/error?${params.toString()}`);
 }
 
 export async function handleOAuthCallback(input: {
@@ -47,8 +22,22 @@ export async function handleOAuthCallback(input: {
 }) {
   const cookieStore = await cookies();
 
+  // Every exit path below either fails or completes the OAuth attempt tied to
+  // this `oauthState` cookie, so it's always safe (and always correct) to
+  // drop it here rather than repeating `cookieStore.delete(...)` at each call
+  // site.
+  function errorRedirect(error: string, errorDescription: string): never {
+    cookieStore.delete("oauthState");
+    const params = new URLSearchParams({
+      error,
+      error_description: errorDescription,
+    });
+    redirect(`/auth/error?${params.toString()}`);
+  }
+
   if (input.error) {
     if (input.error === "access_denied") {
+      cookieStore.delete("oauthState");
       redirect("/");
     }
     errorRedirect(
@@ -66,8 +55,7 @@ export async function handleOAuthCallback(input: {
   }
 
   const expectedState = cookieStore.get("oauthState")?.value;
-  if (!expectedState || input.state !== expectedState) {
-    cookieStore.delete("oauthState");
+  if (!expectedState || !timingSafeEqualString(input.state, expectedState)) {
     errorRedirect("invalidState", "Invalid authentication state");
   }
 
@@ -78,13 +66,13 @@ export async function handleOAuthCallback(input: {
   const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
     body: new URLSearchParams({
-      client_id: requireOAuthEnv("NEXT_PUBLIC_DISCORD_CLIENT_ID"),
-      client_secret: requireOAuthEnv("DISCORD_CLIENT_SECRET"),
+      client_id: requireEnv("NEXT_PUBLIC_DISCORD_CLIENT_ID"),
+      client_secret: requireEnv("DISCORD_CLIENT_SECRET"),
       grant_type: "authorization_code",
       code: input.code,
-      redirect_uri: requireOAuthEnv("REDIRECT_URI"),
+      redirect_uri: requireEnv("REDIRECT_URI"),
     }),
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
     cache: "no-store",
   });
 
@@ -98,11 +86,13 @@ export async function handleOAuthCallback(input: {
   const tokenData = (await tokenResponse.json()) as {
     access_token?: string;
     expires_in?: number;
+    refresh_token?: string;
   };
 
   if (
     typeof tokenData.access_token !== "string" ||
-    typeof tokenData.expires_in !== "number"
+    typeof tokenData.expires_in !== "number" ||
+    typeof tokenData.refresh_token !== "string"
   ) {
     errorRedirect(
       "invalid_token_response",
@@ -110,10 +100,11 @@ export async function handleOAuthCallback(input: {
     );
   }
 
-  const dbSession = await createDBSession(
-    tokenData.access_token,
-    tokenData.expires_in,
-  );
+  const dbSession = await createDBSession({
+    accessToken: tokenData.access_token,
+    refreshToken: tokenData.refresh_token,
+    expiresIn: tokenData.expires_in,
+  });
 
   if (!dbSession) {
     errorRedirect("internalServerError", "Unable to create session");
