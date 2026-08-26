@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 
 import { statusManager } from "@/lib/discord/status";
 import { ErrorCode, handleServerError, logError, reportError } from "@/lib/error";
+import { timingSafeEqualString } from "@/lib/security";
 
 function jsonResponse(payload: Record<string, unknown>, status: number): Response {
   return new Response(JSON.stringify(payload), {
@@ -27,7 +28,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (headers.get("authorization") !== process.env.SERVER_TOKEN) {
+    const serverToken = process.env.SERVER_TOKEN;
+    if (
+      !serverToken ||
+      !timingSafeEqualString(headers.get("authorization"), serverToken)
+    ) {
       return jsonResponse(
         {
           success: false,
