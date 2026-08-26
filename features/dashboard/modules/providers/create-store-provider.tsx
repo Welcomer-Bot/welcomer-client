@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { useStore, type StoreApi } from "zustand";
 
 export function createStoreProvider<TState, TStore>(
@@ -16,10 +16,12 @@ export function createStoreProvider<TState, TStore>(
     children: ReactNode;
     initialState?: Partial<TState>;
   }) => {
-    const store = useMemo(
-      () => createStoreFn(initialState),
-      [initialState],
-    );
+    // Zustand docs, "Initialize state with props" → wrapping the context
+    // provider: the store is created exactly once per mount. `initialState` is
+    // deliberately not a dependency — a fresh server payload must not discard
+    // the user's unsaved edits. To rebind the provider to a different entity,
+    // pass a `key` at the call site so React remounts it on purpose.
+    const [store] = useState(() => createStoreFn(initialState));
     return <Context.Provider value={store}>{children}</Context.Provider>;
   };
 

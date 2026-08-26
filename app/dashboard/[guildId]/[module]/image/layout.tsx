@@ -45,6 +45,9 @@ export default async function Layout({
 
   return (
     <ImageCardStoreProvider
+      // Remount on purpose when the card identity changes (created, deleted,
+      // or a different source). A save only revalidates, so the key holds.
+      key={imageCard ? `card-${imageCard.id}` : `source-${source.id}`}
       initialState={
         imageCard
           ? {
