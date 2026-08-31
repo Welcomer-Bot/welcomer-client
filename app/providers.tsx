@@ -27,12 +27,7 @@ export function Providers({
   return (
     <HeroUIProvider>
       <PlausibleProvider
-        domain="beta.welcomer.app"
-        customDomain="https://plausible.welcomer.app"
-        selfHosted
-        trackOutboundLinks
-        taggedEvents
-        trackLocalhost
+        src="https://plausible.welcomer.app"
       >
         <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
           <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>

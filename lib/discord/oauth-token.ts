@@ -86,6 +86,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<{
     }),
     headers: {"Content-Type": "application/x-www-form-urlencoded"},
     cache: "no-store",
+    signal: AbortSignal.timeout(3000),
   });
 
   if (!res.ok) {
