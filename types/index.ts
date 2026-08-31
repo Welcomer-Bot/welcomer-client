@@ -6,6 +6,6 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export interface SessionPayload extends JWTPayload {
-  id: string;
+  sessionId: string;
   expiresAt: Date;
 }

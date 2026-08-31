@@ -10,7 +10,7 @@ export default async function proxy(req: NextRequest) {
 
   const session = await getSession();
   const sessionData = await decrypt(session);
-  if (isProtectedRoute && !sessionData?.id) {
+  if (isProtectedRoute && !sessionData?.sessionId) {
     const response = NextResponse.redirect(new URL(`/api/auth/login`, req.nextUrl));
     response.cookies.set("redirectAfterLogin", path + req.nextUrl.search, {
       httpOnly: true,

@@ -29,7 +29,7 @@ export {
 export {
   verifySession,
   getSessionData,
-  getSessionDataById,
+  getAccessToken,
   getUser,
   fetchUserFromSession,
   getUserGuilds,
