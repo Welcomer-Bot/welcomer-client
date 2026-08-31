@@ -13,7 +13,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@discordjs/builders": "2.0.0-dev.1755864085-55ab46dbc",
+    "@discordjs/builders": "2.0.0-pr-11006.1765452229-e636950b2",
     "@discordjs/rest": "^2.6.3",
     "@heroui/react": "^2.8.10",
     "@heroui/system": "^2.4.28",
