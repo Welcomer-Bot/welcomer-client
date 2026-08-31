@@ -40,7 +40,7 @@ const toMember = (user: UserObject): Member => ({
 const toGuild = (guild: GuildObject): Guild => ({
   id: guild.id,
   name: guild.name,
-  approximate_member_count: guild.memberCount,
+  member_count: guild.memberCount,
 });
 
 export function parseText(
