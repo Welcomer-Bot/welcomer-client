@@ -1,19 +1,16 @@
 import { redirect } from "next/navigation";
 
 import { ImageEditor as Editor } from "@/components/dashboard/guild";
-import {
-  DashboardModuleSlug,
-  getDashboardModuleBySlug,
-} from "@/features/dashboard/modules/config";
+import { DashboardModuleSlug, getDashboardModuleBySlug, } from "@/features/dashboard/modules/config";
 import { getUserGuild } from "@/lib/dal/session";
 import { getSources } from "@/lib/dal/sources";
 
 import { ModuleHeader } from "./module-header";
 
 export async function ModuleImagePageView({
-  guildId,
-  moduleSlug,
-}: {
+                                            guildId,
+                                            moduleSlug,
+                                          }: {
   guildId: string;
   moduleSlug: DashboardModuleSlug;
 }) {
@@ -35,12 +32,11 @@ export async function ModuleImagePageView({
   return (
     <div className="w-full">
       <ModuleHeader
-        channelId={source?.channelId}
-        guild={guild}
+        guildId={guild.id}
         moduleConfig={moduleConfig}
         sourceId={source?.id}
       />
-      <Editor guildId={guildId} />
+      <Editor guildId={guildId}/>
     </div>
   );
 }

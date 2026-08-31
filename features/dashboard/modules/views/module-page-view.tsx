@@ -1,19 +1,16 @@
 import { redirect } from "next/navigation";
 
 import { Editor } from "@/components/dashboard/guild";
-import {
-  DashboardModuleSlug,
-  getDashboardModuleBySlug,
-} from "@/features/dashboard/modules/config";
+import { DashboardModuleSlug, getDashboardModuleBySlug, } from "@/features/dashboard/modules/config";
 import { getUserGuild } from "@/lib/dal/session";
 import { getSources } from "@/lib/dal/sources";
 
 import { ModuleHeader } from "./module-header";
 
 export async function ModulePageView({
-  guildId,
-  moduleSlug,
-}: {
+                                       guildId,
+                                       moduleSlug,
+                                     }: {
   guildId: string;
   moduleSlug: DashboardModuleSlug;
 }) {
@@ -33,16 +30,15 @@ export async function ModulePageView({
   }
 
   return (
-    // The page scrolls with the document — the guild layout owns no scroll
-    // container, so nothing here declares its own height or overflow.
-    <div className="w-full">
+    <div className="w-full h-full">
       <ModuleHeader
-        channelId={source?.channelId}
-        guild={guild}
+        guildId={guild.id}
         moduleConfig={moduleConfig}
         sourceId={source?.id}
       />
-      {source ? <Editor guild={guild} /> : null}
+      {source ? <Editor guild={guild}/> : (
+        <div className="flex h-full w-full items-center justify-center my-auto">Enable the module to use it !</div>
+      )}
     </div>
   );
 }
