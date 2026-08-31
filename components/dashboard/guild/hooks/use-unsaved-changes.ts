@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 /**
  * Shared "unsaved changes" tracking used by both editor save buttons (the
@@ -20,6 +20,7 @@ export function useUnsavedChanges(
   baselineSnapshot: string,
 ) {
   const [lastSaved, setLastSaved] = useState(baselineSnapshot);
+  const [previousBaseline, setPreviousBaseline] = useState(baselineSnapshot);
 
   // Resync the baseline whenever the caller recomputes it. This happens when
   // the store instance is recreated — e.g. a server action revalidates this
@@ -28,9 +29,14 @@ export function useUnsavedChanges(
   // this resync, server-normalized fields that differ from what the client
   // submitted (or any store recreation unrelated to this button's own save)
   // could make `hasChanges` re-trigger against a stale baseline.
-  useEffect(() => {
+  //
+  // Adjusted during render rather than in an effect: React re-runs this
+  // component immediately with the new state, before committing to the DOM,
+  // so the stale baseline is never rendered and no cascading render happens.
+  if (baselineSnapshot !== previousBaseline) {
+    setPreviousBaseline(baselineSnapshot);
     setLastSaved(baselineSnapshot);
-  }, [baselineSnapshot]);
+  }
 
   const hasChanges = currentSnapshot !== lastSaved;
 
