@@ -6316,9 +6316,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/eslint-plugin-query@npm:^5.102.0":
-  version: 5.102.0
-  resolution: "@tanstack/eslint-plugin-query@npm:5.102.0"
+"@tanstack/eslint-plugin-query@npm:^5.102.8":
+  version: 5.102.8
+  resolution: "@tanstack/eslint-plugin-query@npm:5.102.8"
   dependencies:
     "@typescript-eslint/utils": "npm:^8.58.1"
   peerDependencies:
@@ -6327,7 +6327,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/3e316eb3968b2e3481de8c582626bac51c9b91f8d6e13f86507afd195e4bdf31715e1c3c06d73a0e44f59ae2659f1b15ab6c2c73766487ff428ab601be0023c3
+  checksum: 10c0/83210abc99b596c98126eed6ce4d3fc397ee18b4aefa7d7a73f5b127111350797da64a58a7c1b08a527ae5d75a8b226040c9f16f49e413d96b4dabb112011b6d
   languageName: node
   linkType: hard
 
@@ -10273,7 +10273,7 @@ __metadata:
     "@sentry/nextjs": "npm:^10.70.0"
     "@sentry/profiling-node": "npm:^10.71.0"
     "@tailwindcss/postcss": "npm:^4.3.3"
-    "@tanstack/eslint-plugin-query": "npm:^5.102.0"
+    "@tanstack/eslint-plugin-query": "npm:^5.102.8"
     "@types/node": "npm:^26.2.0"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
