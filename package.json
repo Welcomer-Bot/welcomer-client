@@ -70,7 +70,7 @@
     "postcss": "^8.5.26",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "prisma": "^7.9.1",
+    "prisma": "^7.10.0",
     "prisma-json-types-generator": "^5.1.1",
     "prisma-markdown": "^4.0.0",
     "tailwind-variants": "3.3.1",
