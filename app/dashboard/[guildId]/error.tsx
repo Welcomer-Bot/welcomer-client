@@ -19,14 +19,14 @@ import * as Sentry from "@sentry/nextjs";
  * that case is handled one level up by `app/dashboard/error.tsx`.
  */
 export default function Error({
-  error,
-  reset,
-}: {
+                                error,
+                                reset,
+                              }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error, { tags: { segment: "dashboard/[guildId]" } });
+    Sentry.captureException(error, {tags: {segment: "dashboard/[guildId]"}});
     console.error(error);
   }, [error]);
 
@@ -34,14 +34,14 @@ export default function Error({
     <div className="w-full h-full flex justify-center content-center items-center text-center p-4 sm:px-6 sm:py-5">
       <Card className="w-full max-w-md">
         <CardBody className="items-center gap-4 py-8 text-center">
-          <FiAlertTriangle aria-hidden className="text-4xl text-danger" />
+          <FiAlertTriangle aria-hidden className="text-4xl text-danger"/>
           <div className="space-y-1">
             <h2 className="text-large font-semibold text-foreground">
               Something went wrong
             </h2>
             <p className="text-small text-default-500">
               We couldn&apos;t load this guild&apos;s dashboard. This is
-              usually temporary — try again in a moment.
+              usually temporary, try again in a moment.
             </p>
           </div>
           {error.digest && (
