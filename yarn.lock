@@ -2513,6 +2513,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/eslint-plugin-next@npm:16.3.3":
+  version: 16.3.3
+  resolution: "@next/eslint-plugin-next@npm:16.3.3"
+  dependencies:
+    "@eslint-community/eslint-utils": "npm:4.9.1"
+    fast-glob: "npm:3.3.1"
+  checksum: 10c0/c26f959d47f42c3842f8397d1d6d06829e47ff3bcb743d2dda3fc3a94448a3b34ae2862360089a7795bd516dc5675706d21394927ec9ae7b67c543033b3515a5
+  languageName: node
+  linkType: hard
+
 "@next/swc-darwin-arm64@npm:16.3.2":
   version: 16.3.2
   resolution: "@next/swc-darwin-arm64@npm:16.3.2"
@@ -10259,7 +10269,7 @@ __metadata:
     "@heroui/system": "npm:^2.4.28"
     "@heroui/theme": "npm:^2.4.26"
     "@internationalized/date": "npm:3.12.3"
-    "@next/eslint-plugin-next": "npm:16.3.2"
+    "@next/eslint-plugin-next": "npm:16.3.3"
     "@prisma/adapter-pg": "npm:^7.9.1"
     "@prisma/client": "npm:^7.9.1"
     "@react-aria/ssr": "npm:^3.10.1"
