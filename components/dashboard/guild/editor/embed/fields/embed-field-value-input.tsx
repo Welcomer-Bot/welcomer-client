@@ -4,6 +4,7 @@ import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { useContext } from "react";
 import { useStore } from "zustand";
 import { EmbedTextInput } from "../embed-text-input";
+import { EMBED_LIMITS } from "@/lib/discord/limits";
 
 export function EmbedFieldValueInput({
   embedIndex,
@@ -24,7 +25,7 @@ export function EmbedFieldValueInput({
     <EmbedTextInput
       label="Field value"
       ariaLabel={`Field value ${fieldIndex + 1}`}
-      maxLength={1024}
+      maxLength={EMBED_LIMITS.fieldValue}
       value={fieldValue ?? ""}
       onValueChange={(value) => editField(embedIndex, fieldIndex, { value })}
       placeholder="Field Value"

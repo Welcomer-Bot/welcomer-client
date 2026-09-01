@@ -4,6 +4,7 @@ import { SourceStoreContext } from "@/features/dashboard/modules/providers";
 import { useContext } from "react";
 import { useStore } from "zustand";
 import { EmbedTextInput } from "../embed-text-input";
+import { EMBED_LIMITS } from "@/lib/discord/limits";
 
 export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
   const store = useContext(SourceStoreContext);
@@ -18,7 +19,7 @@ export function EmbedAuthorNameInput({ embedIndex }: { embedIndex: number }) {
       label="Name"
       ariaLabel="Author"
       errorSubject="Author"
-      maxLength={256}
+      maxLength={EMBED_LIMITS.authorName}
       value={author ?? ""}
       onValueChange={(value) =>
         editEmbed(embedIndex, {

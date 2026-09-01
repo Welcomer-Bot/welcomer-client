@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import z from "zod";
 
 import {
   ActionResult,
@@ -12,6 +13,7 @@ import {
 } from "@/features/dashboard/modules/actions/result";
 import { getDashboardModuleBySourceType } from "@/features/dashboard/modules/config";
 import { ImageCardState } from "@/features/dashboard/modules/stores";
+import { imageCardConfigSchema } from "@/features/dashboard/modules/types";
 import { ImageCard } from "@/generated/prisma/client";
 import { getUserGuild } from "@/lib/dal/session";
 import {
@@ -141,8 +143,16 @@ export async function updateImageCard(
       return actionError("Card not found for this guild");
     }
 
+    // The client sends whatever its store holds; nothing upstream constrains
+    // that shape. Parsing here also strips `avatarImgURL` and `renderer`,
+    // which the renderer injects at draw time.
+    const config = imageCardConfigSchema.safeParse(store.data);
+    if (!config.success) {
+      return actionError(z.prettifyError(config.error));
+    }
+
     const updatedCard = await updateImageCardQuery(card, {
-      data: store.data as object,
+      data: config.data,
     });
 
     const source = await getSource(guildId, sourceId);

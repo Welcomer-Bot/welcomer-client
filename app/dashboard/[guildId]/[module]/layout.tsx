@@ -25,6 +25,11 @@ export default async function Layout({
 
   return (
     <SourceStoreProvider
+      // Remount on purpose when the provider binds to a different source:
+      // switching module reuses this layout instance, and creating the first
+      // source turns "new" into a real id. A save only revalidates, so the
+      // key holds and in-flight edits survive.
+      key={`${moduleConfig.slug}-${sources?.[0]?.id ?? "new"}`}
       initialState={
         sources?.[0]
           ? (sources[0] as Source)

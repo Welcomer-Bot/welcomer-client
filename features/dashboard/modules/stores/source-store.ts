@@ -1,55 +1,58 @@
 import { ImageCard, Source } from "@/generated/prisma/client";
-import {
-  defaultEmbedField,
-  defaultLeaverEmbed,
-  defaultWelcomeEmbed,
-} from "@/types/embed";
-import { APIEmbed } from "discord.js";
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
+
+import {
+  createMessageSlice,
+  defaultEmbed,
+  type MessageSlice,
+} from "./message-slice";
 
 export type SourceState = Source & {
   guildId: string;
   activeCard?: ImageCard;
   imagePosition?: "outside" | "embed";
   imageEmbedIndex?: number;
+  /**
+   * Snapshot of the persisted fields as of the last save — or of store
+   * creation, which is the last save from the server's point of view.
+   * `markSaved` re-adopts it after a successful write; nothing else moves it.
+   */
+  savedSnapshot: string;
 };
 
-export type SourceActions = {
+type TrackedSourceFields = Pick<
+  SourceState,
+  "channelId" | "message" | "imagePosition" | "imageEmbedIndex"
+>;
+
+/** Only the fields `updateSource` persists — actions and timestamps excluded. */
+const sourceSnapshot = (state: TrackedSourceFields) =>
+  JSON.stringify([
+    state.channelId,
+    state.message,
+    state.imagePosition,
+    state.imageEmbedIndex,
+  ]);
+
+export const selectSourceHasChanges = (state: SourceStore) =>
+  sourceSnapshot(state) !== state.savedSnapshot;
+
+/** Source-level actions; message editing lives in {@link MessageSlice}. */
+export type SourceActions = MessageSlice & {
   setChannelId: (channelId: string) => void;
-  setContent: (content?: string) => void;
-  addEmbed: (embed?: APIEmbed) => void;
-  moveEmbedUp: (index: number) => void;
-  moveEmbedDown: (index: number) => void;
-  deleteEmbed: (index: number) => void;
-  editEmbed: (index: number, embed: APIEmbed) => void;
-  clearEmbeds: () => void;
-  moveFieldUp: (embedIndex: number, fieldIndex: number) => void;
-  moveFieldDown: (embedIndex: number, fieldIndex: number) => void;
-  deleteField: (embedIndex: number, fieldIndex: number) => void;
-  editField: (
-    embedIndex: number,
-    fieldIndex: number,
-    field: { name?: string; value?: string; inline?: boolean },
-  ) => void;
-  addField: (embedIndex: number) => void;
-  clearFields: (embedIndex: number) => void;
   setImagePosition: (
     position?: "outside" | "embed",
     embedIndex?: number,
   ) => void;
+  /** Adopt the current state as the new baseline for `selectSourceHasChanges`. */
+  markSaved(): void;
   reset(): void;
 };
 
 export type SourceStore = SourceState & SourceActions;
 
-const defaultEmbed: APIEmbed = {
-  title: "New Embed",
-  color: 0x0099ff,
-  fields: [],
-};
-
-const defaultState: SourceState = {
+const defaultState: Omit<SourceState, "savedSnapshot"> = {
   id: 0,
   activeCard: undefined,
   guildId: "",
@@ -83,155 +86,22 @@ export const createSourceStore = (initState?: Partial<Source>) => {
         });
       }
 
-      return {
+      const initial = {
         ...defaultState,
         imagePosition,
         imageEmbedIndex,
         ...initState,
+      };
+
+      return {
+        ...initial,
+        savedSnapshot: sourceSnapshot(initial),
+
+        ...createMessageSlice(set, get, store),
+
         setChannelId: (channelId) =>
           set((state) => {
             state.channelId = channelId;
-          }),
-        setContent: (content) =>
-          set((state) => {
-            state.message = state.message ?? {};
-            state.message.content = content;
-          }),
-        addEmbed: (embed) =>
-          set((state) => {
-            state.message = state.message ?? { embeds: [] };
-            state.message.embeds = state.message.embeds ?? [];
-
-            if (state.type === "WELCOMER" && !embed) {
-              embed = defaultWelcomeEmbed;
-            } else if (state.type === "LEAVER" && !embed) {
-              embed = defaultLeaverEmbed;
-            }
-            state.message.embeds.push(embed ?? defaultEmbed);
-          }),
-        moveEmbedUp: (index) =>
-          set((state) => {
-            if (
-              !state.message?.embeds ||
-              index <= 0 ||
-              index >= state.message.embeds.length
-            )
-              return;
-            const embeds = state.message.embeds;
-            [embeds[index - 1], embeds[index]] = [
-              embeds[index],
-              embeds[index - 1],
-            ];
-          }),
-        moveEmbedDown: (index) =>
-          set((state) => {
-            if (
-              !state.message?.embeds ||
-              index < 0 ||
-              index >= state.message.embeds.length - 1
-            )
-              return;
-            const embeds = state.message.embeds;
-            [embeds[index], embeds[index + 1]] = [
-              embeds[index + 1],
-              embeds[index],
-            ];
-          }),
-        deleteEmbed: (index) =>
-          set((state) => {
-            if (!state.message?.embeds || index < 0 || index >= state.message.embeds.length) {
-              return;
-            }
-            state.message.embeds.splice(index, 1);
-          }),
-        editEmbed: (index, embed) =>
-          set((state) => {
-            if (!state.message?.embeds?.[index]) {
-              return;
-            }
-            state.message.embeds[index] = embed;
-          }),
-        clearEmbeds: () =>
-          set((state) => {
-            state.message = state.message ?? {};
-            state.message.embeds = [];
-          }),
-
-        addField: (embedIndex) =>
-          set((state) => {
-            const embed = state.message?.embeds?.[embedIndex];
-            if (!embed) {
-              return;
-            }
-            embed.fields = embed.fields ?? [];
-            embed.fields.push(defaultEmbedField);
-          }),
-        moveFieldUp: (embedIndex: number, fieldIndex: number) =>
-          set((state) => {
-            const embed = state.message?.embeds?.[embedIndex];
-            if (
-              !embed ||
-              !embed.fields ||
-              fieldIndex <= 0 ||
-              fieldIndex >= embed.fields.length
-            )
-              return;
-            const fields = embed.fields;
-            [fields[fieldIndex - 1], fields[fieldIndex]] = [
-              fields[fieldIndex],
-              fields[fieldIndex - 1],
-            ];
-          }),
-        moveFieldDown: (embedIndex: number, fieldIndex: number) =>
-          set((state) => {
-            const embed = state.message?.embeds?.[embedIndex];
-            if (
-              !embed ||
-              !embed.fields ||
-              fieldIndex < 0 ||
-              fieldIndex >= embed.fields.length - 1
-            )
-              return;
-            const fields = embed.fields;
-            [fields[fieldIndex], fields[fieldIndex + 1]] = [
-              fields[fieldIndex + 1],
-              fields[fieldIndex],
-            ];
-          }),
-        clearFields: (embedIndex) =>
-          set((state) => {
-            const embed = state.message?.embeds?.[embedIndex];
-            if (!embed) {
-              return;
-            }
-            embed.fields = [];
-          }),
-        deleteField: (embedIndex, fieldIndex) =>
-          set((state) => {
-            const embed = state.message?.embeds?.[embedIndex];
-            if (
-              !embed ||
-              !embed.fields ||
-              fieldIndex < 0 ||
-              fieldIndex >= embed.fields.length
-            )
-              return;
-            embed.fields.splice(fieldIndex, 1);
-          }),
-        editField: (embedIndex, fieldIndex, field) =>
-          set((state) => {
-            const embed = state.message?.embeds?.[embedIndex];
-            if (
-              !embed ||
-              !embed.fields ||
-              fieldIndex < 0 ||
-              fieldIndex >= embed.fields.length
-            )
-              return;
-            embed.fields[fieldIndex] = {
-              ...embed.fields[fieldIndex],
-              ...field,
-            };
           }),
         setImagePosition: (position, embedIndex) =>
           set((state) => {
@@ -246,9 +116,15 @@ export const createSourceStore = (initState?: Partial<Source>) => {
               return;
             }
 
-            if (state.imagePosition === "embed" && state.imageEmbedIndex !== undefined) {
+            if (
+              state.imagePosition === "embed" &&
+              state.imageEmbedIndex !== undefined
+            ) {
               const oldEmbed = embeds?.[state.imageEmbedIndex];
-              if (oldEmbed?.image && (position !== "embed" || state.imageEmbedIndex !== embedIndex)) {
+              if (
+                oldEmbed?.image &&
+                (position !== "embed" || state.imageEmbedIndex !== embedIndex)
+              ) {
                 delete oldEmbed.image;
               }
             }
@@ -264,6 +140,9 @@ export const createSourceStore = (initState?: Partial<Source>) => {
             state.imagePosition = position;
             state.imageEmbedIndex = embedIndex;
           }),
+        markSaved: () => set({ savedSnapshot: sourceSnapshot(get()) }),
+        // `getInitialState()` carries `savedSnapshot` too, so a reset restores
+        // the baseline along with the fields — no separate bookkeeping.
         reset: () => {
           set(store.getInitialState());
         },
@@ -271,4 +150,3 @@ export const createSourceStore = (initState?: Partial<Source>) => {
     }),
   );
 };
-
