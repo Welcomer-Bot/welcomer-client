@@ -10410,7 +10410,7 @@ __metadata:
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
     "@typescript-eslint/eslint-plugin": "npm:8.67.0"
-    "@typescript-eslint/parser": "npm:8.67.0"
+    "@typescript-eslint/parser": "npm:8.68.0"
     "@welcomer-bot/card-canvas": "npm:^1.1.1"
     "@welcomer-bot/discord-components-react": "npm:^4.0.2"
     "@welcomer-bot/utils": "npm:^0.1.2"
