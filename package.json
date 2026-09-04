@@ -15,7 +15,7 @@
   "dependencies": {
     "@discordjs/builders": "2.0.0-pr-11006.1765452229-e636950b2",
     "@discordjs/rest": "^2.6.3",
-    "@heroui/react": "^2.8.10",
+    "@heroui/react": "^3.2.4",
     "@heroui/system": "^2.4.28",
     "@heroui/theme": "^2.4.26",
     "@internationalized/date": "3.12.3",
