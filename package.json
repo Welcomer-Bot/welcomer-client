@@ -48,24 +48,24 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
-    "@eslint/js": "^9.39.5",
-    "@next/eslint-plugin-next": "16.3.3",
+    "@eslint/js": "^10.0.1",
+    "@next/eslint-plugin-next": "16.3.4",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/eslint-plugin-query": "^5.102.8",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.4.0",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "@typescript-eslint/eslint-plugin": "8.67.0",
-    "@typescript-eslint/parser": "8.67.0",
+    "@types/react-dom": "19.2.5",
+    "@typescript-eslint/eslint-plugin": "8.69.0",
+    "@typescript-eslint/parser": "8.69.0",
     "autoprefixer": "^10.5.4",
     "discord.js": "^14.27.0",
     "eslint": "^10.9.1",
-    "eslint-config-next": "16.3.3",
+    "eslint-config-next": "16.3.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^17.11.0",
+    "globals": "^17.12.0",
     "husky": "^9.1.7",
     "postcss": "^8.5.26",
     "prettier": "^3.9.6",
@@ -76,11 +76,11 @@
     "tailwind-variants": "3.3.1",
     "tailwindcss": "4.3.3",
     "typescript": "^7.0.2",
-    "typescript-eslint": "^8.68.0"
+    "typescript-eslint": "^8.69.0"
   },
   "resolutions": {
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.3"
+    "@types/react-dom": "19.2.5"
   },
   "packageManager": "yarn@4.18.0"
 }
