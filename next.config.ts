@@ -3,19 +3,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.discordapp.com",
-      },
-      {
-        protocol: "https",
-        hostname: "beta.welcomer.app",
-      },
-    ],
-  },
-  crossOrigin: "anonymous",
 };
 
 export default withSentryConfig(nextConfig, {
