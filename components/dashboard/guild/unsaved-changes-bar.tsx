@@ -15,7 +15,7 @@ export function UnsavedChangesBar({
   onSave,
 }: UnsavedChangesBarProps) {
   return (
-    <div className="fixed sm:w-3/5 w-4/5 flex justify-between bottom-5 z-50 left-0 right-0 mx-auto">
+    <div className="sticky sm:w-3/5 w-4/5 flex justify-between bottom-5 z-50 left-0 right-0 mx-auto">
       <Card className="w-full shadow-lg">
         <CardBody className="flex w-full sm:flex-row flex-col items-center justify-between p-4 text-sm gap-4">
           <div className="flex items-center gap-2">

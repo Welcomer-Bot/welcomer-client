@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 import { createDBSession } from "@/lib/dal/session";
 import { requireEnv } from "@/lib/env";
 import { createSession } from "@/lib/session";
-import { timingSafeEqualString } from "@/lib/security";
 
 function sanitizeRedirectPath(path: string | undefined) {
   if (!path) return null;
@@ -22,23 +21,19 @@ export async function handleOAuthCallback(input: {
 }) {
   const cookieStore = await cookies();
 
-  // Every exit path below either fails or completes the OAuth attempt tied to
-  // this `oauthState` cookie, so it's always safe (and always correct) to
-  // drop it here rather than repeating `cookieStore.delete(...)` at each call
-  // site.
   function errorRedirect(error: string, errorDescription: string): never {
     cookieStore.delete("oauthState");
     const params = new URLSearchParams({
       error,
       error_description: errorDescription,
     });
-    redirect(`/auth/error?${params.toString()}`);
+    return redirect(`/auth/error?${params.toString()}`);
   }
 
   if (input.error) {
     if (input.error === "access_denied") {
       cookieStore.delete("oauthState");
-      redirect("/");
+      return redirect("/");
     }
     errorRedirect(
       input.error,
@@ -55,13 +50,12 @@ export async function handleOAuthCallback(input: {
   }
 
   const expectedState = cookieStore.get("oauthState")?.value;
-  if (!expectedState || !timingSafeEqualString(input.state, expectedState)) {
+  if (!expectedState) {
     errorRedirect("invalidState", "Invalid authentication state");
   }
-
-  const redirectAfterLoginCookie = cookieStore.get("redirectAfterLogin")?.value;
-  const targetUrl =
-    sanitizeRedirectPath(redirectAfterLoginCookie) ?? "/dashboard";
+  if (input.state !== expectedState) {
+    errorRedirect("invalidState", "Invalid authentication state");
+    }
 
   const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
@@ -75,6 +69,8 @@ export async function handleOAuthCallback(input: {
     headers: {"Content-Type": "application/x-www-form-urlencoded"},
     cache: "no-store",
   });
+
+  console.log(tokenResponse)
 
   if (!tokenResponse.ok) {
     errorRedirect(
@@ -110,9 +106,14 @@ export async function handleOAuthCallback(input: {
     errorRedirect("internalServerError", "Unable to create session");
   }
 
+    const redirectAfterLoginCookie = cookieStore.get("redirectAfterLogin")?.value;
+    const targetUrl =
+        sanitizeRedirectPath(redirectAfterLoginCookie) ?? "/dashboard";
+
   await createSession(dbSession);
   cookieStore.delete("oauthState");
   cookieStore.delete("redirectAfterLogin");
+
 
   redirect(targetUrl);
 }

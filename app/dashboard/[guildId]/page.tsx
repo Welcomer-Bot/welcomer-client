@@ -21,25 +21,13 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import { ManageButton, StatsViewer } from "@/components/dashboard/guild";
+import { ManageButton } from "@/components/dashboard/guild";
 import { MODULES } from "@/features/dashboard/modules/config";
 import { getGuild } from "@/lib/dal/discord";
 import {
   getGuildFlags,
-  getLastEventAtBySource,
   getSources,
 } from "@/lib/dal/sources";
-import type { StatsRange } from "@/lib/utils";
-
-/** "today" / "yesterday" / "3 days ago" — Intl does this without a date lib. */
-function formatRelativeDay(date: Date) {
-  const days = Math.round((date.getTime() - Date.now()) / 86_400_000);
-
-  return new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
-    days,
-    "day",
-  );
-}
 
 function StatsViewerSkeleton() {
   return (
@@ -50,7 +38,11 @@ function StatsViewerSkeleton() {
       </div>
       <Card>
         <CardBody>
-          <Skeleton className="h-[180px] w-full rounded-lg" />
+          {/*<Skeleton className="h-45 w-full rounded-lg" >*/}
+              <p className={"text-center flex items-center justify-center h-45 w-full rounded-lg"}>
+                  Coming Soon...
+              </p>
+          {/*</Skeleton>*/}
         </CardBody>
       </Card>
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-5">
@@ -79,8 +71,6 @@ export default async function Page({
   const { guildId } = await params;
   const search = await searchParams;
 
-  const statsRange = (search.statsRange as StatsRange) || "7d";
-
   // getChannel() hangs off the guild, so this one await has to come first.
   const guild = await getGuild(guildId);
   if (!guild) redirect("/dashboard");
@@ -100,19 +90,10 @@ export default async function Page({
     ),
   ]);
 
-  const lastEvents = await getLastEventAtBySource(
-    guildId,
-    moduleStates.flatMap(({ source }) => (source ? [source.id] : [])),
-  );
-
   return (
     <div className="no-scrollbar w-full space-y-6 p-4 sm:px-6 sm:py-5">
       <header className="overflow-hidden rounded-large bg-content1">
         <div className="relative h-36 overflow-hidden sm:h-48">
-          {/* `bannerUrl` already falls back to the Welcomer logo, but that
-              fallback is a square SVG — Next/Image rejects SVGs anyway. Gate on
-              `banner` so a real banner gets optimised, and blur the logo into a
-              texture like the guild list on /dashboard does. */}
           {guild.banner ? (
             <Image
               alt=""
@@ -177,7 +158,6 @@ export default async function Page({
         <h2 className="text-large font-semibold">Modules</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {moduleStates.map(({ module, source, channel }) => {
-            const lastEvent = source ? lastEvents.get(source.id) : undefined;
 
             return (
               <Card key={module.slug} className="w-full">
@@ -210,13 +190,14 @@ export default async function Page({
                         "Not configured yet"
                       )}
                     </p>
-                    <p className="text-default-400">
-                      {lastEvent
-                        ? `Last used ${formatRelativeDay(lastEvent)}`
-                        : source
-                          ? "Never used yet"
-                          : " "}
-                    </p>
+                    {/*  TODO: Reimplement stats for this */}
+                    {/*<p className="text-default-400">*/}
+                    {/*  {lastEvent*/}
+                    {/*    ? `Last used ${formatRelativeDay(lastEvent)}`*/}
+                    {/*    : source*/}
+                    {/*      ? "Never used yet"*/}
+                    {/*      : " "}*/}
+                    {/*</p>*/}
                   </div>
                   <ManageButton
                     href={`/dashboard/${guild.id}/${module.slug}`}
@@ -229,9 +210,11 @@ export default async function Page({
         </div>
       </section>
 
-      <Suspense fallback={<StatsViewerSkeleton />}>
-        <StatsViewer guildId={guild.id} range={statsRange} />
-      </Suspense>
+      {/*<Suspense fallback={<StatsViewerSkeleton />}*/}
+                <StatsViewerSkeleton />
+
+        {/*<StatsViewer guildId={guild.id} range={statsRange} />*/}
+      {/*</Suspense>*/}
     </div>
   );
 }

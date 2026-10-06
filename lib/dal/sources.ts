@@ -105,7 +105,7 @@ export async function createSource(guildId: string, type: SourceType) {
     },
   });
 
-  const updatedSource = await prisma.source.update({
+  return await prisma.source.update({
     where: { id: source.id },
     data: {
       activeCard: {
@@ -119,7 +119,6 @@ export async function createSource(guildId: string, type: SourceType) {
     },
   });
 
-  return updatedSource;
 }
 
 /**
@@ -316,60 +315,6 @@ export async function removeGuildFromBeta(guildId: string) {
       guildId,
     });
     return false;
-  }
-}
-
-/**
- * Fetch daily stat rollups for a guild since a given date.
- *
- * @param guildId - Discord guild ID
- * @param since - Lower bound (inclusive); omit for all-time
- * @returns Array of daily stat rows
- */
-export async function getGuildDailyStatsSince(guildId: string, since?: Date) {
-  return await prisma.guildDailyStat.findMany({
-    where: {
-      guildId,
-      ...(since && { date: { gte: since } }),
-    },
-  });
-}
-
-/**
- * Fetch the most recent event timestamp for each of a guild's sources.
- *
- * One grouped query for every source rather than one findFirst per module.
- *
- * @param guildId - Discord guild ID
- * @param sourceIds - Sources to look up
- * @returns Map of source ID to its latest event date; absent when never used
- */
-export async function getLastEventAtBySource(
-  guildId: string,
-  sourceIds: number[],
-): Promise<Map<number, Date>> {
-  if (sourceIds.length === 0) return new Map();
-
-  try {
-    const rows = await prisma.guildEvent.groupBy({
-      by: ["sourceId"],
-      where: { guildId, sourceId: { in: sourceIds } },
-      _max: { occurredAt: true },
-    });
-
-    return new Map(
-      rows.flatMap((row) =>
-        row.sourceId !== null && row._max.occurredAt
-          ? ([[row.sourceId, row._max.occurredAt]] as [number, Date][])
-          : [],
-      ),
-    );
-  } catch (error) {
-    logDalError("getLastEventAtBySource", ErrorCode.DATABASE_ERROR, error, {
-      guildId,
-    });
-
-    return new Map();
   }
 }
 

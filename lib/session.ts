@@ -4,7 +4,7 @@ import "server-only";
 
 import { requireEnv } from "@/lib/env";
 import { SessionPayload } from "@/types";
-import { Session } from "../generated/prisma/client";
+import { Session } from "@/generated/prisma/client";
 
 const SESSION_COOKIE_NAME = "session";
 const isProduction = process.env.NODE_ENV === "production";

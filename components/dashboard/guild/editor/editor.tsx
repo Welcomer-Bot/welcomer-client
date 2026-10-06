@@ -32,7 +32,7 @@ export async function Editor({ guild }: { guild: Guild }) {
   return (
     // No height or overflow of its own: the document scrolls, and the preview
     // sticks alongside the form instead of owning a second scroll container.
-    <div className="editor w-full">
+    <div className="editor w-full relative">
       <div className="flex w-full flex-col lg:flex-row">
         <div className="w-full lg:w-1/2">
           <form className="w-full space-y-5 px-5 py-5 lg:pb-24">

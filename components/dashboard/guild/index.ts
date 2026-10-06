@@ -39,6 +39,5 @@ export {
 } from "./image-editor/types";
 
 // Stats
-export { default as StatsViewer } from "./stats/stats-viewer";
 
 

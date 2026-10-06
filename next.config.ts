@@ -3,12 +3,24 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "cdn.discordapp.com",
+            },
+            {
+                protocol: "http",
+                hostname: "localhost",
+            }
+        ],
+
+    },
 };
 
 export default withSentryConfig(nextConfig, {
   org: "welcomer",
   project: "website",
-
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
 
